@@ -1,6 +1,7 @@
-#
-!**/__pycache__/
+# Byte-compiled / optimized / DLL files
+__pycache__/
 *.pyc
+*$py.class
 
 #output and inputs 
 src/CALH2
