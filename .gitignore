@@ -1,0 +1,10 @@
+#
+__pycache__/
+*.pyc
+
+#output and inputs 
+src/CALH2
+
+#Intentos de programas
+src/tryp
+src/shield_dia
