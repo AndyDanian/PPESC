@@ -11,4 +11,11 @@ Build the venv
 
 python3.9 -m venv pyint
 
+# Integrals
 
+Integrals implemented into the Iedt and Ieedt
+
+* One--body
+** Potenial 
+** Kinetic
+** Angular momentum

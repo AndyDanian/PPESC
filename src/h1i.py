@@ -44,6 +44,8 @@ def h1i(
     name: str = None,
     output: int = 0,
     atom: list = None,
+    spatial_sym: int = None,
+    gauge: list = None,
 ):
     """
     Initialize the calculate of the integral choose
@@ -77,7 +79,8 @@ def h1i(
         integral = pot(charge, atom, coord, exp, center, lx, ly, lz, output)
     elif name.lower() == "kin" or name.lower() == "kinetic":
         integral = kinetic(coord, exp, center, lx, ly, lz, output)
-
+    elif name.lower() == "ang" or name.lower() == "angmom":
+        integral = angmom(coord, gauge, spatial_sym, exp, center, lx, ly, lz, output)
 
     return integral
 

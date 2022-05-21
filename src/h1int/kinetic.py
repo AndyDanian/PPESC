@@ -32,7 +32,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output):
             # -0.5*<phi|dxx|phi> = -0.5*(dxxSij^0)Skl^0Smn^0 =
             # -0.5*Dij^2Skl^0Smn^0 =
             # -0.5*(4b^2Sij+2^0 - 2b(2j + 1)Sij^0 + j(j-1)Sij-2^0)Skl^0Smn^0 =
-            # -0.5*(4b^2E0^ij+2 - 2b(2j + 1)E0^ij + j(j-1)E0^ij-2)E0^klE0^mn
+            # -0.5*( 4b^2E0^ij+2 - 2b(2j + 1)E0^ij + j(j-1)E0^ij-2 )E0^klE0^mn
 
             sij = E(
                 lx[i],

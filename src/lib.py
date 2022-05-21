@@ -30,3 +30,4 @@ from convert_array import *
 from overlap import *
 from pot import *
 from kinetic import *
+from angmom import *
