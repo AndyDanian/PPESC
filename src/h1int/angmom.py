@@ -19,11 +19,11 @@ def angmom(coord, gauge, spatial_sym, exp, center, lx, ly, lz, output):
         angmom (array): array 2d with atomic integrals
     """
 
-    start = time()
+    start: float = time()
     # Primitive total in the cluster
-    total_nprim = len(exp)
+    total_nprim: int = len(exp)
 
-    angmom = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
+    angmom: list = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
 
     count: int = 0
 
@@ -36,18 +36,21 @@ def angmom(coord, gauge, spatial_sym, exp, center, lx, ly, lz, output):
         """X Component"""
         left_coord: int = 1
         right_coord: int = 2
+        spatial_l: list = lx
         left_l: list = ly
         right_l: list = lz
     elif spatial_sym == 1:
         """Y Componente"""
         left_coord: int = 2
         right_coord: int = 0
+        spatial_l: list = ly
         left_l: list = lz
         right_l: list = lx
     elif spatial_sym == 2:
         """Z Componente"""
         left_coord: int = 0
         right_coord: int = 1
+        spatial_l: list = lz
         left_l: list = lx
         right_l: list = ly
     else:
@@ -58,58 +61,44 @@ def angmom(coord, gauge, spatial_sym, exp, center, lx, ly, lz, output):
 
         for j in range(i, total_nprim):
 
-            # Px = (
-            #     exp[i] * coord[center[i]][0]
-            #     + exp[j] * coord[center[j]][0]
-            # )
-            # Px = Px / (exp[i] + exp[j])
-
-            # Py = (
-            #     exp[i] * coord[center[i]][1]
-            #     + exp[j] * coord[center[j]][1]
-            # )
-            # Py = Py / (exp[i] + exp[j])
-
-            # Pz = (
-            #     exp[i] * coord[center[i]][2]
-            #     + exp[j] * coord[center[j]][2]
-            # )
-            # Pz = Pz / (exp[i] + exp[j])
-
-            Pxyz = (
-                exp[i] * coord[center[i]][spatial_sym]
-                + exp[j] * coord[center[j]][spatial_sym]
+            # Gaussian Center
+            left_Pxyz: float = (
+                exp[i] * coord[center[i]][left_coord]
+                + exp[j] * coord[center[j]][left_coord]
             )
-            Pxyz = Pxyz / (exp[i] + exp[j])
+            left_Pxyz = left_Pxyz / (exp[i] + exp[j])
+            right_Pxyz: float = (
+                exp[i] * coord[center[i]][right_coord]
+                + exp[j] * coord[center[j]][right_coord]
+            )
+            right_Pxyz = right_Pxyz / (exp[i] + exp[j])
 
-            # Xpg = Px - gauge[0]
-            # Ypg = Py - gauge[1]
-            # Zpg = Pz - gauge[2]
-            rg = Pxyz - gauge[spatial_sym]
-
-            sij = E(
-                lx[i],
-                lx[j],
+            left_rg: float = left_Pxyz - gauge[left_coord]
+            right_rg: float = right_Pxyz - gauge[right_coord]
+    
+            spatial_s: float = E(
+                spatial_l[i],
+                spatial_l[j],
                 0,
-                coord[center[i]][0] - coord[center[j]][0],
+                coord[center[i]][spatial_sym] - coord[center[j]][spatial_sym],
                 exp[i],
                 exp[j],
             )
 
-            skl = E(
-                ly[i],
-                ly[j],
+            left_s: float = E(
+                left_l[i],
+                left_l[j],
                 0,
-                coord[center[i]][1] - coord[center[j]][1],
+                coord[center[i]][left_coord] - coord[center[j]][left_coord],
                 exp[i],
                 exp[j],
             )
 
-            smn = E(
-                lz[i],
-                lz[j],
+            right_s: float = E( #z
+                right_l[i],
+                right_l[j],
                 0,
-                coord[center[i]][2] - coord[center[j]][2],
+                coord[center[i]][right_coord] - coord[center[j]][right_coord],
                 exp[i],
                 exp[j],
             )
@@ -119,35 +108,7 @@ def angmom(coord, gauge, spatial_sym, exp, center, lx, ly, lz, output):
             #  [Skl^1Dmn^1 - Smn^1Dkl^1]Sij^0 =
             #  [(E_1^kl + YpgE0^kl)(2bE_0^mn+1-l2bE0^mn-1) -
             #   (E_1^mn + ZpgE0^mn)(2bE_0^kl+1-l2bE0^kl-1)]Sij^0
-            # ygaugeo = E(
-            #     ly[i],
-            #     ly[j],
-            #     1,
-            #     coord[center[i]][1] - coord[center[j]][1],
-            #     exp[i],
-            #     exp[j],
-            # )
-
-            # xgaugeo = E(
-            #     lx[i],
-            #     lx[j],
-            #     1,
-            #     coord[center[i]][0] - coord[center[j]][0],
-            #     exp[i],
-            #     exp[j],
-            # )
-
-            # zgaugeo = E(
-            #     lz[i],
-            #     lz[j],
-            #     1,
-            #     coord[center[i]][2] - coord[center[j]][2],
-            #     exp[i],
-            #     exp[j],
-            # )
-
-
-            left_r = E(
+            left_r: float = E(
                 left_l[i],
                 left_l[j],
                 1,
@@ -156,7 +117,7 @@ def angmom(coord, gauge, spatial_sym, exp, center, lx, ly, lz, output):
                 exp[j],
             )
 
-            right_r = E(
+            right_r: float = E(
                 right_l[i],
                 right_l[j],
                 1,
@@ -165,78 +126,44 @@ def angmom(coord, gauge, spatial_sym, exp, center, lx, ly, lz, output):
                 exp[j],
             )
 
-
-            # py = 2.0 * exp[j] * E(
-            #     ly[i],
-            #     ly[j] + 1,
-            #     0,
-            #     coord[center[i]][1] - coord[center[j]][1],
-            #     exp[i],
-            #     exp[j],
-            # ) - ly[j] * E(
-            #     ly[i],
-            #     ly[j] - 1,
-            #     0,
-            #     coord[center[i]][1] - coord[center[j]][1],
-            #     exp[i],
-            #     exp[j],
-            # )
-
-
-            # pz = 2.0 * exp[j] * E(
-            #     lz[i],
-            #     lz[j] + 1,
-            #     0,
-            #     coord[center[i]][2] - coord[center[j]][2],
-            #     exp[i],
-            #     exp[j],
-            # ) - lz[j] * E(
-            #     lz[i],
-            #     lz[j] - 1,
-            #     0,
-            #     coord[center[i]][2] - coord[center[j]][2],
-            #     exp[i],
-            #     exp[j],
-            # )
-
-            right_p = 2.0 * exp[j] * E(
-                right_l[i],
-                right_l[j] + 1,
-                0,
-                coord[center[i]][left_coord] - coord[center[j]][left_coord],
-                exp[i],
-                exp[j],
-            ) - right_l[j] * E(
-                right_l[i],
-                right_l[j] - 1,
-                0,
-                coord[center[i]][left_coord] - coord[center[j]][left_coord],
-                exp[i],
-                exp[j],
-            )
-
-            left_p = 2.0 * exp[j] * E(
+            right_p: float = 2.0 * exp[j] * E(
                 left_l[i],
                 left_l[j] + 1,
                 0,
-                coord[center[i]][right_coord] - coord[center[j]][right_coord],
+                coord[center[i]][left_coord] - coord[center[j]][left_coord],
                 exp[i],
                 exp[j],
             ) - left_l[j] * E(
                 left_l[i],
                 left_l[j] - 1,
                 0,
-                coord[center[i]][2] - coord[center[right_coord]][right_coord],
+                coord[center[i]][left_coord] - coord[center[j]][left_coord],
                 exp[i],
                 exp[j],
             )
 
-
+            left_p: float = 2.0 * exp[j] * E(
+                right_l[i],
+                right_l[j] + 1,
+                0,
+                coord[center[i]][right_coord] - coord[center[j]][right_coord],
+                exp[i],
+                exp[j],
+            ) - right_l[j] * E(
+                right_l[i],
+                right_l[j] - 1,
+                0,
+                coord[center[i]][right_coord] - coord[center[j]][right_coord],
+                exp[i],
+                exp[j],
+            )
+    
             angmom[count] = (
-                Norm[lx[i] + ly[i] + lz[i]](exp[i])
+                -Norm[lx[i] + ly[i] + lz[i]](exp[i])
                 * Norm[lx[j] + ly[j] + lz[j]](exp[j])
-                * ((left_r + rg * skl) * left_p - (right_r + rg * smn) * right_p)
-                * sij
+                * ((left_r + left_rg * left_s) * left_p -
+                   (right_r + right_rg * right_s) * right_p)
+                * spatial_s
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)
             )
             count += 1

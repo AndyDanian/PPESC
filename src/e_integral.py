@@ -145,4 +145,8 @@ if __name__ == "__main__":
 
     s = eint(wfn.build_wfn_array())
 
-    s.integration(["overlap", "pot", "angmom"], {"pot":{"atoms":[0, 1]}, "angmom":{"spatial":[0,1,2], "gauge":[0.0, 0.0, 1.404552358700]}}, 12)
+    s.integration(["angmom"],
+                  #["overlap", "pot", "angmom"], 
+                  {"pot":{"atoms":[0, 1]}, 
+                  "angmom":{"spatial":[0, 1, 2], "gauge":[0.0, 0.0, 1.404552358700]}}
+                  , 12)

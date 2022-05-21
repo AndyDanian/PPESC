@@ -1,9 +1,9 @@
 from numpy import exp
 import numpy as np
-import time
-import phi
+#import time
+from libh import *
 
-start = time.time()
+start = time()
 
 # 6-311++G**
 exp_array = [
@@ -27,7 +27,6 @@ exp_array = [
     0.75,
 ]
 
-n = [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1]
 lx = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
 ly = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
 lz = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
@@ -37,7 +36,6 @@ total_nprim = 18
 
 coord = [[0.0, 0.0, 0.0586476414], [0.0, 0.0, 1.4045523587]]
 
-Norm = {0: phi.NS, 1: phi.NP}
 intLx = np.zeros((total_nprim, total_nprim), dtype=float)
 intLy = np.zeros((total_nprim, total_nprim), dtype=float)
 intLz = np.zeros((total_nprim, total_nprim), dtype=float)
@@ -70,8 +68,10 @@ for i in range(total_nprim):
         Xpg = Px - Rg[0]
         Ypg = Py - Rg[1]
         Zpg = Pz - Rg[2]
+        print("ygaugeo zgaugeo ", Ypg, Zpg)
 
-        sij = phi.E(
+
+        sij = E(
             lx[i],
             lx[j],
             0,
@@ -80,7 +80,7 @@ for i in range(total_nprim):
             exp_array[j],
         )
 
-        skl = phi.E(
+        skl = E(
             ly[i],
             ly[j],
             0,
@@ -89,7 +89,7 @@ for i in range(total_nprim):
             exp_array[j],
         )
 
-        smn = phi.E(
+        smn = E(
             lz[i],
             lz[j],
             0,
@@ -103,7 +103,7 @@ for i in range(total_nprim):
         #  [Skl^1Dmn^1 - Smn^1Dkl^1]Sij^0 =
         #  [(E_1^kl + YpgE0^kl)(2bE_0^mn+1-l2bE0^mn-1) -
         #   (E_1^mn + ZpgE0^mn)(2bE_0^kl+1-l2bE0^kl-1)]Sij^0
-        ygaugeo = phi.E(
+        ygaugeo = E(
             ly[i],
             ly[j],
             1,
@@ -112,14 +112,14 @@ for i in range(total_nprim):
             exp_array[j],
         )
 
-        py = 2.0 * exp_array[j] * phi.E(
+        py = 2.0 * exp_array[j] * E(
             ly[i],
             ly[j] + 1,
             0,
             coord[center[i]][1] - coord[center[j]][1],
             exp_array[i],
             exp_array[j],
-        ) - ly[j] * phi.E(
+        ) - ly[j] * E(
             ly[i],
             ly[j] - 1,
             0,
@@ -128,7 +128,7 @@ for i in range(total_nprim):
             exp_array[j],
         )
 
-        zgaugeo = phi.E(
+        zgaugeo = E(
             lz[i],
             lz[j],
             1,
@@ -137,14 +137,14 @@ for i in range(total_nprim):
             exp_array[j],
         )
 
-        pz = 2.0 * exp_array[j] * phi.E(
+        pz = 2.0 * exp_array[j] * E(
             lz[i],
             lz[j] + 1,
             0,
             coord[center[i]][2] - coord[center[j]][2],
             exp_array[i],
             exp_array[j],
-        ) - lz[j] * phi.E(
+        ) - lz[j] * E(
             lz[i],
             lz[j] - 1,
             0,
@@ -154,8 +154,8 @@ for i in range(total_nprim):
         )
 
         intLx[i, j] = (
-            Norm[n[i]](exp_array[i])
-            * Norm[n[j]](exp_array[j])
+            Norm[lx[i] + ly[i] + lz[i]](exp_array[i])
+            * Norm[lx[j] + ly[j] + lz[j]](exp_array[j])
             * ((ygaugeo + Ypg * skl) * pz - (zgaugeo + Zpg * smn) * py)
             * sij
             * np.power(np.pi / (exp_array[i] + exp_array[j]), 1.5)
@@ -168,7 +168,7 @@ for i in range(total_nprim):
         #  [(E_1^mn + ZpgE0^mn)(2bE_0^ij+1-l2bE0^ij-1) -
         #   (E_1^ij + XpgE0^ij)(2bE_0^mn+1-l2bE0^mn-1)]Skl^0
 
-        xgaugeo = phi.E(
+        xgaugeo = E(
             lx[i],
             lx[j],
             1,
@@ -177,14 +177,14 @@ for i in range(total_nprim):
             exp_array[j],
         )
 
-        px = 2.0 * exp_array[j] * phi.E(
+        px = 2.0 * exp_array[j] * E(
             lx[i],
             lx[j] + 1,
             0,
             coord[center[i]][0] - coord[center[j]][0],
             exp_array[i],
             exp_array[j],
-        ) - lx[j] * phi.E(
+        ) - lx[j] * E(
             lx[i],
             lx[j] - 1,
             0,
@@ -194,8 +194,8 @@ for i in range(total_nprim):
         )
 
         intLy[i, j] = (
-            Norm[n[i]](exp_array[i])
-            * Norm[n[j]](exp_array[j])
+            Norm[lx[i] + ly[i] + lz[i]](exp_array[i])
+            * Norm[lx[j] + ly[j] + lz[j]](exp_array[j])
             * ((zgaugeo + Zpg * smn) * px - (xgaugeo + Xpg * sij) * pz)
             * skl
             * np.power(np.pi / (exp_array[i] + exp_array[j]), 1.5)
@@ -209,15 +209,15 @@ for i in range(total_nprim):
         #   (E_1^kl + YpgE0^kl)(2bE_0^ij+1-l2bE0^ij-1)]Smn^0
 
         intLz[i, j] = (
-            Norm[n[i]](exp_array[i])
-            * Norm[n[j]](exp_array[j])
+            Norm[lx[i] + ly[i] + lz[i]](exp_array[i])
+            * Norm[lx[j] + ly[j] + lz[j]](exp_array[j])
             * ((xgaugeo + Xpg * sij) * py - (ygaugeo + Ypg * skl) * px)
             * smn
             * np.power(np.pi / (exp_array[i] + exp_array[j]), 1.5)
         )
         intLz[j, i] = -1.0 * intLz[i, j]
         # ! Nota: Revisar que tipo de matriz es, summetric, antisymmetric or Cuadrada
-        if output > 10 and np.abs(intLz[j, i]) > 1e-2:
-            print("int [", j + 1, ",", i + 1, "] : ", intLz[j, i])
+        if output > 10 and np.abs(intLx[i, j]) > 1e-2:
+            print("int [", i + 1, ",", j + 1, "] : ", intLx[i, j])
 
-print(" time [s]: ", -start + time.time())
+print(" time [s]: ", -start + time())
