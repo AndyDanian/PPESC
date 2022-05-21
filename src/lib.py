@@ -2,7 +2,7 @@
 import sys
 
 sys.path.insert(0, "./h1int")
-sys.path.insert(0, "./output")
+sys.path.insert(0, "./io")
 sys.path.insert(0, "./functions")
 
 import numpy as np

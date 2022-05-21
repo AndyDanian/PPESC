@@ -4,3 +4,11 @@ Program written in Python 3.9.10 to calculate response properties in different a
 
 * RPA
 * HRPA
+
+# Installation
+
+Build the venv
+
+python3.9 -m venv pyint
+
+

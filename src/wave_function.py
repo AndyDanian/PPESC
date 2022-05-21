@@ -131,7 +131,7 @@ if __name__ == "__main__":
     """
     Example to use wave function object
     """
-    wfn = wave_function("input/H2.molden")
+    wfn = wave_function("io/H2.molden")
 
     array = wfn.build_wfn_array()
     print("\nWave function ", array["cluster"])
