@@ -73,8 +73,11 @@ def h1i(
         #         "The basis set low precision in hold the electron number ",
         #         ne,
         #     )
-    if name.lower() == "potential" or name.lower() == "pot":
+    elif name.lower() == "potential" or name.lower() == "pot":
         integral = pot(charge, atom, coord, exp, center, lx, ly, lz, output)
+    elif name.lower() == "kin" or name.lower() == "kinetic":
+        integral = kinetic(coord, exp, center, lx, ly, lz, output)
+
 
     return integral
 

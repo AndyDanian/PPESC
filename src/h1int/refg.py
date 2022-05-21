@@ -1,3 +1,4 @@
+
 import numpy as np
 from scipy.special import hyp1f1
 
@@ -31,6 +32,9 @@ def R(t, mu, nu, n, p, PKx, PKy, PKz, Rpc):
 def nuclear_attraction(
     i, k, m, j, l, n, e, f, g, alpha, beta, Ax, Ay, Az, Bx, By, Bz, Kx, Ky, Kz
 ):
+    """
+    Recurrence to calculate the integrate that include 1/r
+    """
     p = alpha + beta
 
     Px = alpha * Ax + beta * Bx

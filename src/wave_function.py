@@ -1,4 +1,4 @@
-from input import molden as mn
+from lib import * # from io import molden as mn
 from cluster import cluster
 
 
@@ -80,7 +80,7 @@ class wave_function(cluster):
                 self.basis,
                 self.mos,
                 self._cartessian_primitive,
-            ) = mn.read_molden(
+            ) = read_molden(
                 filename,
             )
         else:

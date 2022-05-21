@@ -1,4 +1,4 @@
-from lib import *
+from libh import *
 
 #################### Calculate the overlap integrals ########################
 def overlap(coord, exp, center, lx, ly, lz, output):
@@ -76,6 +76,6 @@ def overlap(coord, exp, center, lx, ly, lz, output):
             count += 1
 
     if output > 0:
-        print("\n *** Atomic overlap integrals, time [s]: ", time() - start)
+        print(f"\n *** Atomic overlap integrals, time [s]: {time() - start:.6f}")
 
-    return overlap, "sym"
+    return overlap

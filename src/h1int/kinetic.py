@@ -1,7 +1,7 @@
 from libh import *
 
 ############# Calculate the potential one body integrals ########################
-def pot(coord, exp, center, lx, ly, lz, output):
+def kinetic(coord, exp, center, lx, ly, lz, output):
     """_summary_
 
     Potential integrals
@@ -16,7 +16,7 @@ def pot(coord, exp, center, lx, ly, lz, output):
         output (int): Output level for integral calculation
 
     Return:
-        overlap (array): array 2d with atomic integrals
+        kinetic (array): array 1d with atomic integrals
     """
 
     start = time()
@@ -162,6 +162,6 @@ def pot(coord, exp, center, lx, ly, lz, output):
             count += 1
 
     if output > 10:
-        print("\n *** Atomic kinetic integrals, time [s]: ", time() - start)
+        print(f"\n *** Atomic kinetic integrals time [s]: {time() - start:.6f}")
 
-    return kinetic, "sym"
+    return kinetic

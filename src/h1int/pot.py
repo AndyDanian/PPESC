@@ -6,8 +6,8 @@ def pot(charge, atom, coord, exp, center, lx, ly, lz, output):
     Potential integrals
 
     Args:
-        charge (list): list 1d of charges
-        atoms (list): list with atoms index
+        charge (list): list 1d with the charges
+        atom (list): list 1d with atoms index
         coord (list): list 2d with coordinates of the atoms
         exp (list): list 1d with the exponentials
         center (list): list 1d with the center of the gaussian
@@ -17,7 +17,7 @@ def pot(charge, atom, coord, exp, center, lx, ly, lz, output):
         output (int): Output level for integral calculation
 
     Return:
-        overlap (array): array 2d with atomic integrals
+        pot (array): array 1d with atomic integrals
     """
 
     start = time()
@@ -67,8 +67,7 @@ def pot(charge, atom, coord, exp, center, lx, ly, lz, output):
             count += 1
     if output > 0:
         print(
-            "\n *** Atomic potential one body integrals, time [s]: ",
-            time() - start,
+            f"\n *** One body atomic potential integrals for {atom + 1}° atom, time [s]: {time() - start:.6f}"
         )
 
     return pot
