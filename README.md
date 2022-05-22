@@ -13,10 +13,11 @@ python3.9 -m venv pyint
 
 # Integrals
 
-Integrals implemented into the Iedt and Ieedt
+Integrals implemented into the Iedt and Ieedt, using point nucleu
 
 * One--body
     * Potenial 
     * Kinetic
     * Angular momentum
     * Spin dipolar
+    * Fermi contact

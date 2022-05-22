@@ -2,10 +2,10 @@ from lib import *
 from h1i import *
 from wave_function import *
 
-nucleu: dict = {"overlap": 0, "nucpot": 1, "kinetic": 0, "angmom": 0, "sd": 0}
-esp_sym: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 0, "sd": 1}
-magnetic_r: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 1, "sd": 1}
-integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", "angmom": "antisym", "sd": "sym"}
+nucleu: dict = {"overlap": 0, "nucpot": 1, "kinetic": 0, "angmom": 0, "sd": 0, "fc": 1}
+esp_sym: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 0, "sd": 1, "fc": 0}
+magnetic_r: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 1, "sd": 1, "fc": 0}
+integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", "angmom": "antisym", "sd": "sym", "fc": "sym"}
 
 magnetic_components: dict = {0:"x", 1:"y", 2:"z"}
 
@@ -200,10 +200,12 @@ if __name__ == "__main__":
 
     s = eint(wfn.build_wfn_array())
 
-    s.integration(["sd"],
+    s.integration(["fc"],
                   #["overlap", "pot", "angmom"], 
-                  {"pot":{"atoms":[0, 1]}, 
+                  {
+                  "pot":{"atoms":[0, 1]}, 
                   "angmom":{"magnetic":[0, 1, 2], "gauge":[0.0, 0.0, 1.404552358700]},
-                  "sd":{"spatial":[0,1,2,3,4,5], "magnetic":[0,1,2]}
-                  }
-                  , 12)
+                  "sd":{"spatial":[0,1,2,3,4,5], "magnetic":[0,1,2]},
+                  "fc":{"atoms":[0,1]}
+                  },
+                  12)

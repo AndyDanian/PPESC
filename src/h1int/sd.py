@@ -2,7 +2,7 @@ from libh import *
 
 def sd(coord, magnetic_component, spatial_sym, atom, exp, center, lx, ly, lz, output):
     """
-    Spin dipolar atomic integrals, which is a vector
+    Spin dipolar atomic integrals, which is a tensor
 
     Args:
         coord (list): list 2d with coordinates of the atoms
@@ -28,7 +28,6 @@ def sd(coord, magnetic_component, spatial_sym, atom, exp, center, lx, ly, lz, ou
 
     count: int = 0
 
-    # ! Buscar ref gfactor
     GFACTOR: float = 2.0023193134
     CONST_SD: float = GFACTOR / 2.0 * 1 / 3.0
 

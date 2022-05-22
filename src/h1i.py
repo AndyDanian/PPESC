@@ -84,6 +84,8 @@ def h1i(
         integral: list = angmom(coord, gauge, magnetic_xyz, exp, center, lx, ly, lz, output)
     elif name.lower() == "sd":
         integral: list = sd(coord, magnetic_xyz, spatial_sym, atom, exp, center, lx, ly, lz, output)
+    elif name.lower() == "fc":
+        integral: list = fc(coord, atom, exp, center, lx, ly, lz, output)
 
     return integral
 
