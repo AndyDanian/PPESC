@@ -35,3 +35,4 @@ from sd import *       # Spin dipolar
 from fc import *       # Fermi--contact
 from darwin import *   # Darwin
 from massvelo import * # Massvelo
+from nelfld import *   # Nuclear electric field gradient

@@ -23,3 +23,5 @@ Integrals implemented into the Iedt and Ieedt, using point nucleu
     * Fermi contact
     * Darwin
     * Mass--Velocity
+    * Nuclear eletric field gradient
+

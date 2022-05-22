@@ -90,6 +90,8 @@ def h1i(
         integral: list = darwin(charge, coord, exp, center, lx, ly, lz, output)
     if name.lower() == "massvelo":
         integral: list = massvelo(coord, exp, center, lx, ly, lz, output)
+    if name.lower() == "nelfld":
+        integral: list = nelfld(coord, spatial_sym, atom, exp, center, lx, ly, lz, output)
 
 
     return integral

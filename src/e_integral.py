@@ -3,13 +3,13 @@ from h1i import *
 from wave_function import *
 
 nucleu: dict = {"overlap": 0, "nucpot": 1, "kinetic": 0, "angmom": 0, "sd": 0, "fc": 1, "darwin": 0,
-"massvelo": 0}
+"massvelo": 0, "nelfld": 0}
 esp_sym: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 0, "sd": 1, "fc": 0, "darwin": 0,
-"massvelo": 0}
+"massvelo": 0, "nelfld": 1}
 magnetic_r: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 1, "sd": 1, "fc": 0, "darwin": 0,
-"massvelo": 0}
+"massvelo": 0, "nelfld": 0}
 integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", "angmom": "antisym",
-"sd": "sym", "fc": "sym", "darwin": "sym", "massvelo": "sym"}
+"sd": "sym", "fc": "sym", "darwin": "sym", "massvelo": "sym", "nelfld": "sym"}
 
 magnetic_components: dict = {0:"x", 1:"y", 2:"z"}
 
@@ -95,8 +95,9 @@ class eint:
                         atom = atom,
                     )
 
-            if magnetic_r[name.lower()] == 0 and esp_sym[name.lower()] == 1:
+            if magnetic_r[name.lower()] == 1 and esp_sym[name.lower()] == 0:
                 for m_component in properties[name]["magnetic"]:
+
                     if type(m_component) == int:
                         integral_name: str = (name.lower() + " " 
                         + magnetic_components[m_component])
@@ -123,6 +124,54 @@ class eint:
                         output = output,
                         magnetic_xyz = magnetic_xyz,
                         gauge = properties[name]["gauge"]
+                    )
+
+            if magnetic_r[name.lower()] == 0 and esp_sym[name.lower()] == 1:
+                number_atoms: int =  len(self._coord[:][0])
+
+                for spatial in properties[name]["spatial"]:
+
+                    # Selection of coordinate x, y, z for spatial symmetry
+                    coordinate: int = spatial - 3 * int(spatial/3)
+                    atom: int = int(spatial/3)
+                    
+                    if atom >= number_atoms:
+                        raise ValueError(f"***Error \n\n\
+                            atom {atom} doesn't exist") 
+    
+                    if coordinate == 0:
+                        spatial_sym: int = 0
+                    elif coordinate == 1:
+                        spatial_sym: int = 1
+                    elif coordinate == 2:
+                        spatial_sym: int = 2
+                    else:
+                        raise ValueError("*** Error\n\n \
+                            spatial sym doesn't exist")
+
+                    if type(spatial) == int:
+                        integral_name: str = (name.lower() + " " +
+                        str(spatial + 1))
+                    else:
+                        integral_name: str = (name.lower() + " " +
+                        str(spatial + 1))
+
+                    symmetry[
+                        integral_name
+                    ] = integral_symmetry[name.lower()]
+
+                    integrals[integral_name] = h1i(
+                        charge = self._charge,
+                        coord = self._coord,
+                        exp = self._exp,
+                        center = self._center,
+                        lx = self._lx,
+                        ly = self._ly,
+                        lz = self._lz,
+                        name = name,
+                        output = output,
+                        spatial_sym = spatial_sym,
+                        atom = atom
                     )
 
             if magnetic_r[name.lower()] == 1 and esp_sym[name.lower()] == 1:
@@ -204,12 +253,13 @@ if __name__ == "__main__":
 
     s = eint(wfn.build_wfn_array())
 
-    s.integration(["massvelo"],
+    s.integration(["nelfld"],
                   #["overlap", "pot", "angmom"], 
                   {
                   "pot":{"atoms":[0, 1]}, 
                   "angmom":{"magnetic":[0, 1, 2], "gauge":[0.0, 0.0, 1.404552358700]},
                   "sd":{"spatial":[0,1,2,3,4,5], "magnetic":[0,1,2]},
-                  "fc":{"atoms":[0,1]}
+                  "fc":{"atoms":[0,1]},
+                  "nelfld":{"spatial":[0,1,2,3,4,5]}
                   },
                   12)
