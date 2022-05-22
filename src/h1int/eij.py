@@ -2,6 +2,9 @@ from numpy import exp
 
 
 def E(i, j, t, r, alpha, beta):
+    """
+    Hermite coefficient
+    """
     p = alpha + beta
     mu = alpha * beta / p
     if (t < 0) or (t > (i + j)):

@@ -16,6 +16,7 @@ python3.9 -m venv pyint
 Integrals implemented into the Iedt and Ieedt
 
 * One--body
-** Potenial 
-** Kinetic
-** Angular momentum
+    * Potenial 
+    * Kinetic
+    * Angular momentum
+    * Spin dipolar
