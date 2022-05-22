@@ -44,6 +44,7 @@ def h1i(
     name: str = None,
     output: int = 0,
     atom: list = None,
+    magnetic_xyz: int = None, 
     spatial_sym: int = None,
     gauge: list = None,
 ):
@@ -60,7 +61,7 @@ def h1i(
     """
 
     if name.lower() == "overlap":
-        integral = overlap(coord, exp, center, lx, ly, lz, output)
+        integral: list = overlap(coord, exp, center, lx, ly, lz, output)
 
         # Comprobation of the basis set
         # mo_integral = self.molecular_matrix(integral, sym)
@@ -75,12 +76,14 @@ def h1i(
         #         "The basis set low precision in hold the electron number ",
         #         ne,
         #     )
-    elif name.lower() == "potential" or name.lower() == "pot":
-        integral = pot(charge, atom, coord, exp, center, lx, ly, lz, output)
-    elif name.lower() == "kin" or name.lower() == "kinetic":
-        integral = kinetic(coord, exp, center, lx, ly, lz, output)
-    elif name.lower() == "ang" or name.lower() == "angmom":
-        integral = angmom(coord, gauge, spatial_sym, exp, center, lx, ly, lz, output)
+    elif name.lower() == "nucpot":
+        integral: list = nucpot(charge, atom, coord, exp, center, lx, ly, lz, output)
+    elif name.lower() == "kinetic":
+        integral: list = kinetic(coord, exp, center, lx, ly, lz, output)
+    elif name.lower() == "angmom":
+        integral: list = angmom(coord, gauge, magnetic_xyz, exp, center, lx, ly, lz, output)
+    elif name.lower() == "sd":
+        integral: list = sd(coord, magnetic_xyz, spatial_sym, atom, exp, center, lx, ly, lz, output)
 
     return integral
 

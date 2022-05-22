@@ -1,13 +1,13 @@
 from libh import *
 
 ############# Calculate the potential one body integrals ########################
-def pot(charge, atom, coord, exp, center, lx, ly, lz, output):
+def nucpot(charge, atom, coord, exp, center, lx, ly, lz, output):
     """
     Potential integrals
 
     Args:
         charge (list): list 1d with the charges
-        atom (list): list 1d with atoms index
+        atom (int): atom index
         coord (list): list 2d with coordinates of the atoms
         exp (list): list 1d with the exponentials
         center (list): list 1d with the center of the gaussian
@@ -20,18 +20,18 @@ def pot(charge, atom, coord, exp, center, lx, ly, lz, output):
         pot (array): array 1d with atomic integrals
     """
 
-    start = time()
+    start: float = time()
     # Primitive total in the cluster
-    total_nprim = len(exp)
+    total_nprim: int = len(exp)
 
-    pot = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
+    pot: list = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
 
-    count = 0
+    count: int = 0
     for i in range(total_nprim):
 
         for j in range(i, total_nprim):
 
-            veN = nuclear_attraction(
+            veN: float = nuclear_attraction(
                 lx[i],
                 ly[i],
                 lz[i],
@@ -67,7 +67,7 @@ def pot(charge, atom, coord, exp, center, lx, ly, lz, output):
             count += 1
     if output > 0:
         print(
-            f"\n *** One body atomic potential integrals for {atom + 1}° atom, time [s]: {time() - start:.6f}"
+            f"\n *** Potential nucleu atomic integrals for {atom + 1}-th atom, time [s]: {time() - start:.6f}"
         )
 
     return pot

@@ -1,13 +1,13 @@
 from libh import *
 
-def angmom(coord, gauge, spatial_sym, exp, center, lx, ly, lz, output):
+def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output):
     """
     Angular moment integrals, which is a vector
 
     Args:
         coord (list): list 2d with coordinates of the atoms
         gauge (list): list 1d with gauge coordinates 
-        spatial_sym (list): list with coordinate to evaluate [0:x, 1:y, 2:z]
+        magnetic_component (int): magnetic component
         exp (list): list 1d with the exponentials
         center (list): list 1d with the center of the gaussian
         lx (list): list 1d with the x component of ml of the gaussian
@@ -32,21 +32,21 @@ def angmom(coord, gauge, spatial_sym, exp, center, lx, ly, lz, output):
                           = (zpy-ypz)x + (xpz-zpx)y + (ypx-xpy)z
     """
 
-    if spatial_sym == 0: 
+    if magnetic_component == 0: 
         """X Component"""
         left_coord: int = 1
         right_coord: int = 2
         spatial_l: list = lx
         left_l: list = ly
         right_l: list = lz
-    elif spatial_sym == 1:
+    elif magnetic_component == 1:
         """Y Componente"""
         left_coord: int = 2
         right_coord: int = 0
         spatial_l: list = ly
         left_l: list = lz
         right_l: list = lx
-    elif spatial_sym == 2:
+    elif magnetic_component == 2:
         """Z Componente"""
         left_coord: int = 0
         right_coord: int = 1
@@ -54,7 +54,7 @@ def angmom(coord, gauge, spatial_sym, exp, center, lx, ly, lz, output):
         left_l: list = lx
         right_l: list = ly
     else:
-        raise ValueError(f"***Error\n\n Component not exist: {spatial_sym}")
+        raise ValueError(f"***Error\n\n Component not exist: {magnetic_component}")
 
 
     for i in range(total_nprim):
@@ -80,7 +80,7 @@ def angmom(coord, gauge, spatial_sym, exp, center, lx, ly, lz, output):
                 spatial_l[i],
                 spatial_l[j],
                 0,
-                coord[center[i]][spatial_sym] - coord[center[j]][spatial_sym],
+                coord[center[i]][magnetic_component] - coord[center[j]][magnetic_component],
                 exp[i],
                 exp[j],
             )
@@ -169,6 +169,7 @@ def angmom(coord, gauge, spatial_sym, exp, center, lx, ly, lz, output):
             count += 1
 
     if output > 10:
-        print(f"\n *** Atomic angular momentum integrals time [s]: {time() - start:.6f}")
+        print(f"\n *** Angular momentum atomic integrals,\
+        component {magnetic_component}, time [s]: {time() - start:.6f}")
 
     return angmom

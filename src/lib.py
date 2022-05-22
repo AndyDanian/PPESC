@@ -26,8 +26,9 @@ from print_matrix import *
 # functions
 from convert_array import *
 
-# One--Body hermite integrals
-from overlap import *
-from pot import *
-from kinetic import *
-from angmom import *
+# h1int: One--Body hermite integrals
+from overlap import * 
+from nucpot import *  # Nucleu potential
+from kinetic import * # Kinectic energy
+from angmom import *  # Angular momentum
+from sd import *      # Spin dipolar

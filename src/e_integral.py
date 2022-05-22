@@ -2,10 +2,12 @@ from lib import *
 from h1i import *
 from wave_function import *
 
-nucleu = {"overlap": 0, "pot": 1, "kinetic": 0, "angmom": 0}
-esp_sym = {"overlap": 0, "pot": 0, "kinetic": 0, "angmom": 1}
-integral_symmetry = {"overlap": "sym", "pot": "sym", "kinetic": "sym", "angmom": "antisym"}
+nucleu: dict = {"overlap": 0, "nucpot": 1, "kinetic": 0, "angmom": 0, "sd": 0}
+esp_sym: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 0, "sd": 1}
+magnetic_r: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 1, "sd": 1}
+integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", "angmom": "antisym", "sd": "sym"}
 
+magnetic_components: dict = {0:"x", 1:"y", 2:"z"}
 
 class eint:
     def __init__(self, wf: dict = None):
@@ -73,10 +75,10 @@ class eint:
             if nucleu[name.lower()] == 1 and esp_sym[name.lower()] == 0:
                 for atom in properties[name]["atoms"]:
                     symmetry[
-                        name.lower()[0:3] + " " + str(atom + 1)
+                        name.lower() + " " + str(atom + 1)
                     ] = integral_symmetry[name.lower()]
 
-                    integrals[name.lower()[0:3] + " " + str(atom + 1)] = h1i(
+                    integrals[name.lower() + " " + str(atom + 1)] = h1i(
                         charge = self._charge,
                         coord = self._coord,
                         exp = self._exp,
@@ -89,17 +91,17 @@ class eint:
                         atom = atom,
                     )
 
-            if nucleu[name.lower()] == 0 and esp_sym[name.lower()] == 1:
-                spatial_symmetry = {0:"x", 1:"y", 2:"z"}
-                for spatial in properties[name]["spatial"]:
-                    if type(spatial) == int:
-                        integral_name: str = (name.lower()[0:3] + " " 
-                        + spatial_symmetry[spatial])
-                        spatial_sym = spatial
+            if magnetic_r[name.lower()] == 0 and esp_sym[name.lower()] == 1:
+                for m_component in properties[name]["magnetic"]:
+                    if type(m_component) == int:
+                        integral_name: str = (name.lower() + " " 
+                        + magnetic_components[m_component])
+                        magnetic_xyz: int = m_component
                     else:
-                        integral_name: str = (name.lower()[0:3] + " " 
-                        + spatial)
-                        spatial_sym = list(spatial_symmetry.keys())[list(spatial_symmetry.values()).index(spatial)]
+                        integral_name: str = (name.lower() + " " 
+                        + m_component)
+                        magnetic_xyz: int = (list(magnetic_components.keys())
+                                            [list(magnetic_components.values()).index(m_component)])
 
                     symmetry[
                         integral_name
@@ -115,10 +117,63 @@ class eint:
                         lz = self._lz,
                         name = name,
                         output = output,
-                        spatial_sym = spatial_sym,
+                        magnetic_xyz = magnetic_xyz,
                         gauge = properties[name]["gauge"]
                     )
 
+            if magnetic_r[name.lower()] == 1 and esp_sym[name.lower()] == 1:
+                number_atoms: int =  len(self._coord[0][:])
+
+                for spatial in properties[name]["spatial"]:
+
+                    # Selection of coordinate x, y, z for spatial symmetry
+                    coordinate: int = spatial - 3 * int(spatial/3)
+                    atom: int = int(spatial/3)
+                    
+                    if atom >= number_atoms:
+                        raise ValueError(f"***Error \n\n\
+                            atom {atom} doesn't exist") 
+    
+                    if coordinate == 0:
+                        spatial_sym: int = 0
+                    elif coordinate == 1:
+                        spatial_sym: int = 1
+                    elif coordinate == 2:
+                        spatial_sym: int = 2
+                    else:
+                        raise ValueError("*** Error\n\n \
+                            spatial sym doesn't exist")
+
+                    for m_component in properties[name]["magnetic"]:
+
+                        if type(spatial) == int:
+                            integral_name: str = (name.lower() + " " +
+                            str(spatial + 1) + " " + magnetic_components[m_component])
+                            magnetic_xyz: int = m_component
+                        else:
+                            integral_name: str = (name.lower() + " " +
+                            str(spatial + 1) + " "  + m_component)
+                            magnetic_xyz: int = (list(magnetic_components.keys())
+                            [list(magnetic_components.values()).index(m_component)])
+
+                        symmetry[
+                            integral_name
+                        ] = integral_symmetry[name.lower()]
+
+                        integrals[integral_name] = h1i(
+                            charge = self._charge,
+                            coord = self._coord,
+                            exp = self._exp,
+                            center = self._center,
+                            lx = self._lx,
+                            ly = self._ly,
+                            lz = self._lz,
+                            name = name,
+                            output = output,
+                            magnetic_xyz = magnetic_xyz,
+                            spatial_sym = spatial_sym,
+                            atom = atom
+                        )
 
         # Print integral
         if output > 10:
@@ -145,8 +200,10 @@ if __name__ == "__main__":
 
     s = eint(wfn.build_wfn_array())
 
-    s.integration(["angmom"],
+    s.integration(["sd"],
                   #["overlap", "pot", "angmom"], 
                   {"pot":{"atoms":[0, 1]}, 
-                  "angmom":{"spatial":[0, 1, 2], "gauge":[0.0, 0.0, 1.404552358700]}}
+                  "angmom":{"magnetic":[0, 1, 2], "gauge":[0.0, 0.0, 1.404552358700]},
+                  "sd":{"spatial":[0,1,2,3,4,5], "magnetic":[0,1,2]}
+                  }
                   , 12)
