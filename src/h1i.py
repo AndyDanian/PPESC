@@ -86,6 +86,8 @@ def h1i(
         integral: list = sd(coord, magnetic_xyz, spatial_sym, atom, exp, center, lx, ly, lz, output)
     elif name.lower() == "fc":
         integral: list = fc(coord, atom, exp, center, lx, ly, lz, output)
+    if name.lower() == "darwin":
+        integral: list = darwin(charge, coord, exp, center, lx, ly, lz, output)
 
     return integral
 

@@ -33,3 +33,4 @@ from kinetic import * # Kinectic energy
 from angmom import *  # Angular momentum
 from sd import *      # Spin dipolar
 from fc import *      # Fermi--contact
+from darwin import *      # Darwin

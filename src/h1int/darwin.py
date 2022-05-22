@@ -1,110 +1,70 @@
-from numpy import exp
-import numpy as np
-import time
-import phi
+from libh import *
 
-start = time.time()
+def darwin(charge, coord, exp, center, lx, ly, lz, output):
+    """
+    Darwin atomic integrals
 
-# 6-311++G**
-exp_array = [
-    33.865,
-    5.09479,
-    1.15879,
-    0.32584,
-    0.102741,
-    0.036,
-    0.75,
-    0.75,
-    0.75,
-    33.865,
-    5.09479,
-    1.15879,
-    0.32584,
-    0.102741,
-    0.036,
-    0.75,
-    0.75,
-    0.75,
-]
+    Args:
+        charge (list): list 1d with the charges
+        coord (list): list 2d with coordinates of the atoms
+        exp (list): list 1d with the exponentials
+        center (list): list 1d with the center of the gaussian
+        lx (list): list 1d with the x component of ml of the gaussian
+        ly (list): list 1d with the y component of ml of the gaussian
+        lz (list): list 1d with the z component of ml of the gaussian
+        output (int): Output level for integral calculation
 
-n = [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1]
-lx = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
-ly = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
-lz = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+    Return:
+        angmom (array): array 2d with atomic integrals
+    """
+    start: float = time()
+    # Primitive total in the cluster
+    total_nprim: int = len(exp)
 
-center = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-total_nprim = 18
+    darwin: list = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
 
-coord = [[0.0, 0.0, 0.0586476414], [0.0, 0.0, 1.4045523587]]
+    SPEED_LIGHT: float = 137.0359998
+    CONST_ALPHA: float = 1.0 / (SPEED_LIGHT ** 2)
+    CONST_DARWIN: float = np.pi * CONST_ALPHA / 2.0
 
-Norm = {0: phi.NS, 1: phi.NP}
-intDwx = np.zeros((total_nprim, total_nprim), dtype=float)
-output = 11
+    for k in range(len(coord)):
+        count: int = 0
 
-c = 137.0359998
-a2 = 1.0 / (c ** 2)
-darwin_const = np.pi * a2 / 2.0
+        for i in range(total_nprim):
 
+            for j in range(i, total_nprim):
 
-def gaussian_mult(
-    i, k, m, j, l, n, Ax, Ay, Az, Bx, By, Bz, alpha, beta, Kx, Ky, Kz
-):
-    # <phi|delta(rk)|phi> = <phi|delta(x-Kx,y-Ky,z-Kz)|phi> =
-    # (xk-Ax)^i(yk-Ay)^k(zk-Az)^mexp(-alpha*(rk-A)^2) *
-    # (xk-Bx)^j(yk-By)^l(zk-Bz)^nexp(-alpha*(rk-B)^2)
+                dw = gaussian_mult(
+                    lx[i],
+                    ly[i],
+                    lz[i],
+                    lx[j],
+                    ly[j],
+                    lz[j],
+                    coord[center[i]][0],
+                    coord[center[i]][1],
+                    coord[center[i]][2],
+                    coord[center[j]][0],
+                    coord[center[j]][1],
+                    coord[center[j]][2],
+                    exp[i],
+                    exp[j],
+                    coord[k][0],
+                    coord[k][1],
+                    coord[k][2],
+                )
 
-    gij = exp(-alpha * (Kx - Ax) ** 2) * exp(-beta * (Kx - Bx) ** 2)
-    #    gij = np.power((Kx - Ax), i) * np.power((Kx - Bx), j) * gij
-    # !TODO review this change in order of (Ay, By, Ky) y (Ax, Bx, Kx)
-    gij = np.power((Ax - Kx), i) * np.power((Bx - Kx), j) * gij
+                darwin[count] += (
+                    CONST_DARWIN
+                    * charge[k]
+                    * Norm[lx[i] + ly[i] + lz[i]](exp[i])
+                    * Norm[lx[j] + ly[j] + lz[j]](exp[j])
+                    * dw
+                )
+                count += 1
+    if output > 0:
+        print(
+            f"\n ***Darwin atomic integrals time [s]: {time() - start:.6f}"
+        )
 
-    gkl = exp(-alpha * (Ky - Ay) ** 2) * exp(-beta * (Ky - By) ** 2)
-    #    gkl = np.power((Ky - Ay), k) * np.power((Ky - By), l) * gkl
-    gkl = np.power((Ay - Ky), k) * np.power((By - Ky), l) * gkl
-
-    gmn = exp(-alpha * (Kz - Az) ** 2) * exp(-beta * (Kz - Bz) ** 2)
-    #    gmn = np.power((Az - Kz), m) * np.power((Bz - Kz), n) * gmn
-    # ! To reproduce sign of DALTON like with Fc, it is change x - Ax by Ax - x
-    gmn = np.power((Az - Kz), m) * np.power((Bz - Kz), n) * gmn
-
-    return gij * gkl * gmn
-
-
-for k in range(2):
-    # print("\n   ****Atom  ", k + 1, " ****\n")
-    for i in range(total_nprim):
-
-        for j in range(i, total_nprim):
-
-            dw = gaussian_mult(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j],
-                ly[j],
-                lz[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                exp_array[i],
-                exp_array[j],
-                coord[k][0],
-                coord[k][1],
-                coord[k][2],
-            )
-
-            intDwx[i, j] += (
-                darwin_const
-                * Norm[n[i]](exp_array[i])
-                * Norm[n[j]](exp_array[j])
-                * dw
-            )
-            intDwx[j, i] = intDwx[i, j]
-
-            if output > 10 and k == 1:
-                print("int [", j + 1, ",", i + 1, "] : ", intDwx[j, i])
-
-print(" time [s]: ", -start + time.time())
+    return darwin

@@ -21,3 +21,4 @@ Integrals implemented into the Iedt and Ieedt, using point nucleu
     * Angular momentum
     * Spin dipolar
     * Fermi contact
+    * Darwin

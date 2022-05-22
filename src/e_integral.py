@@ -2,10 +2,11 @@ from lib import *
 from h1i import *
 from wave_function import *
 
-nucleu: dict = {"overlap": 0, "nucpot": 1, "kinetic": 0, "angmom": 0, "sd": 0, "fc": 1}
-esp_sym: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 0, "sd": 1, "fc": 0}
-magnetic_r: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 1, "sd": 1, "fc": 0}
-integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", "angmom": "antisym", "sd": "sym", "fc": "sym"}
+nucleu: dict = {"overlap": 0, "nucpot": 1, "kinetic": 0, "angmom": 0, "sd": 0, "fc": 1, "darwin": 0}
+esp_sym: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 0, "sd": 1, "fc": 0, "darwin": 0}
+magnetic_r: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 1, "sd": 1, "fc": 0, "darwin": 0}
+integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", "angmom": "antisym",
+"sd": "sym", "fc": "sym", "darwin": "sym"}
 
 magnetic_components: dict = {0:"x", 1:"y", 2:"z"}
 
@@ -122,7 +123,7 @@ class eint:
                     )
 
             if magnetic_r[name.lower()] == 1 and esp_sym[name.lower()] == 1:
-                number_atoms: int =  len(self._coord[0][:])
+                number_atoms: int =  len(self._coord[:][0])
 
                 for spatial in properties[name]["spatial"]:
 
@@ -200,7 +201,7 @@ if __name__ == "__main__":
 
     s = eint(wfn.build_wfn_array())
 
-    s.integration(["fc"],
+    s.integration(["darwin"],
                   #["overlap", "pot", "angmom"], 
                   {
                   "pot":{"atoms":[0, 1]}, 
