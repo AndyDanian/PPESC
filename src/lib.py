@@ -28,9 +28,10 @@ from convert_array import *
 
 # h1int: One--Body hermite integrals
 from overlap import * 
-from nucpot import *  # Nucleu potential
-from kinetic import * # Kinectic energy
-from angmom import *  # Angular momentum
-from sd import *      # Spin dipolar
-from fc import *      # Fermi--contact
-from darwin import *      # Darwin
+from nucpot import *   # Nucleu potential
+from kinetic import *  # Kinectic energy
+from angmom import *   # Angular momentum
+from sd import *       # Spin dipolar
+from fc import *       # Fermi--contact
+from darwin import *   # Darwin
+from massvelo import * # Massvelo

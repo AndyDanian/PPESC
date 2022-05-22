@@ -88,6 +88,9 @@ def h1i(
         integral: list = fc(coord, atom, exp, center, lx, ly, lz, output)
     if name.lower() == "darwin":
         integral: list = darwin(charge, coord, exp, center, lx, ly, lz, output)
+    if name.lower() == "massvelo":
+        integral: list = massvelo(coord, exp, center, lx, ly, lz, output)
+
 
     return integral
 
