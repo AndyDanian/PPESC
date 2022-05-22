@@ -47,6 +47,7 @@ def h1i(
     magnetic_xyz: int = None, 
     spatial_sym: int = None,
     gauge: list = None,
+    rdipole: list = None,
 ):
     """
     Initialize the calculate of the integral choose
@@ -92,7 +93,8 @@ def h1i(
         integral: list = massvelo(coord, exp, center, lx, ly, lz, output)
     if name.lower() == "nelfld":
         integral: list = nelfld(coord, spatial_sym, atom, exp, center, lx, ly, lz, output)
-
+    if name.lower() == "diplen":
+        integral: list = diplen(coord, magnetic_xyz, rdipole, exp, center, lx, ly, lz, output)
 
     return integral
 

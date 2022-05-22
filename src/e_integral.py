@@ -3,13 +3,13 @@ from h1i import *
 from wave_function import *
 
 nucleu: dict = {"overlap": 0, "nucpot": 1, "kinetic": 0, "angmom": 0, "sd": 0, "fc": 1, "darwin": 0,
-"massvelo": 0, "nelfld": 0}
+"massvelo": 0, "nelfld": 0, "diplen": 0}
 esp_sym: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 0, "sd": 1, "fc": 0, "darwin": 0,
-"massvelo": 0, "nelfld": 1}
+"massvelo": 0, "nelfld": 1, "diplen": 0}
 magnetic_r: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 1, "sd": 1, "fc": 0, "darwin": 0,
-"massvelo": 0, "nelfld": 0}
+"massvelo": 0, "nelfld": 0, "diplen": 1}
 integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", "angmom": "antisym",
-"sd": "sym", "fc": "sym", "darwin": "sym", "massvelo": "sym", "nelfld": "sym"}
+"sd": "sym", "fc": "sym", "darwin": "sym", "massvelo": "sym", "nelfld": "sym", "diplen": "sym"}
 
 magnetic_components: dict = {0:"x", 1:"y", 2:"z"}
 
@@ -61,7 +61,7 @@ class eint:
         symmetry = {}
 
         for name in names:
-            if nucleu[name.lower()] == 0 and esp_sym[name.lower()] == 0:
+            if nucleu[name.lower()] == 0 and esp_sym[name.lower()] == 0 and magnetic_r[name.lower()] == 0:
                 symmetry[str(name)] = integral_symmetry[name.lower()]
 
                 integrals[str(name)] = h1i(
@@ -76,7 +76,7 @@ class eint:
                     output = output
                 )
 
-            if nucleu[name.lower()] == 1 and esp_sym[name.lower()] == 0:
+            if nucleu[name.lower()] == 1 and esp_sym[name.lower()] == 0  and magnetic_r[name.lower()] == 0:
                 for atom in properties[name]["atoms"]:
                     symmetry[
                         name.lower() + " " + str(atom + 1)
@@ -95,7 +95,15 @@ class eint:
                         atom = atom,
                     )
 
-            if magnetic_r[name.lower()] == 1 and esp_sym[name.lower()] == 0:
+            if  nucleu[name.lower()] == 0 and magnetic_r[name.lower()] == 1 and esp_sym[name.lower()] == 0:
+                
+                if "rdipole" not in properties[name].keys():
+                    properties[name]["rdipole"] = None
+
+                if "gauge" not in properties[name].keys():
+                    properties[name]["gauge"] = None
+
+
                 for m_component in properties[name]["magnetic"]:
 
                     if type(m_component) == int:
@@ -123,7 +131,8 @@ class eint:
                         name = name,
                         output = output,
                         magnetic_xyz = magnetic_xyz,
-                        gauge = properties[name]["gauge"]
+                        gauge = properties[name]["gauge"],
+                        rdipole = properties[name]["rdipole"]
                     )
 
             if magnetic_r[name.lower()] == 0 and esp_sym[name.lower()] == 1:
@@ -253,13 +262,14 @@ if __name__ == "__main__":
 
     s = eint(wfn.build_wfn_array())
 
-    s.integration(["nelfld"],
+    s.integration(["diplen"],
                   #["overlap", "pot", "angmom"], 
                   {
                   "pot":{"atoms":[0, 1]}, 
                   "angmom":{"magnetic":[0, 1, 2], "gauge":[0.0, 0.0, 1.404552358700]},
                   "sd":{"spatial":[0,1,2,3,4,5], "magnetic":[0,1,2]},
                   "fc":{"atoms":[0,1]},
-                  "nelfld":{"spatial":[0,1,2,3,4,5]}
+                  "nelfld":{"spatial":[0,1,2,3,4,5]},
+                  "diplen":{"rdipole":[0.0,0.0,0.0],"magnetic":[0,1,2]}
                   },
                   12)
