@@ -26,3 +26,5 @@ Integrals implemented into the Iedt and Ieedt, using point nucleu
     * Nuclear eletric field gradient
     * Dipole length
     * Dipole velocity
+    * Paramagnetic spin-orbit
+    * Diamagnetic nuclear shielding tensor 

@@ -38,3 +38,5 @@ from massvelo import * # Massvelo
 from nelfld import *   # Nuclear electric field gradient
 from diplen import *   # Dipole lenght
 from dipvel import *   # Dipole velocity
+from pso import *      # Paramagnetic spin-orbit
+from nstcgo import *   # Diamagnetic nuclear shielding tensor

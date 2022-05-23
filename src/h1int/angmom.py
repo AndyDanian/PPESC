@@ -30,6 +30,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output):
     """
     Component Selection L = p x r 
                           = (zpy-ypz)x + (xpz-zpx)y + (ypx-xpy)z
+    where r = r_e - r_gauge
     """
 
     if magnetic_component == 0: 
@@ -55,7 +56,6 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output):
         right_l: list = ly
     else:
         raise ValueError(f"***Error\n\n Component not exist: {magnetic_component}")
-
 
     for i in range(total_nprim):
 

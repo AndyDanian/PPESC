@@ -97,7 +97,10 @@ def h1i(
         integral: list = diplen(coord, magnetic_xyz, rdipole, exp, center, lx, ly, lz, output)
     elif name.lower() == "dipvel":
         integral: list = dipvel(coord, magnetic_xyz, exp, center, lx, ly, lz, output)
-
+    elif name.lower() == "pso":
+        integral: list = pso(coord, spatial_sym, atom, exp, center, lx, ly, lz, output)
+    elif name.lower() == "nstcgo":
+        integral: list = nstcgo(coord, gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, output)
     return integral
 
     # def molecular_matrix(self, integral: list = None, sym: str = None):
