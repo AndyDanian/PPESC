@@ -22,6 +22,7 @@ Integrals implemented into the Iedt and Ieedt, using point nucleu
     * Spin dipolar
     * Fermi contact
     * Darwin
-    * Mass--Velocity
+    * Mass--velocity
     * Nuclear eletric field gradient
     * Dipole length
+    * Dipole velocity

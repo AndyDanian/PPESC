@@ -87,14 +87,16 @@ def h1i(
         integral: list = sd(coord, magnetic_xyz, spatial_sym, atom, exp, center, lx, ly, lz, output)
     elif name.lower() == "fc":
         integral: list = fc(coord, atom, exp, center, lx, ly, lz, output)
-    if name.lower() == "darwin":
+    elif name.lower() == "darwin":
         integral: list = darwin(charge, coord, exp, center, lx, ly, lz, output)
-    if name.lower() == "massvelo":
+    elif name.lower() == "massvelo":
         integral: list = massvelo(coord, exp, center, lx, ly, lz, output)
-    if name.lower() == "nelfld":
+    elif name.lower() == "nelfld":
         integral: list = nelfld(coord, spatial_sym, atom, exp, center, lx, ly, lz, output)
-    if name.lower() == "diplen":
+    elif name.lower() == "diplen":
         integral: list = diplen(coord, magnetic_xyz, rdipole, exp, center, lx, ly, lz, output)
+    elif name.lower() == "dipvel":
+        integral: list = dipvel(coord, magnetic_xyz, exp, center, lx, ly, lz, output)
 
     return integral
 

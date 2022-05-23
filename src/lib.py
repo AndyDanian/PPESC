@@ -37,3 +37,4 @@ from darwin import *   # Darwin
 from massvelo import * # Massvelo
 from nelfld import *   # Nuclear electric field gradient
 from diplen import *   # Dipole lenght
+from dipvel import *   # Dipole velocity

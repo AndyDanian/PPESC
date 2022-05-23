@@ -2,7 +2,7 @@ from libh import *
 
 def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output):
     """
-    Spin dipolar atomic integrals, which is a tensor
+    Dipole lenght atomic integrals
 
     Args:
         coord (list): list 2d with coordinates of the atoms
@@ -16,7 +16,7 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output):
         output (int): Output level for integral calculation
 
     Return:
-        angmom (array): array 2d with atomic integrals
+        diplen (array): array 1d with atomic integrals
     """
 
     start: float = time()
