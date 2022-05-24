@@ -182,6 +182,6 @@ def pso(coord, spatial_sym, atom, exp, center, lx, ly, lz, output):
             count += 1
     if output > 10:
         print(f"\n ***Paramagnetic spin-orbit atomic integrals,\
-        spatial symmetry {spatial_sym}, time [s]: {time() - start:.6f}")
+        for {spatial_sym} spatial symmetry, time [s]: {time() - start:.6f}")
 
     return pso

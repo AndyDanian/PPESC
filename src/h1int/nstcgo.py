@@ -1,3 +1,4 @@
+from multiprocessing import managers
 from libh import *
 
 def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, ly, lz, output):
@@ -7,6 +8,7 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
     Args:
         coord (list): list 2d with coordinates of the atoms
         gauge (list): list 1d with gauge coordinates 
+        spatial_sym (int): spatial symmetry index
         magnetic_component (int): magnetic component
         atom (int): atomic index
         exp (list): list 1d with the exponentials
@@ -41,60 +43,72 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
     r_y_c: int = 0
     r_z_c: int = 0
 
-    out_diagonal: bool = False
+    diagonal: bool = False
     if spatial_sym == 0: 
         """X Component"""
-        r_y_b = 1
-        r_z_c = 1
-        coord_b: int = 1
-        coord_c: int = 2
-        if magnetic_component == 1:
-            out_diagonal = True
-            coord_a = 0
-            l_x = 1
+        if magnetic_component == 0:
+            diagonal = True
+            sign: float = 1.0
             r_y_a = 1
+            r_y_b = 1
+            r_z_c = 1
+            coord_ab: int = 1
+            coord_c: int = 2
+        elif magnetic_component == 1:
+            sign: float = -1.0
+            coord_ab = 0
+            r_x_a = 1
+            r_y_b = 1
         elif magnetic_component == 2:
-            out_diagonal = True
-            coord_a = 0
-            l_x = 1
-            r_z_a = 1
+            sign: float = -1.0
+            coord_ab = 0
+            r_x_a = 1
+            r_z_b = 1
     elif spatial_sym == 1:
         """Y Componente"""
-        r_x_b = 1
-        r_z_c = 1
-        coord_b: int = 0
-        coord_c: int = 2
-        if magnetic_component == 0:
-            out_diagonal = True
-            coord_a = 1
-            l_y = 1
+        if magnetic_component == 1:
+            diagonal = True
+            sign: float = 1.0
             r_x_a = 1
+            r_x_b = 1
+            r_z_c = 1
+            coord_ab: int = 0
+            coord_c: int = 2
+        if magnetic_component == 0:
+            coord_ab = 1
+            sign: float = -1.0
+            r_y_a = 1
+            r_x_b = 1
         elif magnetic_component == 2:
-            out_diagonal = True
-            coord_a = 1
-            l_y = 1
-            r_z_a = 1
+            coord_ab = 1
+            sign: float = -1.0
+            r_y_a = 1
+            r_z_b = 1
     elif spatial_sym == 2:
         """Z Componente"""
-        r_x_b = 1
-        r_y_c = 1
-        coord_b: int = 0
-        coord_c: int = 1
-        if magnetic_component == 0:
-            out_diagonal = True
-            coord_a = 2
-            l_z = 1
+        if magnetic_component == 2:
+            diagonal = True
+            sign: float = 1.0
             r_x_a = 1
+            r_x_b = 1
+            r_y_c = 1
+            coord_ab: int = 0
+            coord_c: int = 1
+        if magnetic_component == 0:
+            sign: float = -1.0
+            coord_ab = 2
+            r_z_a = 1
+            r_x_b = 1
         elif magnetic_component == 1:
-            out_diagonal = True
-            coord_a = 2
-            l_z = 1
-            r_y_a = 1
+            sign: float = -1.0
+            coord_ab = 2
+            r_z_a = 1
+            r_y_b = 1
     else:
         raise ValueError(f"***Error\n\n Component not exist: {spatial_sym}")
 
-    nefa: float = 0.0
-    nefbc: float = 0.0
+    nefab: float = 0.0
+    nefc: float = 0.0
     for i in range(total_nprim):
 
         for j in range(i, total_nprim):
@@ -103,18 +117,17 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
             # <phi|(y-yg)(y-yk)/rk^3 + (z-zg)(z-zk)/rk^3|phi> --> Eqs 9.932, 9.9.18-20
             # *** (y-yg)(y-yk)/r^3_k + (z-zg)(z-zk)/r^3_k ***
             # *** -(x-xg)(y-yk)/r^3_k***
-            if out_diagonal:
-                nefa = -1.0 * (
+            nefab = sign * (
                 nuclear_attraction(
                     lx[i],
                     ly[i],
                     lz[i],
-                    lx[j] + l_x,
-                    ly[j] + l_y,
-                    lz[j] + l_z,
-                    r_x_a,
-                    r_y_a,
-                    r_z_a,
+                    lx[j] + r_x_a,
+                    ly[j] + r_y_a,
+                    lz[j] + r_z_a,
+                    r_x_b,
+                    r_y_b,
+                    r_z_b,
                     exp[i],
                     exp[j],
                     coord[center[i]][0],
@@ -127,7 +140,7 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
                     coord[atom][1],
                     coord[atom][2],
                 )
-                + (coord[center[j]][coord_a] - gauge[coord_a])
+                + (coord[center[j]][coord_ab] - gauge[coord_ab])
                 * nuclear_attraction(
                     lx[i],
                     ly[i],
@@ -135,9 +148,9 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
                     lx[j],
                     ly[j],
                     lz[j],
-                    r_x_a,
-                    r_y_a,
-                    r_z_a,
+                    r_x_b,
+                    r_y_b,
+                    r_z_b,
                     exp[i],
                     exp[j],
                     coord[center[i]][0],
@@ -151,55 +164,56 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
                     coord[atom][2],
                 )
             )
-            else:
+            if diagonal:
+            #else:
                 # Diagonals terms
-                nefbc = (
+                nefc = (
+                    # nuclear_attraction(
+                    #     lx[i],
+                    #     ly[i],
+                    #     lz[i],
+                    #     lx[j] + r_x_b,
+                    #     ly[j] + r_y_b,
+                    #     lz[j] + r_z_b,
+                    #     r_x_b,
+                    #     r_y_b,
+                    #     r_z_b,
+                    #     exp[i],
+                    #     exp[j],
+                    #     coord[center[i]][0],
+                    #     coord[center[i]][1],
+                    #     coord[center[i]][2],
+                    #     coord[center[j]][0],
+                    #     coord[center[j]][1],
+                    #     coord[center[j]][2],
+                    #     coord[atom][0],
+                    #     coord[atom][1],
+                    #     coord[atom][2],
+                    # )
+                    # + (coord[center[j]][coord_b] - gauge[coord_b])
+                    # * nuclear_attraction(
+                    #     lx[i],
+                    #     ly[i],
+                    #     lz[i],
+                    #     lx[j],
+                    #     ly[j],
+                    #     lz[j],
+                    #     r_x_b,
+                    #     r_y_b,
+                    #     r_z_b,
+                    #     exp[i],
+                    #     exp[j],
+                    #     coord[center[i]][0],
+                    #     coord[center[i]][1],
+                    #     coord[center[i]][2],
+                    #     coord[center[j]][0],
+                    #     coord[center[j]][1],
+                    #     coord[center[j]][2],
+                    #     coord[atom][0],
+                    #     coord[atom][1],
+                    #     coord[atom][2],
+                    # )
                     nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j] + r_x_b,
-                        ly[j] + r_y_b,
-                        lz[j] + r_z_b,
-                        r_x_b,
-                        r_y_b,
-                        r_z_b,
-                        exp[i],
-                        exp[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[atom][0],
-                        coord[atom][1],
-                        coord[atom][2],
-                    )
-                    + (coord[center[j]][coord_b] - gauge[coord_b])
-                    * nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j],
-                        r_x_b,
-                        r_y_b,
-                        r_z_b,
-                        exp[i],
-                        exp[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[atom][0],
-                        coord[atom][1],
-                        coord[atom][2],
-                    )
-                    + nuclear_attraction(
                         lx[i],
                         ly[i],
                         lz[i],
@@ -252,15 +266,16 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
                 * 2.0
                 * np.pi
                 / (exp[i] + exp[j])
-                * (nefa + nefbc)
+                * (nefab + nefc)
                 * 0.5
             )
             count += 1
 
     if output > 0:
         print(
-            f"\n ***Diamagnetic nuclear shielding tensor\
-                 atomic integrals for {magnetic_component}, time [s]: {time() - start:.6f}"
+            f"\n ***Diamagnetic nuclear shielding tensor atomic integrals \n\
+                for {magnetic_component} magnetic component and {spatial_sym} spatial symmetry,\n\
+                    time [s]: {time() - start:.6f}"
         )
 
     return nstcgo

@@ -27,4 +27,5 @@ Integrals implemented into the Iedt and Ieedt, using point nucleu
     * Dipole length
     * Dipole velocity
     * Paramagnetic spin-orbit
-    * Diamagnetic nuclear shielding tensor 
+    * Diamagnetic nuclear shielding tensor
+    * Kinetic-energy correction to the diamagnetic contribution to nuclear shielding 
