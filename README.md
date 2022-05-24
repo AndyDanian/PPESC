@@ -29,4 +29,6 @@ Integrals implemented into the Iedt and Ieedt, using point nucleu
     * Paramagnetic spin-orbit
     * Diamagnetic nuclear shielding tensor
     * Kinetic-energy correction to the diamagnetic contribution to nuclear shielding
-    * Kinetic-energy correction to the paramagnetic spin-orbit 
+    * Kinetic-energy correction to the paramagnetic spin-orbit
+    * Orbital-Zeeman correction to the paramagnetic spin-orbit 
+    *  

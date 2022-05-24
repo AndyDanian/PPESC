@@ -15,7 +15,7 @@ def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output):
         output (int): Output level for integral calculation
 
     Return:
-        angmom (array): array 2d with atomic integrals
+        psoke (array): array 1d with atomic integrals
     """
 
     start: float = time()
