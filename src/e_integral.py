@@ -4,16 +4,17 @@ from wave_function import *
 
 nucleu: dict = {"overlap": 0, "nucpot": 1, "kinetic": 0, "angmom": 0, "sd": 0, "fc": 1, "darwin": 0,
 "massvelo": 0, "nelfld": 0, "diplen": 0, "dipvel": 0, "pso": 0, "nstcgo": 0, "dnske": 0, "psoke": 0,
-"psooz": 0}
+"psooz": 0, "ozke": 0}
 esp_sym: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 0, "sd": 1, "fc": 0, "darwin": 0,
 "massvelo": 0, "nelfld": 1, "diplen": 0, "dipvel": 0, "pso": 1, "nstcgo": 1, "dnske": 1, "psoke": 1,
-"psooz": 1}
+"psooz": 1, "ozke": 0}
 magnetic_r: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 1, "sd": 1, "fc": 0, "darwin": 0,
 "massvelo": 0, "nelfld": 0, "diplen": 1, "dipvel": 1, "pso": 0, "nstcgo": 1, "dnske": 1, "psoke": 0,
-"psooz": 1}
+"psooz": 1, "ozke": 1}
 integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", "angmom": "antisym",
 "sd": "sym", "fc": "sym", "darwin": "sym", "massvelo": "sym", "nelfld": "sym", "diplen": "sym", 
-"dipvel": "antisym", "pso": "antisym", "nstcgo": "sym", "dnske": "sym", "psoke": "square", "psooz": "square"}
+"dipvel": "antisym", "pso": "antisym", "nstcgo": "sym", "dnske": "sym", "psoke": "square",
+"psooz": "square", "ozke": "antisym"}
 
 magnetic_components: dict = {0:"x", 1:"y", 2:"z"}
 
@@ -273,7 +274,7 @@ if __name__ == "__main__":
 
     s = eint(wfn.build_wfn_array())
 
-    s.integration(["psooz"],
+    s.integration(["ozke"],
                   #["overlap", "pot", "angmom"], 
                   {
                   "pot":{"atoms":[0, 1]}, 
@@ -288,5 +289,6 @@ if __name__ == "__main__":
                   "dnske":{"spatial":[0,1,2,3,4,5],"magnetic":[0,1,2], "gauge":[0.0, 0.0, 1.404552358700]},
                   "psoke":{"spatial":[0,1,2,3,4,5]},
                   "psooz":{"spatial":[0,1,2,3,4,5],"magnetic":[0,1,2], "gauge":[0.0, 0.0, 1.404552358700]},
+                  "ozke":{"magnetic":[0,1,2], "gauge":[0.0, 0.0, 1.404552358700]},
                   },
                   12)

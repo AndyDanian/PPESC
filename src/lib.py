@@ -43,3 +43,4 @@ from nstcgo import *   # Diamagnetic nuclear shielding tensor
 from dnske import *    # Kinetic-energy correction to the diamagnetic contribution to nuclear shielding
 from psoke import *    # Kinetic-energy correction to the paramagnetic spin-orbit to nuclear shielding
 from psooz import *    # Orbital-Zeeman correction to the paramagnetic spin-orbit to nuclear shielding
+from ozke import *     # Calculates the kinetic energy correction to the orbital Zeeman operator

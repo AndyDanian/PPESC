@@ -107,6 +107,8 @@ def h1i(
         integral: list = psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output)
     elif name.lower() == "psooz":
         integral: list = psooz(coord, gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, output)
+    elif name.lower() == "ozke":
+        integral: list = ozke(coord, gauge, magnetic_xyz, exp, center, lx, ly, lz, output)
     return integral
 
     # def molecular_matrix(self, integral: list = None, sym: str = None):
