@@ -1,4 +1,3 @@
-from multiprocessing import managers
 from libh import *
 
 def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, ly, lz, output):
@@ -165,54 +164,7 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
                 )
             )
             if diagonal:
-            #else:
-                # Diagonals terms
                 nefc = (
-                    # nuclear_attraction(
-                    #     lx[i],
-                    #     ly[i],
-                    #     lz[i],
-                    #     lx[j] + r_x_b,
-                    #     ly[j] + r_y_b,
-                    #     lz[j] + r_z_b,
-                    #     r_x_b,
-                    #     r_y_b,
-                    #     r_z_b,
-                    #     exp[i],
-                    #     exp[j],
-                    #     coord[center[i]][0],
-                    #     coord[center[i]][1],
-                    #     coord[center[i]][2],
-                    #     coord[center[j]][0],
-                    #     coord[center[j]][1],
-                    #     coord[center[j]][2],
-                    #     coord[atom][0],
-                    #     coord[atom][1],
-                    #     coord[atom][2],
-                    # )
-                    # + (coord[center[j]][coord_b] - gauge[coord_b])
-                    # * nuclear_attraction(
-                    #     lx[i],
-                    #     ly[i],
-                    #     lz[i],
-                    #     lx[j],
-                    #     ly[j],
-                    #     lz[j],
-                    #     r_x_b,
-                    #     r_y_b,
-                    #     r_z_b,
-                    #     exp[i],
-                    #     exp[j],
-                    #     coord[center[i]][0],
-                    #     coord[center[i]][1],
-                    #     coord[center[i]][2],
-                    #     coord[center[j]][0],
-                    #     coord[center[j]][1],
-                    #     coord[center[j]][2],
-                    #     coord[atom][0],
-                    #     coord[atom][1],
-                    #     coord[atom][2],
-                    # )
                     nuclear_attraction(
                         lx[i],
                         ly[i],
