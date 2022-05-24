@@ -5,8 +5,6 @@ from pathlib import Path
 
 PROJECT_DIR = Path.cwd()
 
-print("PROJECT_DIR ",PROJECT_DIR)
-
 sys.path.append(
     os.fspath(PROJECT_DIR / "h1int")
     )
