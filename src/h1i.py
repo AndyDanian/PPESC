@@ -103,6 +103,8 @@ def h1i(
         integral: list = nstcgo(coord, gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, output)
     elif name.lower() == "dnske":
         integral: list = dnske(coord, gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, output)
+    elif name.lower() == "psoke":
+        integral: list = psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output)
     return integral
 
     # def molecular_matrix(self, integral: list = None, sym: str = None):

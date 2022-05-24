@@ -1,10 +1,11 @@
-def print_triangle_matrix(integral: list = None, name: str = None):
+def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: str = None):
     """
     Print the triangule matrix
 
     Args:
         integral (array): array 2d with atomic integrals
         name (str): name of the integral
+        matriz_sym (str): Matriz symmetric of atomic integrals
     """
     print("*" * 80)
     print("*** ", name.upper().center(70), " ***")
@@ -20,6 +21,7 @@ def print_triangle_matrix(integral: list = None, name: str = None):
             n = (count + 1) * 5
         else:
             n = size
+        # Column index
         print(
             *[
                 "    " + str(i + 1).center(14)
@@ -30,17 +32,33 @@ def print_triangle_matrix(integral: list = None, name: str = None):
             end="",
         )
         print()
-        for row in range(count * 5, size):
-            print(
-                *[
-                    str(row + 1).center(4)
-                    + str("{:.6f}".format(integral[column][row])).center(14)
-                    if i == 0
-                    else str("{:.6f}".format(integral[column][row])).center(14)
-                    for i, column in enumerate(range(count * 5, n))
-                    if row >= column
-                ],
-                end="",
-            )
-            print()
-        count += 1
+        if matriz_sym == "square":
+            for row in range(0, size):
+                print(
+                    *[
+                        str(row + 1).center(4)
+                        + str("{:.6f}".format(integral[column][row])).center(14)
+                        if i == 0
+                        else str("{:.6f}".format(integral[column][row])).center(14)
+                        for i, column in enumerate(range(count * 5, n))
+                        #if row >= column
+                    ],
+                    end="",
+                )
+                print()
+            count += 1
+        else:
+            for row in range(count * 5, size):
+                print(
+                    *[
+                        str(row + 1).center(4)
+                        + str("{:.6f}".format(integral[column][row])).center(14)
+                        if i == 0
+                        else str("{:.6f}".format(integral[column][row])).center(14)
+                        for i, column in enumerate(range(count * 5, n))
+                        if row >= column
+                    ],
+                    end="",
+                )
+                print()
+            count += 1

@@ -1,2727 +1,373 @@
-from numpy import exp
-import numpy as np
-import time
-import phi
+from libh import *
+def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output):
+    """
+    Kinetic energy correction to the paramagnetic spin-orbit atomic integrals
 
-start = time.time()
+    Agauges:
+        coord (list): list 2d with coordinates of the atoms
+        spatial_sym (int): spatial symmetry index
+        atom (int): atomic index
+        exp (list): list 1d with the exponentials
+        center (list): list 1d with the center of the gaussian
+        lx (list): list 1d with the x component of ml of the gaussian
+        ly (list): list 1d with the y component of ml of the gaussian
+        lz (list): list 1d with the z component of ml of the gaussian
+        output (int): Output level for integral calculation
 
-# 6-311++G**
-exp_array = [
-    33.865,
-    5.09479,
-    1.15879,
-    0.32584,
-    0.102741,
-    0.036,
-    0.75,
-    0.75,
-    0.75,
-    33.865,
-    5.09479,
-    1.15879,
-    0.32584,
-    0.102741,
-    0.036,
-    0.75,
-    0.75,
-    0.75,
-]
+    Return:
+        angmom (array): array 2d with atomic integrals
+    """
 
-n = [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1]
-lx = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
-ly = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
-lz = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+    start: float = time()
+    # Primitive total in the cluster
+    total_nprim: int = len(exp)
 
-center = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-total_nprim = 18
+    psoke: list = [0 for i in range(int(total_nprim * total_nprim))]
 
-coord = [[0.0, 0.0, 0.0586476414], [0.0, 0.0, 1.4045523587]]
+    count: int = 0
+    
+    r_x_b: int = 0
+    r_y_b: int = 0
+    r_z_b: int = 0
+    r_x_c: int = 0
+    r_y_c: int = 0
+    r_z_c: int = 0
 
-Norm = {0: phi.NS, 1: phi.NP}
-intLx = np.zeros((2, total_nprim, total_nprim), dtype=float)
-intLy = np.zeros((2, total_nprim, total_nprim), dtype=float)
-intLz = np.zeros((2, total_nprim, total_nprim), dtype=float)
-output = 9
+    if spatial_sym == 0: 
+        """X Component"""
+        r_y_b = 1
+        r_z_c = 1
+        der_l_b: list = ly
+        der_l_c: list = lz
+    elif spatial_sym == 1:
+        """Y Componente"""
+        r_z_b = 1
+        r_x_c = 1
+        der_l_b: list = lz
+        der_l_c: list = lx
+    elif spatial_sym == 2:
+        """Z Componente"""
+        r_x_b = 1
+        r_y_c = 1
+        der_l_b: list = lx
+        der_l_c: list = ly
+    else:
+        raise ValueError(f"***Error\n\n Component not exist: {spatial_sym}")
 
-# !Note: Rgaugeo is put on in the origen
-for k in range(2):
-    if output > 10:
-        print(" **** Atom ", k + 1, " **** \n")
+    lap: list = [(2,0,0),(0,2,0),(0,0,2)]
     for i in range(total_nprim):
 
         for j in range(total_nprim):
 
-            ydz = 2.0 * exp_array[j] * phi.nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j],
-                ly[j],
-                lz[j] + 1,
-                0,
-                1,
-                0,
-                exp_array[i],
-                exp_array[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[k][0],
-                coord[k][1],
-                coord[k][2],
-            ) - lz[j] * phi.nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j],
-                ly[j],
-                lz[j] - 1,
-                0,
-                1,
-                0,
-                exp_array[i],
-                exp_array[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[k][0],
-                coord[k][1],
-                coord[k][2],
-            )
+            idj_jdi: list = []
+            for k in range(2):
+                if k == 0:
+                    l_x, l_y, l_z = r_x_c, r_y_c, r_z_c
+                    r_x, r_y, r_z = r_x_b, r_y_b, r_z_b
+                    sign: float = 1.0
+                    der_l: float = float(der_l_c[j])
+                else:
+                    l_x, l_y, l_z = r_x_b, r_y_b, r_z_b
+                    r_x, r_y, r_z = r_x_c, r_y_c, r_z_c
+                    sign: float = -1.0
+                    der_l: float = float(der_l_b[j])
+                idj_jdi.append(
+                    2.0 * exp[j] * nuclear_attraction(
+                    lx[i],
+                    ly[i],
+                    lz[i],
+                    lx[j] + l_x,
+                    ly[j] + l_y,
+                    lz[j] + l_z,
+                    r_x,
+                    r_y,
+                    r_z,
+                    exp[i],
+                    exp[j],
+                    coord[center[i]][0],
+                    coord[center[i]][1],
+                    coord[center[i]][2],
+                    coord[center[j]][0],
+                    coord[center[j]][1],
+                    coord[center[j]][2],
+                    coord[atom][0],
+                    coord[atom][1],
+                    coord[atom][2],
+                ) - 
+                der_l * nuclear_attraction(
+                    lx[i],
+                    ly[i],
+                    lz[i],
+                    lx[j] - l_x,
+                    ly[j] - l_y,
+                    lz[j] - l_z,
+                    r_x,
+                    r_y,
+                    r_z,
+                    exp[i],
+                    exp[j],
+                    coord[center[i]][0],
+                    coord[center[i]][1],
+                    coord[center[i]][2],
+                    coord[center[j]][0],
+                    coord[center[j]][1],
+                    coord[center[j]][2],
+                    coord[atom][0],
+                    coord[atom][1],
+                    coord[atom][2],
+                ))
+            
+            # Todo bien hasta áca
+            lap_idj_jdi: float = 0.0
+            idj_jdi_lap: float = 0.0
+            for d2x, d2y, d2z in lap:
+                if d2x == 2:
+                    lap_l_i: float = float(lx[i])
+                    lap_l_j: float = float(lx[j])
+                elif d2y == 2:
+                    lap_l_i: float = float(ly[i])
+                    lap_l_j: float = float(ly[j])
+                elif d2z == 2:
+                    lap_l_i: float = float(lz[i])
+                    lap_l_j: float = float(lz[j])
 
-            zdy = 2.0 * exp_array[j] * phi.nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j],
-                ly[j] + 1,
-                lz[j],
-                0,
-                0,
-                1,
-                exp_array[i],
-                exp_array[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[k][0],
-                coord[k][1],
-                coord[k][2],
-            ) - ly[j] * phi.nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j],
-                ly[j] - 1,
-                lz[j],
-                0,
-                0,
-                1,
-                exp_array[i],
-                exp_array[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[k][0],
-                coord[k][1],
-                coord[k][2],
-            )
-
-            xdz = 2.0 * exp_array[j] * phi.nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j],
-                ly[j],
-                lz[j] + 1,
-                1,
-                0,
-                0,
-                exp_array[i],
-                exp_array[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[k][0],
-                coord[k][1],
-                coord[k][2],
-            ) - lz[j] * phi.nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j],
-                ly[j],
-                lz[j] - 1,
-                1,
-                0,
-                0,
-                exp_array[i],
-                exp_array[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[k][0],
-                coord[k][1],
-                coord[k][2],
-            )
-
-            zdx = 2.0 * exp_array[j] * phi.nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j] + 1,
-                ly[j],
-                lz[j],
-                0,
-                0,
-                1,
-                exp_array[i],
-                exp_array[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[k][0],
-                coord[k][1],
-                coord[k][2],
-            ) - lx[j] * phi.nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j] - 1,
-                ly[j],
-                lz[j],
-                0,
-                0,
-                1,
-                exp_array[i],
-                exp_array[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[k][0],
-                coord[k][1],
-                coord[k][2],
-            )
-
-            xdy = 2.0 * exp_array[j] * phi.nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j],
-                ly[j] + 1,
-                lz[j],
-                1,
-                0,
-                0,
-                exp_array[i],
-                exp_array[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[k][0],
-                coord[k][1],
-                coord[k][2],
-            ) - ly[j] * phi.nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j],
-                ly[j] - 1,
-                lz[j],
-                1,
-                0,
-                0,
-                exp_array[i],
-                exp_array[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[k][0],
-                coord[k][1],
-                coord[k][2],
-            )
-
-            ydx = 2.0 * exp_array[j] * phi.nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j] + 1,
-                ly[j],
-                lz[j],
-                0,
-                1,
-                0,
-                exp_array[i],
-                exp_array[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[k][0],
-                coord[k][1],
-                coord[k][2],
-            ) - lx[j] * phi.nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j] - 1,
-                ly[j],
-                lz[j],
-                0,
-                1,
-                0,
-                exp_array[i],
-                exp_array[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[k][0],
-                coord[k][1],
-                coord[k][2],
-            )
-
-            # ! Terms of dxxLx/rk^3
-            xxdydz = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i] + 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] + 1,
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
+                for k in range(2):
+                    if k == 0:
+                        l_x, l_y, l_z = r_x_c, r_y_c, r_z_c
+                        r_x, r_y, r_z = r_x_b, r_y_b, r_z_b
+                        sign: float = 1.0
+                        der_l: float = float(der_l_c[j])
+                    else:
+                        l_x, l_y, l_z = r_x_b, r_y_b, r_z_b
+                        r_x, r_y, r_z = r_x_c, r_y_c, r_z_c
+                        sign: float = -1.0
+                        der_l: float = float(der_l_b[j])
+                # ! Terms of dxxLxyz/rk^3
+                    lap_idj_jdi += sign*(
+                    4.0
+                    * exp[i]
+                    * exp[i]
+                    * (
+                        2.0
+                        * exp[j]
+                        * nuclear_attraction(
+                            lx[i] + d2x,
+                            ly[i] + d2y,
+                            lz[i] + d2z,
+                            lx[j] + l_x,
+                            ly[j] + l_y,
+                            lz[j] + l_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        )
+                        - der_l
+                        * nuclear_attraction(
+                            lx[i] + d2x,
+                            ly[i] + d2y,
+                            lz[i] + d2z,
+                            lx[j] - l_x,
+                            ly[j] - l_y,
+                            lz[j] - l_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        )
                     )
-                    - lz[j]
-                    * phi.nuclear_attraction(
-                        lx[i] + 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] - 1,
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
+                    - 2.0 * exp[i] * (2.0 * lap_l_i + 1.0) * idj_jdi[k]
+                    + lap_l_i
+                    * (lap_l_i - 1.0)
+                    * (
+                        2.0
+                        * exp[j]
+                        * nuclear_attraction(
+                            lx[i] - d2x,
+                            ly[i] - d2y,
+                            lz[i] - d2z,
+                            lx[j] + l_x,
+                            ly[j] + l_y,
+                            lz[j] + l_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        )
+                        - der_l
+                        * nuclear_attraction(
+                            lx[i] - d2x,
+                            ly[i] - d2y,
+                            lz[i] - d2z,
+                            lx[j] - r_x,
+                            ly[j] - r_y,
+                            lz[j] - r_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        ) ))
+                    # if d2x == 2:
+                    #     print(k,idj_jdi[k],lap_idj_jdi)
+                # ! Terms of LxyzLap/rk^3
+                    idj_jdi_lap += sign*(
+                    4.0
+                    * exp[i]
+                    * exp[i]
+                    * (
+                        2.0
+                        * exp[j]
+                        * nuclear_attraction(
+                            lx[i],
+                            ly[i],
+                            lz[i],
+                            lx[j] + d2x + l_x,
+                            ly[j] + d2y + l_y,
+                            lz[j] + d2z + l_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        )
+                        - der_l
+                        * nuclear_attraction(
+                            lx[i],
+                            ly[i],
+                            lz[i],
+                            lx[j] + d2x - l_x,
+                            ly[j] + d2y - l_y,
+                            lz[j] + d2z - l_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        )
                     )
-                )
-                - 2.0 * exp_array[i] * (2.0 * lx[i] + 1.0) * ydz  # e0ij
-                + lx[i]
-                * (lx[i] - 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i] - 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] + 1,
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lz[j]
-                    * phi.nuclear_attraction(
-                        lx[i] - 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] - 1,
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-
-            xxdzdy = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i] + 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j] + 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - ly[j]
-                    * phi.nuclear_attraction(
-                        lx[i] + 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j] - 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            ) - 2.0 * exp_array[i] * (2.0 * lx[i] + 1.0) * zdy
-            +(
-                lx[i]
-                * (lx[i] - 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i] - 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j] + 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - ly[j]
-                    * phi.nuclear_attraction(
-                        lx[i] - 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j] - 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-
-            dxxlx = xxdydz - xxdzdy
-
-            # ! Terms of dyyLx
-            ########### Dipole
-
-            d_skl_1 = (
-                2.0 * exp_array[i] * (2.0 * ly[i] + 1) * ydz
-            )  # (e1kl + Ypg * e0kl)
-
-            d_skm2l_1 = (
-                ly[i]
-                * (ly[i] - 1)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] - 2,
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] + 1,
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lz[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] - 2,
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] - 1,
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_1^k+2l + Ypc*E_0^k+2l
-            d_skt2l_1 = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] + 2,
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] + 1,
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lz[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] + 2,
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] - 1,
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            ####################### Derivatives
-            # E_0^kl+1 - l*E_0^kl-1
-            d_dkl_1 = (
-                2.0
-                * exp_array[i]
-                * (2.0 * ly[i] + 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j] + 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - ly[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j] - 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_0^k-2l+1 - l*E_0^k-2l-1
-            d_dkm2l_1 = (
-                ly[i]
-                * (ly[i] - 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] - 2,
-                        lz[i],
-                        lx[j],
-                        ly[j] + 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - ly[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] - 2,
-                        lz[i],
-                        lx[j],
-                        ly[j] - 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_0^k+2l+1 - l*E_0^k+2l-1
-            d_dkt2l_1 = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] + 2,
-                        lz[i],
-                        lx[j],
-                        ly[j] + 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - ly[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] + 2,
-                        lz[i],
-                        lx[j],
-                        ly[j] - 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-
-            dyylx = (d_skm2l_1 - d_skl_1 + d_skt2l_1) - (
-                d_dkm2l_1 - d_dkl_1 + d_dkt2l_1
-            )
-
-            # ! Terms of dzzLx
-            # E_1^mn + Zpc*E_0^mn
-            d_smn_1 = (
-                2.0
-                * exp_array[i]
-                * (2.0 * lz[i] + 1)
-                * ydz  # (e1mn + Zpg * e0mn)
-            )
-            # E_1^m-2n + Zpc*E_0^m-2n
-            d_smm2n_1 = (
-                lz[i]
-                * (lz[i] - 1)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] - 2,
-                        lx[j],
-                        ly[j],
-                        lz[j] + 1,
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lz[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] - 2,
-                        lx[j],
-                        ly[j],
-                        lz[j] - 1,
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_1^m+2n + Zpc*E_0^m+2n
-            d_smt2n_1 = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] + 2,
-                        lx[j],
-                        ly[j],
-                        lz[j] + 1,
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lz[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] + 2,
-                        lx[j],
-                        ly[j],
-                        lz[j] - 1,
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            ####################### Derivatives
-            # E_0^kl+1 - l*E_0^kl-1
-            d_dmn_1 = (
-                2.0
-                * exp_array[i]
-                * (2.0 * lz[i] + 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j] + 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - ly[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j] - 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_0^k-2l+1 - l*E_0^k-2l-1
-            d_dmm2n_1 = (
-                lz[i]
-                * (lz[i] - 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] - 2,
-                        lx[j],
-                        ly[j] + 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - ly[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] - 2,
-                        lx[j],
-                        ly[j] - 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_0^k+2l+1 - l*E_0^k+2l-1
-            d_dmt2n_1 = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] + 2,
-                        lx[j],
-                        ly[j] + 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - ly[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] + 2,
-                        lx[j],
-                        ly[j] - 1,
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-
-            dzzlx = (d_smm2n_1 - d_smn_1 + d_smt2n_1) - (
-                d_dmm2n_1 - d_dmn_1 + d_dmt2n_1
-            )
-
+                    - 2.0 * exp[i] * (2.0 * lap_l_j + 1.0) * idj_jdi[k] 
+                    + lap_l_j
+                    * (lap_l_j - 1.0)
+                    * (
+                        2.0
+                        * exp[j]
+                        * nuclear_attraction(
+                            lx[i],
+                            ly[i],
+                            lz[i],
+                            lx[j] - d2x + l_x,
+                            ly[j] - d2y + l_y,
+                            lz[j] - d2z + l_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        )
+                        - der_l
+                        * nuclear_attraction(
+                            lx[i],
+                            ly[i],
+                            lz[i],
+                            lx[j] - d2x - r_x,
+                            ly[j] - d2y - r_y,
+                            lz[j] - d2z - r_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        ) ))
             # * nabla Real{Lx} + Real{Lx} nabla
 
-            intLx[k, j, i] = (
-                -Norm[n[i]](exp_array[i])
-                * Norm[n[j]](exp_array[j])
-                * (dxxlx + dyylx + dzzlx)
+            psoke[count] = (
+                Norm[lx[i] + ly[i] + lz[i]](exp[i])
+                * Norm[lx[j] + ly[j] + lz[j]](exp[j])
+                * (lap_idj_jdi)
                 * 0.5
                 * 2.0
                 * np.pi
-                / (exp_array[i] + exp_array[j])
+                / (exp[i] + exp[j])
             )
+            count += 1
+    if output > 10:
+        print(f"\n ***Kinetic energy correction to the paramagnetic spin-orbit atomic integrals,\n\
+        for {spatial_sym} spatial symmetry, time [s]: {time() - start:.6f}")
 
-            # ! Terms of dyyLy/rk^3
-            yydzdx = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] + 2,
-                        lz[i],
-                        lx[j] + 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lx[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] + 2,
-                        lz[i],
-                        lx[j] - 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-                - 2.0 * exp_array[i] * (2.0 * ly[i] + 1.0) * zdx  # e0ij
-                + ly[i]
-                * (ly[i] - 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] - 2,
-                        lz[i],
-                        lx[j] + 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lx[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] - 2,
-                        lz[i],
-                        lx[j] - 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-
-            yydxdz = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] + 2,
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] + 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lz[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] + 2,
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] - 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            ) - 2.0 * exp_array[i] * (2.0 * ly[i] + 1.0) * xdz
-            +(
-                ly[i]
-                * (ly[i] - 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] - 2,
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] + 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lz[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] - 2,
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] - 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-
-            dyyly = yydzdx - yydxdz
-
-            # ! Terms of dxxLy
-            ########### Dipole
-
-            d_skl_1 = (
-                2.0 * exp_array[i] * (2.0 * lx[i] + 1) * zdx
-            )  # (e1kl + Ypg * e0kl)
-
-            d_skm2l_1 = (
-                lx[i]
-                * (lx[i] - 1)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i] - 2,
-                        ly[i],
-                        lz[i],
-                        lx[j] + 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lx[j]
-                    * phi.nuclear_attraction(
-                        lx[i] - 2,
-                        ly[i],
-                        lz[i],
-                        lx[j] - 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_1^k+2l + Ypc*E_0^k+2l
-            d_skt2l_1 = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i] + 2,
-                        ly[i],
-                        lz[i],
-                        lx[j] + 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lx[j]
-                    * phi.nuclear_attraction(
-                        lx[i] + 2,
-                        ly[i],
-                        lz[i],
-                        lx[j] - 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            ####################### Derivatives
-            # E_0^kl+1 - l*E_0^kl-1
-            d_dkl_1 = (
-                2.0
-                * exp_array[i]
-                * (2.0 * lx[i] + 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] + 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lz[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] - 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_0^k-2l+1 - l*E_0^k-2l-1
-            d_dkm2l_1 = (
-                lx[i]
-                * (lx[i] - 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i] - 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] + 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lz[j]
-                    * phi.nuclear_attraction(
-                        lx[i] - 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] - 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_0^k+2l+1 - l*E_0^k+2l-1
-            d_dkt2l_1 = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i] + 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] + 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lz[j]
-                    * phi.nuclear_attraction(
-                        lx[i] + 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] - 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-
-            dxxly = (d_skm2l_1 - d_skl_1 + d_skt2l_1) - (
-                d_dkm2l_1 - d_dkl_1 + d_dkt2l_1
-            )
-
-            # ! Terms of dzzLy
-            # E_1^mn + Zpc*E_0^mn
-            d_smn_1 = 2.0 * exp_array[i] * (2.0 * lz[i] + 1) * zdx
-            # E_1^m-2n + Zpc*E_0^m-2n
-            d_smm2n_1 = (
-                lz[i]
-                * (lz[i] - 1)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] - 2,
-                        lx[j] + 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lx[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] - 2,
-                        lx[j] - 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_1^m+2n + Zpc*E_0^m+2n
-            d_smt2n_1 = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] + 2,
-                        lx[j] + 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lx[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] + 2,
-                        lx[j] - 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        0,
-                        1,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            ####################### Derivatives
-            # E_0^kl+1 - l*E_0^kl-1
-            d_dmn_1 = (
-                2.0
-                * exp_array[i]
-                * (2.0 * lz[i] + 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] + 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lz[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j] - 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_0^k-2l+1 - l*E_0^k-2l-1
-            d_dmm2n_1 = (
-                lz[i]
-                * (lz[i] - 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] - 2,
-                        lx[j],
-                        ly[j],
-                        lz[j] + 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lz[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] - 2,
-                        lx[j],
-                        ly[j],
-                        lz[j] - 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_0^k+2l+1 - l*E_0^k+2l-1
-            d_dmt2n_1 = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] + 2,
-                        lx[j],
-                        ly[j],
-                        lz[j] + 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lz[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] + 2,
-                        lx[j],
-                        ly[j],
-                        lz[j] - 1,
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-
-            dzzly = (d_smm2n_1 - d_smn_1 + d_smt2n_1) - (
-                d_dmm2n_1 - d_dmn_1 + d_dmt2n_1
-            )
-
-            # * nabla Real{Ly} + Real{Ly} nabla
-
-            intLy[k, j, i] = (
-                -Norm[n[i]](exp_array[i])
-                * Norm[n[j]](exp_array[j])
-                * (dxxly + dyyly + dzzly)
-                * 0.5
-                * 2.0
-                * np.pi
-                / (exp_array[i] + exp_array[j])
-            )
-
-            # ! Terms of dyyLy/rk^3
-            zzdxdy = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] + 2,
-                        lx[j],
-                        ly[j] + 1,
-                        lz[j],
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - ly[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] + 2,
-                        lx[j],
-                        ly[j] - 1,
-                        lz[j],
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-                - 2.0 * exp_array[i] * (2.0 * lz[i] + 1.0) * xdy
-                + lz[i]
-                * (lz[i] - 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] - 2,
-                        lx[j],
-                        ly[j] + 1,
-                        lz[j],
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - ly[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] - 2,
-                        lx[j],
-                        ly[j] - 1,
-                        lz[j],
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-
-            zzdydx = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] + 2,
-                        lx[j] + 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lx[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] + 2,
-                        lx[j] - 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            ) - 2.0 * exp_array[i] * (2.0 * lz[i] + 1.0) * ydx
-            +(
-                lz[i]
-                * (lz[i] - 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] - 2,
-                        lx[j] + 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lx[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i] - 2,
-                        lx[j] - 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-
-            dzzlz = zzdxdy - zzdydx
-
-            # ! Terms of dxxLy
-            ########### Dipole
-
-            d_skl_1 = (
-                2.0 * exp_array[i] * (2.0 * lx[i] + 1) * xdy
-            )  # (e1kl + Ypg * e0kl)
-
-            d_skm2l_1 = (
-                lx[i]
-                * (lx[i] - 1)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i] - 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j] + 1,
-                        lz[j],
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - ly[j]
-                    * phi.nuclear_attraction(
-                        lx[i] - 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j] - 1,
-                        lz[j],
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_1^k+2l + Ypc*E_0^k+2l
-            d_skt2l_1 = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i] + 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j] + 1,
-                        lz[j],
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - ly[j]
-                    * phi.nuclear_attraction(
-                        lx[i] + 2,
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j] - 1,
-                        lz[j],
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            ####################### Derivatives
-            # E_0^kl+1 - l*E_0^kl-1
-            d_dkl_1 = (
-                2.0
-                * exp_array[i]
-                * (2.0 * lx[i] + 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j] + 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lx[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j] - 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_0^k-2l+1 - l*E_0^k-2l-1
-            d_dkm2l_1 = (
-                lx[i]
-                * (lx[i] - 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i] - 2,
-                        ly[i],
-                        lz[i],
-                        lx[j] + 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lx[j]
-                    * phi.nuclear_attraction(
-                        lx[i] - 2,
-                        ly[i],
-                        lz[i],
-                        lx[j] - 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_0^k+2l+1 - l*E_0^k+2l-1
-            d_dkt2l_1 = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i] + 2,
-                        ly[i],
-                        lz[i],
-                        lx[j] + 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lx[j]
-                    * phi.nuclear_attraction(
-                        lx[i] + 2,
-                        ly[i],
-                        lz[i],
-                        lx[j] - 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-
-            dxxlz = (d_skm2l_1 - d_skl_1 + d_skt2l_1) - (
-                d_dkm2l_1 - d_dkl_1 + d_dkt2l_1
-            )
-
-            # ! Terms of dyyLz
-            # E_1^mn + Zpc*E_0^mn
-            d_smn_1 = 2.0 * exp_array[i] * (2.0 * ly[i] + 1) * xdy
-
-            # E_1^m-2n + Zpc*E_0^m-2n
-            d_smm2n_1 = (
-                ly[i]
-                * (ly[i] - 1)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] - 2,
-                        lz[i],
-                        lx[j],
-                        ly[j] + 1,
-                        lz[j],
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - ly[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] - 2,
-                        lz[i],
-                        lx[j],
-                        ly[j] - 1,
-                        lz[j],
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-
-            # E_1^m+2n + Zpc*E_0^m+2n
-            d_smt2n_1 = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] + 2,
-                        lz[i],
-                        lx[j],
-                        ly[j] + 1,
-                        lz[j],
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - ly[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] + 2,
-                        lz[i],
-                        lx[j],
-                        ly[j] - 1,
-                        lz[j],
-                        1,
-                        0,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-
-            ####################### Derivatives
-            # E_0^kl+1 - l*E_0^kl-1
-            d_dmn_1 = (
-                2.0
-                * exp_array[i]
-                * (2.0 * ly[i] + 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j] + 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lx[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j] - 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_0^k-2l+1 - l*E_0^k-2l-1
-            d_dmm2n_1 = (
-                ly[i]
-                * (ly[i] - 1.0)
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] - 2,
-                        lz[i],
-                        lx[j] + 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lx[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] - 2,
-                        lz[i],
-                        lx[j] - 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-            # E_0^k+2l+1 - l*E_0^k+2l-1
-            d_dmt2n_1 = (
-                4.0
-                * exp_array[i]
-                * exp_array[i]
-                * (
-                    2.0
-                    * exp_array[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] + 2,
-                        lz[i],
-                        lx[j] + 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                    - lx[j]
-                    * phi.nuclear_attraction(
-                        lx[i],
-                        ly[i] + 2,
-                        lz[i],
-                        lx[j] - 1,
-                        ly[j],
-                        lz[j],
-                        0,
-                        1,
-                        0,
-                        exp_array[i],
-                        exp_array[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[k][0],
-                        coord[k][1],
-                        coord[k][2],
-                    )
-                )
-            )
-
-            dyylz = (d_smm2n_1 - d_smn_1 + d_smt2n_1) - (
-                d_dmm2n_1 - d_dmn_1 + d_dmt2n_1
-            )
-            # * nabla Real{Ly} + Real{Ly} nabla
-
-            intLz[k, j, i] = (
-                -Norm[n[i]](exp_array[i])
-                * Norm[n[j]](exp_array[j])
-                * (dxxlz + dyylz + dzzlz)
-                * 0.5
-                * 2.0
-                * np.pi
-                / (exp_array[i] + exp_array[j])
-            )
-
-            if output > 1:
-                print(
-                    "int [",
-                    j + 1,
-                    ",",
-                    i + 1,
-                    "] : ",
-                    intLz[k, j, i],
-                )
-
-
-print(" time [s]: ", -start + time.time())
+    return psoke
