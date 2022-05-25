@@ -9,6 +9,9 @@ sys.path.append(
     os.fspath(PROJECT_DIR / "h1int")
     )
 sys.path.append(
+    os.fspath(PROJECT_DIR / "include")
+    )
+sys.path.append(
     os.fspath(PROJECT_DIR / "io")
     )
 sys.path.append(
@@ -17,12 +20,15 @@ sys.path.append(
 
 import numpy as np
 
+#include
+from dicts import *
+
 # io
 from molden import *
-from print_matrix import *
 
 # functions
 from convert_array import *
+from print_matrix import *
 
 # h1int: One--Body hermite integrals
 from overlap import * 
