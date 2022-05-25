@@ -253,7 +253,7 @@ class eint:
 if __name__ == "__main__":
     from wave_function import *
 
-    wfn = wave_function("io/H2.molden")
+    wfn = wave_function("io/H2O.molden")
 
     s = eint(wfn.build_wfn_array())
 

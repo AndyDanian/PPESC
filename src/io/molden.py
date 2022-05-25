@@ -77,7 +77,7 @@ def read_molden(file_molden, verbose=21):
     total_primitives = 0
     # -- Molden Format https://www3.cmbi.umcn.nl/molden/molden_format.html
     l = {
-        "cartessian": {"s": 1, "p": 3, "d": 6, "f": 10, "g": 15},
+        "cartessian": {"s": 1, "p": 3, "d": 6, "f": 10, "g": 15, "h": 21, "i": 28},
         "spherical": {"s": 1, "p": 3, "d": 5, "f": 7, "g": 9},
     }
     spatial_primitive = "cartessian"
