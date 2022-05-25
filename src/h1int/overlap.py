@@ -65,8 +65,8 @@ def overlap(coord, exp, center, lx, ly, lz, output):
             )
 
             overlap[count] = (
-                Norm[lx[i] + ly[i] + lz[i]](exp[i])
-                * Norm[lx[j] + ly[j] + lz[j]](exp[j])
+                Normalization(lx[i], ly[i], lz[i], exp[i])
+                * Normalization(lx[j], ly[j], lz[j], exp[j])
                 * sij
                 * skl
                 * smn

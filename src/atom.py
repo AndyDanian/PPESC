@@ -1,8 +1,8 @@
 angular_number = {"s": 1, "p": 3, "d": 6, "f": 10, "g": 15, "h": 21, "i": 28}
 
-cartessian_mlx = {"s": [0], "p": [1, 0, 0]}
-cartessian_mly = {"s": [0], "p": [0, 1, 0]}
-cartessian_mlz = {"s": [0], "p": [0, 0, 1]}
+cartessian_mlx = {"s": [0], "p": [1, 0, 0], "d": [2,0,0,1,1,0]}
+cartessian_mly = {"s": [0], "p": [0, 1, 0], "d": [0,2,0,1,0,1]}
+cartessian_mlz = {"s": [0], "p": [0, 0, 1], "d": [0,0,2,0,1,1]}
 
 
 class atom:
