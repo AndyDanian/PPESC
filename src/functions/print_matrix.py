@@ -1,3 +1,5 @@
+from convert_array import *
+
 def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: str = None):
     """
     Print the triangule matrix
@@ -62,3 +64,24 @@ def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: s
                 )
                 print()
             count += 1
+
+def print_matriz_integrated(
+    n: int = None, integrals: dict = None, symmetries: dict = None
+):
+
+    for integral_label in integrals.keys():
+        print_triangle_matrix(
+            vector_to_matrix(
+                n,
+                integrals[
+                    integral_label
+                ],
+                symmetries[
+                    integral_label
+                ],
+            ),
+            integral_label,
+            symmetries[
+                integral_label
+            ]
+        )

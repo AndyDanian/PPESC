@@ -2,13 +2,10 @@ from lib import *
 from h1i import *
 from wave_function import *
 
-nucleu: dict = {"overlap": 0, "nucpot": 1, "kinetic": 0, "angmom": 0, "sd": 0, "fc": 1, "darwin": 0,
-"massvelo": 0, "nelfld": 0, "diplen": 0, "dipvel": 0, "pso": 0, "nstcgo": 0, "dnske": 0, "psoke": 0,
-"psooz": 0, "ozke": 0}
-esp_sym: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 0, "sd": 1, "fc": 0, "darwin": 0,
+spatial_symmetry: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 0, "sd": 1, "fc": 0, "darwin": 0,
 "massvelo": 0, "nelfld": 1, "diplen": 0, "dipvel": 0, "pso": 1, "nstcgo": 1, "dnske": 1, "psoke": 1,
 "psooz": 1, "ozke": 0}
-magnetic_r: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 1, "sd": 1, "fc": 0, "darwin": 0,
+magnetic: dict = {"overlap": 0, "nucpot": 0, "kinetic": 0, "angmom": 1, "sd": 1, "fc": 0, "darwin": 0,
 "massvelo": 0, "nelfld": 0, "diplen": 1, "dipvel": 1, "pso": 0, "nstcgo": 1, "dnske": 1, "psoke": 0,
 "psooz": 1, "ozke": 1}
 integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", "angmom": "antisym",
@@ -16,7 +13,7 @@ integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", 
 "dipvel": "antisym", "pso": "antisym", "nstcgo": "sym", "dnske": "sym", "psoke": "square",
 "psooz": "square", "ozke": "antisym"}
 
-magnetic_components: dict = {0:"x", 1:"y", 2:"z"}
+magnetic_axes: dict = {0:"x", 1:"y", 2:"z"}
 
 class eint:
     def __init__(self, wf: dict = None):
@@ -49,132 +46,57 @@ class eint:
     ##################################################################
 
     def integration(
-        self, names: list = None, properties: list = None, output: int = None
+        self, integrals_names: list = None, integrals_properties: dict = None, output: int = 0
     ):
 
-        if not names:
+        if not integrals_names:
             raise ValueError("***Error \n\n what integral do you want?")
         else:
-            for name in names:
-                if name.lower() not in integral_symmetry.keys():
+            for integral_name in integrals_names:
+                if integral_name.lower() not in integral_symmetry.keys():
                     raise ValueError(f"*** Error \n\n\
                     Integral name is not implement or the name is mistake\n\n\
                     Integrals implemented: \n\
                         {integral_symmetry.keys()}")
 
-        integrals = {}
-        symmetry = {}
+        # output dictionaries
+        integrals: dict = {}
+        symmetries: dict = {}
 
-        for name in names:
-            if nucleu[name.lower()] == 0 and esp_sym[name.lower()] == 0 and magnetic_r[name.lower()] == 0:
-                symmetry[str(name)] = integral_symmetry[name.lower()]
+        # Default values to integrals properties
+        r_gauge: list = [0.0,0.0,0.0]
+        r_dipole: list = [0.0,0.0,0.0]
+        atoms: list = [atom for atom in range(len(self._coord[0][:]))]
+        magnetic_components: list = [0,1,2]
+        spatial_symmetries: list = [symmetry for symmetry in range(np.size(np.array(self._coord)))]
+        number_atoms: int =  len(self._coord[:][0])
 
-                integrals[str(name)] = h1i(
-                    charge = self._charge,
-                    coord = self._coord,
-                    exp = self._exp,
-                    center = self._center,
-                    lx = self._lx,
-                    ly = self._ly,
-                    lz = self._lz,
-                    name = name,
-                    output = output
-                )
+        if len(atoms) > 50:
+            print(f"*** WARNING\n\n\
+            System has a lot atoms ({len(atoms)}), then calculate can take very much time")
 
-            if nucleu[name.lower()] == 1 and esp_sym[name.lower()] == 0  and magnetic_r[name.lower()] == 0:
-                for atom in properties[name]["atoms"]:
-                    symmetry[
-                        name.lower() + " " + str(atom + 1)
-                    ] = integral_symmetry[name.lower()]
+        for integral_name in integrals_names:
 
-                    integrals[name.lower() + " " + str(atom + 1)] = h1i(
-                        charge = self._charge,
-                        coord = self._coord,
-                        exp = self._exp,
-                        center = self._center,
-                        lx = self._lx,
-                        ly = self._ly,
-                        lz = self._lz,
-                        name = name,
-                        output = output,
-                        atom = atom,
-                    )
+        # Check definition of integrals properties into integrals_properties
+            if integral_name in integrals_properties.keys():
+                if "r_gauge" in integrals_properties[integral_name].keys():
+                    r_gauge = integrals_properties[integral_name]["r_gauge"]
+                if "r_dipole" in integrals_properties[integral_name].keys():
+                    r_dipole = integrals_properties[integral_name]["r_dipole"]
+                if "magnetic_components" in integrals_properties[integral_name].keys():
+                    magnetic_components = integrals_properties[integral_name]["magnetic_components"]
+                if "spatial_symmetries" in integrals_properties[integral_name].keys():
+                    spatial_symmetries = integrals_properties[integral_name]["spatial_symmetries"]
+                if "atoms" in integrals_properties[integral_name].keys():
+                    atoms = integrals_properties[integral_name]["atoms"]
+            
+            if spatial_symmetry[integral_name.lower()] == 0 and magnetic[integral_name.lower()] == 0:
 
-            if  nucleu[name.lower()] == 0 and magnetic_r[name.lower()] == 1 and esp_sym[name.lower()] == 0:
-                
-                if "rdipole" not in properties[name].keys():
-                    properties[name]["rdipole"] = None
-
-                if "gauge" not in properties[name].keys():
-                    properties[name]["gauge"] = None
-
-
-                for m_component in properties[name]["magnetic"]:
-
-                    if type(m_component) == int:
-                        integral_name: str = (name.lower() + " " 
-                        + magnetic_components[m_component])
-                        magnetic_xyz: int = m_component
-                    else:
-                        integral_name: str = (name.lower() + " " 
-                        + m_component)
-                        magnetic_xyz: int = (list(magnetic_components.keys())
-                                            [list(magnetic_components.values()).index(m_component)])
-
-                    symmetry[
-                        integral_name
-                    ] = integral_symmetry[name.lower()]
-
-                    integrals[integral_name] = h1i(
-                        charge = self._charge,
-                        coord = self._coord,
-                        exp = self._exp,
-                        center = self._center,
-                        lx = self._lx,
-                        ly = self._ly,
-                        lz = self._lz,
-                        name = name,
-                        output = output,
-                        magnetic_xyz = magnetic_xyz,
-                        gauge = properties[name]["gauge"],
-                        rdipole = properties[name]["rdipole"]
-                    )
-
-            if nucleu[name.lower()] == 0 and magnetic_r[name.lower()] == 0 and esp_sym[name.lower()] == 1:
-                number_atoms: int =  len(self._coord[:][0])
-
-                for spatial in properties[name]["spatial"]:
-
-                    # Selection of coordinate x, y, z for spatial symmetry
-                    coordinate: int = spatial - 3 * int(spatial/3)
-                    atom: int = int(spatial/3)
+                if integral_name.lower() in ["overlap", "darwin"]:
                     
-                    if atom >= number_atoms:
-                        raise ValueError(f"***Error \n\n\
-                            atom {atom} doesn't exist") 
-    
-                    if coordinate == 0:
-                        spatial_sym: int = 0
-                    elif coordinate == 1:
-                        spatial_sym: int = 1
-                    elif coordinate == 2:
-                        spatial_sym: int = 2
-                    else:
-                        raise ValueError("*** Error\n\n \
-                            spatial sym doesn't exist")
-
-                    if type(spatial) == int:
-                        integral_name: str = (name.lower() + " " +
-                        str(spatial + 1))
-                    else:
-                        integral_name: str = (name.lower() + " " +
-                        str(spatial + 1))
-
-                    symmetry[
-                        integral_name
-                    ] = integral_symmetry[name.lower()]
-
-                    integrals[integral_name] = h1i(
+                    symmetries[integral_name.lower()] = integral_symmetry[integral_name.lower()]
+                    integrals[integral_name.lower()] = h1i(
+                        #Default
                         charge = self._charge,
                         coord = self._coord,
                         exp = self._exp,
@@ -182,55 +104,19 @@ class eint:
                         lx = self._lx,
                         ly = self._ly,
                         lz = self._lz,
-                        name = name,
-                        output = output,
-                        spatial_sym = spatial_sym,
-                        atom = atom
+                        name = integral_name,
+                        output = output
                     )
+                elif integral_name.lower() in ["nucpot", "fc"]:
 
-            if nucleu[name.lower()] == 0 and magnetic_r[name.lower()] == 1 and esp_sym[name.lower()] == 1:
-                number_atoms: int =  len(self._coord[:][0])
-
-                if "gauge" not in properties[name].keys():
-                    properties[name]["gauge"] = None
-
-                for spatial in properties[name]["spatial"]:
-
-                    # Selection of coordinate x, y, z for spatial symmetry
-                    coordinate: int = spatial - 3 * int(spatial/3)
-                    atom: int = int(spatial/3)
-                    
-                    if atom >= number_atoms:
-                        raise ValueError(f"***Error \n\n\
-                            atom {atom} doesn't exist") 
-    
-                    if coordinate == 0:
-                        spatial_sym: int = 0
-                    elif coordinate == 1:
-                        spatial_sym: int = 1
-                    elif coordinate == 2:
-                        spatial_sym: int = 2
-                    else:
-                        raise ValueError("*** Error\n\n \
-                            spatial sym doesn't exist")
-
-                    for m_component in properties[name]["magnetic"]:
-
-                        if type(spatial) == int:
-                            integral_name: str = (name.lower() + " " +
-                            str(spatial + 1) + " " + magnetic_components[m_component])
-                            magnetic_xyz: int = m_component
-                        else:
-                            integral_name: str = (name.lower() + " " +
-                            str(spatial + 1) + " "  + m_component)
-                            magnetic_xyz: int = (list(magnetic_components.keys())
-                            [list(magnetic_components.values()).index(m_component)])
-
-                        symmetry[
-                            integral_name
-                        ] = integral_symmetry[name.lower()]
-
-                        integrals[integral_name] = h1i(
+                    for atom in atoms:
+                        symmetries[
+                            integral_name.lower() + " " + str(atom + 1)
+                            ] = integral_symmetry[integral_name.lower()]
+                        integrals[
+                            integral_name.lower() + " " + str(atom + 1)
+                            ] = h1i(
+                            # Default
                             charge = self._charge,
                             coord = self._coord,
                             exp = self._exp,
@@ -238,34 +124,145 @@ class eint:
                             lx = self._lx,
                             ly = self._ly,
                             lz = self._lz,
-                            name = name,
+                            name = integral_name,
                             output = output,
-                            magnetic_xyz = magnetic_xyz,
-                            spatial_sym = spatial_sym,
+                            # Special information
                             atom = atom,
-                            gauge = properties[name]["gauge"]
+                        )
+
+            elif spatial_symmetry[integral_name.lower()] == 0 and magnetic[integral_name.lower()] == 1:
+                
+                for b_i in magnetic_components:
+
+                    if type(b_i) == int:
+                        integral_label: str = (integral_name.lower() + " " + magnetic_axes[b_i])
+                        magnetic_xyz: int = b_i
+                    else:
+                        integral_label: str = (
+                            integral_name.lower() + " " + b_i)
+                        magnetic_xyz: int = (list(magnetic_axes.keys())
+                                            [list(magnetic_axes.values()).index(b_i)])
+
+                    symmetries[integral_label] = integral_symmetry[integral_name.lower()]
+
+                    integrals[integral_label] = h1i(
+                        #Default
+                        charge = self._charge,
+                        coord = self._coord,
+                        exp = self._exp,
+                        center = self._center,
+                        lx = self._lx,
+                        ly = self._ly,
+                        lz = self._lz,
+                        name = integral_name,
+                        output = output,
+                        # Special information
+                        magnetic_xyz = magnetic_xyz,
+                        r_gauge = r_gauge,
+                        r_dipole = r_dipole
+                    )
+
+            elif spatial_symmetry[integral_name.lower()] == 1 and magnetic[integral_name.lower()] == 0:
+
+                for spatial_i in spatial_symmetries:
+
+                    # Selection of coordinate x, y, z for spatial symmetry
+                    coordinate: int = spatial_i - 3 * int(spatial_i/3)
+                    atom: int = int(spatial_i/3)
+                    
+                    if atom >= number_atoms:
+                        raise ValueError(f"***Error \n\n\
+                            atom {atom} doesn't exist") 
+    
+                    if coordinate == 0:
+                        spatial_component: int = 0
+                    elif coordinate == 1:
+                        spatial_component: int = 1
+                    elif coordinate == 2:
+                        spatial_component: int = 2
+                    else:
+                        raise ValueError("*** Error\n\n \
+                            spatial component doesn't exist, {spatial_component}")
+
+                    integral_label: str = str(
+                        integral_name.lower() + " " + str(spatial_i + 1))
+
+                    symmetries[integral_label] = integral_symmetry[integral_name.lower()]
+                    integrals[integral_label] = h1i(
+                        # Default
+                        charge = self._charge,
+                        coord = self._coord,
+                        exp = self._exp,
+                        center = self._center,
+                        lx = self._lx,
+                        ly = self._ly,
+                        lz = self._lz,
+                        name = integral_name,
+                        output = output,
+                        # Special information
+                        spatial_sym = spatial_component,
+                        atom = atom,
+                    )
+
+            elif spatial_symmetry[integral_name.lower()] == 1 and magnetic[integral_name.lower()] == 1:
+
+                for spatial_i in spatial_symmetries:
+
+                    # Selection of coordinate x, y, z for spatial symmetry
+                    coordinate: int = spatial_i - 3 * int(spatial_i/3)
+                    atom: int = int(spatial_i/3)
+                    
+                    if atom >= number_atoms:
+                        raise ValueError(f"***Error \n\n\
+                            atom {atom} doesn't exist") 
+    
+                    if coordinate == 0:
+                        spatial_component: int = 0
+                    elif coordinate == 1:
+                        spatial_component: int = 1
+                    elif coordinate == 2:
+                        spatial_component: int = 2
+                    else:
+                        raise ValueError("*** Error\n\n \
+                            spatial sym doesn't exist")
+
+                    for b_i in magnetic_components:
+
+                        if type(spatial_i) == int:
+                            integral_label: str = (integral_name.lower() + " " +
+                            str(spatial_i + 1) + " " + magnetic_axes[b_i])
+                            magnetic_xyz: int = b_i
+                        else:
+                            integral_label: str = (integral_name.lower() + " " +
+                            str(spatial_i + 1) + " "  + b_i)
+                            magnetic_xyz: int = (list(magnetic_axes.keys())
+                            [list(magnetic_axes.values()).index(b_i)])
+
+                        symmetries[integral_label] = integral_symmetry[integral_name.lower()]
+
+                        integrals[integral_label] = h1i(
+                            # Default
+                            charge = self._charge,
+                            coord = self._coord,
+                            exp = self._exp,
+                            center = self._center,
+                            lx = self._lx,
+                            ly = self._ly,
+                            lz = self._lz,
+                            name = integral_name,
+                            output = output,
+                            # Special information
+                            magnetic_xyz = magnetic_xyz,
+                            spatial_sym = spatial_component,
+                            atom = atom,
+                            r_gauge = r_gauge
                         )
 
         # Print integral
         if output > 10:
-            for atomic_integrals_name in integrals.keys():
-                print_triangle_matrix(
-                    vector_to_matrix(
-                        len(self._exp),
-                        integrals[
-                            atomic_integrals_name
-                        ],
-                        symmetry[
-                            atomic_integrals_name
-                        ],
-                    ),
-                    atomic_integrals_name,
-                    symmetry[
-                        atomic_integrals_name
-                    ]
-                )
-        return integrals
+            print_matriz_integrated(n = len(self._exp), integrals = integrals, symmetries = symmetries)
 
+        return integrals, symmetries
 
 if __name__ == "__main__":
     from wave_function import *
@@ -274,21 +271,20 @@ if __name__ == "__main__":
 
     s = eint(wfn.build_wfn_array())
 
-    s.integration(["ozke"],
-                  #["overlap", "pot", "angmom"], 
-                  {
-                  "pot":{"atoms":[0, 1]}, 
-                  "angmom":{"magnetic":[0, 1, 2], "gauge":[0.0, 0.0, 1.404552358700]},
-                  "sd":{"spatial":[0,1,2,3,4,5], "magnetic":[0,1,2]},
-                  "fc":{"atoms":[0,1]},
-                  "nelfld":{"spatial":[0,1,2,3,4,5]},
-                  "diplen":{"rdipole":[0.0,0.0,0.0],"magnetic":[0,1,2]},
-                  "dipvel":{"magnetic":[0,1,2]},
-                  "pso":{"spatial":[0,1,2,3,4,5]},
-                  "nstcgo":{"spatial":[0,1,2,3,4,5],"magnetic":[0,1,2], "gauge":[0.0, 0.0, 1.404552358700]},
-                  "dnske":{"spatial":[0,1,2,3,4,5],"magnetic":[0,1,2], "gauge":[0.0, 0.0, 1.404552358700]},
-                  "psoke":{"spatial":[0,1,2,3,4,5]},
-                  "psooz":{"spatial":[0,1,2,3,4,5],"magnetic":[0,1,2], "gauge":[0.0, 0.0, 1.404552358700]},
-                  "ozke":{"magnetic":[0,1,2], "gauge":[0.0, 0.0, 1.404552358700]},
-                  },
-                  12)
+    integrals, symmetries = s.integration(["diplen"],
+                {
+                "pot":{"atoms":[0, 1]}, 
+                "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                "sd":{"spatial_symmetries":[0,1,2,3,4,5], "magnetic_components":[0,1,2]},
+                "fc":{"atoms":[0,1]},
+                "nelfld":{"spatial_symmetries":[0,1,2,3,4,5]},
+                "diplen":{"r_dipole":[0.0,0.0,0.0],"magnetic_components":[0,1,2]},
+                "dipvel":{"magnetic_components":[0,1,2]},
+                "pso":{"spatial_symmetries":[0,1,2,3,4,5]},
+                "nstcgo":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                "dnske":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                "psoke":{"spatial_symmetries":[0,1,2,3,4,5]},
+                "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                },
+                11)
