@@ -250,8 +250,8 @@ def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output):
             # * nabla Real{Lx} + Real{Lx} nabla
 
             psoke[count] = (
-                Norm[lx[i] + ly[i] + lz[i]](exp[i])
-                * Norm[lx[j] + ly[j] + lz[j]](exp[j])
+                normalization(lx[i], ly[i], lz[i], exp[i])
+                * normalization(lx[j], ly[j], lz[j], exp[j])
                 * (lap_idj_jdi)
                 * 0.5
                 * 2.0

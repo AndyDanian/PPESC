@@ -97,8 +97,8 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output):
             )
 
             diplen[count] = (
-                Norm[lx[i] + ly[i] + lz[i]](exp[i])
-                * Norm[lx[j] + ly[j] + lz[j]](exp[j])
+                normalization(lx[i], ly[i], lz[i], exp[i])
+                * normalization(lx[j], ly[j], lz[j], exp[j])
                 * (xyzdipole + rpk * s_dipole)
                 * s_a
                 * s_b

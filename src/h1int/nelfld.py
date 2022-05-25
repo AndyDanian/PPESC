@@ -69,8 +69,8 @@ def nelfld(coord, spatial_sym, atom, exp, center, lx, ly, lz, output):
             )
 
             nelfld[count] = (
-                Norm[lx[i] + ly[i] + lz[i]](exp[i])
-                * Norm[lx[j] + ly[j] + lz[j]](exp[j])
+                normalization(lx[i], ly[i], lz[i], exp[i])
+                * normalization(lx[j], ly[j], lz[j], exp[j])
                 * 2.0
                 * np.pi
                 / (exp[i] + exp[j])

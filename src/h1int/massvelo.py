@@ -422,8 +422,8 @@ def massvelo(coord, exp, center, lx, ly, lz, output):
             )
 
             massvelo[count] = (
-                -Norm[lx[i] + ly[i] + lz[i]](exp[i])
-                * Norm[lx[j] + ly[j] + lz[j]](exp[j])
+                -normalization(lx[i], ly[i], lz[i], exp[i])
+                * normalization(lx[j], ly[j], lz[j], exp[j])
                 * CONST_MASSV
                 * (
                     dxxsidxxsj * skl * smn

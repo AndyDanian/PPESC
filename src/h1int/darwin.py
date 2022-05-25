@@ -57,8 +57,8 @@ def darwin(charge, coord, exp, center, lx, ly, lz, output):
                 darwin[count] += (
                     CONST_DARWIN
                     * charge[k]
-                    * Norm[lx[i] + ly[i] + lz[i]](exp[i])
-                    * Norm[lx[j] + ly[j] + lz[j]](exp[j])
+                    * normalization(lx[i], ly[i], lz[i], exp[i])
+                    * normalization(lx[j], ly[j], lz[j], exp[j])
                     * dw
                 )
                 count += 1

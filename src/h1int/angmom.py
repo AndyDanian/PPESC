@@ -159,8 +159,8 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output):
             )
     
             angmom[count] = (
-                -Norm[lx[i] + ly[i] + lz[i]](exp[i])
-                * Norm[lx[j] + ly[j] + lz[j]](exp[j])
+                -normalization(lx[i], ly[i], lz[i], exp[i])
+                * normalization(lx[j], ly[j], lz[j], exp[j])
                 * ((left_r + left_rg * left_s) * left_p -
                    (right_r + right_rg * right_s) * right_p)
                 * spatial_s
