@@ -46,8 +46,8 @@ def h1i(
     atom: list = None,
     magnetic_xyz: int = None, 
     spatial_sym: int = None,
-    gauge: list = None,
-    rdipole: list = None,
+    r_gauge: list = None,
+    r_dipole: list = None,
 ):
     """
     Initialize the calculate of the integral choose
@@ -82,7 +82,7 @@ def h1i(
     elif name.lower() == "kinetic":
         integral: list = kinetic(coord, exp, center, lx, ly, lz, output)
     elif name.lower() == "angmom":
-        integral: list = angmom(coord, gauge, magnetic_xyz, exp, center, lx, ly, lz, output)
+        integral: list = angmom(coord, r_gauge, magnetic_xyz, exp, center, lx, ly, lz, output)
     elif name.lower() == "sd":
         integral: list = sd(coord, magnetic_xyz, spatial_sym, atom, exp, center, lx, ly, lz, output)
     elif name.lower() == "fc":
@@ -94,21 +94,21 @@ def h1i(
     elif name.lower() == "nelfld":
         integral: list = nelfld(coord, spatial_sym, atom, exp, center, lx, ly, lz, output)
     elif name.lower() == "diplen":
-        integral: list = diplen(coord, magnetic_xyz, rdipole, exp, center, lx, ly, lz, output)
+        integral: list = diplen(coord, magnetic_xyz, r_dipole, exp, center, lx, ly, lz, output)
     elif name.lower() == "dipvel":
         integral: list = dipvel(coord, magnetic_xyz, exp, center, lx, ly, lz, output)
     elif name.lower() == "pso":
         integral: list = pso(coord, spatial_sym, atom, exp, center, lx, ly, lz, output)
     elif name.lower() == "nstcgo":
-        integral: list = nstcgo(coord, gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, output)
+        integral: list = nstcgo(coord, r_gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, output)
     elif name.lower() == "dnske":
-        integral: list = dnske(coord, gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, output)
+        integral: list = dnske(coord, r_gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, output)
     elif name.lower() == "psoke":
         integral: list = psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output)
     elif name.lower() == "psooz":
-        integral: list = psooz(coord, gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, output)
+        integral: list = psooz(coord, r_gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, output)
     elif name.lower() == "ozke":
-        integral: list = ozke(coord, gauge, magnetic_xyz, exp, center, lx, ly, lz, output)
+        integral: list = ozke(coord, r_gauge, magnetic_xyz, exp, center, lx, ly, lz, output)
     return integral
 
     # def molecular_matrix(self, integral: list = None, sym: str = None):
