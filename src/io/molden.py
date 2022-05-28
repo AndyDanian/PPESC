@@ -370,6 +370,14 @@ def read_molden(file_molden, verbose=21):
 
     content.close()
 
+    # NOTE: It's neccesary to verified if primitives are cartessian or
+    #       spherical because this effect split of the atomic orbitals.
+    #       In the calculation integrals always calculate in cartessian
+    #       form, then integrals is convert to spherical. 
+    # WARNING: When the basis set used is spherical then is neccesary
+    #           recalculated the molecular orbital energies, because
+    #           if not there will be errors in the calculations where
+    #           is neccesary  
     if spatial_primitive == "spherical":
         return l_i_q_xyz, t_a_exp, mo, False
     else:
