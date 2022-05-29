@@ -253,7 +253,7 @@ class eint:
 if __name__ == "__main__":
     from wave_function import *
 
-    wfn = wave_function("io/H2O.molden")
+    wfn = wave_function("io/H2.molden")
 
     s = eint(wfn.build_wfn_array())
 
@@ -261,6 +261,7 @@ if __name__ == "__main__":
                 {
                 "pot":{"atoms":[0, 1]}, 
                 "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                #"angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 0.1179]},
                 "sd":{"spatial_symmetries":[0,1,2,3,4,5], "magnetic_components":[0,1,2]},
                 "fc":{"atoms":[0,1]},
                 "nelfld":{"spatial_symmetries":[0,1,2,3,4,5]},

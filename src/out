@@ -1,0 +1,30 @@
+Molden's file is valid.
+*** Warning
+                    Each atom is a molecule. You can group atoms put on the same index
+                    into molden file in section [Atoms], second column. Example: 
+
+                    O 1 8 0.0 0.0 0.0
+                    H 1 1 0.0 0.0 0.0
+                    H 1 1 0.0 0.0 0.0
+
+**** Warning
+
+        Value ********* assigned to energy isn't a float.
+        This can produce errors in the calcule when is neccesary energy.
+
+
+Wave function  [{'element': 'O', 'charge': 8.0, 'x': 0.0, 'y': 0.0, 'z': 0.22259084, 'l': {'s': 12, 'p': 6, 'd': 1}, 'mlx': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 0, 1, 1, 0], 'mly': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 1, 0, 1], 'mlz': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 1, 1], 'exp': [8588.5, 1297.23, 299.296, 87.3771, 42.1175, 25.6789, 9.62837, 3.74004, 2.85332, 0.905661, 0.255611, 0.0845, 42.1175, 9.62837, 2.85332, 0.905661, 0.255611, 0.0845, 42.1175, 9.62837, 2.85332, 0.905661, 0.255611, 0.0845, 42.1175, 9.62837, 2.85332, 0.905661, 0.255611, 0.0845, 1.292, 1.292, 1.292, 1.292, 1.292, 1.292]}]
+
+mlx amount  36
+
+mly amount  36
+
+mlz amount  36
+
+exp amount  36
+
+ Wafe Function like dictionary 
+ charge  [8.0, 1.0, 1.0]
+
+ Wafe Function like list 
+ charge  [8.0, 1.0, 1.0]

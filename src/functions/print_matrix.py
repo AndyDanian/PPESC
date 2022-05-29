@@ -1,4 +1,5 @@
 from convert_array import *
+import numpy as np
 
 def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: str = None):
     """
@@ -13,9 +14,15 @@ def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: s
     print("*** ", name.upper().center(70), " ***")
     print("*" * 80)
 
+    ZERO = 1.0E-7
+
     size = len(integral[0][:])
-    chunks = int(size / 5)
-    chunks += (size % 5) / (size % 5)
+    if size <= 5:
+        chunks = size
+    else:
+        chunks = int(size / 5)
+        if size % 5 != 0:
+            chunks += (size % 5) / (size % 5)
     count = 0
     while count < chunks:
         # Column number
@@ -35,35 +42,27 @@ def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: s
         )
         print()
         if matriz_sym == "square":
-            for row in range(0, size):
-                print(
-                    *[
-                        str(row + 1).center(4)
-                        + str("{:.6f}".format(integral[column][row])).center(14)
-                        if i == 0
-                        else str("{:.6f}".format(integral[column][row])).center(14)
-                        for i, column in enumerate(range(count * 5, n))
-                        #if row >= column
-                    ],
-                    end="",
-                )
-                print()
-            count += 1
+            initial_value: int = 0
         else:
-            for row in range(count * 5, size):
+            initial_value: int = count * 5
+        for row in range(initial_value, size):
+            # Row values and index
+            values = [
+                    integral[column][row]
+                    for i, column in enumerate(range(count * 5, n))
+                    if matriz_sym != "square" and row >= column
+                ]
+            if np.linalg.norm(np.array(values)) > ZERO:
                 print(
-                    *[
-                        str(row + 1).center(4)
-                        + str("{:.6f}".format(integral[column][row])).center(14)
-                        if i == 0
-                        else str("{:.6f}".format(integral[column][row])).center(14)
-                        for i, column in enumerate(range(count * 5, n))
-                        if row >= column
-                    ],
+                    *[str(row + 1).center(4) 
+                    + str("{:.6f}".format(value)).center(14)
+                    if i == 0
+                    else str("{:.6f}".format(value)).center(14)
+                    for i, value in enumerate(values)],
                     end="",
                 )
                 print()
-            count += 1
+        count += 1
 
 def print_matriz_integrated(
     n: int = None, integrals: dict = None, symmetries: dict = None
