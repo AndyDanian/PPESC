@@ -1,7 +1,7 @@
 from libh import *
 
 #################### Calculate the overlap integrals ########################
-def overlap(coord, exp, center, lx, ly, lz, output):
+def overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization):
     """
     Overlap integrals
 
@@ -14,6 +14,7 @@ def overlap(coord, exp, center, lx, ly, lz, output):
         ly (list): list 1d with the y component of ml of the gaussian
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
+        dalton_normalization (bool): If it is used the dalton normalization formule
 
     Return:
         overlap (array): array 2d with atomic integrals
@@ -64,15 +65,15 @@ def overlap(coord, exp, center, lx, ly, lz, output):
                 exp[j],
             )
 
+
             overlap[count] = (
-                normalization(lx[i], ly[i], lz[i], exp[i])
-                * normalization(lx[j], ly[j], lz[j], exp[j])
+                normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * sij
                 * skl
                 * smn
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)
             )
-
             count += 1
 
     if output > 0:

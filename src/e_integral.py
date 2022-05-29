@@ -32,7 +32,8 @@ class eint:
     ##################################################################
 
     def integration(
-        self, integrals_names: list = None, integrals_properties: dict = None, output: int = 0
+        self, integrals_names: list = None, integrals_properties: dict = None, output: int = 0,
+        dalton_normalization: bool = False
     ):
 
         if not integrals_names:
@@ -91,7 +92,8 @@ class eint:
                         ly = self._ly,
                         lz = self._lz,
                         name = integral_name,
-                        output = output
+                        output = output,
+                        dalton_normalization = dalton_normalization
                     )
                 elif integral_name.lower() in ["nucpot", "fc"]:
 
@@ -112,6 +114,7 @@ class eint:
                             lz = self._lz,
                             name = integral_name,
                             output = output,
+                            dalton_normalization = dalton_normalization,
                             # Special information
                             atom = atom,
                         )
@@ -142,6 +145,7 @@ class eint:
                         lz = self._lz,
                         name = integral_name,
                         output = output,
+                        dalton_normalization = dalton_normalization,
                         # Special information
                         magnetic_xyz = magnetic_xyz,
                         r_gauge = r_gauge,
@@ -185,6 +189,7 @@ class eint:
                         lz = self._lz,
                         name = integral_name,
                         output = output,
+                        dalton_normalization = dalton_normalization,
                         # Special information
                         spatial_sym = spatial_component,
                         atom = atom,
@@ -237,6 +242,7 @@ class eint:
                             lz = self._lz,
                             name = integral_name,
                             output = output,
+                            dalton_normalization = dalton_normalization,
                             # Special information
                             magnetic_xyz = magnetic_xyz,
                             spatial_sym = spatial_component,
@@ -253,15 +259,15 @@ class eint:
 if __name__ == "__main__":
     from wave_function import *
 
-    wfn = wave_function("io/H2.molden")
+    wfn = wave_function("io/H2_sto2gpd.molden")
 
     s = eint(wfn.build_wfn_array())
 
-    integrals, symmetries = s.integration(["angmom"],
+    integrals, symmetries = s.integration(["overlap"],
                 {
                 "pot":{"atoms":[0, 1]}, 
-                "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
-                #"angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 0.1179]},
+                #"angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 0.1179]},
                 "sd":{"spatial_symmetries":[0,1,2,3,4,5], "magnetic_components":[0,1,2]},
                 "fc":{"atoms":[0,1]},
                 "nelfld":{"spatial_symmetries":[0,1,2,3,4,5]},
@@ -274,4 +280,4 @@ if __name__ == "__main__":
                 "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 },
-                11)
+                11, dalton_normalization=False)

@@ -43,6 +43,7 @@ def h1i(
     lz: list = None,
     name: str = None,
     output: int = 0,
+    dalton_normalization: bool = None,
     atom: list = None,
     magnetic_xyz: int = None, 
     spatial_sym: int = None,
@@ -62,7 +63,7 @@ def h1i(
     """
 
     if name.lower() == "overlap":
-        integral: list = overlap(coord, exp, center, lx, ly, lz, output)
+        integral: list = overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization)
 
         # Comprobation of the basis set
         # mo_integral = self.molecular_matrix(integral, sym)
