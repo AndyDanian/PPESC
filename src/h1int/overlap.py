@@ -14,7 +14,7 @@ def overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization):
         ly (list): list 1d with the y component of ml of the gaussian
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
-        dalton_normalization (bool): If it is used the dalton normalization formule
+        dalton_normalization (bool): it is used the dalton normalization formule
 
     Return:
         overlap (array): array 2d with atomic integrals

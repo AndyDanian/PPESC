@@ -263,11 +263,10 @@ if __name__ == "__main__":
 
     s = eint(wfn.build_wfn_array())
 
-    integrals, symmetries = s.integration(["overlap"],
+    integrals, symmetries = s.integration(["angmom"],
                 {
                 "pot":{"atoms":[0, 1]}, 
-                #"angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
-                "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 0.1179]},
+                "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 "sd":{"spatial_symmetries":[0,1,2,3,4,5], "magnetic_components":[0,1,2]},
                 "fc":{"atoms":[0,1]},
                 "nelfld":{"spatial_symmetries":[0,1,2,3,4,5]},
@@ -280,4 +279,4 @@ if __name__ == "__main__":
                 "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 },
-                11, dalton_normalization=False)
+                11, dalton_normalization=True)

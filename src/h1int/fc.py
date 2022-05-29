@@ -1,6 +1,6 @@
 from libh import *
 
-def fc(coord, atom, exp, center, lx, ly, lz, output):
+def fc(coord, atom, exp, center, lx, ly, lz, output, dalton_normalization):
     """
     Fermi--contact atomic integrals
 
@@ -13,6 +13,7 @@ def fc(coord, atom, exp, center, lx, ly, lz, output):
         ly (list): list 1d with the y component of ml of the gaussian
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
+        dalton_normalization (bool): it is used the dalton normalization formule
 
     Return:
         angmom (array): array 2d with atomic integrals
@@ -54,8 +55,8 @@ def fc(coord, atom, exp, center, lx, ly, lz, output):
 
             fc[count] = (
                 CONST_FC
-                * normalization(lx[i], ly[i], lz[i], exp[i])
-                * normalization(lx[j], ly[j], lz[j], exp[j])
+                * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * multiplication_gg
             )
             count += 1

@@ -1,5 +1,5 @@
 from libh import *
-def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output):
+def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization):
     """
     Kinetic energy correction to the paramagnetic spin-orbit atomic integrals
 
@@ -13,6 +13,7 @@ def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output):
         ly (list): list 1d with the y component of ml of the gaussian
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
+        dalton_normalization (bool): it is used the dalton normalization formule
 
     Return:
         psoke (array): array 1d with atomic integrals
@@ -250,8 +251,8 @@ def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output):
             # * nabla Real{Lx} + Real{Lx} nabla
 
             psoke[count] = (
-                normalization(lx[i], ly[i], lz[i], exp[i])
-                * normalization(lx[j], ly[j], lz[j], exp[j])
+                normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * (lap_idj_jdi)
                 * 0.5
                 * 2.0
