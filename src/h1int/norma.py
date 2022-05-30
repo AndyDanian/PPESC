@@ -1,11 +1,19 @@
+from math import factorial
 from numpy import sqrt, exp, pi
+from numpy import math
 
 
 ############################## Normalization factor ##############################
 # N = (2*alpha/pi)^3/4*sqrt({[8*alpha]^(i+j+k) i!j!k!}/{[2i]![2j]![2k]!})
-NS = lambda alpha: (2.0 * alpha / pi) ** (3.0 / 4.0)
-NP = lambda alpha: 2.0 * NS(alpha) * sqrt(alpha)
-Norm = {0: NS, 1: NP}
+
+def normalization(i: int = None, j: int = None, k: int = None, alpha: float = None, dalton_normalization: bool = False): 
+    if dalton_normalization:
+        return ((2.0 * alpha / pi) ** (3.0 / 4.0) * sqrt(( 4.0 * alpha ) ** (i + j + k)))
+    else:
+        return ((2.0 * alpha / pi) ** (3.0 / 4.0) *
+        sqrt((( 8.0 * alpha ) ** (i + j + k) * math.factorial(i) * math.factorial(j) * math.factorial(k))
+        / (math.factorial(2*i) * math.factorial(2*j) * math.factorial(2*k))))
+
 
 
 ############################## Primitive Functions ##############################

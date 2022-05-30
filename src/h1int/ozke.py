@@ -1,6 +1,6 @@
 from libh import *
 
-def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output):
+def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalton_normalization):
     """
     Calculates the kinetic energy correction to the orbital Zeeman operator
 
@@ -14,6 +14,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output):
         ly (list): list 1d with the y component of ml of the gaussian
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
+        dalton_normalization (bool): it is used the dalton normalization formule
 
     Return:
         ozke (array): array 1d with atomic integrals
@@ -29,7 +30,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output):
 
     """
     Component Selection L = p x r 
-                          = (zpy-ypz)x + (xpz-zpx)y + (ypx-xpy)z
+                        = (zpy-ypz)x + (xpz-zpx)y + (ypx-xpy)z
     where r = r_e - r_gauge
     """
 
@@ -474,13 +475,13 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output):
 
             # * nabla Real{Lx} + Real{Lx} nabla
             ozke[count] = (
-                -Norm[lx[i] + ly[i] + lz[i]](exp[i])
-                * Norm[lx[j] + ly[j] + lz[j]](exp[j])
+                -normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * 0.25
                 * (dxxlx + dyylx + dzzlx)
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)
             )
-              
+            
             count += 1
 
     if output > 10:

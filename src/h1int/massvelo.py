@@ -1,6 +1,6 @@
 from libh import *
 
-def massvelo(coord, exp, center, lx, ly, lz, output):
+def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization):
     """
     Spin dipolar atomic integrals, which is a tensor
 
@@ -13,6 +13,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output):
         ly (list): list 1d with the y component of ml of the gaussian
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
+        dalton_normalization (bool): it is used the dalton normalization formule
 
     Return:
         angmom (array): array 2d with atomic integrals
@@ -422,8 +423,8 @@ def massvelo(coord, exp, center, lx, ly, lz, output):
             )
 
             massvelo[count] = (
-                -Norm[lx[i] + ly[i] + lz[i]](exp[i])
-                * Norm[lx[j] + ly[j] + lz[j]](exp[j])
+                -normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * CONST_MASSV
                 * (
                     dxxsidxxsj * skl * smn

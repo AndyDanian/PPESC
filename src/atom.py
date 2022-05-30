@@ -1,9 +1,4 @@
-angular_number = {"s": 1, "p": 3, "d": 6, "f": 10, "g": 15, "h": 21, "i": 28}
-
-cartessian_mlx = {"s": [0], "p": [1, 0, 0]}
-cartessian_mly = {"s": [0], "p": [0, 1, 0]}
-cartessian_mlz = {"s": [0], "p": [0, 0, 1]}
-
+from lib import *
 
 class atom:
     def __init__(self, coord: str or list = None, basis: dict = None):
@@ -14,7 +9,8 @@ class atom:
             coord (string, list): atomic information
             coord = 'H charge x y z'
 
-            basis (dict): atomic exponents basis set
+            basis (dict): keywords are the angular quatum number and values are
+            atomic exponents basis set
             {'s':[exponents], 'p':[exponents], 'd':[exponents], 'f':[exponents]}
         """
 
@@ -31,7 +27,7 @@ class atom:
 
     ##################################################################
     # METHODS
-    ##################################################################
+    ####################################basis##############################
     def build_atom_array(self, coord, basis):
         """
         Build a dictionary for atom

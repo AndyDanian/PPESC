@@ -1,6 +1,18 @@
-import linecache
+from os import read
 import numpy as np
 
+def convert_to_float(variable_name: None, value: None):
+    """
+    Convert numeric string o int to float or return None
+    when is a special character like ****
+    """
+    try:
+        return float(value)
+    except:
+        print(f"**** Warning\n\n\
+        Value {value} assigned to {variable_name} isn't a float.\n\
+        This can produce errors in the calcule when is neccesary {variable_name}.\n")
+        return None
 
 def validate_file(file_molden):
     """
@@ -77,8 +89,8 @@ def read_molden(file_molden, verbose=21):
     total_primitives = 0
     # -- Molden Format https://www3.cmbi.umcn.nl/molden/molden_format.html
     l = {
-        "cartessian": {"s": 1, "p": 3, "d": 6, "f": 10, "g": 15},
-        "spherical": {"s": 1, "p": 3, "d": 5, "f": 7, "g": 9},
+        "cartessian": {"s": 1, "p": 3, "d": 6, "f": 10, "g": 15, "h": 21, "i": 28},
+        "spherical": {"s": 1, "p": 3, "d": 5, "f": 7, "g": 9, "h": 11, "i": 13},
     }
     spatial_primitive = "cartessian"
     #
@@ -102,9 +114,22 @@ def read_molden(file_molden, verbose=21):
             #
             if datafile[number_line].split()[1] != "AU":
                 A_Bohr = 1.0 / 0.52917721
+
+            # Geometry last line
+            # it is neccesary because there are sometimes where the next string
+            # have six string
+            no_float = False
+            if len(datafile[number_line + 1 + numbers_atoms].split()) >= 3:
+                third_string = datafile[number_line + 1 + numbers_atoms].split()[3]
+                no_float = third_string.isalpha()
+
             if (
-                amount_strings
+                # Amount the strings, molden format is 6 to geometry 
+                (amount_strings
                 != len(datafile[number_line + 1 + numbers_atoms].split())
+                or 
+                # If the third string in the line is not float then stop
+                no_float)
                 and numbers_atoms > 0
             ):
                 stop_atoms = True
@@ -124,8 +149,8 @@ def read_molden(file_molden, verbose=21):
                     + datafile[number_line + 1 + numbers_atoms].split()[2]
                     + "  "
                     + str(
-                        float(
-                            datafile[number_line + 1 + numbers_atoms].split()[
+                        convert_to_float(
+                            "x coordinate", datafile[number_line + 1 + numbers_atoms].split()[
                                 3
                             ]
                         )
@@ -133,8 +158,8 @@ def read_molden(file_molden, verbose=21):
                     )
                     + "  "
                     + str(
-                        float(
-                            datafile[number_line + 1 + numbers_atoms].split()[
+                        convert_to_float(
+                            "y coordinate", datafile[number_line + 1 + numbers_atoms].split()[
                                 4
                             ]
                         )
@@ -142,7 +167,8 @@ def read_molden(file_molden, verbose=21):
                     )
                     + "  "
                     + str(
-                        float(
+                        convert_to_float(
+                            "z coordinate",
                             datafile[number_line + 1 + numbers_atoms].split()[
                                 5
                             ]
@@ -251,7 +277,9 @@ def read_molden(file_molden, verbose=21):
                     == primitive_type
                 ):
                     # Skip following lines until new primitive type
-                    line_gto += (primitive_amount - 1) * 7
+                    # primitive_amount - 1: Number of blocks to skip
+                    # primitive_amount + 1: Number of lines by block
+                    line_gto += (primitive_amount - 1) * (primitive_amount + 1)
                 elif (
                     primitive_amount == 1
                     and datafile[number_line + line_gto].split()[0]
@@ -297,11 +325,13 @@ def read_molden(file_molden, verbose=21):
             #
             sym = datafile[number_line + count_mo].split()[1]
             count_mo += 1
-            e = float(datafile[number_line + count_mo].split()[1])
+            e = convert_to_float("energy", 
+                                datafile[number_line + count_mo].split()[1])
             count_mo += 1
             spin = datafile[number_line + count_mo].split()[1]
             count_mo += 1
-            occupation = float(datafile[number_line + count_mo].split()[1])
+            occupation = convert_to_float("occupation", 
+                                    datafile[number_line + count_mo].split()[1])
             count_mo += 1
 
             mo_coefficients = [0.0] * total_primitives
@@ -314,7 +344,8 @@ def read_molden(file_molden, verbose=21):
                     mo_coefficients[
                         int(datafile[number_line + count_mo + i].split()[0])
                         - 1
-                    ] = float(datafile[number_line + count_mo + i].split()[1])
+                    ] = convert_to_float("coefficient", 
+                                        datafile[number_line + count_mo + i].split()[1])
                     count_different_0 += 1
                 else:
                     break
@@ -339,7 +370,26 @@ def read_molden(file_molden, verbose=21):
 
     content.close()
 
+    # NOTE: It's neccesary to verified if primitives are cartessian or
+    #       spherical because this effect split of the atomic orbitals.
+    #       In the calculation integrals always calculate in cartessian
+    #       form, then integrals is convert to spherical. 
+    # WARNING: When the basis set used is spherical then is neccesary
+    #           recalculated the molecular orbital energies, because
+    #           if not there will be errors in the calculations where
+    #           is neccesary  
     if spatial_primitive == "spherical":
         return l_i_q_xyz, t_a_exp, mo, False
     else:
         return l_i_q_xyz, t_a_exp, mo, True
+
+if __name__ == "__main__":
+    """
+    Read .molden file
+    """
+
+    l_i_q_xyz, t_a_exp, mo, type_primitives = read_molden("H2O.molden")
+    
+    print(l_i_q_xyz)
+    print("energies :",mo[-1]['energy'])
+    

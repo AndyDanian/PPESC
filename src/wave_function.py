@@ -131,10 +131,14 @@ if __name__ == "__main__":
     """
     Example to use wave function object
     """
-    wfn = wave_function("io/H2.molden")
+    wfn = wave_function("io/H2O.molden")
 
     array = wfn.build_wfn_array()
-    print("\nWave function ", array["cluster"])
+    print("\nWave function ", array["cluster"][0])
+    print("\nmlx amount ", len(array["cluster"][0][0]["mlx"]))
+    print("\nmly amount ", len(array["cluster"][0][0]["mly"]))
+    print("\nmlz amount ", len(array["cluster"][0][0]["mlz"]))
+    print("\nexp amount ", len(array["cluster"][0][0]["exp"]))
 
     print("\n Wafe Function like dictionary ")
     charge, coord, exp, center, lx, ly, lz = linealize_array_wf(array)

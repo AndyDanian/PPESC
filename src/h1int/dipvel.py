@@ -1,6 +1,6 @@
 from libh import *
 
-def dipvel(coord, magnetic_component, exp, center, lx, ly, lz, output):
+def dipvel(coord, magnetic_component, exp, center, lx, ly, lz, output, dalton_normalization):
     """
     Dipole velocity
 
@@ -13,6 +13,7 @@ def dipvel(coord, magnetic_component, exp, center, lx, ly, lz, output):
         ly (list): list 1d with the y component of ml of the gaussian
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
+        dalton_normalization (bool): it is used the dalton normalization formule
 
     Return:
         dipvel (array): array 1d with atomic integrals
@@ -86,8 +87,8 @@ def dipvel(coord, magnetic_component, exp, center, lx, ly, lz, output):
             )
             
             dipvel[count] = (
-                Norm[lx[i] + ly[i] + lz[i]](exp[i])
-                * Norm[lx[j] + ly[j] + lz[j]](exp[j])
+                normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * p_dipvel
                 * s_a
                 * s_b

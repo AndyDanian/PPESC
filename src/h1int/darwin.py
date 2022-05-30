@@ -1,6 +1,6 @@
 from libh import *
 
-def darwin(charge, coord, exp, center, lx, ly, lz, output):
+def darwin(charge, coord, exp, center, lx, ly, lz, output, dalton_normalization):
     """
     Darwin atomic integrals
 
@@ -13,6 +13,7 @@ def darwin(charge, coord, exp, center, lx, ly, lz, output):
         ly (list): list 1d with the y component of ml of the gaussian
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
+        dalton_normalization (bool): it is used the dalton normalization formule
 
     Return:
         angmom (array): array 2d with atomic integrals
@@ -57,8 +58,8 @@ def darwin(charge, coord, exp, center, lx, ly, lz, output):
                 darwin[count] += (
                     CONST_DARWIN
                     * charge[k]
-                    * Norm[lx[i] + ly[i] + lz[i]](exp[i])
-                    * Norm[lx[j] + ly[j] + lz[j]](exp[j])
+                    * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                    * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                     * dw
                 )
                 count += 1

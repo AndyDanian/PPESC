@@ -1,6 +1,6 @@
 from libh import *
 
-def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, ly, lz, output):
+def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, ly, lz, output, dalton_normalization):
     """
     Diamagnetic nuclear shielding tensor atomic integrals
 
@@ -16,6 +16,7 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
         ly (list): list 1d with the y component of ml of the gaussian
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
+        dalton_normalization (bool): it is used the dalton normalization formule
 
     Return:
         angmom (array): array 2d with atomic integrals
@@ -213,8 +214,8 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
                 )
             # ! Falta poner el -1^e+g+f en la recurrencia de nuclear_attraction
             nstcgo[count] = (
-                Norm[lx[i] + ly[i] + lz[i]](exp[i])
-                * Norm[lx[j] + ly[j] + lz[j]](exp[j])
+                normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * 2.0
                 * np.pi
                 / (exp[i] + exp[j])
