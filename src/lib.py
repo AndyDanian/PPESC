@@ -22,6 +22,7 @@ import numpy as np
 
 #include
 from dicts import *
+from quantum_numbers import *
 
 # io
 from molden import *
