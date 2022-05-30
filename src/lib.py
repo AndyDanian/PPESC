@@ -6,7 +6,10 @@ from pathlib import Path
 PROJECT_DIR = Path.cwd()
 
 sys.path.append(
-    os.fspath(PROJECT_DIR / "h1int")
+    os.fspath(PROJECT_DIR / "hermite")
+    )
+sys.path.append(
+    os.fspath(PROJECT_DIR / "hermite/h1int")
     )
 sys.path.append(
     os.fspath(PROJECT_DIR / "include")

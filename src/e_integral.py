@@ -279,4 +279,4 @@ if __name__ == "__main__":
                 "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 },
-                11, dalton_normalization=True)
+                11, dalton_normalization=False)
