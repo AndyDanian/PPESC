@@ -1,6 +1,10 @@
 from lib import *
+# Current folder
 from h1i import *
+from h2i import *
 from wave_function import *
+
+
 class eint:
     def __init__(self, wf: dict = None):
         """
@@ -31,7 +35,7 @@ class eint:
     # METHODS
     ##################################################################
 
-    def integration(
+    def integration_onebody(
         self, integrals_names: list = None, integrals_properties: dict = None, output: int = 0,
         dalton_normalization: bool = False
     ):
@@ -256,16 +260,54 @@ class eint:
 
         return integrals, symmetries
 
+
+    def integration_twobody(
+        self, integrals_names: list = None,output: int = 0,
+        dalton_normalization: bool = False
+    ):
+        """
+        Driver to calculation the two--body atomic integrals 
+        
+        Implemented:
+            repulsion integrals
+        """
+
+        if integrals_names == None:
+            integral_name: str = "e2pot"
+        
+        integrals_twobody: dict = {}
+        integral_name: str = integrals_names[0]
+
+        integrals_twobody[integral_name.lower()] = h2i(
+            #Default
+            coord = self._coord,
+            exp = self._exp,
+            center = self._center,
+            lx = self._lx,
+            ly = self._ly,
+            lz = self._lz,
+            name = integral_name,
+            output = output,
+            dalton_normalization = dalton_normalization
+        )
+
+        if output > 10:
+            print(integrals_twobody["e2pot"])
+
+        return integrals_twobody
+
+
+
 if __name__ == "__main__":
     from wave_function import *
 
-    wfn = wave_function("io/H2_sto2gpdfghi.molden")
+    wfn = wave_function("io/H2.molden")
 
     s = eint(wfn.build_wfn_array())
 
-    integrals, symmetries = s.integration(["overlap"],
+    integrals, symmetries = s.integration_onebody(["nucpot"],
                 {
-                "pot":{"atoms":[0, 1]}, 
+                "nucpot":{"atoms":[0, 1]}, 
                 "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 "sd":{"spatial_symmetries":[0,1,2,3,4,5], "magnetic_components":[0,1,2]},
                 "fc":{"atoms":[0,1]},
@@ -279,4 +321,6 @@ if __name__ == "__main__":
                 "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 },
-                11, dalton_normalization=True)
+                11, dalton_normalization=False)
+
+    integrals = s.integration_twobody(["e2pot"], output=11, dalton_normalization=False)

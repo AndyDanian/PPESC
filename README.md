@@ -32,3 +32,6 @@ Integrals implemented into the Iedt and Ieedt, using point nucleu
     * Kinetic-energy correction to the paramagnetic spin-orbit
     * Orbital-Zeeman correction to the paramagnetic spin-orbit 
     * Kinetic energy correction to the orbital zeeman
+
+* Two--body
+    * Electron repulsion

@@ -1,4 +1,4 @@
-from libh import *
+from lib1h import *
 
 def psooz(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, ly, lz, output, dalton_normalization):
     """
