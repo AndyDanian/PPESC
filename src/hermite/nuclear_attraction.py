@@ -34,6 +34,8 @@ def nuclear_attraction(
 ):
     """
     Recurrence to calculate the integrate that include 1/r
+
+    Equation 9.9.32 from Molecular Electronic-Structure Theory. T Helgaker, et al. 
     """
     p = alpha + beta
 

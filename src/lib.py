@@ -12,6 +12,9 @@ sys.path.append(
     os.fspath(PROJECT_DIR / "hermite/h1int")
     )
 sys.path.append(
+    os.fspath(PROJECT_DIR / "hermite/h2int")
+    )
+sys.path.append(
     os.fspath(PROJECT_DIR / "include")
     )
 sys.path.append(
@@ -52,3 +55,6 @@ from dnske import *    # Kinetic-energy correction to the diamagnetic contributi
 from psoke import *    # Kinetic-energy correction to the paramagnetic spin-orbit to nuclear shielding
 from psooz import *    # Orbital-Zeeman correction to the paramagnetic spin-orbit to nuclear shielding
 from ozke import *     # Calculates the kinetic energy correction to the orbital Zeeman operator
+
+# h2int: Two--Body hermite integrals
+from e2pot import *

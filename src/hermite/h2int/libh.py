@@ -3,6 +3,8 @@ import sys
 from pathlib import Path
 from time import time
 
+from typing import List, Set, Dict, Tuple, Optional
+
 #Addres when execute from hxint
 H1I_PATH = Path.cwd()
 
@@ -19,7 +21,7 @@ import numpy as np
 from normalization import *
 # Eij coefficients
 from eij import *
-# Refg
+# R1efg
 from nuclear_attraction import *
-# Gaussian multiplication
-from gaussian_multiplication import *
+# R2efg
+from electron_repulsion import *

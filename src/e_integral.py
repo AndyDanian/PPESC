@@ -259,13 +259,13 @@ class eint:
 if __name__ == "__main__":
     from wave_function import *
 
-    wfn = wave_function("io/H2_sto2gpdfghi.molden")
+    wfn = wave_function("io/H2.molden")
 
     s = eint(wfn.build_wfn_array())
 
-    integrals, symmetries = s.integration(["overlap"],
+    integrals, symmetries = s.integration(["nucpot"],
                 {
-                "pot":{"atoms":[0, 1]}, 
+                "nucpot":{"atoms":[0, 1]}, 
                 "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 "sd":{"spatial_symmetries":[0,1,2,3,4,5], "magnetic_components":[0,1,2]},
                 "fc":{"atoms":[0,1]},
