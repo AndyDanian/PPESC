@@ -1,4 +1,5 @@
-from libh import *
+from lib1h import *
+
 def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization):
     """
     Kinetic energy correction to the paramagnetic spin-orbit atomic integrals

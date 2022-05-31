@@ -1,4 +1,4 @@
-from libh import *
+from lib1h import *
 
 def darwin(charge, coord, exp, center, lx, ly, lz, output, dalton_normalization):
     """

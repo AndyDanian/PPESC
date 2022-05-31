@@ -1,4 +1,4 @@
-from libh import * 
+from lib1h import * 
 
 def nelfld(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization):
     """

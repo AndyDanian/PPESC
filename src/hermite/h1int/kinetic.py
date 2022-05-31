@@ -1,4 +1,4 @@
-from libh import *
+from lib1h import *
 
 ############# Calculate the potential one body integrals ########################
 def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization):

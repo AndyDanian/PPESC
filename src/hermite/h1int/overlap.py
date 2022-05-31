@@ -1,4 +1,4 @@
-from libh import *
+from lib1h import *
 
 #################### Calculate the overlap integrals ########################
 def overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization):

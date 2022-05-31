@@ -1,6 +1,6 @@
 import numpy as  np
 
-from libh import *
+from lib2h import *
 
 def electron_repulsion(
     # Alpha and Beta centers

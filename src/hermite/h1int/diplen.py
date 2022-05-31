@@ -1,4 +1,4 @@
-from libh import *
+from lib1h import *
 
 def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, dalton_normalization):
     """

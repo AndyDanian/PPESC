@@ -1,4 +1,4 @@
-from libh import *
+from lib1h import *
 
 def pso(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization):
     """

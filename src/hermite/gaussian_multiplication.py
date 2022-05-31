@@ -1,4 +1,4 @@
-from libh import *
+from lib1h import *
 
 def gaussian_mult(
     i, k, m, j, l, n, Ax, Ay, Az, Bx, By, Bz, alpha, beta, Kx, Ky, Kz

@@ -1,4 +1,4 @@
-from libh import *
+from lib1h import *
 
 def dipvel(coord, magnetic_component, exp, center, lx, ly, lz, output, dalton_normalization):
     """

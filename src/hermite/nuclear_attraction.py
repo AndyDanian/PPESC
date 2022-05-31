@@ -2,7 +2,7 @@
 import numpy as np
 from scipy.special import hyp1f1
 
-from libh import *
+from lib1h import *
 
 
 def R(t, mu, nu, n, p, PKx, PKy, PKz, Rpc):
