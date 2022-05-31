@@ -25,10 +25,11 @@ def e2pot(coord, exp, center, lx, ly, lz, output, dalton_normalization):
 
     e2pot: array = np.zeros((total_nprim,total_nprim,total_nprim,total_nprim),dtype=float)
 
+    count = 0
     for i in range(total_nprim):
-        for j in range(total_nprim):
-            for k in range(total_nprim):
-                for l in range(total_nprim):
+        for k in range(i, total_nprim):
+            for l in range(k, total_nprim):
+                for j in range(l, total_nprim):
 
                     ee: float = electron_repulsion(
                         lx[i],
@@ -68,10 +69,8 @@ def e2pot(coord, exp, center, lx, ly, lz, output, dalton_normalization):
                         * normalization(lx[l], ly[l], lz[l], exp[l], dalton_normalization)
                         * ee
                     )
-
-                    if i == j == k == l == 0:
-                        print("ee ",ee)
-                        print("normalization ",normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization))
+                    count += 1
+                    print(count, i,j,k,l,e2pot[i,j,k,l])
 
     if output > 0:
         print(
@@ -90,15 +89,15 @@ if __name__ == "__main__":
         lz = [0, 0, 0, 0],
         output=11,
         dalton_normalization = False)
-    e2_sto3g = e2pot(
-        coord = [[0.0, 0.0, 0.0], [0.0, 0.0, 1.4]],
-        exp = [3.4252509, 0.6239137, 0.1688554, 3.4252509, 0.6239137, 0.1688554],
-        center = [0, 0, 0, 1, 1, 1],
-        lx = [0, 0, 0, 0, 0, 0],
-        ly = [0, 0, 0, 0, 0, 0],
-        lz = [0, 0, 0, 0, 0, 0],
-        output=11,
-        dalton_normalization = False)
+    # e2_sto3g = e2pot(
+    #     coord = [[0.0, 0.0, 0.0], [0.0, 0.0, 1.4]],
+    #     exp = [3.4252509, 0.6239137, 0.1688554, 3.4252509, 0.6239137, 0.1688554],
+    #     center = [0, 0, 0, 1, 1, 1],
+    #     lx = [0, 0, 0, 0, 0, 0],
+    #     ly = [0, 0, 0, 0, 0, 0],
+    #     lz = [0, 0, 0, 0, 0, 0],
+    #     output=11,
+    #     dalton_normalization = False)
       
     #print("e2(STO-2G) : ",e2_sto2g)
     print("e2(STO-2G) : ",np.size(e2_sto2g))
