@@ -1,0 +1,34 @@
+[Molden Format]
+[GTO]
+    1 0
+ s   1 1.00
+       1.3097564    1.0000000000
+
+    2 0
+ s   1 1.00
+       1.3097564    1.0000000000
+
+[SCFCONV]
+scf-first  1  THROUGH   1
+       -0.1607792000
+[TITLE]
+*** Dalton interface to Molden, wave function type : HF             3Jun22   02:
+[Atoms] AU
+H          1     1         0.0000000000         0.0000000000         0.058647641
+H          2     1         0.0000000000         0.0000000000         1.404552358
+[5D7F]
+[9G]
+[MO]
+Sym= A
+Ene=    0.0715
+Spin= Alpha
+Occup=  2.0000
+    1        0.618901
+    2        0.618901
+Sym= A
+Ene=    1.7358
+Spin= Alpha
+Occup=  0.0000
+    1       -0.848405
+    2        0.848405
+[End of Molden output from Dalton]

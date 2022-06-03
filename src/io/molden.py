@@ -280,6 +280,10 @@ def read_molden(file_molden, verbose=21):
                     # primitive_amount - 1: Number of blocks to skip
                     # primitive_amount + 1: Number of lines by block
                     line_gto += (primitive_amount - 1) * (primitive_amount + 1)
+                    # To pass the next element, if there isn't another primitive type
+                    if datafile[number_line + line_gto] == "\n":
+                        line_gto += 1
+                        stop_read_exponents = True
                 elif (
                     primitive_amount == 1
                     and datafile[number_line + line_gto].split()[0]
