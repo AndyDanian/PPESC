@@ -1,8 +1,9 @@
-from lib import *
 # Current folder
 from h1i import *
 from h2i import *
 from wave_function import *
+# Modules into sub-folder
+from lib import *
 
 
 class eint:
@@ -46,7 +47,7 @@ class eint:
             for integral_name in integrals_names:
                 if integral_name.lower() not in integral_symmetry.keys():
                     raise ValueError(f"*** Error \n\n\
-                    Integral name is not implement or the name is mistake\n\n\
+                    Integral {integral_name} is not implement or the name is mistake\n\n\
                     Integrals implemented: \n\
                         {integral_symmetry.keys()}")
 
@@ -57,7 +58,7 @@ class eint:
         # Default values to integrals properties
         r_gauge: list = [0.0,0.0,0.0]
         r_dipole: list = [0.0,0.0,0.0]
-        atoms: list = [atom for atom in range(len(self._coord[0][:]))]
+        atoms: list = [atom for atom in range(len(self._coord))]
         magnetic_components: list = [0,1,2]
         spatial_symmetries: list = [symmetry for symmetry in range(np.size(np.array(self._coord)))]
         number_atoms: int =  len(self._coord[:][0])
@@ -69,21 +70,22 @@ class eint:
         for integral_name in integrals_names:
 
         # Check definition of integrals properties into integrals_properties
-            if integral_name in integrals_properties.keys():
-                if "r_gauge" in integrals_properties[integral_name].keys():
-                    r_gauge = integrals_properties[integral_name]["r_gauge"]
-                if "r_dipole" in integrals_properties[integral_name].keys():
-                    r_dipole = integrals_properties[integral_name]["r_dipole"]
-                if "magnetic_components" in integrals_properties[integral_name].keys():
-                    magnetic_components = integrals_properties[integral_name]["magnetic_components"]
-                if "spatial_symmetries" in integrals_properties[integral_name].keys():
-                    spatial_symmetries = integrals_properties[integral_name]["spatial_symmetries"]
-                if "atoms" in integrals_properties[integral_name].keys():
-                    atoms = integrals_properties[integral_name]["atoms"]
+            if integrals_properties:
+                if integral_name in integrals_properties.keys():
+                    if "r_gauge" in integrals_properties[integral_name].keys():
+                        r_gauge = integrals_properties[integral_name]["r_gauge"]
+                    if "r_dipole" in integrals_properties[integral_name].keys():
+                        r_dipole = integrals_properties[integral_name]["r_dipole"]
+                    if "magnetic_components" in integrals_properties[integral_name].keys():
+                        magnetic_components = integrals_properties[integral_name]["magnetic_components"]
+                    if "spatial_symmetries" in integrals_properties[integral_name].keys():
+                        spatial_symmetries = integrals_properties[integral_name]["spatial_symmetries"]
+                    if "atoms" in integrals_properties[integral_name].keys():
+                        atoms = integrals_properties[integral_name]["atoms"]
             
             if spatial_symmetry[integral_name.lower()] == 0 and magnetic[integral_name.lower()] == 0:
 
-                if integral_name.lower() in ["overlap", "darwin"]:
+                if integral_name.lower() in ["overlap", "darwin", "kinetic"]:
                     
                     symmetries[integral_name.lower()] = integral_symmetry[integral_name.lower()]
                     integrals[integral_name.lower()] = h1i(
@@ -255,7 +257,7 @@ class eint:
                         )
 
         # Print integral
-        if output > 10:
+        if output > 20:
             print_matriz_integrated(n = len(self._exp), integrals = integrals, symmetries = symmetries)
 
         return integrals, symmetries
@@ -291,7 +293,7 @@ class eint:
             dalton_normalization = dalton_normalization
         )
 
-        if output > 10:
+        if output > 100:
             print(integrals_twobody["e2pot"])
 
         return integrals_twobody

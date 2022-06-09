@@ -81,7 +81,7 @@ def h1i(
     elif name.lower() == "nucpot":
         integral: list = nucpot(charge, atom, coord, exp, center, lx, ly, lz, output, dalton_normalization)
     elif name.lower() == "kinetic":
-        integral: list = kinetic(coord, exp, center, lx, ly, lz, output)
+        integral: list = kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization)
     elif name.lower() == "angmom":
         integral: list = angmom(coord, r_gauge, magnetic_xyz, exp, center, lx, ly, lz, output, dalton_normalization)
     elif name.lower() == "sd":

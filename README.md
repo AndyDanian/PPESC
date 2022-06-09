@@ -35,3 +35,7 @@ Integrals implemented into the Iedt and Ieedt, using point nucleu
 
 * Two--body
     * Electron repulsion
+
+* Fock--Matrix Implemented
+    * Hartree--Fock 
+  

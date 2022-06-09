@@ -23,6 +23,9 @@ sys.path.append(
 sys.path.append(
     os.fspath(PROJECT_DIR / "functions")
     )
+sys.path.append(
+    os.fspath(PROJECT_DIR / "fock")
+    )
 
 import numpy as np
 
@@ -58,3 +61,6 @@ from ozke import *     # Calculates the kinetic energy correction to the orbital
 
 # h2int: Two--Body hermite integrals
 from e2pot import *
+
+#fock
+from fock import *
