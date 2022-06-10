@@ -4,7 +4,7 @@ Author: Mgs Andy Zapata
 
 from libint import *
 
-def Convert_xyz_rtp(Mxyz,TP_A):
+def cto_gto(Mxyz,TP_A):
     """
     Convert cartesian to spherical integrals
 

@@ -213,10 +213,10 @@ class fock():
             calculate_integrals = eint(wf)
             print("\n\n*** Calculating: kinetic, nucpot and electron repulsion atomic integrals")
             integrals_onebody, symmetries = calculate_integrals.integration_onebody(
-                integrals_names = ["kinetic", "nucpot"], 
+                integrals_names = ["kinetic", "nucpot"],
                 integrals_properties = None, output = verbose,
                 dalton_normalization = dalton_normalization)
-                       
+
             integrals_twobody: list = calculate_integrals.integration_twobody(
                 integrals_names = ["e2pot"], output = verbose,
                 dalton_normalization = False

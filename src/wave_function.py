@@ -18,6 +18,7 @@ def linealize_array_wf(wfn_array: dict or list = None):
     """
 
     if isinstance(wfn_array, dict):
+        cartessian_primitives = wfn_array["cto"]
         wfn_array = wfn_array["cluster"]
 
     charge = [q["charge"] for atom in wfn_array for q in atom]
@@ -29,11 +30,12 @@ def linealize_array_wf(wfn_array: dict or list = None):
         for e in atom
         for i in e["exp"]
     ]
-    lx = [mlx for atom in wfn_array for ml in atom for mlx in ml["mlx"]]
-    ly = [mly for atom in wfn_array for ml in atom for mly in ml["mly"]]
-    lz = [mlz for atom in wfn_array for ml in atom for mlz in ml["mlz"]]
+    mlx = [mlx for atom in wfn_array for ml in atom for mlx in ml["mlx"]]
+    mly = [mly for atom in wfn_array for ml in atom for mly in ml["mly"]]
+    mlz = [mlz for atom in wfn_array for ml in atom for mlz in ml["mlz"]]
+    angular_moments = [symbol for atom in wfn_array for l in atom for symbol, amount in l["l"].items() for i in range(amount)]
 
-    return charge, coord, exp, center, lx, ly, lz
+    return charge, coord, exp, center, mlx, mly, mlz, angular_moments, cartessian_primitives
 
 
 class wave_function(cluster):
@@ -79,7 +81,7 @@ class wave_function(cluster):
                 self.coord,
                 self.basis,
                 self.mos,
-                self._cartessian_primitive,
+                self.cartessian_primitive,
             ) = read_molden(
                 filename,
             )
@@ -87,7 +89,7 @@ class wave_function(cluster):
             self.coord = coord
             self.basis = basis
             self.mos = mos
-            self._cartessian_primitive = cartessian_primitive
+            self.cartessian_primitive = cartessian_primitive
 
     ##################################################################
     # METHODS
@@ -123,6 +125,7 @@ class wave_function(cluster):
 
         wfn["cluster"] = molecule
         wfn["mos"] = self.mos
+        wfn["cto"] = self.cartessian_primitive
 
         return wfn
 

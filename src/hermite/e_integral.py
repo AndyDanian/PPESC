@@ -30,6 +30,8 @@ class eint:
             self._lx,
             self._ly,
             self._lz,
+            self._angular_moments,
+            self._cartessian,
         ) = linealize_array_wf(wf)
 
     ##################################################################
@@ -211,7 +213,7 @@ class eint:
 
                     if atom >= number_atoms:
                         raise ValueError(f"***Error \n\n\
-                            atom {atom} doesn't exist") 
+                            atom {atom} doesn't exist")
 
                     if coordinate == 0:
                         spatial_component: int = 0
@@ -258,7 +260,16 @@ class eint:
 
         # Print integral
         if output > 20:
-            print_matriz_integrated(n = len(self._exp), integrals = integrals, symmetries = symmetries)
+            print(f"\n Integrals with CTO \n")
+            print_matriz_integrated(n = len(self._exp), integrals = integrals, symmetries = symmetries, vector=True)
+
+        if not self._cartessian:
+            integrals_sph = {}
+            for label, integral in integrals.items():
+                integrals_sph[label] = cto_gto(np.array(vector_to_matrix(len(self._exp), integral, symmetries[label])),
+                        np.array(self._angular_moments))
+            print_matriz_integrated(integrals = integrals_sph, symmetries = symmetries)
+
 
         return integrals, symmetries
 
