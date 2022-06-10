@@ -259,7 +259,7 @@ class eint:
                         )
 
         # Print integral
-        if output > 20: # and self._cartessian:
+        if output > 20 and self._cartessian:
             print("="*80,"\n Integrals with cto--primitives\n",80*"=")
             print_matriz_integrated(n = len(self._exp), integrals = integrals, symmetries = symmetries, vector=True)
 
@@ -315,7 +315,7 @@ class eint:
 
 if __name__ == "__main__":
     from libint import *
-    wfn = wave_function("../io/He_f.molden")
+    wfn = wave_function("../io/He_i.molden")
 
     s = eint(wfn.build_wfn_array())
 
