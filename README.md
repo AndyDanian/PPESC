@@ -36,6 +36,8 @@ Integrals implemented using point nucleu, cartessian primitives and until i shel
 * Two--body
     * Electron repulsion
 
+# Fock Matriz 
+
 * Fock--Matrix Implemented
     * Hartree--Fock 
   
