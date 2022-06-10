@@ -1,9 +1,9 @@
 # Current folder
 from h1i import *
 from h2i import *
-from wave_function import *
 # Modules into sub-folder
-from lib import *
+from libint import *
+from cartesian_spherical import *
 
 
 class eint:
@@ -30,6 +30,8 @@ class eint:
             self._lx,
             self._ly,
             self._lz,
+            self._angular_moments,
+            self._cartessian,
         ) = linealize_array_wf(wf)
 
     ##################################################################
@@ -82,11 +84,11 @@ class eint:
                         spatial_symmetries = integrals_properties[integral_name]["spatial_symmetries"]
                     if "atoms" in integrals_properties[integral_name].keys():
                         atoms = integrals_properties[integral_name]["atoms"]
-            
+
             if spatial_symmetry[integral_name.lower()] == 0 and magnetic[integral_name.lower()] == 0:
 
                 if integral_name.lower() in ["overlap", "darwin", "kinetic"]:
-                    
+
                     symmetries[integral_name.lower()] = integral_symmetry[integral_name.lower()]
                     integrals[integral_name.lower()] = h1i(
                         #Default
@@ -126,7 +128,7 @@ class eint:
                         )
 
             elif spatial_symmetry[integral_name.lower()] == 0 and magnetic[integral_name.lower()] == 1:
-                
+
                 for b_i in magnetic_components:
 
                     if type(b_i) == int:
@@ -165,11 +167,11 @@ class eint:
                     # Selection of coordinate x, y, z for spatial symmetry
                     coordinate: int = spatial_i - 3 * int(spatial_i/3)
                     atom: int = int(spatial_i/3)
-                    
+
                     if atom >= number_atoms:
                         raise ValueError(f"***Error \n\n\
-                            atom {atom} doesn't exist") 
-    
+                            atom {atom} doesn't exist")
+
                     if coordinate == 0:
                         spatial_component: int = 0
                     elif coordinate == 1:
@@ -208,11 +210,11 @@ class eint:
                     # Selection of coordinate x, y, z for spatial symmetry
                     coordinate: int = spatial_i - 3 * int(spatial_i/3)
                     atom: int = int(spatial_i/3)
-                    
+
                     if atom >= number_atoms:
                         raise ValueError(f"***Error \n\n\
-                            atom {atom} doesn't exist") 
-    
+                            atom {atom} doesn't exist")
+
                     if coordinate == 0:
                         spatial_component: int = 0
                     elif coordinate == 1:
@@ -257,8 +259,19 @@ class eint:
                         )
 
         # Print integral
+        if output > 20 and self._cartessian:
+            print("="*80,"\n Integrals with cto--primitives\n",80*"=")
+            print_matriz_integrated(n = len(self._exp), integrals = integrals, symmetries = symmetries, vector=True)
+
+        if not self._cartessian:
+            integrals_sph = {}
+            for label, integral in integrals.items():
+                integrals_sph[label] = cto_gto(np.array(vector_to_matrix(len(self._exp), integral, symmetries[label])),
+                        np.array(self._angular_moments))
         if output > 20:
-            print_matriz_integrated(n = len(self._exp), integrals = integrals, symmetries = symmetries)
+            print("="*80,"\n Integrals with gto--primitives\n","="*80)
+            print_matriz_integrated(integrals = integrals_sph, symmetries = symmetries)
+
 
         return integrals, symmetries
 
@@ -268,15 +281,15 @@ class eint:
         dalton_normalization: bool = False
     ):
         """
-        Driver to calculation the two--body atomic integrals 
-        
+        Driver to calculation the two--body atomic integrals
+
         Implemented:
             repulsion integrals
         """
 
         if integrals_names == None:
             integral_name: str = "e2pot"
-        
+
         integrals_twobody: dict = {}
         integral_name: str = integrals_names[0]
 
@@ -301,15 +314,14 @@ class eint:
 
 
 if __name__ == "__main__":
-    from wave_function import *
-
-    wfn = wave_function("io/H2.molden")
+    from libint import *
+    wfn = wave_function("../io/He_i.molden")
 
     s = eint(wfn.build_wfn_array())
 
     integrals, symmetries = s.integration_onebody(["nucpot"],
                 {
-                "nucpot":{"atoms":[0, 1]}, 
+                "nucpot":{"atoms":[0]},
                 "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 "sd":{"spatial_symmetries":[0,1,2,3,4,5], "magnetic_components":[0,1,2]},
                 "fc":{"atoms":[0,1]},
@@ -323,6 +335,6 @@ if __name__ == "__main__":
                 "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 },
-                11, dalton_normalization=False)
+                21, dalton_normalization=False)
 
-    integrals = s.integration_twobody(["e2pot"], output=11, dalton_normalization=False)
+    #integrals = s.integration_twobody(["e2pot"], output=11, dalton_normalization=False)

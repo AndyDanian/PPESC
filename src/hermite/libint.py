@@ -1,47 +1,55 @@
-# from intherm1.overlap import *
 import os
 import sys
 from pathlib import Path
+from time import time
 
-PROJECT_DIR = Path.cwd()
+#Addres when execute from fock
+HERMITE_PATH = Path.cwd()
+
+PARENT_PATH = HERMITE_PATH.parent
 
 sys.path.append(
-    os.fspath(PROJECT_DIR / "hermite")
+    os.fspath(PARENT_PATH)
     )
 sys.path.append(
-    os.fspath(PROJECT_DIR / "hermite/h1int")
+    os.fspath(PARENT_PATH / ("include")) #This is neccesary by e_integral
     )
 sys.path.append(
-    os.fspath(PROJECT_DIR / "hermite/h2int")
+    os.fspath(PARENT_PATH / ("io")) #This is neccesary by wave_function
     )
 sys.path.append(
-    os.fspath(PROJECT_DIR / "include")
+    os.fspath(PARENT_PATH / ("functions"))
     )
 sys.path.append(
-    os.fspath(PROJECT_DIR / "io")
+    os.fspath(PARENT_PATH / ("include"))
     )
 sys.path.append(
-    os.fspath(PROJECT_DIR / "functions")
+    os.fspath(HERMITE_PATH / ("h1int"))
     )
 sys.path.append(
-    os.fspath(PROJECT_DIR / "fock")
+    os.fspath(HERMITE_PATH / ("h2int"))
     )
 
 import numpy as np
 
+from wave_function import *
+
+#functions
+from print_matrix import *
+
 #include
 from dicts import *
-from quantum_numbers import *
-
-# io
-from molden import *
+from constants_cto_gto import *
 
 # functions
 from convert_array import *
 from print_matrix import *
 
+#io
+from molden import *
+
 # h1int: One--Body hermite integrals
-from overlap import * 
+from overlap import *
 from nucpot import *   # Nucleu potential
 from kinetic import *  # Kinectic energy
 from angmom import *   # Angular momentum
@@ -61,6 +69,3 @@ from ozke import *     # Calculates the kinetic energy correction to the orbital
 
 # h2int: Two--Body hermite integrals
 from e2pot import *
-
-#fock
-from fock import *

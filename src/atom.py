@@ -1,4 +1,4 @@
-from lib import *
+from libsrc import *
 
 class atom:
     def __init__(self, coord: str or list = None, basis: dict = None):

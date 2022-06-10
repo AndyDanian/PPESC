@@ -26,11 +26,11 @@ class fock():
     # METHODS
     ################################################################################################
 
-    def run_hf_fock_calculate(self, intk: list = None, inten: dict = None, intee: list = None, 
-                            mocoef: list = None, nprim: int = None, natoms: int = None, ne: int = None, 
+    def run_hf_fock_calculate(self, intk: list = None, inten: dict = None, intee: list = None,
+                            mocoef: list = None, nprim: int = None, natoms: int = None, ne: int = None,
                             charge: list = None, coord: list = None, verbose: int = 0):
         """
-        Run calculation Hartree--Fock molecular orbital energies 
+        Run calculation Hartree--Fock molecular orbital energies
 
         Args:
         ----
@@ -44,7 +44,7 @@ class fock():
         ne (int): electrons number
         charge (list): atomic charges
         coord (list): 2d array with atomic coordinates
-        verbose (int): print level 
+        verbose (int): print level
 
         Return:
         ------
@@ -113,9 +113,9 @@ class fock():
         #AO TO MO
         mocoef_T = [list(value) for value in zip(*mocoef)]
         fock_mo = np.matmul(np.array(mocoef_T),np.matmul(np.array(fock),np.array(mocoef)))
-        eom: list = [value for irow, row in enumerate(fock_mo) 
+        eom: list = [value for irow, row in enumerate(fock_mo)
                     for icol, value in enumerate(row) if irow == icol]
-        #Repulsion nuclear
+        #Nuleu Repulsion
         time_start_te = time()
         vnn = 0.0
         distance_coordinate = [0 for i in range(3)]
@@ -213,10 +213,10 @@ class fock():
             calculate_integrals = eint(wf)
             print("\n\n*** Calculating: kinetic, nucpot and electron repulsion atomic integrals")
             integrals_onebody, symmetries = calculate_integrals.integration_onebody(
-                integrals_names = ["kinetic", "nucpot"], 
+                integrals_names = ["kinetic", "nucpot"],
                 integrals_properties = None, output = verbose,
                 dalton_normalization = dalton_normalization)
-                       
+
             integrals_twobody: list = calculate_integrals.integration_twobody(
                 integrals_names = ["e2pot"], output = verbose,
                 dalton_normalization = False

@@ -13,7 +13,7 @@ python3.9 -m venv pyint
 
 # Integrals
 
-Integrals implemented into the Iedt and Ieedt, using point nucleu
+Integrals implemented using point nucleu, cartessian primitives and until i shell. The transformation to spherical also i shell.
 
 * One--body
     * Potenial 
@@ -35,6 +35,8 @@ Integrals implemented into the Iedt and Ieedt, using point nucleu
 
 * Two--body
     * Electron repulsion
+
+# Fock Matriz 
 
 * Fock--Matrix Implemented
     * Hartree--Fock 

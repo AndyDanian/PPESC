@@ -78,22 +78,30 @@ def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: s
             count += 1
 
 def print_matriz_integrated(
-    n: int = None, integrals: dict = None, symmetries: dict = None
+    n: int = None, integrals: dict = None, symmetries: dict = None, vector: bool = False
 ):
 
-    for integral_label in integrals.keys():
-        print_triangle_matrix(
-            vector_to_matrix(
-                n,
-                integrals[
-                    integral_label
-                ],
+    if vector:
+        for integral_label, integral in integrals.items():
+            print_triangle_matrix(
+                vector_to_matrix(
+                    n,
+                    integral,
+                    symmetries[
+                        integral_label
+                    ],
+                ),
+                integral_label,
                 symmetries[
                     integral_label
-                ],
-            ),
-            integral_label,
-            symmetries[
-                integral_label
-            ]
-        )
+                ]
+            )
+    else:
+        for integral_label, integral in integrals.items():
+            print_triangle_matrix(
+                    integral,
+                    integral_label,
+                    symmetries[
+                        integral_label
+                        ]
+            )
