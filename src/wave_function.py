@@ -1,5 +1,5 @@
-from lib import * # from io import molden as mn
-from cluster import cluster
+from libsrc import * # from io import molden as mn
+from cluster import *
 
 
 def linealize_array_wf(wfn_array: dict or list = None):
@@ -60,7 +60,7 @@ class wave_function(cluster):
             mos (list[dict]): molecular orbitals information (coefficients, ...)
             [{'energy':..., 'spin':..., "occupation":..., "coefficients":[...]},...]
 
-            cartessian_primitive (bool): if True, the primitive are in cartessian
+            cartessian_primitive (bool): if True, the molecular orbitals are in cartessian
         """
 
         if not filename:

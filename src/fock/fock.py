@@ -26,11 +26,11 @@ class fock():
     # METHODS
     ################################################################################################
 
-    def run_hf_fock_calculate(self, intk: list = None, inten: dict = None, intee: list = None, 
-                            mocoef: list = None, nprim: int = None, natoms: int = None, ne: int = None, 
+    def run_hf_fock_calculate(self, intk: list = None, inten: dict = None, intee: list = None,
+                            mocoef: list = None, nprim: int = None, natoms: int = None, ne: int = None,
                             charge: list = None, coord: list = None, verbose: int = 0):
         """
-        Run calculation Hartree--Fock molecular orbital energies 
+        Run calculation Hartree--Fock molecular orbital energies
 
         Args:
         ----
@@ -44,7 +44,7 @@ class fock():
         ne (int): electrons number
         charge (list): atomic charges
         coord (list): 2d array with atomic coordinates
-        verbose (int): print level 
+        verbose (int): print level
 
         Return:
         ------
