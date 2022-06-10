@@ -113,9 +113,9 @@ class fock():
         #AO TO MO
         mocoef_T = [list(value) for value in zip(*mocoef)]
         fock_mo = np.matmul(np.array(mocoef_T),np.matmul(np.array(fock),np.array(mocoef)))
-        eom: list = [value for irow, row in enumerate(fock_mo) 
+        eom: list = [value for irow, row in enumerate(fock_mo)
                     for icol, value in enumerate(row) if irow == icol]
-        #Repulsion nuclear
+        #Nuleu Repulsion
         time_start_te = time()
         vnn = 0.0
         distance_coordinate = [0 for i in range(3)]

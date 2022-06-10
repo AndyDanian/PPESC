@@ -259,8 +259,8 @@ class eint:
                         )
 
         # Print integral
-        if output > 20:
-            print(f"\n Integrals with CTO \n")
+        if output > 20: # and self._cartessian:
+            print("="*80,"\n Integrals with cto--primitives\n",80*"=")
             print_matriz_integrated(n = len(self._exp), integrals = integrals, symmetries = symmetries, vector=True)
 
         if not self._cartessian:
@@ -268,6 +268,8 @@ class eint:
             for label, integral in integrals.items():
                 integrals_sph[label] = cto_gto(np.array(vector_to_matrix(len(self._exp), integral, symmetries[label])),
                         np.array(self._angular_moments))
+        if output > 20:
+            print("="*80,"\n Integrals with gto--primitives\n","="*80)
             print_matriz_integrated(integrals = integrals_sph, symmetries = symmetries)
 
 
@@ -313,13 +315,13 @@ class eint:
 
 if __name__ == "__main__":
     from libint import *
-    wfn = wave_function("../io/H2.molden")
+    wfn = wave_function("../io/He_f.molden")
 
     s = eint(wfn.build_wfn_array())
 
     integrals, symmetries = s.integration_onebody(["nucpot"],
                 {
-                "nucpot":{"atoms":[0, 1]},
+                "nucpot":{"atoms":[0]},
                 "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 "sd":{"spatial_symmetries":[0,1,2,3,4,5], "magnetic_components":[0,1,2]},
                 "fc":{"atoms":[0,1]},
@@ -333,6 +335,6 @@ if __name__ == "__main__":
                 "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                 },
-                11, dalton_normalization=False)
+                21, dalton_normalization=False)
 
-    integrals = s.integration_twobody(["e2pot"], output=11, dalton_normalization=False)
+    #integrals = s.integration_twobody(["e2pot"], output=11, dalton_normalization=False)
