@@ -13,7 +13,7 @@ python3.9 -m venv pyint
 
 # Integrals
 
-Integrals implemented using point nucleu, cartessian primitives and until i shell. The transformation to spherical also i shell.
+Integrals implemented using point nucleu, cartessian primitives and until i shell. The transformation to one or two--spherical also i shell.
 
 * One--body
     * Potenial 

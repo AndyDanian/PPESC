@@ -3,7 +3,8 @@ from h1i import *
 from h2i import *
 # Modules into sub-folder
 from libint import *
-from cartesian_spherical import *
+from cto_gto_h1 import *
+from cto_gto_h2 import *
 
 
 class eint:
@@ -260,16 +261,16 @@ class eint:
 
         # Print integral
         if output > 20 and self._cartessian:
-            print("="*80,"\n Integrals with cto--primitives\n",80*"=")
+            print("="*80,"\n One--body integrals with cto--primitives\n",80*"=")
             print_matriz_integrated(n = len(self._exp), integrals = integrals, symmetries = symmetries, vector=True)
 
         if not self._cartessian:
             integrals_sph = {}
             for label, integral in integrals.items():
-                integrals_sph[label] = cto_gto(np.array(vector_to_matrix(len(self._exp), integral, symmetries[label])),
+                integrals_sph[label] = cto_gto_h1(np.array(vector_to_matrix(len(self._exp), integral, symmetries[label])),
                         np.array(self._angular_moments))
         if output > 20:
-            print("="*80,"\n Integrals with gto--primitives\n","="*80)
+            print("="*80,"\n One--body integrals with gto--primitives\n","="*80)
             print_matriz_integrated(integrals = integrals_sph, symmetries = symmetries)
 
 
@@ -306,8 +307,19 @@ class eint:
             dalton_normalization = dalton_normalization
         )
 
-        if output > 100:
+        if output > 100 and self._cartessian:
+            print("="*80,"\nTwo--body integrals with cto--primitives\n","="*80)
             print(integrals_twobody["e2pot"])
+
+        if not self._cartessian:
+            integrals_tb_sph = {}
+            for label, integral in integrals_twobody.items():
+                integrals_tb_sph[label] = cto_gto_h2(np.array(integral),
+                        np.array(self._angular_moments))
+
+        if output > 20:
+            print("="*80,"\nTwo--body integrals with gto--primitives\n","="*80)
+            print(integrals_tb_sph["e2pot"])
 
         return integrals_twobody
 
@@ -315,7 +327,7 @@ class eint:
 
 if __name__ == "__main__":
     from libint import *
-    wfn = wave_function("../io/He_i.molden")
+    wfn = wave_function("../io/He_spd.molden")
 
     s = eint(wfn.build_wfn_array())
 
@@ -337,4 +349,4 @@ if __name__ == "__main__":
                 },
                 21, dalton_normalization=False)
 
-    #integrals = s.integration_twobody(["e2pot"], output=11, dalton_normalization=False)
+    integrals = s.integration_twobody(["e2pot"], output=21, dalton_normalization=False)

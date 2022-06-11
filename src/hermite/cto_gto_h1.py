@@ -4,7 +4,7 @@ Author: Mgs Andy Zapata
 
 from libint import *
 
-def cto_gto(Mxyz,TP_A):
+def cto_gto_h1(Mxyz,TP_A):
     """
     Convert cartesian to spherical integrals
 
@@ -16,8 +16,9 @@ def cto_gto(Mxyz,TP_A):
     Mrtp [array, float]: Spherical integrals
     """
 
-    Nsph        = 0 #number of spherical primitives
-    Np          = 0 #number of cartesian primitives
+    Nsph: int = 0 #number of spherical primitives
+    Np: int = 0 #number of cartesian primitives
+    start: float = time()
 
     for a in TP_A:
         if a == 's':
@@ -297,4 +298,5 @@ def cto_gto(Mxyz,TP_A):
                 Mrtp[irow+12,icol]+= I11_21*Mtemp[jrow+21,icol]
             icol += 13
             jcol += 28
+    print(f"\n***Time to transform one--body cto to gto {time() - start} s\n")
     return Mrtp
