@@ -63,7 +63,7 @@ class atom:
             mlx += cartessian_mlx[l] * len(exp)
             mly += cartessian_mly[l] * len(exp)
             mlz += cartessian_mlz[l] * len(exp)
-            exponents += exp * angular_number[l]
+            exponents += [value for value in exp for i in range(angular_number[l])]
         atom_array["l"] = angular_q
         atom_array["mlx"] = mlx
         atom_array["mly"] = mly
@@ -85,13 +85,13 @@ if __name__ == "__main__":
     #               [ S  Z   X   Y   Z  ]    l    exp         l     exp
     hydrogen = atom(["H 1.0 0.0 0.0 0.0"], {"s": [3.0, 0.01], "p": [1.0, 0.5]})
 
-    print(" Coordinate is a list ")
+    print(" Coordinate like a list ")
     print("\ncoordinate ", hydrogen._coord)
     print("basis set ", hydrogen._basis)
     print("Array ", hydrogen._atom_array)
 
     hydrogen = atom("H 1.0 0.0 0.0 0.0", {"s": [3.0, 0.01], "p": [1.0, 0.5]})
-    print(" Coordinate is a string ")
+    print("\n Coordinate like a string ")
     print("\ncoordinate ", hydrogen._coord)
     print("basis set ", hydrogen._basis)
     print("Array ", hydrogen._atom_array)

@@ -54,18 +54,16 @@ def cto_gto_h1(Mxyz,TP_A):
                 jcol += 1
             if iket == 'p':
                 Mtemp[irow,icol] = Mxyz[irow,jcol]
-                icol += 1
-                Mtemp[irow,icol] = Mxyz[irow,jcol+1]
-                icol += 1
-                Mtemp[irow,icol] = Mxyz[irow,jcol+2]
-                icol += 1
+                Mtemp[irow,icol + 1] = Mxyz[irow,jcol+1]
+                Mtemp[irow,icol + 2] = Mxyz[irow,jcol+2]
+                icol += 3
                 jcol += 3
             if iket == 'd':
-                Mtemp[irow,icol] = R3_2*Mxyz[irow,jcol]-R3_2*Mxyz[irow,jcol+3]
+                Mtemp[irow,icol]   = Mxyz[irow,jcol+1]
                 Mtemp[irow,icol+1] = Mxyz[irow,jcol+4]
                 Mtemp[irow,icol+2] = -0.5*Mxyz[irow,jcol]-0.5*Mxyz[irow,jcol+3]+Mxyz[irow,jcol+5]
                 Mtemp[irow,icol+3] = Mxyz[irow,jcol+2]
-                Mtemp[irow,icol+4] = Mxyz[irow,jcol+1]
+                Mtemp[irow,icol+4] = R3_2*Mxyz[irow,jcol]-R3_2*Mxyz[irow,jcol+3]
                 icol += 5
                 jcol += 6
             if iket == 'f':
@@ -179,18 +177,19 @@ def cto_gto_h1(Mxyz,TP_A):
             irow += 1
             jrow += 1
         elif ibra == 'p':
-            Mrtp[irow,:] = Mtemp[jrow,:]
-            Mrtp[irow+1,:] = Mtemp[jrow+1,:]
-            Mrtp[irow+2,:] = Mtemp[jrow+2,:]
+            for icol in range(Nsph):
+                Mrtp[irow,icol] = Mtemp[jrow,icol]
+                Mrtp[irow+1,icol] = Mtemp[jrow+1,icol]
+                Mrtp[irow+2,icol] = Mtemp[jrow+2,icol]
             irow += 3
             jrow += 3
         elif ibra == 'd':
             for icol in range(Nsph):
-                Mrtp[irow,icol] = R3_2*Mtemp[jrow,icol]-R3_2*Mtemp[jrow+3,icol]
+                Mrtp[irow,icol]   = Mtemp[jrow+1,icol]
                 Mrtp[irow+1,icol] = Mtemp[jrow+4,icol]
                 Mrtp[irow+2,icol] = -0.5*Mtemp[jrow,icol]-0.5*Mtemp[jrow+3,icol]+Mtemp[jrow+5,icol]
                 Mrtp[irow+3,icol] = Mtemp[jrow+2,icol]
-                Mrtp[irow+4,icol] = Mtemp[jrow+1,icol]
+                Mrtp[irow+4,icol] = R3_2*Mtemp[jrow,icol]-R3_2*Mtemp[jrow+3,icol]
             irow += 5
             jrow += 6
         elif ibra == 'f':

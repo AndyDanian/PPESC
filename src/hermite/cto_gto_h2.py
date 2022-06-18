@@ -56,18 +56,16 @@ def cto_gto_h2(Mxyz,TP_A):
                         b2 += 1
                     if iket == 'p':
                         Mtemp[i,j,a,b1] = Mxyz[i,j,a,b2]
-                        b1 += 1
-                        Mtemp[i,j,a,b1] = Mxyz[i,j,a,b2+1]
-                        b1 += 1
-                        Mtemp[i,j,a,b1] = Mxyz[i,j,a,b2+2]
-                        b1 += 1
+                        Mtemp[i,j,a,b1+1] = Mxyz[i,j,a,b2+1]
+                        Mtemp[i,j,a,b1+2] = Mxyz[i,j,a,b2+2]
+                        b1 += 3
                         b2 += 3
                     if iket == 'd':
-                        Mtemp[i,j,a,b1] = R3_2*Mxyz[i,j,a,b2]-R3_2*Mxyz[i,j,a,b2+3]
+                        Mtemp[i,j,a,b1]   = Mxyz[i,j,a,b2+1]
                         Mtemp[i,j,a,b1+1] = Mxyz[i,j,a,b2+4]
                         Mtemp[i,j,a,b1+2] = -0.5*Mxyz[i,j,a,b2]-0.5*Mxyz[i,j,a,b2+3]+Mxyz[i,j,a,b2+5]
                         Mtemp[i,j,a,b1+3] = Mxyz[i,j,a,b2+2]
-                        Mtemp[i,j,a,b1+4] = Mxyz[i,j,a,b2+1]
+                        Mtemp[i,j,a,b1+4] = R3_2*Mxyz[i,j,a,b2]-R3_2*Mxyz[i,j,a,b2+3]
                         b1 += 5
                         b2 += 6
                     if iket == 'f':
@@ -190,11 +188,11 @@ def cto_gto_h2(Mxyz,TP_A):
                     a2 += 3
                 elif ibra == 'd':
                     for b in range(Nsph):
-                        Mtemp1[i,j,a1,b] = R3_2*Mtemp[i,j,a2,b]-R3_2*Mtemp[i,j,a2+3,b]
+                        Mtemp1[i,j,a1,b]   = Mtemp[i,j,a2+1,b]
                         Mtemp1[i,j,a1+1,b] = Mtemp[i,j,a2+4,b]
                         Mtemp1[i,j,a1+2,b] = -0.5*Mtemp[i,j,a2,b]-0.5*Mtemp[i,j,a2+3,b]+Mtemp[i,j,a2+5,b]
                         Mtemp1[i,j,a1+3,b] = Mtemp[i,j,a2+2,b]
-                        Mtemp1[i,j,a1+4,b] = Mtemp[i,j,a2+1,b]
+                        Mtemp1[i,j,a1+4,b] = R3_2*Mtemp[i,j,a2,b]-R3_2*Mtemp[i,j,a2+3,b]
                     a1 += 5
                     a2 += 6
                 elif ibra == 'f':
@@ -321,11 +319,11 @@ def cto_gto_h2(Mxyz,TP_A):
             elif ibra == 'd':
                 for a in range(Nsph):
                     for b in range(Nsph):
-                        Mtemp[i,j1,a,b] = R3_2*Mtemp1[i,j2,a,b]-R3_2*Mtemp1[i,j2+3,a,b]
+                        Mtemp[i,j1,a,b]   = Mtemp1[i,j2+1,a,b]
                         Mtemp[i,j1+1,a,b] = Mtemp1[i,j2+4,a,b]
                         Mtemp[i,j1+2,a,b] = -0.5*Mtemp1[i,j2,a,b]-0.5*Mtemp1[i,j2+3,a,b]+Mtemp1[i,j2+5,a,b]
                         Mtemp[i,j1+3,a,b] = Mtemp1[i,j2+2,a,b]
-                        Mtemp[i,j1+4,a,b] = Mtemp1[i,j2+1,a,b]
+                        Mtemp[i,j1+4,a,b] = R3_2*Mtemp1[i,j2,a,b]-R3_2*Mtemp1[i,j2+3,a,b]
                 j1 += 5
                 j2 += 6
             elif ibra == 'f':
@@ -447,7 +445,7 @@ def cto_gto_h2(Mxyz,TP_A):
             i1 += 1
             i2 += 1
         elif ibra == 'p':
-            Mrtp[i1,:,:,:] = Mtemp[i,:,:,:]
+            Mrtp[i1,:,:,:] = Mtemp[i2,:,:,:]
             Mrtp[i1+1,:,:,:] = Mtemp[i2+1,:,:,:]
             Mrtp[i1+2,:,:,:] = Mtemp[i2+2,:,:,:]
             i1 += 3
@@ -456,11 +454,11 @@ def cto_gto_h2(Mxyz,TP_A):
             for j in range(Nsph):
                 for a in range(Nsph):
                     for b in range(Nsph):
-                        Mrtp[i1,j,a,b] = R3_2*Mtemp[i2,j,a,b]-R3_2*Mtemp[i2+3,j,a,b]
+                        Mrtp[i1,j,a,b]   = Mtemp[i2+1,j,a,b]
                         Mrtp[i1+1,j,a,b] = Mtemp[i2+4,j,a,b]
                         Mrtp[i1+2,j,a,b] = -0.5*Mtemp[i2,j,a,b]-0.5*Mtemp[i2+3,j,a,b]+Mtemp[i2+5,j,a,b]
                         Mrtp[i1+3,j,a,b] = Mtemp[i2+2,j,a,b]
-                        Mrtp[i1+4,j,a,b] = Mtemp[i2+1,j,a,b]
+                        Mrtp[i1+4,j,a,b] = R3_2*Mtemp[i2,j,a,b]-R3_2*Mtemp[i2+3,j,a,b]
             i1 += 5
             i2 += 6
         elif ibra == 'f':

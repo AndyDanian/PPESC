@@ -32,7 +32,11 @@ sys.path.append(
 
 import numpy as np
 
-from e_integral import * 
-from wave_function import * 
+# project PATH
+from wave_function import *
 
+# hermite
+from e_integral import *
+
+# functions
 from print_matrix import *

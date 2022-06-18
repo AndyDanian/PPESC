@@ -44,7 +44,7 @@ def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: s
             end="",
         )
         print()
-        
+
         if matriz_sym == "square":
             initial_value: int = 0
         else:
@@ -63,7 +63,7 @@ def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: s
                             ]
             if np.linalg.norm(np.array(values)) > ZERO:
                 print(
-                    *[str(row + 1).center(4) 
+                    *[str(row + 1).center(4)
                     + str("{:.6f}".format(value)).center(14)
                     if i == 0
                     else str("{:.6f}".format(value)).center(14)
@@ -78,30 +78,14 @@ def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: s
             count += 1
 
 def print_matriz_integrated(
-    n: int = None, integrals: dict = None, symmetries: dict = None, vector: bool = False
+    integrals: dict = None, symmetries: dict = None
 ):
 
-    if vector:
-        for integral_label, integral in integrals.items():
-            print_triangle_matrix(
-                vector_to_matrix(
-                    n,
-                    integral,
-                    symmetries[
-                        integral_label
-                    ],
-                ),
+    for integral_label, integral in integrals.items():
+        print_triangle_matrix(
+                integral,
                 integral_label,
                 symmetries[
                     integral_label
-                ]
-            )
-    else:
-        for integral_label, integral in integrals.items():
-            print_triangle_matrix(
-                    integral,
-                    integral_label,
-                    symmetries[
-                        integral_label
-                        ]
-            )
+                    ]
+        )

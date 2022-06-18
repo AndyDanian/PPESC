@@ -260,21 +260,23 @@ class eint:
                         )
 
         # Print integral
-        if output > 20 and self._cartessian:
-            print("="*80,"\n One--body integrals with cto--primitives\n",80*"=")
-            print_matriz_integrated(n = len(self._exp), integrals = integrals, symmetries = symmetries, vector=True)
-
+        integrals_matrix = {}
         if not self._cartessian:
-            integrals_sph = {}
             for label, integral in integrals.items():
-                integrals_sph[label] = cto_gto_h1(np.array(vector_to_matrix(len(self._exp), integral, symmetries[label])),
+                integrals_matrix[label] = cto_gto_h1(np.array(vector_to_matrix(len(self._exp), integral, symmetries[label])),
                         np.array(self._angular_moments))
-        if output > 20:
-            print("="*80,"\n One--body integrals with gto--primitives\n","="*80)
-            print_matriz_integrated(integrals = integrals_sph, symmetries = symmetries)
+            if output > 20:
+                print("="*80,"\n One--body integrals with gto--primitives\n","="*80)
+                print_matriz_integrated(integrals = integrals_matrix, symmetries = symmetries)
+        else:
+            for label, integral in integrals.items():
+                integrals_matrix[label] = np.array(vector_to_matrix(len(self._exp), integral, symmetries[label]))
+            if output > 20:
+                print("="*80,"\n One--body integrals with cto--primitives\n",80*"=")
+                print_matriz_integrated(integrals = integrals_matrix, symmetries = symmetries)
 
 
-        return integrals, symmetries
+        return integrals_matrix, symmetries
 
 
     def integration_twobody(
@@ -291,10 +293,10 @@ class eint:
         if integrals_names == None:
             integral_name: str = "e2pot"
 
-        integrals_twobody: dict = {}
+        integrals_2_cart: dict = {}
         integral_name: str = integrals_names[0]
 
-        integrals_twobody[integral_name.lower()] = h2i(
+        integrals_2_cart[integral_name.lower()] = h2i(
             #Default
             coord = self._coord,
             exp = self._exp,
@@ -307,46 +309,50 @@ class eint:
             dalton_normalization = dalton_normalization
         )
 
+        integrals_two_body = {}
         if output > 100 and self._cartessian:
+            for label, integral in integrals_2_cart.items():
+                integrals_two_body[label] = np.array(integral)
             print("="*80,"\nTwo--body integrals with cto--primitives\n","="*80)
-            print(integrals_twobody["e2pot"])
+            print(integrals_two_body["e2pot"])
 
         if not self._cartessian:
-            integrals_tb_sph = {}
-            for label, integral in integrals_twobody.items():
-                integrals_tb_sph[label] = cto_gto_h2(np.array(integral),
+            for label, integral in integrals_2_cart.items():
+                integrals_two_body[label] = cto_gto_h2(np.array(integral),
                         np.array(self._angular_moments))
 
-        if output > 20:
+        if output > 100:
             print("="*80,"\nTwo--body integrals with gto--primitives\n","="*80)
-            print(integrals_tb_sph["e2pot"])
+            print(integrals_two_body["e2pot"])
 
-        return integrals_twobody
+        return integrals_two_body
 
 
 
 if __name__ == "__main__":
     from libint import *
-    wfn = wave_function("../io/He_spd.molden")
+    wfn = wave_function("../io/LiH_sd.molden")
 
     s = eint(wfn.build_wfn_array())
 
-    integrals, symmetries = s.integration_onebody(["nucpot"],
-                {
-                "nucpot":{"atoms":[0]},
-                "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
-                "sd":{"spatial_symmetries":[0,1,2,3,4,5], "magnetic_components":[0,1,2]},
-                "fc":{"atoms":[0,1]},
-                "nelfld":{"spatial_symmetries":[0,1,2,3,4,5]},
-                "diplen":{"r_dipole":[0.0,0.0,0.0],"magnetic_components":[0,1,2]},
-                "dipvel":{"magnetic_components":[0,1,2]},
-                "pso":{"spatial_symmetries":[0,1,2,3,4,5]},
-                "nstcgo":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
-                "dnske":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
-                "psoke":{"spatial_symmetries":[0,1,2,3,4,5]},
-                "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
-                "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
-                },
-                21, dalton_normalization=False)
+    one = False
+    if one:
+        integrals, symmetries = s.integration_onebody(["kinetic"],
+                    {
+                    "nucpot":{"atoms":[0]},
+                    "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                    "sd":{"spatial_symmetries":[0,1,2,3,4,5], "magnetic_components":[0,1,2]},
+                    "fc":{"atoms":[0,1]},
+                    "nelfld":{"spatial_symmetries":[0,1,2,3,4,5]},
+                    "diplen":{"r_dipole":[0.0,0.0,0.0],"magnetic_components":[0,1,2]},
+                    "dipvel":{"magnetic_components":[0,1,2]},
+                    "pso":{"spatial_symmetries":[0,1,2,3,4,5]},
+                    "nstcgo":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                    "dnske":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                    "psoke":{"spatial_symmetries":[0,1,2,3,4,5]},
+                    "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                    "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                    },
+                    21, dalton_normalization=False)
 
-    integrals = s.integration_twobody(["e2pot"], output=21, dalton_normalization=False)
+    integrals = s.integration_twobody(["e2pot"], output=11, dalton_normalization=False)

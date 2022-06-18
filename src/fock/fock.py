@@ -54,20 +54,25 @@ class fock():
         print("\n*** Calculating: Fock matrix at Hartree--Fock level")
         time_start_eom = time()
 
-        if verbose > 50:
-            print_triangle_matrix(integrals = mocoef, name = "Molecular Orbital Coefficients", matriz_sym = "square")
+        if verbose > 20:
+            print_triangle_matrix(integral = mocoef, name = "Molecular Orbital Coefficients", matriz_sym = "square")
 
         time_start_dm = time()
-        density_matrix: list = [[0 for zero in range(nprim)]for zero in range(nprim)]
+        mocoef_T = [list(value) for value in zip(*mocoef)]
+        density_matrix: list = [[0.0 for zero in range(nprim)]for zero in range(nprim)]
+        if ne%2 ==0:
+            ne2 = int(ne/2)
+        else:
+            ne2 = int(ne/2) + 1
         for i in range(nprim):
             for j in range(nprim):
-                density_matrix[i][j] =  0.0
-                for k in range(int(ne/2)):
+
+                for k in range(ne2):
                     density_matrix[i][j] += 2.0*mocoef[i][k]*mocoef[j][k]
         if verbose > 10:
             print(f"Time to calculate density matrix: {time() - time_start_dm}")
         if verbose > 20:
-            print_triangle_matrix(integral = density_matrix, name= "Density Matrix", matriz_sym = "square")
+            print_triangle_matrix(integral = density_matrix, name= "Density Matrix", matriz_sym = "sym")
 
         #Core Hamiltonian
         time_start_ch = time()
@@ -81,7 +86,7 @@ class fock():
         if verbose > 10:
             print(f"Time to calculate Core Hamiltonian Matrix: {time() - time_start_ch}")
         if verbose > 20:
-            print_triangle_matrix(integral = hcore, name = "Core Hamiltonian Matrix", matriz_sym = "square")
+            print_triangle_matrix(integral = hcore, name = "Core Hamiltonian Matrix", matriz_sym = "sym")
 
 
         #Matriz G
@@ -96,8 +101,8 @@ class fock():
         if verbose > 10:
             print(f"Time to calculate G Matrix: {time() - time_start_g}")
         if verbose > 20:
-            print_triangle_matrix(integral = g, name = "G Matrix", matriz_sym = "square")
-        
+            print_triangle_matrix(integral = g, name = "G Matrix", matriz_sym = "sym")
+
         #Matriz Fock
         time_start_fock_ao = time()
         fock: list = [[0 for zero in range(nprim)]for zero in range(nprim)]
@@ -111,7 +116,6 @@ class fock():
 
         #FOCK
         #AO TO MO
-        mocoef_T = [list(value) for value in zip(*mocoef)]
         fock_mo = np.matmul(np.array(mocoef_T),np.matmul(np.array(fock),np.array(mocoef)))
         eom: list = [value for irow, row in enumerate(fock_mo)
                     for icol, value in enumerate(row) if irow == icol]
@@ -136,14 +140,8 @@ class fock():
         if verbose > 10:
             print(f"Time to calculate Total energy: {time() - time_start_te}")
 
-        print(40*"=")
-        print(f"\nElectronic energy: {electronic_energy}")
-        print(f"Nucleu energy: {vnn}")
-        print(f"Total energy (HF): {electronic_energy + vnn} \n")
-        print(40*"=")
-
         if verbose <= 10 or not verbose:
-            print(f"Print the first 20 Hartree--Fock molecular orbitals energies: \n")
+            print(f"\n Print the first 20 Hartree--Fock molecular orbitals energies: \n")
             if float(nprim/5) >= 5:
                 rows: int = 5
             else:
@@ -154,7 +152,7 @@ class fock():
 
         if nprim % 5 != 0:
             rows += 1
-            
+
         for row in range(rows):
             if (row+1)*5 < nprim:
                 columns = (row + 1)*5
@@ -167,16 +165,31 @@ class fock():
                 #end="",
             )
 
+        print("\n")
+        print(40*"=")
+        gap = eom[ne2]-eom[ne2-1]
+        print(f"  E(LUMO):  {eom[ne2]} au")
+        print(f"- E(HOMO):  {eom[ne2-1]}   au")
+        print(f"----------------------------")
+        print(f"    gap  :  {gap}        au")
+        print(40*"=")
+        print("\n")
+        print(40*"=")
+        print(f"\nElectronic energy: {electronic_energy}")
+        print(f"Nuclear energy: {vnn}")
+        print(f"Total energy (HF): {electronic_energy + vnn} \n")
+        print(40*"=")
         if verbose > 10:
             print(f"Time to calculate molecular orbitals energies: {time()-time_start_eom} ")
-        return eom 
 
-    def calculate_hf_moe(self, wf: dict = None, intk: list = None, inten: dict = None, intee: list = None, 
-                        mocoef: list = None, nprim: int = None, natoms: int = None, ne: int = None, 
+        return eom
+
+    def calculate_hf_moe(self, wf: dict = None, intk: list = None, inten: dict = None, intee: list = None,
+                        mocoef: list = None, nprim: int = None, natoms: int = None, ne: int = None,
                         charge: list = None, coord: list = None, dalton_normalization: bool = False,
                         verbose: int = 0):
         """
-        Driver to calculate Hartree--Fock molecular orbital energies 
+        Driver to calculate Hartree--Fock molecular orbital energies
 
         Args:
         ----
@@ -192,7 +205,7 @@ class fock():
         charge (list): atomic charges
         coord (list): 2d array with atomic coordinates
         dalton_normalization (bool): Use dalton normalization to d, f, ...
-        verbose (int): print level 
+        verbose (int): print level
 
         Return:
         ------
@@ -231,16 +244,11 @@ class fock():
             if not nprim:
                 nprim = len(mocoef[0][:])
 
-            intk: list = vector_to_matrix(
-                nprim,
-                integrals_onebody["kinetic"],
-                symmetries["kinetic"],
-            )
+            intk: list = integrals_onebody["kinetic"]
             inten: dict = {}
             for name, values in integrals_onebody.items():
                 if name != "kinetic":
-                    inten[name] = vector_to_matrix(nprim, values,
-                                    symmetries[name])
+                    inten[name] = values
 
             if not charge:
                 charge = [q["charge"] for atom in wf["cluster"] for q in atom]
@@ -251,30 +259,30 @@ class fock():
             if not coord:
                 coord = [[r["x"], r["y"], r["z"]] for atom in wf["cluster"] for r in atom]
             #Verification mocoef would be square
-        
+
         if not nprim or not ne or not natoms or not charge or not coord:
             raise ValueError("***Error\n\n\
                 Information insufficient. It is necesary: primitives or atoms or\n\
-                     electrons number or charges or coordinates")
-                
-        eom: list = self.run_hf_fock_calculate(intk = intk, inten = inten, intee = intee, mocoef = mocoef, 
+                    electrons number or charges or coordinates")
+
+        eom: list = self.run_hf_fock_calculate(intk = intk, inten = inten, intee = intee, mocoef = mocoef,
                     nprim = nprim, natoms = natoms, ne = ne, charge = charge, coord = coord, verbose = verbose)
 
         return eom
 
 if __name__ == "__main__":
-    wfn = wave_function("../io/H2.molden")
+    wfn = wave_function("../io/w_s.molden")
 
-    print("Calculate MO energies used wave function")
+    print("\n Calculate MO energies used wave function \n")
     eom_values = fock()
-    eom_values.calculate_hf_moe(wfn.build_wfn_array(), verbose=11) 
+    eom_values.calculate_hf_moe(wfn.build_wfn_array(), verbose=21)
 
 # H2 STO-1G
-#@    Final HF energy:              -0.160779200015                 
+#@    Final HF energy:              -0.160779200015
 #@    Nuclear repulsion:             0.742994646761
 #@    Electronic energy:            -0.903773846776
 
 # H2 HF/STO-2G
-#@    Final HF energy:              -1.095728776299                                                                                                    
+#@    Final HF energy:              -1.095728776299
 #@    Nuclear repulsion:             0.742994646761
 #@    Electronic energy:            -1.838723423060
