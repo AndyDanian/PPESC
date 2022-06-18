@@ -68,42 +68,43 @@ def cto_gto_h1(Mxyz,TP_A):
                 jcol += 6
             if iket == 'f':
                 Mtemp[irow,icol]   = -R18_4*Mxyz[irow,jcol+1]-R10_4*Mxyz[irow,jcol+6]
-                Mtemp[irow,icol+1] = R3_2*Mxyz[irow,jcol+2]-R3_2*Mxyz[irow,jcol+7]
+                Mtemp[irow,icol+1] = Mxyz[irow,jcol+4]
                 Mtemp[irow,icol+2] = R30_20*Mxyz[irow,jcol+1]+R6_4*Mxyz[irow,jcol+6]+R30_5*Mxyz[irow,jcol+8]
+                # ml : 0
                 Mtemp[irow,icol+3] = R5_03*Mxyz[irow,jcol+2]+R5_03*Mxyz[irow,jcol+7]+Mxyz[irow,jcol+9]
                 Mtemp[irow,icol+4] = R6_4*Mxyz[irow,jcol]+R30_20*Mxyz[irow,jcol+3]+R30_5*Mxyz[irow,jcol+5]
-                Mtemp[irow,icol+5] = Mxyz[irow,jcol+4]
+                Mtemp[irow,icol+5] = R3_2*Mxyz[irow,jcol+2]-R3_2*Mxyz[irow,jcol+7]
                 Mtemp[irow,icol+6] = R10_4*Mxyz[irow,jcol]+R18_4*Mxyz[irow,jcol+3]
                 icol += 7
                 jcol += 10
             if iket == 'g':
-                Mtemp[irow,icol]   = R35_8*Mxyz[irow,jcol]+R3_D3_4*Mxyz[irow,jcol+3]+R35_8*Mxyz[irow,jcol+10]
+                Mtemp[irow,icol]   = R5_2*Mxyz[irow,jcol+1]-R5_2*Mxyz[irow,jcol+6]
                 Mtemp[irow,icol+1] = -R2_D3_4*Mxyz[irow,jcol+4]-R10_4*Mxyz[irow,jcol+11]
 
-                Mtemp[irow,icol+2] = R5_4*Mxyz[irow,jcol]+R21_D3_14*Mxyz[irow,jcol+5]-R5_4*Mxyz[irow,jcol+10]
-                Mtemp[irow,icol+2] -= R21_D3_14*Mxyz[irow,jcol+12]
+                Mtemp[irow,icol+2] = R35_14*Mxyz[irow,jcol+1]+R35_14*Mxyz[irow,jcol+6]+R7_D3_7*Mxyz[irow,jcol+8]
 
                 Mtemp[irow,icol+3] = R14_D3_28*Mxyz[irow,jcol+4]+R70_D3_28*Mxyz[irow,jcol+11]+R70_7*Mxyz[irow,jcol+13]
-
+                # ml : 0
                 Mtemp[irow,icol+4] = D3_8*Mxyz[irow,jcol]+R105_D3_140*Mxyz[irow,jcol+3]+R105_D3_35*Mxyz[irow,jcol+5]
                 Mtemp[irow,icol+4] += D3_8*Mxyz[irow,jcol+10]+R105_D3_35*Mxyz[irow,jcol+12]+Mxyz[irow,jcol+14]
 
                 Mtemp[irow,icol+5] = R70_D3_28*Mxyz[irow,jcol+2]+R14_D3_28*Mxyz[irow,jcol+7]+R70_7*Mxyz[irow,jcol+9]
-                Mtemp[irow,icol+6] = R35_14*Mxyz[irow,jcol+1]+R35_14*Mxyz[irow,jcol+6]+R7_D3_7*Mxyz[irow,jcol+8]
+                Mtemp[irow,icol+6] = R5_4*Mxyz[irow,jcol]+R21_D3_14*Mxyz[irow,jcol+5]-R5_4*Mxyz[irow,jcol+10]
+                Mtemp[irow,icol+6] -= R21_D3_14*Mxyz[irow,jcol+12]
                 Mtemp[irow,icol+7] = R10_4*Mxyz[irow,jcol+2]+R2_D3_4*Mxyz[irow,jcol+7]
-                Mtemp[irow,icol+8] = R5_2*Mxyz[irow,jcol+1]-R5_2*Mxyz[irow,jcol+6]
+                Mtemp[irow,icol+8] = R35_8*Mxyz[irow,jcol]+R3_D3_4*Mxyz[irow,jcol+3]+R35_8*Mxyz[irow,jcol+10]
                 icol += 9
                 jcol += 15
             if iket == 'h' :
                 # ml: -5
                 Mtemp[irow,icol]   = H910*Mxyz[irow,jcol+1]+H93*Mxyz[irow,jcol+6]+H90*Mxyz[irow,jcol+15]
                 # ml: -4
-                Mtemp[irow,icol+1] = H72*Mxyz[irow,jcol+2]+H77*Mxyz[irow,jcol+7]+H72*Mxyz[irow,jcol+16]
+                Mtemp[irow,icol+1] = H39*Mxyz[irow,jcol+4]-H39*Mxyz[irow,jcol+11]
                 # ml: -3
                 Mtemp[irow,icol+2] = H50*Mxyz[irow,jcol+1]-H53*Mxyz[irow,jcol+6]-H512*Mxyz[irow,jcol+8]
                 Mtemp[irow,icol+2] = Mtemp[irow,icol+2]-H50*Mxyz[irow,jcol+15]-H55*Mxyz[irow,jcol+17]
                 # ml: -2
-                Mtemp[irow,icol+3] = H32*Mxyz[irow,jcol+2]+H39*Mxyz[irow,jcol+9]-H32*Mxyz[irow,jcol+16]-H39*Mxyz[irow,jcol+18]
+                Mtemp[irow,icol+3] = H44*Mxyz[irow,jcol+4]+H44*Mxyz[irow,jcol+11]+H114*Mxyz[irow,jcol+13]
                 # ml: -1
                 Mtemp[irow,icol+4] = H110*Mxyz[irow,jcol+1]+H13*Mxyz[irow,jcol+6]+H112*Mxyz[irow,jcol+8]
                 Mtemp[irow,icol+4]+= H10*Mxyz[irow,jcol+15]+H15*Mxyz[irow,jcol+17]+H114*Mxyz[irow,jcol+19]
@@ -114,12 +115,12 @@ def cto_gto_h1(Mxyz,TP_A):
                 Mtemp[irow,icol+6] = H10*Mxyz[irow,jcol]+H13*Mxyz[irow,jcol+3]+H15*Mxyz[irow,jcol+5]
                 Mtemp[irow,icol+6]+= H110*Mxyz[irow,jcol+10]+H112*Mxyz[irow,jcol+12]+H114*Mxyz[irow,jcol+14]
                 # ml: 2
-                Mtemp[irow,icol+7] = H44*Mxyz[irow,jcol+4]+H44*Mxyz[irow,jcol+11]+H114*Mxyz[irow,jcol+13]
+                Mtemp[irow,icol+7] = H32*Mxyz[irow,jcol+2]+H39*Mxyz[irow,jcol+9]-H32*Mxyz[irow,jcol+16]-H39*Mxyz[irow,jcol+18]
                 # ml: 3
                 Mtemp[irow,icol+8] = H50*Mxyz[irow,jcol]+H53*Mxyz[irow,jcol+3]+H55*Mxyz[irow,jcol+5]
                 Mtemp[irow,icol+8]+= H512*Mxyz[irow,jcol+12]-H50*Mxyz[irow,jcol+10]
                 # ml: 4
-                Mtemp[irow,icol+9] = H39*Mxyz[irow,jcol+4]-H39*Mxyz[irow,jcol+11]
+                Mtemp[irow,icol+9] = H72*Mxyz[irow,jcol+2]+H77*Mxyz[irow,jcol+7]+H72*Mxyz[irow,jcol+16]
                 # ml: 5
                 Mtemp[irow,icol+10] = H90*Mxyz[irow,jcol]+H93*Mxyz[irow,jcol+3]+H910*Mxyz[irow,jcol+10] #C55
                 icol += 11
@@ -195,21 +196,20 @@ def cto_gto_h1(Mxyz,TP_A):
         elif ibra == 'f':
             for icol in range(Nsph):
                 Mrtp[irow,icol]   = -R18_4*Mtemp[jrow+1,icol]-R10_4*Mtemp[jrow+6,icol]
-                Mrtp[irow+1,icol] = R3_2*Mtemp[jrow+2,icol]-R3_2*Mtemp[jrow+7,icol]
+                Mrtp[irow+1,icol] = Mtemp[jrow+4,icol]
                 Mrtp[irow+2,icol] = R30_20*Mtemp[jrow+1,icol]+R6_4*Mtemp[jrow+6,icol]+R30_5*Mtemp[jrow+8,icol]
                 Mrtp[irow+3,icol] = R5_03*Mtemp[jrow+2,icol]+R5_03*Mtemp[jrow+7,icol]+Mtemp[jrow+9,icol]
                 Mrtp[irow+4,icol] = R6_4*Mtemp[jrow,icol]+R30_20*Mtemp[jrow+3,icol]+R30_5*Mtemp[jrow+5,icol]
-                Mrtp[irow+5,icol] = Mtemp[jrow+4,icol]
+                Mrtp[irow+5,icol] = R3_2*Mtemp[jrow+2,icol]-R3_2*Mtemp[jrow+7,icol]
                 Mrtp[irow+6,icol] = R10_4*Mtemp[jrow,icol]+R18_4*Mtemp[jrow+3,icol]
             irow += 7
             jrow += 10
         elif ibra == 'g':
             for icol in range(Nsph):
-                Mrtp[irow,icol]   = R35_8*Mtemp[jrow,icol]+R3_D3_4*Mtemp[jrow+3,icol]+R35_8*Mtemp[jrow+10,icol]
+                Mrtp[irow,icol]   = R5_2*Mtemp[jrow+1,icol]-R5_2*Mtemp[jrow+6,icol]
                 Mrtp[irow+1,icol] = -R2_D3_4*Mtemp[jrow+4,icol]-R10_4*Mtemp[jrow+11,icol]
 
-                Mrtp[irow+2,icol] = R5_4*Mtemp[jrow,icol]+R21_D3_14*Mtemp[jrow+5,icol]-R5_4*Mtemp[jrow+10,icol]
-                Mrtp[irow+2,icol] -= R21_D3_14*Mtemp[jrow+12,icol]
+                Mrtp[irow+2,icol] = R35_14*Mtemp[jrow+1,icol]+R35_14*Mtemp[jrow+6,icol]+R7_D3_7*Mtemp[jrow+8,icol]
 
                 Mrtp[irow+3,icol] = R14_D3_28*Mtemp[jrow+4,icol]+R70_D3_28*Mtemp[jrow+11,icol]+R70_7*Mtemp[jrow+13,icol]
 
@@ -217,9 +217,10 @@ def cto_gto_h1(Mxyz,TP_A):
                 Mrtp[irow+4,icol] += D3_8*Mtemp[jrow+10,icol]+R105_D3_35*Mtemp[jrow+12,icol]+Mtemp[jrow+14,icol]
 
                 Mrtp[irow+5,icol] = R70_D3_28*Mtemp[jrow+2,icol]+R14_D3_28*Mtemp[jrow+7,icol]+R70_7*Mtemp[jrow+9,icol]
-                Mrtp[irow+6,icol] = R35_14*Mtemp[jrow+1,icol]+R35_14*Mtemp[jrow+6,icol]+R7_D3_7*Mtemp[jrow+8,icol]
+                Mrtp[irow+6,icol] = R5_4*Mtemp[jrow,icol]+R21_D3_14*Mtemp[jrow+5,icol]-R5_4*Mtemp[jrow+10,icol]
+                Mrtp[irow+6,icol] -= R21_D3_14*Mtemp[jrow+12,icol]
                 Mrtp[irow+7,icol] = R10_4*Mtemp[jrow+2,icol]+R2_D3_4*Mtemp[jrow+7,icol]
-                Mrtp[irow+8,icol] = R5_2*Mtemp[jrow+1,icol]-R5_2*Mtemp[jrow+6,icol]
+                Mrtp[irow+8,icol] = R35_8*Mtemp[jrow,icol]+R3_D3_4*Mtemp[jrow+3,icol]+R35_8*Mtemp[jrow+10,icol]
             irow += 9
             jrow += 15
         elif ibra == 'h' :
@@ -227,12 +228,12 @@ def cto_gto_h1(Mxyz,TP_A):
                 # ml: -5
                 Mrtp[irow,icol]   = H910*Mtemp[jrow+1,icol]+H93*Mtemp[jrow+6,icol]+H90*Mtemp[jrow+15,icol]
                 # ml: -4
-                Mrtp[irow+1,icol] = H72*Mtemp[jrow+2,icol]+H77*Mtemp[jrow+7,icol]+H72*Mtemp[jrow+16,icol]
+                Mrtp[irow+1,icol] = H39*Mtemp[jrow+4,icol]-H39*Mtemp[jrow+11,icol]
                 # ml: -3
                 Mrtp[irow+2,icol] = H50*Mtemp[jrow+1,icol]-H53*Mtemp[jrow+6,icol]-H512*Mtemp[jrow+8,icol]
                 Mrtp[irow+2,icol] = Mrtp[irow+2,icol]-H50*Mtemp[jrow+15,icol]-H55*Mtemp[jrow+17,icol]
                 # ml: -2
-                Mrtp[irow+3,icol] = H32*Mtemp[jrow+2,icol]+H39*Mtemp[jrow+9,icol]-H32*Mtemp[jrow+16,icol]-H39*Mtemp[jrow+18,icol]
+                Mrtp[irow+3,icol] = H44*Mtemp[jrow+4,icol]+H44*Mtemp[jrow+11,icol]+H114*Mtemp[jrow+13,icol]
                 # ml: -1
                 Mrtp[irow+4,icol] = H110*Mtemp[jrow+1,icol]+H13*Mtemp[jrow+6,icol]+H112*Mtemp[jrow+8,icol]
                 Mrtp[irow+4,icol]+= H10*Mtemp[jrow+15,icol]+H15*Mtemp[jrow+17,icol]+H114*Mtemp[jrow+19,icol]
@@ -243,12 +244,12 @@ def cto_gto_h1(Mxyz,TP_A):
                 Mrtp[irow+6,icol] = H10*Mtemp[jrow,icol]+H13*Mtemp[jrow+3,icol]+H15*Mtemp[jrow+5,icol]
                 Mrtp[irow+6,icol]+= H110*Mtemp[jrow+10,icol]+H112*Mtemp[jrow+12,icol]+H114*Mtemp[jrow+14,icol]
                 # ml: 2
-                Mrtp[irow+7,icol] = H44*Mtemp[jrow+4,icol]+H44*Mtemp[jrow+11,icol]+H114*Mtemp[jrow+13,icol]
+                Mrtp[irow+7,icol] = H32*Mtemp[jrow+2,icol]+H39*Mtemp[jrow+9,icol]-H32*Mtemp[jrow+16,icol]-H39*Mtemp[jrow+18,icol]
                 # ml: 3
                 Mrtp[irow+8,icol] = H50*Mtemp[jrow,icol]+H53*Mtemp[jrow+3,icol]+H55*Mtemp[jrow+5,icol]
                 Mrtp[irow+8,icol]+= H512*Mtemp[jrow+12,icol]-H50*Mtemp[jrow+10,icol]
                 # ml: 4
-                Mrtp[irow+9,icol] = H39*Mtemp[jrow+4,icol]-H39*Mtemp[jrow+11,icol]
+                Mrtp[irow+9,icol] = H72*Mtemp[jrow+2,icol]+H77*Mtemp[jrow+7,icol]+H72*Mtemp[jrow+16,icol]
                 # ml: 5
                 Mrtp[irow+10,icol] = H90*Mtemp[jrow,icol]+H93*Mtemp[jrow+3,icol]+H910*Mtemp[jrow+10,icol] #C55
             irow += 11
