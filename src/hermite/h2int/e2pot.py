@@ -28,15 +28,10 @@ def e2pot(coord, exp, center, lx, ly, lz, output, dalton_normalization):
                     for x in range(total_nprim)]
                     for x in range(total_nprim)]
 
-    count: int = 0
-    # for i in range(total_nprim):
-    #     for j in range(total_nprim):
-    #         for k in range(total_nprim):
-    #             for l in range(total_nprim):
-
-    stop = False
+    stop: bool = False
     i = j = k = l = 0
     n: int = total_nprim - 1
+    count: int = 0
     while not stop:
 
         if k > i:
