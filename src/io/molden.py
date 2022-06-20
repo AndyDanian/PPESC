@@ -124,10 +124,9 @@ def read_molden(file_molden, verbose=21):
                 no_float = third_string.isalpha()
 
             if (
-                # Amount the strings, molden format is 6 to geometry 
-                (amount_strings
-                != len(datafile[number_line + 1 + numbers_atoms].split())
-                or 
+                # Amount the strings, molden format is 6 to geometry
+                (amount_strings != len(datafile[number_line + 1 + numbers_atoms].split())
+                or
                 # If the third string in the line is not float then stop
                 no_float)
                 and numbers_atoms > 0
@@ -329,12 +328,12 @@ def read_molden(file_molden, verbose=21):
             #
             sym = datafile[number_line + count_mo].split()[1]
             count_mo += 1
-            e = convert_to_float("energy", 
+            e = convert_to_float("energy",
                                 datafile[number_line + count_mo].split()[1])
             count_mo += 1
             spin = datafile[number_line + count_mo].split()[1]
             count_mo += 1
-            occupation = convert_to_float("occupation", 
+            occupation = convert_to_float("occupation",
                                     datafile[number_line + count_mo].split()[1])
             count_mo += 1
 
@@ -348,7 +347,7 @@ def read_molden(file_molden, verbose=21):
                     mo_coefficients[
                         int(datafile[number_line + count_mo + i].split()[0])
                         - 1
-                    ] = convert_to_float("coefficient", 
+                    ] = convert_to_float("coefficient",
                                         datafile[number_line + count_mo + i].split()[1])
                     count_different_0 += 1
                 else:
@@ -374,14 +373,43 @@ def read_molden(file_molden, verbose=21):
 
     content.close()
 
+    # NOTE: Re--organize of coefficient when there are angular moments higher than p
+    #       because the coefficients aren't ordered by ml, when is used the DALTON
+    angular_moments =[il for dicti in t_a_exp for il, values in dicti.items() for i in values for j in range(l[spatial_primitive][il])]
+    if "d" in angular_moments and spatial_primitive == "spherical":
+        print("*** There are l higher p, then is neccesary re-organize mo coefficient ***")
+        print("*** when is used DALTON, which will done ***")
+        new_mo = []
+        for imo in mo:
+            coefficients = [0.0 for i in range(total_primitives)]
+            count = 0
+            ml = 0
+            for iterator, coeff in enumerate(imo["coefficients"]):
+                nml = l["spherical"][angular_moments[iterator]]
+                if nml > 3:
+                    coefficients[count + int(nml/2) + int((ml+1)/2)*np.power(-1,ml+1)] = coeff
+                    ml += 1
+                else:
+                    coefficients[count] = coeff
+                    count += 1
+                if  ml == nml:
+                    ml = 0
+                    count += nml
+            new_mo.append({"energy": imo["energy"], "spin": imo["spin"], "occupation": imo["occupation"], "coefficients": coefficients})
+        mo = new_mo
+    elif "d" in angular_moments and spatial_primitive != "spherical":
+        print("*** There are l higher p, then is neccesary re-organize mo coefficient ***")
+        print("when is used DALTON. Also, it is used cartessian primitive and in this case\
+                the primitives isn't reorganized")
+
     # NOTE: It's neccesary to verified if primitives are cartessian or
     #       spherical because this effect split of the atomic orbitals.
     #       In the calculation integrals always calculate in cartessian
-    #       form, then integrals is convert to spherical. 
+    #       form, then integrals is convert to spherical.
     # WARNING: When the basis set used is spherical then is neccesary
     #           recalculated the molecular orbital energies, because
     #           if not there will be errors in the calculations where
-    #           is neccesary  
+    #           is neccesary
     if spatial_primitive == "spherical":
         return l_i_q_xyz, t_a_exp, mo, False
     else:
@@ -392,8 +420,8 @@ if __name__ == "__main__":
     Read .molden file
     """
 
-    l_i_q_xyz, t_a_exp, mo, type_primitives = read_molden("H2O.molden")
-    
-    print(l_i_q_xyz)
-    print("energies :",mo[-1]['energy'])
-    
+    l_i_q_xyz, t_a_exp, mo, type_primitives = read_molden("LiH_sd.molden")
+
+    print("\n primitive information \n",t_a_exp)
+    print("\n mo coefficientes \n",mo[0]['coefficients'])
+
