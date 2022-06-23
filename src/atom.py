@@ -1,4 +1,5 @@
-from libsrc import *
+from include.quantum_numbers import *
+from include.atomic_symbol import *
 
 class atom:
     def __init__(self, coord: str or list = None, basis: dict = None):
@@ -6,6 +7,7 @@ class atom:
         Atom object
 
         Args:
+        ----
             coord (string, list): atomic information
                                     coord = 'H charge x y z'
             basis (dict): keywords are the angular quantum number and values are
@@ -146,8 +148,9 @@ class atom:
 
         if verbose >= 100:
             print("\nAtomic Infomarion : ",atom_array["element"])
+            print("*) Atomic number ",self.Z)
             print("*) Charge ",self.q)
-            print("*) coordinates ",self.atom_xyz)
+            print("*) Coordinate ",self.atom_xyz)
             print("*) Angular Momentums ",self.amount_angular_momentum)
             print("*) Exponents ",self.exponents)
             print("*) mlx ",self.mlx)

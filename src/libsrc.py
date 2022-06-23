@@ -29,6 +29,8 @@ sys.path.append(
 
 import numpy as np
 
+from atom import *
+
 #include
 from quantum_numbers import *
 from atomic_symbol import *

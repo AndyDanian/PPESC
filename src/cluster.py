@@ -38,6 +38,9 @@ class cluster(molecule):
             self._coord, self._basis
         )
 
+    ##################################################################
+    # METHODS
+    ##################################################################
     def build_cluster_array(self, coord, basis):
         """
         Build one list of lists of dictionaries with the molecule information
