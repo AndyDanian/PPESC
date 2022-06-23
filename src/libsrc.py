@@ -31,6 +31,7 @@ import numpy as np
 
 #include
 from quantum_numbers import *
+from atomic_symbol import *
 
 # io
 from molden import *
