@@ -134,7 +134,7 @@ def read_molden(file_molden, verbose=21):
                 stop_atoms = True
                 if len(l_i_q_xyz) == numbers_atoms:
                     print(
-                        "*** Warning\n\
+                        "*** Warning VER ESTO MEJORAR\n\
                     Each atom is a molecule. You can group atoms put on the same index\n\
                     into molden file in section [Atoms], second column. Example: \n\n\
                     O 1 8 0.0 0.0 0.0\n\
@@ -144,9 +144,9 @@ def read_molden(file_molden, verbose=21):
             else:
                 molecule_information = [
                     datafile[number_line + 1 + numbers_atoms].split()[0]
-                    + "  "
+                    + " "
                     + datafile[number_line + 1 + numbers_atoms].split()[2]
-                    + "  "
+                    + " "
                     + str(
                         convert_to_float(
                             "x coordinate", datafile[number_line + 1 + numbers_atoms].split()[
@@ -155,7 +155,7 @@ def read_molden(file_molden, verbose=21):
                         )
                         * A_Bohr
                     )
-                    + "  "
+                    + " "
                     + str(
                         convert_to_float(
                             "y coordinate", datafile[number_line + 1 + numbers_atoms].split()[
@@ -164,7 +164,7 @@ def read_molden(file_molden, verbose=21):
                         )
                         * A_Bohr
                     )
-                    + "  "
+                    + " "
                     + str(
                         convert_to_float(
                             "z coordinate",
@@ -402,6 +402,17 @@ def read_molden(file_molden, verbose=21):
         print("when is used DALTON. Also, it is used cartessian primitive and in this case\
                 the primitives isn't reorganized")
 
+    # Encapsule t_a_exp like l_i_q_xyz
+    t_a_exp_temp = t_a_exp
+    t_a_exp = []
+    count = 0
+    for mol in l_i_q_xyz:
+        atomic_basis = []
+        for atom in mol:
+            atomic_basis.append(t_a_exp_temp[count])
+            count += 1
+        t_a_exp.append(atomic_basis)
+
     # NOTE: It's neccesary to verified if primitives are cartessian or
     #       spherical because this effect split of the atomic orbitals.
     #       In the calculation integrals always calculate in cartessian
@@ -420,8 +431,8 @@ if __name__ == "__main__":
     Read .molden file
     """
 
-    l_i_q_xyz, t_a_exp, mo, type_primitives = read_molden("LiH_sd.molden")
+    l_i_q_xyz, t_a_exp, mo, type_primitives = read_molden("LiH.molden")
 
-    print("\n primitive information \n",t_a_exp)
-    print("\n mo coefficientes \n",mo[0]['coefficients'])
+    # print("\n primitive information \n",t_a_exp)
+    # print("\n mo coefficientes \n",mo[0]['coefficients'])
 

@@ -28,11 +28,25 @@ class molecule():
             )
         # NOTE: The primitives are always taking as cartessians
 
+        if np.array(coord).ndim > 1:
+            raise ValueError(
+                "*** Error \n\n\
+                Systems with more one molecule is a cluster.\n\
+                Use the cluster object:\n\
+                        molecule/cluster(coord, basis)\n\
+                "
+            )
+
         self._coord = coord
         self._basis = basis
     ##################################################################
     # ATRIBUTES
     ##################################################################
+    @property
+    def atoms_number(self) -> int:
+        "Atoms Number"
+        return len(self._coord)
+
     @property
     def molecule_xyz(self) -> list:
         "Molecule Coordinates"
@@ -55,7 +69,7 @@ class molecule():
         return sum([atom(coord, self._basis[index]).primitive_number for index, coord in enumerate(self._coord)])
 
     @property
-    def angular_momentuns(self) -> list:
+    def angular_momentums(self) -> list:
         return [atom(coord, self._basis[index]).angular_momentum for index, coord in enumerate(self._coord)]
 
     @property
@@ -88,7 +102,8 @@ class molecule():
     ##################################################################
     # METHODS
     ##################################################################
-    def build_molecule_array(self, verbose: int = None):
+    #def build_molecule_array(self, verbose: int = None):
+    def get_atoms(self, verbose: int = None):
         """
         Build one list of dictionaries with the atomic information
 
@@ -106,8 +121,7 @@ class molecule():
 
         molecule_array: list = []
         for count, atomic_information in enumerate(self._coord):
-            atomic = atom(atomic_information, self._basis[count])
-            molecule_array.append(atomic.build_atom_array(verbose=verbose))
+            molecule_array.append(atom(atomic_information, self._basis[count]).build_atom_array(verbose=verbose))
 
         return molecule_array
 
@@ -124,4 +138,4 @@ if __name__ == "__main__":
         ],
     )
 
-    h2.build_molecule_array(verbose=101)
+    h2.get_atoms(verbose=101)

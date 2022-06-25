@@ -1,3 +1,5 @@
+import numpy as np
+
 from include.quantum_numbers import *
 from include.atomic_symbol import *
 
@@ -20,6 +22,24 @@ class atom:
                 "*** ERROR \n\n No atomic data \n\n\
                 You must provide the coordinates and exponents of basis set.\n\
                 Example: atom('H 1.0 0.0 0.0 0.0', '{'s:'3.0,2.0''}')"
+            )
+
+        if np.array(coord).ndim > 1 or (isinstance(coord, list) and len(coord) > 1):
+            raise ValueError(
+                "*** Error \n\n\
+                Systems with more one atom/molecule is a cluster.\n\
+                Use the molecule/cluster object:\n\
+                        molecule/cluster(coord, basis)\n\
+                "
+            )
+
+        if (isinstance(coord, str) and len(coord.split(" ")) != 5) or (isinstance(coord, list) and len(coord[0].split(" ")) != 5):
+            raise ValueError(
+            "*** Error \n\n\
+            The coordinate vairable is conformed by 5 strings: label or atomic number,\n\
+            atomic charge, and cartessain coordinates\n. \
+                \"H 1.0 0.00 0.00 0.00\"\n\
+            "
             )
 
         self._coord = coord
@@ -146,7 +166,7 @@ class atom:
         atom_array["mlz"] = self.mlz
         atom_array["exp"] = self.exponents
 
-        if verbose >= 100:
+        if isinstance(verbose, int) and verbose >= 100:
             print("\nAtomic Infomarion : ",atom_array["element"])
             print("*) Atomic number ",self.Z)
             print("*) Charge ",self.q)
