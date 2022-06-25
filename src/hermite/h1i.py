@@ -45,7 +45,7 @@ def h1i(
     output: int = 0,
     dalton_normalization: bool = None,
     atom: list = None,
-    magnetic_xyz: int = None, 
+    magnetic_xyz: int = None,
     spatial_sym: int = None,
     r_gauge: list = None,
     r_dipole: list = None,
