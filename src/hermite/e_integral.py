@@ -1,10 +1,10 @@
 # Current folder
 from h1i import *
 from h2i import *
-# Modules into sub-folder
-from libint import *
 from cto_gto_h1 import *
 from cto_gto_h2 import *
+# Modules into sub-folder
+from libint import *
 
 
 class eint:
@@ -330,10 +330,9 @@ class eint:
 
 
 if __name__ == "__main__":
-    from libint import *
-    wf = wave_function("../io/LiH.molden")
+    wf = wave_function("../tests/molden_file/LiH.molden")
     s = eint(wf)
-    one = True
+    one = False
     if one:
         integrals, symmetries = s.integration_onebody(["kinetic"],
                     {

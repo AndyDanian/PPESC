@@ -38,7 +38,6 @@ from wave_function import *
 from print_matrix import *
 
 #include
-from dicts import *
 from constants_cto_gto import *
 
 # functions

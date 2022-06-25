@@ -1,4 +1,3 @@
-# from intherm1.overlap import *
 import os
 import sys
 from pathlib import Path
@@ -32,6 +31,7 @@ import numpy as np
 from atom import *
 
 #include
+from integrals_parameters import *
 from quantum_numbers import *
 from atomic_symbol import *
 
