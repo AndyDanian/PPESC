@@ -1,10 +1,10 @@
 # Current folder
 from h1i import *
 from h2i import *
-# Modules into sub-folder
-from libint import *
 from cto_gto_h1 import *
 from cto_gto_h2 import *
+# Modules into sub-folder
+from libint import *
 
 
 class eint:
@@ -23,17 +23,17 @@ class eint:
 
         self._array_wf = wf
         # linealize arrays to calculate the integrals
-        (
-            self._charge,
-            self._coord,
-            self._exp,
-            self._center,
-            self._lx,
-            self._ly,
-            self._lz,
-            self._angular_moments,
-            self._cartessian,
-        ) = linealize_array_wf(wf)
+
+        self._charge = wf.charges
+        self._coord  = wf.coordinates
+        self._n      = wf.primitives_number
+        self._exp    = wf.exponents
+        self._center = wf.primitives_centers
+        self._lx     = wf.mlx
+        self._ly     = wf.mly
+        self._lz     = wf.mlz
+        self._angular_moments = wf.angular_momentums
+        self._cartessian = wf.cto
 
     ##################################################################
     # METHODS
@@ -263,14 +263,14 @@ class eint:
         integrals_matrix = {}
         if not self._cartessian:
             for label, integral in integrals.items():
-                integrals_matrix[label] = cto_gto_h1(np.array(vector_to_matrix(len(self._exp), integral, symmetries[label])),
+                integrals_matrix[label] = cto_gto_h1(np.array(vector_to_matrix(self._n, integral, symmetries[label])),
                         np.array(self._angular_moments))
             if output > 20:
                 print("="*80,"\n One--body integrals with gto--primitives\n","="*80)
                 print_matriz_integrated(integrals = integrals_matrix, symmetries = symmetries)
         else:
             for label, integral in integrals.items():
-                integrals_matrix[label] = np.array(vector_to_matrix(len(self._exp), integral, symmetries[label]))
+                integrals_matrix[label] = np.array(vector_to_matrix(self._n, integral, symmetries[label]))
             if output > 20:
                 print("="*80,"\n One--body integrals with cto--primitives\n",80*"=")
                 print_matriz_integrated(integrals = integrals_matrix, symmetries = symmetries)
@@ -330,11 +330,8 @@ class eint:
 
 
 if __name__ == "__main__":
-    from libint import *
-    wfn = wave_function("../io/LiH_sd.molden")
-
-    s = eint(wfn.build_wfn_array())
-
+    wf = wave_function("../tests/molden_file/LiH.molden")
+    s = eint(wf)
     one = False
     if one:
         integrals, symmetries = s.integration_onebody(["kinetic"],
@@ -354,5 +351,5 @@ if __name__ == "__main__":
                     "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                     },
                     21, dalton_normalization=False)
-
-    integrals = s.integration_twobody(["e2pot"], output=11, dalton_normalization=False)
+    else:
+        integrals = s.integration_twobody(["e2pot"], output=11, dalton_normalization=False)

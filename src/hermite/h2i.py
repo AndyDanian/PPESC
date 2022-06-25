@@ -1,5 +1,4 @@
-from libint import *
-
+from h2int.e2pot import *
 
 def h2i(
     charge: list = None,

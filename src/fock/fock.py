@@ -236,13 +236,11 @@ class fock():
             )
             intee = integrals_twobody["e2pot"]
 
-            mocoef_T: list = []
-            for values in wf["mos"]:
-                mocoef_T.append(values["coefficients"])
-            mocoef = [list(value) for value in zip(*mocoef_T)]
+            # Coefficient from fock are in vector form
+            mocoef: list = [list(value) for value in zip(*wf.mo_coefficients)]
 
             if not nprim:
-                nprim = len(mocoef[0][:])
+                nprim = wf.primitives_number
 
             intk: list = integrals_onebody["kinetic"]
             inten: dict = {}
@@ -251,13 +249,13 @@ class fock():
                     inten[name] = values
 
             if not charge:
-                charge = [q["charge"] for atom in wf["cluster"] for q in atom]
+                charge = wf.atomic_numbers
             if not ne:
                 ne = sum(charge)
-            if not natoms:
-                natoms = len(wf["cluster"])
             if not coord:
-                coord = [[r["x"], r["y"], r["z"]] for atom in wf["cluster"] for r in atom]
+                coord = wf.coordinates
+            if not natoms:
+                natoms = len(coord)
             #Verification mocoef would be square
 
         if not nprim or not ne or not natoms or not charge or not coord:
@@ -271,11 +269,11 @@ class fock():
         return eom
 
 if __name__ == "__main__":
-    wfn = wave_function("../io/w_s.molden")
+    wfn = wave_function("../tests/molden_file/LiH.molden")
 
     print("\n Calculate MO energies used wave function \n")
     eom_values = fock()
-    eom_values.calculate_hf_moe(wfn.build_wfn_array(), verbose=21)
+    eom_values.calculate_hf_moe(wfn, verbose=21)
 
 # H2 STO-1G
 #@    Final HF energy:              -0.160779200015
