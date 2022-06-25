@@ -1,7 +1,4 @@
-import numpy as np
-
-from include.quantum_numbers import *
-from include.atomic_symbol import *
+from libsrc import *
 
 class atom:
     def __init__(self, coord: str or list = None, basis: dict = None):

@@ -236,9 +236,8 @@ class fock():
             )
             intee = integrals_twobody["e2pot"]
 
-            mocoef_T: list = []
-            mocoef_T.append(wf.mo_coefficients)
-            mocoef = wf.mo_coefficients
+            # Coefficient from fock are in vector form
+            mocoef: list = [list(value) for value in zip(*wf.mo_coefficients)]
 
             if not nprim:
                 nprim = wf.primitives_number

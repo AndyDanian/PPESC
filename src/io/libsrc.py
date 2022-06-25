@@ -3,7 +3,7 @@ import os
 import sys
 from pathlib import Path
 
-PROJECT_DIR = Path.cwd()
+PROJECT_DIR = Path.cwd().parent
 
 sys.path.append(
     os.fspath(PROJECT_DIR / "hermite")

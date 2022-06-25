@@ -1,8 +1,4 @@
 from libsrc import * # from io import molden as mn
-import numpy as np
-
-from molecule import *
-from cluster import *
 
 def linealize_array_wf(wfn_array: dict or list = None):
     """
@@ -250,7 +246,7 @@ if __name__ == "__main__":
     """
     Example to use wave function object
     """
-    wfn = wave_function("io/LiH.molden")
+    wfn = wave_function("../io/LiH.molden")
 
     print(" Atomic Symbols ",wfn.atomic_symbols)
     print(" Coordinates ",wfn.coordinates)
