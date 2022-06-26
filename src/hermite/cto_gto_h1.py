@@ -4,13 +4,14 @@ Author: Mgs Andy Zapata
 
 from libint import *
 
-def cto_gto_h1(Mxyz,TP_A):
+def cto_gto_h1(Mxyz: list = None, TP_A: list = None, verbose: int = 0):
     """
     Convert cartesian to spherical integrals
 
     Arg:
     Mxyz [array, float]: Cartesian integrals
     TP_A [array, string]: Symbol associated with main quantum number
+    verbose (int): Print level
 
     Return:
     Mrtp [array, float]: Spherical integrals
@@ -298,5 +299,7 @@ def cto_gto_h1(Mxyz,TP_A):
                 Mrtp[irow+12,icol]+= I11_21*Mtemp[jrow+21,icol]
             icol += 13
             jcol += 28
-    print(f"\n***Time to transform one--body cto to gto {time() - start} s\n")
+    if verbose > 10:
+        print()
+        print(f"Time to transform one--body cto to gto {time() - start} s\n")
     return Mrtp

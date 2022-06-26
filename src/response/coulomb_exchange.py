@@ -1,24 +1,26 @@
 from libr import *
 
-def get_coulomb_exchange_integrals(wf: wave_function = None, verbose: int = 0):
+def get_coulomb_exchange_integrals(wf: wave_function = None, verbose: int = 0,
+                                    verbose_int: int = 0):
     """
     Get exchange and coulomb integrals from atomic tow-body integrals
 
     Args:
     ----
         wf (wave_function): Wave function object
-
+        verbose (int): Print level for Coulomb and Exchange
+        verbose_int (int): Print level for atomic integrals
     Reference:
     ---------
     Program to transform ao to mo i2c
     C N M Pounder
     Theoret. Chim. Acta (Berl.). 1975, 39, 247--253
     """
-
+    start = time()
     # atomic integrals
     calculate_integral = eint(wf)
     at2in: np.array = np.array(calculate_integral.integration_twobody(
-        integrals_names = ["e2pot"], output = verbose,
+        integrals_names = ["e2pot"], output = verbose_int,
     )["e2pot"])
 
     # Coulomb and Exchange
@@ -91,6 +93,9 @@ def get_coulomb_exchange_integrals(wf: wave_function = None, verbose: int = 0):
                         exchange[a,j,b,i] += mo_coeff[i,k]*h[k]
                     if b > a:
                         exchange[b,i,a,j] = exchange[a,j,b,i]
+
+    if verbose > 10:
+        print(f"Coulomb and Exchange time: {time() - start}")
 
     if verbose > 20:
 

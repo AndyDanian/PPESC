@@ -14,7 +14,9 @@ def integral_1b_parameters(wf: wave_function = None, property: str = None, verbo
     if property.lower() == "fc" or "fc" in property_split:
         if property.lower() == "fc":
             parameters = {"atoms": [a for a in range(wf.atom_number)]}
+            all_response = True
         else:
-            parameters = {"atoms": [int(property_split)]}
+            parameters = {"atoms": [int(property_split[1])]}
+            all_response = False
 
-    return parameters
+    return all_response, parameters

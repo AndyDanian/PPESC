@@ -21,7 +21,8 @@ def print_gradient_property_vector(gpvs: list = None, multiplicity: str or int =
 
 
 def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
-                                    multiplicity: str or int = None, verbose: int = 0):
+                                    multiplicity: str or int = None,
+                                    verbose: int = 0, verbose_int: int = 0):
     """
     Calculate of gradient property vectos in rpa approximation
 
@@ -32,14 +33,15 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
         multiplicity (str, int): Multiplicty, open/closed system
         verbose (int): Print level.
     """
-
+    start = time()
     # atomic integrals
     calculate_integral = eint(wf)
 
-    print(" property ",[property])
+    all_responses, integrals_properties = integral_1b_parameters(wf, property)
+
     integrals_1b, symmetries_1b = calculate_integral.integration_onebody(
     integrals_names = [property],
-    integrals_properties = integral_1b_parameters(wf, property), output = verbose)
+    integrals_properties = integrals_properties, output = verbose_int)
 
     # molecular integrals
     n_mo_occ = wf.mo_occ
@@ -52,10 +54,13 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
         # gradient porperty vector
         gpvs[name] = [2.0*mo_integral[i][a + n_mo_occ] for i in range(n_mo_occ) for a in range(n_mo_virt)]
 
+    if verbose > 10:
+        print(f"Time to build GPV {property}: {time() - start}")
+
     if verbose > 30:
         print_gradient_property_vector(gpvs = gpvs, multiplicity = multiplicity)
 
-    return gpvs
+    return all_responses, gpvs
 
 def read_gradient_property_vector_rpa(gpvs: dict = None, property: str = None,
                                     multiplicity: str or int = None, verbose: int = 0):
@@ -67,7 +72,9 @@ def read_gradient_property_vector_rpa(gpvs: dict = None, property: str = None,
         gpvs (dict): Gradient property vectors
         property (str): Property label.
         multiplicity (str, int): Multiplicty, open/closed system
-        verbose (int): Print level.
+        verbose (int): Print level GPV
+        verbose_int (int): Print level for atomic integrals
+
     """
 
     read_gpvs = {}

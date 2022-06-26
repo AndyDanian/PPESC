@@ -48,3 +48,4 @@ from e_integral import *
 # functions
 from print_matrix import *
 from integral_parameters import *
+from string_informations import *

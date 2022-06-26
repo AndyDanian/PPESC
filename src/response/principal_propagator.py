@@ -29,6 +29,7 @@ def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = N
         fock_inv: np.array = np.zeros((rotations,rotations),dtype=float)
     w: np.array = np.zeros((rotations,rotations),dtype=float)
 
+    start = time()
     for i in range(n_mo_occ):
         for a in range(n_mo_virt):
             s = a + n_mo_occ
@@ -61,9 +62,22 @@ def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = N
                     if icol > rotations-1 : irow += 1
                     if icol > rotations-1 : icol  = 0
 
+    build_time = time() - start
+
+    start = time()
     if tp_inv == 0:
         pp = np.linalg.inv(w)
     else:
         raise ValueError("***ERROR\n\n\
             Inverse of a matrix only with numpy is implemeted")
+    inverse_time = time() - start
+
+    if verbose > 10:
+        print(f"Time take to build principal propagator: {build_time}")
+        print(f"Time to inverse calculate: {inverse_time}")
+
+    if verbose > 20:
+        if tp_inv == 0:
+            name = "Principal Propagator Inverse (Numpy)."
+        print_triangle_matrix(integral = pp, name = name,  matriz_sym = "square")
     return pp
