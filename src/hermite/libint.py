@@ -39,6 +39,7 @@ from print_matrix import *
 
 #include
 from constants_cto_gto import *
+from integrals_parameters import *
 
 # functions
 from convert_array import *

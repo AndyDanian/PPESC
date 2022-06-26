@@ -1,0 +1,1 @@
+response_type = {"2": "lineal", "3": "quadractic", "4": "cubic"}

@@ -58,7 +58,6 @@ class fock():
             print_triangle_matrix(integral = mocoef, name = "Molecular Orbital Coefficients", matriz_sym = "square")
 
         time_start_dm = time()
-        mocoef_T = [list(value) for value in zip(*mocoef)]
         density_matrix: list = [[0.0 for zero in range(nprim)]for zero in range(nprim)]
         if ne%2 ==0:
             ne2 = int(ne/2)
@@ -116,7 +115,7 @@ class fock():
 
         #FOCK
         #AO TO MO
-        fock_mo = np.matmul(np.array(mocoef_T),np.matmul(np.array(fock),np.array(mocoef)))
+        fock_mo = np.matmul(np.array(mocoef).T,np.matmul(np.array(fock),np.array(mocoef)))
         eom: list = [value for irow, row in enumerate(fock_mo)
                     for icol, value in enumerate(row) if irow == icol]
         #Nuleu Repulsion
@@ -230,7 +229,7 @@ class fock():
                 integrals_properties = None, output = verbose,
                 dalton_normalization = dalton_normalization)
 
-            integrals_twobody: list = calculate_integrals.integration_twobody(
+            integrals_twobody: dict = calculate_integrals.integration_twobody(
                 integrals_names = ["e2pot"], output = verbose,
                 dalton_normalization = False
             )
@@ -269,7 +268,7 @@ class fock():
         return eom
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/LiH.molden")
+    wfn = wave_function("../tests/molden_file/LiH_STO2G.molden")
 
     print("\n Calculate MO energies used wave function \n")
     eom_values = fock()

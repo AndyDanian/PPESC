@@ -77,6 +77,11 @@ class wave_function():
         return [[float(at.split()[2]), float(at.split()[3]), float(at.split()[4])] for mol in self._coord for at in mol]
 
     @property
+    def atom_number(self) -> int:
+        "Atom Number"
+        return len(self.coordinates)
+
+    @property
     def atomic_numbers(self) -> list:
         "Atomic Numbers"
         Z = []
@@ -87,6 +92,11 @@ class wave_function():
                 elif self._coord.split()[0].isnumeric():
                     return Z.append(int(self._coord.split()[0]))
         return Z
+
+    @property
+    def mo_occ(self) -> int:
+        "Molecular Orbital Occupied Number"
+        return len([mo["occupation"] for mo in self._mos if mo["occupation"] > 0])
 
     @property
     def charges(self) -> list:
@@ -112,6 +122,11 @@ class wave_function():
     def primitives_number(self) -> int:
         "Primitive number"
         return len(self.exponents)
+
+    @property
+    def mo_virt(self) -> int:
+        "Molecular Orbital Occupied Number"
+        return self.primitives_number - len([mo["occupation"] for mo in self._mos if mo["occupation"] > 0])
 
     @property
     def primitives_centers(self) -> list:
@@ -160,7 +175,13 @@ class wave_function():
 
     @property
     def mo_coefficients(self) -> list:
+        "Molecular Orbital Coefficients"
         return [mo["coefficients"] for mo in self._mos]
+
+    @property
+    def mo_energies(self) -> list:
+        "Molecular Orbitals Energies"
+        return [mo["energy"] for mo in self._mos]
 
 if __name__ == "__main__":
     """
@@ -168,6 +189,9 @@ if __name__ == "__main__":
     """
     wfn = wave_function("../tests/molden_file/LiH.molden")
 
+    print(" Molecule Number ",wfn.molecules_number)
+    print(" Atom Number ",wfn.atom_number)
+    print(" MO Occupied/Virtuals ",wfn.mo_occ,wfn.mo_virt)
     print(" Atomic Symbols ",wfn.atomic_symbols)
     print(" Coordinates ",wfn.coordinates)
     print(" Z ",wfn.atomic_numbers)
