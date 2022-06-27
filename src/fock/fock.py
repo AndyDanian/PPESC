@@ -51,10 +51,11 @@ class fock():
 
         eom (list): 1d array with molecular orbitals energies
         """
-        print("\n*** Calculating: Fock matrix at Hartree--Fock level")
+        print_title(name = "Calculating: Fock matrix at Hartree--Fock level")
+
         time_start_eom = time()
 
-        if verbose > 20:
+        if verbose > 30:
             print_triangle_matrix(integral = mocoef, name = "Molecular Orbital Coefficients", matriz_sym = "square")
 
         time_start_dm = time()
@@ -68,9 +69,7 @@ class fock():
 
                 for k in range(ne2):
                     density_matrix[i][j] += 2.0*mocoef[i][k]*mocoef[j][k]
-        if verbose > 10:
-            print(f"Time to calculate density matrix: {time() - time_start_dm}")
-        if verbose > 20:
+        if verbose > 30:
             print_triangle_matrix(integral = density_matrix, name= "Density Matrix", matriz_sym = "sym")
 
         #Core Hamiltonian
@@ -82,11 +81,8 @@ class fock():
                 for atom_en in inten.values():
                     ven += atom_en[i][j]
                 hcore[i][j] = intk[i][j] + ven
-        if verbose > 10:
-            print(f"Time to calculate Core Hamiltonian Matrix: {time() - time_start_ch}")
-        if verbose > 20:
+        if verbose > 30:
             print_triangle_matrix(integral = hcore, name = "Core Hamiltonian Matrix", matriz_sym = "sym")
-
 
         #Matriz G
         time_start_g = time()
@@ -97,9 +93,7 @@ class fock():
                 for k in range(nprim):
                     for l in range(nprim):
                         g[i][j] += density_matrix[k][l]*(intee[i][j][k][l]-0.5*intee[i][l][k][j])
-        if verbose > 10:
-            print(f"Time to calculate G Matrix: {time() - time_start_g}")
-        if verbose > 20:
+        if verbose > 30:
             print_triangle_matrix(integral = g, name = "G Matrix", matriz_sym = "sym")
 
         #Matriz Fock
@@ -108,9 +102,7 @@ class fock():
         for i  in range(nprim):
             for j  in range(nprim):
                 fock[i][j] = hcore[i][j] + g[i][j]
-        if verbose > 10:
-            print(f"Time to calculate Fock Matrix in AO: {time() - time_start_fock_ao}")
-        if verbose > 20:
+        if verbose > 30:
             print_triangle_matrix(integral = fock, name = "Fock Matrix in AO", matriz_sym = "square")
 
         #FOCK
@@ -136,8 +128,6 @@ class fock():
         for i in range(nprim):
             for j in range(nprim):
                 electronic_energy += 0.5*density_matrix[i][j]*(hcore[i][j] + fock[i][j])
-        if verbose > 10:
-            print(f"Time to calculate Total energy: {time() - time_start_te}")
 
         if verbose <= 10 or not verbose:
             print(f"\n Print the first 20 Hartree--Fock molecular orbitals energies: \n")
@@ -179,14 +169,20 @@ class fock():
         print(f"Total energy (HF): {electronic_energy + vnn} \n")
         print(40*"=")
         if verbose > 10:
-            print(f"Time to calculate molecular orbitals energies: {time()-time_start_eom} ")
+            print_time(name = f"Density Matrix", delta_time = (time() - time_start_dm), tailer = False)
+            print_time(name = f"Core Hamiltonian", delta_time = (time() - time_start_ch), header = False, tailer = False)
+            print_time(name = f"G Matrix", delta_time = (time() - time_start_g), header = False, tailer = False)
+            print_time(name = f"Fock Matrix", delta_time = (time() - time_start_fock_ao), header = False, tailer = False)
+            print_time(name = f"Total Energy", delta_time = (time() - time_start_te), header = False, tailer = False)
+            print_time(name = f"Molecular Orbitals Energies", delta_time = (time()-time_start_eom), header = False)
 
+        print_title(name = "End Calculating: Fock matrix at Hartree--Fock level")
         return eom
 
     def calculate_hf_moe(self, wf: dict = None, intk: list = None, inten: dict = None, intee: list = None,
                         mocoef: list = None, nprim: int = None, natoms: int = None, ne: int = None,
                         charge: list = None, coord: list = None, dalton_normalization: bool = False,
-                        verbose: int = 0):
+                        verbose: int = 0, verbose_integrals: int = 0):
         """
         Driver to calculate Hartree--Fock molecular orbital energies
 
@@ -205,6 +201,7 @@ class fock():
         coord (list): 2d array with atomic coordinates
         dalton_normalization (bool): Use dalton normalization to d, f, ...
         verbose (int): print level
+        verbose_integrals (int): print level for integral calculation
 
         Return:
         ------
@@ -226,11 +223,11 @@ class fock():
             print("\n\n*** Calculating: kinetic, nucpot and electron repulsion atomic integrals")
             integrals_onebody, symmetries = calculate_integrals.integration_onebody(
                 integrals_names = ["kinetic", "nucpot"],
-                integrals_properties = None, output = verbose,
+                integrals_properties = None, output = verbose_integrals,
                 dalton_normalization = dalton_normalization)
 
             integrals_twobody: dict = calculate_integrals.integration_twobody(
-                integrals_names = ["e2pot"], output = verbose,
+                integrals_names = ["e2pot"], output = verbose_integrals,
                 dalton_normalization = False
             )
             intee = integrals_twobody["e2pot"]

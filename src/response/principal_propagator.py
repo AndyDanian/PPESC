@@ -73,8 +73,8 @@ def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = N
     inverse_time = time() - start
 
     if verbose > 10:
-        print(f"Time take to build principal propagator: {build_time}")
-        print(f"Time to inverse calculate: {inverse_time}")
+        print_time(name = f"Build Principal Propagator", delta_time = build_time, tailer = False)
+        print_time(name = f"Inverse", delta_time = inverse_time, header = False)
 
     if verbose > 20:
         if tp_inv == 0:

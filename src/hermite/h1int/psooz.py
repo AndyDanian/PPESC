@@ -29,7 +29,7 @@ def psooz(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, 
     psooz: list = [0 for i in range(int(total_nprim * total_nprim))]
 
     count: int = 0
-    
+
     oz_r_x_b: int = 0
     oz_r_y_b: int = 0
     oz_r_z_b: int = 0
@@ -69,7 +69,7 @@ def psooz(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, 
         oz_der_l_b: list = lx
         oz_der_l_c: list = ly
 
-    if spatial_sym == 0: 
+    if spatial_sym == 0:
         """1 Component"""
         pso_r_y_b = 1
         pso_r_z_c = 1
@@ -280,8 +280,8 @@ def psooz(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, 
             count += 1
 
     if output > 10:
-        print(f"\n ***Orbital-Zeeman correction to the paramagnetic spin-orbit atomic integrals,\n\
-        for {magnetic_component} magnetic component, {spatial_sym} spatial symmetry, and {atom} atom,\n\
-        time [s]: {time() - start:.6f}")
+        print_time(name = f"Orbital-Zeeman Correction to the Paramagnetic Spin-Orbit Atomic Integrals, \
+        for {magnetic_component} Magnetic Component, {spatial_sym} Spatial Symmetry, and {atom}-th Atom",
+        delta_time = (time() - start))
 
     return psooz

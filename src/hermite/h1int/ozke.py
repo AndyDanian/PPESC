@@ -29,12 +29,12 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
     count: int = 0
 
     """
-    Component Selection L = p x r 
+    Component Selection L = p x r
                         = (zpy-ypz)x + (xpz-zpx)y + (ypx-xpy)z
     where r = r_e - r_gauge
     """
 
-    if magnetic_component == 0: 
+    if magnetic_component == 0:
         """X Component"""
         left_coord: int = 1
         right_coord: int = 2
@@ -481,11 +481,11 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 * (dxxlx + dyylx + dzzlx)
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)
             )
-            
+
             count += 1
 
     if output > 10:
-        print(f"\n ***Calculates the kinetic energy correction to the orbital Zeeman operator,\
-        component {magnetic_component}, time [s]: {time() - start:.6f}")
+        print_time("Calculates the Kinetic Energy Correction to the Orbital Zeeman Operator, \
+        {magnetic_component} Magnetic Component", delta_time = (time() - start))
 
     return ozke

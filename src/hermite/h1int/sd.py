@@ -155,9 +155,9 @@ def sd(coord, magnetic_component, spatial_sym, atom, exp, center, lx, ly, lz, ou
                 lx[j],
                 ly[j],
                 lz[j],
-                dx_y, 
-                dy_y, 
-                dz_y, 
+                dx_y,
+                dy_y,
+                dz_y,
                 exp[i],
                 exp[j],
                 coord[center[i]][0],
@@ -206,8 +206,8 @@ def sd(coord, magnetic_component, spatial_sym, atom, exp, center, lx, ly, lz, ou
             count += 1
 
     if output > 10:
-        print(f"\n *** Spin dipolar atomic integrals,\
-        spatial symmetry {spatial_sym} and magnetic component {magnetic_component}\
-        of atom {atom + 1}-th, time [s]: {time() - start:.6f}")
+        print_time(name = "Spin-Dipolar Atomic Integrals, \
+        {spatial_sym} Spatial Symmetry and {magnetic_component} Magnetic Component \
+        of {atom + 1}-th Atom", delta_time = (time() - start))
 
     return sd

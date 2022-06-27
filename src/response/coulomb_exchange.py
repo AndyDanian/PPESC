@@ -95,7 +95,7 @@ def get_coulomb_exchange_integrals(wf: wave_function = None, verbose: int = 0,
                         exchange[b,i,a,j] = exchange[a,j,b,i]
 
     if verbose > 10:
-        print(f"Coulomb and Exchange time: {time() - start}")
+        print_time(name = f"Coulomb and Exchange", delta_time = (time() - start))
 
     if verbose > 20:
 

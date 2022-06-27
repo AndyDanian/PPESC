@@ -163,6 +163,6 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization):
             count += 1
 
     if output > 10:
-        print(f"\n *** Atomic kinetic integrals time [s]: {time() - start:.6f}")
+        print(name = f"Kinetic Atomic Integrals", delta_time = (time() - start))
 
     return kinetic

@@ -44,7 +44,7 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
     r_z_c: int = 0
 
     diagonal: bool = False
-    if spatial_sym == 0: 
+    if spatial_sym == 0:
         """X Component"""
         if magnetic_component == 0:
             diagonal = True
@@ -225,10 +225,10 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
             count += 1
 
     if output > 0:
-        print(
-            f"\n ***Diamagnetic nuclear shielding tensor atomic integrals \n\
-                for {magnetic_component} magnetic component and {spatial_sym} spatial symmetry,\n\
-                    time [s]: {time() - start:.6f}"
+        print_time(
+            name = f"Diamagnetic Nuclear Shielding Tensor Atomic Integrals \
+                for {magnetic_component} Magnetic Component and {spatial_sym} Spatial Symmetry",
+                delta_time = (time() - start)
         )
 
     return nstcgo

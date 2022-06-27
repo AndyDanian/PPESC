@@ -109,8 +109,8 @@ def e2pot(coord, exp, center, lx, ly, lz, output, dalton_normalization):
             l = 0
 
     if output > 0:
-        print(
-            f"\n ***Electron repulsion atomic integrals ({count}), time [s]: {time() - start:.6f}"
+        print_time(
+            name = f"Electron Repulsion Atomic Integrals ({count})", delta_time = (time() - start)
         )
 
     return e2pot
@@ -155,5 +155,5 @@ if __name__ == "__main__":
         output=11,
         dalton_normalization = False)
 
-    print("e2(STO-2G) : ",np.size(e2_sto2g))
-    print("e2(STO-2G) : ",np.size(e2_6311ttgxx))
+    print("H2 e2(STO-2G) : ",np.size(e2_sto2g))
+    print("H2 e2(6-311++G**) : ",np.size(e2_6311ttgxx))

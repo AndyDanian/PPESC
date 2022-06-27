@@ -27,7 +27,7 @@ def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_norm
     psoke: list = [0 for i in range(int(total_nprim * total_nprim))]
 
     count: int = 0
-    
+
     r_x_b: int = 0
     r_y_b: int = 0
     r_z_b: int = 0
@@ -35,7 +35,7 @@ def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_norm
     r_y_c: int = 0
     r_z_c: int = 0
 
-    if spatial_sym == 0: 
+    if spatial_sym == 0:
         """X Component"""
         r_y_b = 1
         r_z_c = 1
@@ -95,7 +95,7 @@ def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_norm
                     coord[atom][0],
                     coord[atom][1],
                     coord[atom][2],
-                ) - 
+                ) -
                 der_l * nuclear_attraction(
                     lx[i],
                     ly[i],
@@ -118,8 +118,8 @@ def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_norm
                     coord[atom][1],
                     coord[atom][2],
                 ))
-            
-            # Todo bien hasta áca
+
+            #
             lap_idj_jdi: float = 0.0
             idj_jdi_lap: float = 0.0
             for d2x, d2y, d2z in lap:
@@ -262,7 +262,8 @@ def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_norm
             )
             count += 1
     if output > 10:
-        print(f"\n ***Kinetic energy correction to the paramagnetic spin-orbit atomic integrals,\n\
-        for {spatial_sym} spatial symmetry, time [s]: {time() - start:.6f}")
+        print_time(name = f"Kinetic-Energy Correction to the Paramagnetic \
+            Spin-Orbit Atomic Integrals, for {spatial_sym} Spatial Symmetry",
+            delta_time = (time() - start))
 
     return psoke

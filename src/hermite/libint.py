@@ -44,6 +44,7 @@ from integrals_parameters import *
 # functions
 from convert_array import *
 from print_matrix import *
+from string_informations import *
 
 #io
 from molden import *

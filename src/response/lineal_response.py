@@ -85,5 +85,5 @@ def calculate_lineal_reponse(n_mo_occ: int = None, n_mo_virt: int = None,
             print(('='*40).center(70))
 
     if verbose > 10:
-        print()
-        print(f"Lineal response time: {time() - start}")
+        name = f"Lineal Response"
+        print_time(name = name,  delta_time=(time() - start))

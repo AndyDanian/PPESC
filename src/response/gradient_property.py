@@ -55,7 +55,7 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
         gpvs[name] = [2.0*mo_integral[i][a + n_mo_occ] for i in range(n_mo_occ) for a in range(n_mo_virt)]
 
     if verbose > 10:
-        print(f"Time to build GPV {property}: {time() - start}")
+        print_time(name = f"Build GPV {property}", delta_time = (time() - start))
 
     if verbose > 30:
         print_gradient_property_vector(gpvs = gpvs, multiplicity = multiplicity)

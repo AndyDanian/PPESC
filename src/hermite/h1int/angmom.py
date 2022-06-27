@@ -29,12 +29,12 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
     count: int = 0
 
     """
-    Component Selection L = p x r 
+    Component Selection L = p x r
                             = (zpy-ypz)x + (xpz-zpx)y + (ypx-xpy)z
     where r = r_e - r_gauge
     """
 
-    if magnetic_component == 0: 
+    if magnetic_component == 0:
         """X Component"""
         left_coord: int = 1
         right_coord: int = 2
@@ -76,7 +76,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
 
             left_rg: float = left_Pxyz - gauge[left_coord]
             right_rg: float = right_Pxyz - gauge[right_coord]
-    
+
             spatial_s: float = E(
                 spatial_l[i],
                 spatial_l[j],
@@ -158,7 +158,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
                 exp[i],
                 exp[j],
             )
-    
+
             angmom[count] = (
                 -normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
@@ -170,7 +170,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
             count += 1
 
     if output > 10:
-        print(f"\n *** Angular momentum atomic integrals,\
-        component {magnetic_component}, time [s]: {time() - start:.6f}")
+        print_time(name = f"Angular Momentum Atomic Integrals for {magnetic_component} Magnetic Component",
+        delta_time = (time() - start))
 
     return angmom

@@ -61,8 +61,9 @@ def fc(coord, atom, exp, center, lx, ly, lz, output, dalton_normalization):
             )
             count += 1
     if output > 0:
-        print(
-            f"\n *** Fermi--contact atomic integrals for {atom + 1}-th atom, time [s]: {time() - start:.6f}"
+        print_time(
+            name = f"Fermi--contact Atomic Integrals for {atom + 1}-th Atom",
+            delta_time = (time() - start)
         )
 
     return fc

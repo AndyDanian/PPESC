@@ -6,12 +6,19 @@ from time import time
 #Addres when execute from hxint
 H1I_PATH = Path.cwd()
 
-PARENT_PATH = H1I_PATH.parent
+HERMITE_PATH = H1I_PATH.parent
+PROJECT = HERMITE_PATH.parent
 
 sys.path.append(
-    os.fspath(PARENT_PATH)
+    os.fspath(HERMITE_PATH)
     )
 #
+sys.path.append(
+    os.fspath(HERMITE_PATH / ("h1int"))
+    )
+sys.path.append(
+    os.fspath(HERMITE_PATH / ("h2int"))
+    )
 
 import numpy as np
 
@@ -23,3 +30,5 @@ from eij import *
 from nuclear_attraction import *
 # Gaussian multiplication
 from gaussian_multiplication import *
+# functions
+from string_informations import *

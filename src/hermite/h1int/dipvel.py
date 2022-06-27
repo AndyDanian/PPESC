@@ -31,20 +31,20 @@ def dipvel(coord, magnetic_component, exp, center, lx, ly, lz, output, dalton_no
         l_dipvel: list = lx
         l_a: list = ly
         l_b: list = lz
-        coord_a: int = 1 
-        coord_b: int = 2 
+        coord_a: int = 1
+        coord_b: int = 2
     elif magnetic_component == 1:
         l_dipvel: list = ly
         l_a: list = lx
         l_b: list = lz
-        coord_a: int = 0 
-        coord_b: int = 2 
+        coord_a: int = 0
+        coord_b: int = 2
     elif magnetic_component == 2:
         l_dipvel: list = lz
         l_a: list = ly
         l_b: list = lx
-        coord_a: int = 1 
-        coord_b: int = 0 
+        coord_a: int = 1
+        coord_b: int = 0
 
     for i in range(total_nprim):
 
@@ -85,7 +85,7 @@ def dipvel(coord, magnetic_component, exp, center, lx, ly, lz, output, dalton_no
                 exp[i],
                 exp[j],
             )
-            
+
             dipvel[count] = (
                 normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
@@ -96,8 +96,9 @@ def dipvel(coord, magnetic_component, exp, center, lx, ly, lz, output, dalton_no
             )
             count += 1
     if output > 0:
-        print(
-            f"\n ***Dipole velocity atomic integrals for {magnetic_component}, time [s]: {time() - start:.6f}"
+        print_time(
+            name = f"Dipole Velocity Atomic Integrals for {magnetic_component} Magnetic Component",
+            delta_time = (time() - start)
         )
 
     return dipvel

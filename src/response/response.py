@@ -12,8 +12,7 @@ class response():
     def __init__(self, wf: wave_function = None, moe: list = None,
                     gradient_properties: dict = None, two_integrals: list or array = None,
                     properties: list = None, multiplicity: list = None,
-                    all_responses: bool = None,
-                    verbose: int = 0, verbose_integrals: int = 0):
+                    all_responses: bool = None, verbose: int = 0):
         """
         Reponse object
 
@@ -57,12 +56,10 @@ class response():
 
                             Example, if is False:
                             [A,B] then is get <<A;B>>
-
         verbose (int): Print level
-        verbose_integrals (int): Print level for integrals calculation
         """
 
-        title(name = "RESPONSE CALCULATION")
+        print_title(name = "RESPONSE CALCULATION")
 
         if not wf or (not moe and not gradient_properties and not properties
             and not multiplicity):
@@ -81,7 +78,6 @@ class response():
         self._tintegrals = two_integrals
         self._allr = all_responses
         self._verbose = verbose
-        self._verbose_int = verbose_integrals
 
         if not self._gp:
             self._gp = {}
@@ -89,9 +85,13 @@ class response():
     ################################################################################################
     # METHODS
     ################################################################################################
-    def rpa(self):
+    def rpa(self, verbose_integrals: int = 0):
         """
         Calculate reponse at random phase approximation
+
+        Args:
+        ----
+        verbose_integrals (int): Print level for integrals calculation
         """
         start = time()
         print("\nLevel approximation: RPA \n")
@@ -132,7 +132,7 @@ class response():
                 if not self._gp or property not in self._gp.keys():
                     temp_all_responses, gpvs = gradient_property_vector_rpa(wf = self._wf,
                                         property = property,
-                                        verbose = self._verbose, verbose_int = self._verbose_int,
+                                        verbose = self._verbose, verbose_int = verbose_integrals,
                                         multiplicity=multiplicity[count])
                     if self._allr == None:
                         self._allr = temp_all_responses
@@ -148,7 +148,7 @@ class response():
             if not self._tintegrals:
                 coulomb_integrals, exchange_integrals = get_coulomb_exchange_integrals(self._wf,
                                                         verbose = self._verbose,
-                                                        verbose_int = self._verbose_int)
+                                                        verbose_int = verbose_integrals)
             else:
                 raise ValueError("Falta implementar que obtenga las integrales desde 2i dadas")
             # - Build PP
@@ -169,8 +169,10 @@ class response():
             calculate_lineal_reponse(n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
             principal_propagator = principal_propagator, gpvs = gpvs, all_responses = self._allr,
             verbose = self._verbose)
+
             if self._verbose > 10:
-                title(name = f"TIME REPONSE CALCULATION {time() - start}")
+                print_time(name = "Response Calculation", delta_time = (time() - start))
+            print_title(name = f"END REPONSE CALCULATION")
 
 if __name__ == "__main__":
     wfn = wave_function("../tests/molden_file/LiH.molden")

@@ -41,3 +41,4 @@ from e_integral import *
 
 # functions
 from print_matrix import *
+from string_informations import *

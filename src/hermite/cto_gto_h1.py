@@ -300,6 +300,5 @@ def cto_gto_h1(Mxyz: list = None, TP_A: list = None, verbose: int = 0):
             icol += 13
             jcol += 28
     if verbose > 10:
-        print()
-        print(f"Time to transform one--body cto to gto {time() - start} s\n")
+        print_time(name = f"One--Body CTOs--GTOs", delta_time = (time() - start))
     return Mrtp

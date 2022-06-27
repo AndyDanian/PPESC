@@ -29,7 +29,7 @@ def pso(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normal
     count: int = 0
 
     """
-    Component Selection L = p x r 
+    Component Selection L = p x r
                         = (zpy-ypz)x + (xpz-zpx)y + (ypx-xpy)z
     where r = r_e - r_k
     """
@@ -49,7 +49,7 @@ def pso(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normal
     r_z_right: int = 0
 
 
-    if spatial_sym == 0: 
+    if spatial_sym == 0:
         """X Component"""
         der_y_right = 1
         der_z_left = 1
@@ -182,7 +182,7 @@ def pso(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normal
             )
             count += 1
     if output > 10:
-        print(f"\n ***Paramagnetic spin-orbit atomic integrals,\
-        for {spatial_sym} spatial symmetry, time [s]: {time() - start:.6f}")
+        print_time(name = f"Paramagnetic Spin-Orbit Atomic Integrals, \
+        for {spatial_sym} Spatial Symmetry", delta_time  = (time() - start))
 
     return pso

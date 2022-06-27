@@ -32,20 +32,20 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
         l_diplen: list = lx
         l_a: list = ly
         l_b: list = lz
-        coord_a: int = 1 
-        coord_b: int = 2 
+        coord_a: int = 1
+        coord_b: int = 2
     elif magnetic_component == 1:
         l_diplen: list = ly
         l_a: list = lx
         l_b: list = lz
-        coord_a: int = 0 
-        coord_b: int = 2 
+        coord_a: int = 0
+        coord_b: int = 2
     elif magnetic_component == 2:
         l_diplen: list = lz
         l_a: list = ly
         l_b: list = lx
-        coord_a: int = 1 
-        coord_b: int = 0 
+        coord_a: int = 1
+        coord_b: int = 0
 
     for i in range(total_nprim):
 
@@ -74,7 +74,7 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
                 l_b[j],
                 0,
                 coord[center[i]][coord_b] - coord[center[j]][coord_b],
-                exp[i], 
+                exp[i],
                 exp[j],
             )
             # Eq 9.5.43 Helgaker
@@ -107,8 +107,9 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
             )
             count += 1
     if output > 0:
-        print(
-            f"\n ***Dipole lenght atomic integrals for {magnetic_component}, time [s]: {time() - start:.6f}"
+        print_time(
+            name = f"Dipole Lenght Atomic Integrals for {magnetic_component} Magnetic Component",
+            delta_time = (time() - start)
         )
 
     return diplen

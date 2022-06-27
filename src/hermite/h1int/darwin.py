@@ -64,8 +64,8 @@ def darwin(charge, coord, exp, center, lx, ly, lz, output, dalton_normalization)
                 )
                 count += 1
     if output > 0:
-        print(
-            f"\n ***Darwin atomic integrals time [s]: {time() - start:.6f}"
+        print_time(
+            name = f"Darwin Atomic Integrals", delta_time = (time() - start)
         )
 
     return darwin

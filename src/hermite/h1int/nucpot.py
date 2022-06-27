@@ -67,8 +67,9 @@ def nucpot(charge, atom, coord, exp, center, lx, ly, lz, output, dalton_normaliz
 
             count += 1
     if output > 0:
-        print(
-            f"\n *** Potential nucleu atomic integrals for {atom + 1}-th atom, time [s]: {time() - start:.6f}"
-        )
+        print_time(
+            name = f"Potential Nucleu Atomic Integrals for {atom + 1}-th Atom",
+            delta_time = (time() - start)
+                )
 
     return pot

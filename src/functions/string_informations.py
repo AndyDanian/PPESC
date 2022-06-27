@@ -1,4 +1,4 @@
-def title(name: str = None):
+def print_title(name: str = None):
     """
     Print titles
 
@@ -8,3 +8,44 @@ def title(name: str = None):
     print("*" * 80)
     print("*** ", name.upper().center(70), " ***")
     print("*" * 80)
+
+def print_time(name: str = None, delta_time: float = None,
+                header: bool = True, tailer: bool = True):
+    """"
+    Print time neccesary for calculations
+
+    Args:
+        name (str): Name of calculate
+        delta_time (float): time in seconds
+    """
+    if len(name) > 40:
+        count = 0
+        words = ''
+        for s in name.split():
+            if count > 0:
+                    count += 1
+            count += len(s)
+            if count < 7:
+                    words += s + ' '
+            else:
+                    count = 0
+                    words += "\n" + s + ' '
+        name = words
+
+    if header:
+        print()
+        print("t"*20,"hours:minutes:seconds","t"*20)
+    if delta_time <= 60:
+        print(f"{name} Time: 0:0:{delta_time:.3f}".center(62))
+    elif delta_time > 60 and delta_time <= 3600:
+        minutes = int(delta_time/60)
+        seconds = delta_time%60
+        print(f"{name} Time: 0:{minutes}:{seconds:.3f}".center(62))
+    else:
+        hours = int(delta_time/3600)
+        minutes = int(delta_time%3600/60)
+        seconds = delta_time%3600%60
+        print(f"{name} Time: {hours}:{minutes}:{seconds:.3f}".center(62))
+    if tailer:
+        print("t"*62,"\n")
+

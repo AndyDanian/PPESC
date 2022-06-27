@@ -80,9 +80,9 @@ def nelfld(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_nor
             count += 1
 
     if output > 0:
-        print(
-            f"\n *** Nuclear electric field gradient atomic integrals,\
-                spatial symmetry {spatial_sym}, time [s]: {time() - start:.6f}"
+        print_time(
+            name = f"Nuclear Electric Field Gradient Atomic Integrals,\
+                {spatial_sym} Spatial Symmetry", delta_time = (time() - start)
         )
 
     return nelfld

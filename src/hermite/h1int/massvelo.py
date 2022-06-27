@@ -436,8 +436,8 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization):
             count += 1
 
     if output > 0:
-        print(
-            f"\n ***Massvelo atomic integrals time [s]: {time() - start:.6f}"
+        print_time(
+            name = f"Massvelo Atomic Integrals", delta_time = (time() - start)
         )
 
     return massvelo
