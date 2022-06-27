@@ -13,7 +13,7 @@ def integral_1b_parameters(wf: wave_function = None, property: str = None, verbo
     property_split = property.lower().split()
     if property.lower() == "fc" or "fc" in property_split:
         if property.lower() == "fc":
-            parameters = {"atoms": [a for a in range(wf.atom_number)]}
+            parameters = None #Calculate Fermi--contact on all atoms
             all_response = True
         else:
             parameters = {"atoms": [int(property_split[1])]}

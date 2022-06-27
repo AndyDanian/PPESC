@@ -280,7 +280,7 @@ class eint:
 
 
     def integration_twobody(
-        self, integrals_names: list = None,output: int = 0,
+        self, integrals_names: list = None, output: int = 0,
         dalton_normalization: bool = False
     ):
         """
@@ -332,24 +332,24 @@ class eint:
 if __name__ == "__main__":
     wf = wave_function("../tests/molden_file/LiH.molden")
     s = eint(wf)
-    one = False
+    one = True
     if one:
-        integrals, symmetries = s.integration_onebody(["kinetic"],
-                    {
-                    "nucpot":{"atoms":[0]},
-                    "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
-                    "sd":{"spatial_symmetries":[0,1,2,3,4,5], "magnetic_components":[0,1,2]},
-                    "fc":{"atoms":[0,1]},
-                    "nelfld":{"spatial_symmetries":[0,1,2,3,4,5]},
-                    "diplen":{"r_dipole":[0.0,0.0,0.0],"magnetic_components":[0,1,2]},
-                    "dipvel":{"magnetic_components":[0,1,2]},
-                    "pso":{"spatial_symmetries":[0,1,2,3,4,5]},
-                    "nstcgo":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
-                    "dnske":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
-                    "psoke":{"spatial_symmetries":[0,1,2,3,4,5]},
-                    "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
-                    "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
-                    },
-                    21, dalton_normalization=False)
+        integrals, symmetries = s.integration_onebody(integrals_names = ["fc"],
+                    # {
+                    # "nucpot":{"atoms":[0]},
+                    # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                    # "sd":{"spatial_symmetries":[0,1,2,3,4,5], "magnetic_components":[0,1,2]},
+                    # "fc":{"atoms":[0,1]},
+                    # "nelfld":{"spatial_symmetries":[0,1,2,3,4,5]},
+                    # "diplen":{"r_dipole":[0.0,0.0,0.0],"magnetic_components":[0,1,2]},
+                    # "dipvel":{"magnetic_components":[0,1,2]},
+                    # "pso":{"spatial_symmetries":[0,1,2,3,4,5]},
+                    # "nstcgo":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                    # "dnske":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                    # "psoke":{"spatial_symmetries":[0,1,2,3,4,5]},
+                    # "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                    # "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
+                    # },
+                    output = 21, dalton_normalization=False)
     else:
         integrals = s.integration_twobody(["e2pot"], output=11, dalton_normalization=False)

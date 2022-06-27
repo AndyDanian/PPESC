@@ -176,5 +176,5 @@ class response():
 
 if __name__ == "__main__":
     wfn = wave_function("../tests/molden_file/LiH.molden")
-    r = response(wfn, properties = [["fc","fc"]], multiplicity=[[3,3]],all_responses=False,verbose=12)
+    r = response(wfn, properties = [["fc","fc"]], multiplicity=[[3,3]]) #,all_responses=False,verbose=12)
     r.rpa()
