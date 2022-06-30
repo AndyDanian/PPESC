@@ -14,11 +14,8 @@ sys.path.append(
     )
 #
 sys.path.append(
-    os.fspath(HERMITE_PATH / ("h1int"))
-    )
-sys.path.append(
-    os.fspath(HERMITE_PATH / ("h2int"))
-    )
+    os.fspath(PROJECT / ("functions"))
+)
 
 import numpy as np
 

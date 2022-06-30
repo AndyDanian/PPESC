@@ -18,14 +18,14 @@ def print_time(name: str = None, delta_time: float = None,
         name (str): Name of calculate
         delta_time (float): time in seconds
     """
-    if len(name) > 40:
+    if len(name) > 60:
         count = 0
         words = ''
         for s in name.split():
             if count > 0:
                     count += 1
             count += len(s)
-            if count < 7:
+            if count <= 60:
                     words += s + ' '
             else:
                     count = 0
@@ -36,16 +36,16 @@ def print_time(name: str = None, delta_time: float = None,
         print()
         print("t"*20,"hours:minutes:seconds","t"*20)
     if delta_time <= 60:
-        print(f"{name} Time: 0:0:{delta_time:.3f}".center(62))
+        print(f"{name} Time: 0:0:{delta_time:.3f}".ljust(62))
     elif delta_time > 60 and delta_time <= 3600:
         minutes = int(delta_time/60)
         seconds = delta_time%60
-        print(f"{name} Time: 0:{minutes}:{seconds:.3f}".center(62))
+        print(f"{name} Time: 0:{minutes}:{seconds:.3f}".ljust(62))
     else:
         hours = int(delta_time/3600)
         minutes = int(delta_time%3600/60)
         seconds = delta_time%3600%60
-        print(f"{name} Time: {hours}:{minutes}:{seconds:.3f}".center(62))
+        print(f"{name} Time: {hours}:{minutes}:{seconds:.3f}".ljust(62))
     if tailer:
-        print("t"*62,"\n")
+        print("t"*63,"\n")
 

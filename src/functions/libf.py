@@ -26,3 +26,4 @@ from wave_function import *
 
 # include
 from response_parameters import *
+from integrals_parameters import *

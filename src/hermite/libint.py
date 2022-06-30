@@ -6,22 +6,22 @@ from time import time
 #Addres when execute from fock
 HERMITE_PATH = Path.cwd()
 
-PARENT_PATH = HERMITE_PATH.parent
+PROJECT = HERMITE_PATH.parent
 
 sys.path.append(
-    os.fspath(PARENT_PATH)
+    os.fspath(PROJECT)
     )
 sys.path.append(
-    os.fspath(PARENT_PATH / ("include")) #This is neccesary by e_integral
+    os.fspath(PROJECT / ("include")) #This is neccesary by e_integral
     )
 sys.path.append(
-    os.fspath(PARENT_PATH / ("io")) #This is neccesary by wave_function
+    os.fspath(PROJECT / ("io")) #This is neccesary by wave_function
     )
 sys.path.append(
-    os.fspath(PARENT_PATH / ("functions"))
+    os.fspath(PROJECT / ("functions"))
     )
 sys.path.append(
-    os.fspath(PARENT_PATH / ("include"))
+    os.fspath(PROJECT / ("include"))
     )
 sys.path.append(
     os.fspath(HERMITE_PATH / ("h1int"))
@@ -37,14 +37,15 @@ from wave_function import *
 #functions
 from print_matrix import *
 
-#include
-from constants_cto_gto import *
-from integrals_parameters import *
-
 # functions
+from integral_parameters import *
 from convert_array import *
 from print_matrix import *
 from string_informations import *
+
+#include
+from constants_cto_gto import *
+from integrals_parameters import *
 
 #io
 from molden import *

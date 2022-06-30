@@ -21,7 +21,7 @@ class eint:
                 "*** Error \n\n There isn't information in the  wave function object."
             )
 
-        self._array_wf = wf
+        self._wf = wf
         # linealize arrays to calculate the integrals
 
         self._charge = wf.charges
@@ -41,14 +41,20 @@ class eint:
 
     def integration_onebody(
         self, integrals_names: list = None, integrals_properties: dict = None, output: int = 0,
-        dalton_normalization: bool = False
+        gauge: list  = None, dipole: list = None, dalton_normalization: bool = False
     ):
 
         if not integrals_names:
             raise ValueError("***Error \n\n what integral do you want?")
         else:
             for integral_name in integrals_names:
-                if integral_name.lower() not in integral_symmetry.keys():
+                split_integral_name = integral_name.lower().split()
+                error = False
+                if len(integral_name.split(" ")) == 1 and integral_name.lower() not in integral_symmetry.keys():
+                    error = True
+                elif split_integral_name[0] not in integral_symmetry.keys():
+                    error = True
+                if error:
                     raise ValueError(f"*** Error \n\n\
                     Integral {integral_name} is not implement or the name is mistake\n\n\
                     Integrals implemented: \n\
@@ -58,19 +64,21 @@ class eint:
         integrals: dict = {}
         symmetries: dict = {}
 
-        # Default values to integrals properties
-        r_gauge: list = [0.0,0.0,0.0]
-        r_dipole: list = [0.0,0.0,0.0]
-        atoms: list = [atom for atom in range(len(self._coord))]
-        magnetic_components: list = [0,1,2]
-        spatial_symmetries: list = [symmetry for symmetry in range(np.size(np.array(self._coord)))]
-        number_atoms: int =  len(self._coord[:][0])
-
-        if len(atoms) > 50:
+        number_atoms: int =  self._wf.atom_number
+        if number_atoms > 50:
             print(f"*** WARNING\n\n\
             System has a lot atoms ({len(atoms)}), then calculate can take very much time")
 
-        for integral_name in integrals_names:
+        if gauge is not None:
+            r_gauge = gauge
+        if dipole is not None:
+            r_dipole = dipole
+
+        for int_name in integrals_names:
+            if len(integral_name.split(" ")) > 1:
+                integral_name = int_name.lower().split()[0]
+            else:
+                integral_name = int_name
 
         # Check definition of integrals properties into integrals_properties
             if integrals_properties:
@@ -80,15 +88,19 @@ class eint:
                     if "r_dipole" in integrals_properties[integral_name].keys():
                         r_dipole = integrals_properties[integral_name]["r_dipole"]
                     if "magnetic_components" in integrals_properties[integral_name].keys():
-                        magnetic_components = integrals_properties[integral_name]["magnetic_components"]
+                        magnetic_components = [x - 1 for x in integrals_properties[integral_name]["magnetic_components"]]
                     if "spatial_symmetries" in integrals_properties[integral_name].keys():
-                        spatial_symmetries = integrals_properties[integral_name]["spatial_symmetries"]
+                        spatial_symmetries = [s - 1 for s  in integrals_properties[integral_name]["spatial_symmetries"]]
                     if "atoms" in integrals_properties[integral_name].keys():
-                        atoms = integrals_properties[integral_name]["atoms"]
+                        atoms = [a - 1 for a in integrals_properties[integral_name]["atoms"]]
+            else: # When is indicated in the name the magnetic or symmetry name or atom
+                r_gauge, r_dipole, magnetic_components, spatial_symmetries, atoms =\
+                    integral_1b_parameters(atoms_number = number_atoms, integral_name = int_name)
+
 
             if spatial_symmetry[integral_name.lower()] == 0 and magnetic[integral_name.lower()] == 0:
 
-                if integral_name.lower() in ["overlap", "darwin", "kinetic"]:
+                if integral_name.lower() in ["overlap", "darwin", "massvelo", "kinetic"]:
 
                     symmetries[integral_name.lower()] = integral_symmetry[integral_name.lower()]
                     integrals[integral_name.lower()] = h1i(
@@ -266,13 +278,13 @@ class eint:
                 integrals_matrix[label] = cto_gto_h1(np.array(vector_to_matrix(self._n, integral, symmetries[label])),
                         np.array(self._angular_moments))
             if output > 20:
-                print("="*80,"\n One--body integrals with gto--primitives\n","="*80)
+                print_title(name = "One--body integrals with gto--primitives")
                 print_matriz_integrated(integrals = integrals_matrix, symmetries = symmetries)
         else:
             for label, integral in integrals.items():
                 integrals_matrix[label] = np.array(vector_to_matrix(self._n, integral, symmetries[label]))
             if output > 20:
-                print("="*80,"\n One--body integrals with cto--primitives\n",80*"=")
+                print_title(name = "One--body integrals with cto--primitives")
                 print_matriz_integrated(integrals = integrals_matrix, symmetries = symmetries)
 
 
@@ -334,7 +346,7 @@ if __name__ == "__main__":
     s = eint(wf)
     one = True
     if one:
-        integrals, symmetries = s.integration_onebody(integrals_names = ["fc"],
+        integrals, symmetries = s.integration_onebody(integrals_names = ["sd 2 1"],
                     # {
                     # "nucpot":{"atoms":[0]},
                     # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},

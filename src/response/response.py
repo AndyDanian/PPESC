@@ -136,7 +136,6 @@ class response():
                                         multiplicity=multiplicity[count])
                     if self._allr == None:
                         self._allr = temp_all_responses
-
                 else:
                     gpvs: dict = read_gradient_property_vector_rpa(wf = self._gp, property = property,
                                         verbose = self._verbose, multiplicity=multiplicity[count])
