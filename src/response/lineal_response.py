@@ -2,7 +2,8 @@ from libr import *
 
 def calculate_lineal_reponse(n_mo_occ: int = None, n_mo_virt: int = None,
                             principal_propagator: np.array = None, gpvs: dict = None,
-                            all_responses: bool = False, verbose: int = 0):
+                            all_responses: bool = False, time_object: drv_time = None,
+                            verbose: int = 0):
     """
     Calculate of the path and total value of lienal response
 
@@ -86,4 +87,4 @@ def calculate_lineal_reponse(n_mo_occ: int = None, n_mo_virt: int = None,
 
     if verbose > 10:
         name = f"Lineal Response"
-        print_time(name = name,  delta_time=(time() - start))
+        time_object.add_name_delta_time(name = name,  delta_time=(time() - start))

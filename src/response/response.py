@@ -93,7 +93,12 @@ class response():
         ----
         verbose_integrals (int): Print level for integrals calculation
         """
-        start = time()
+        if self._verbose > 10:
+            driver_time = drv_time()
+            start = time()
+        else:
+            driver_time = None
+
         print("\nLevel approximation: RPA \n")
         for iresponse, response in enumerate(self._properties):
 
@@ -131,7 +136,7 @@ class response():
                     continue
                 if not self._gp or property not in self._gp.keys():
                     temp_all_responses, gpvs = gradient_property_vector_rpa(wf = self._wf,
-                                        property = property,
+                                        property = property, time_object = driver_time,
                                         verbose = self._verbose, verbose_int = verbose_integrals,
                                         multiplicity=multiplicity[count])
                     if self._allr == None:
@@ -146,6 +151,7 @@ class response():
             # - two integrals
             if not self._tintegrals:
                 coulomb_integrals, exchange_integrals = get_coulomb_exchange_integrals(self._wf,
+                                                        time_object = driver_time,
                                                         verbose = self._verbose,
                                                         verbose_int = verbose_integrals)
             else:
@@ -158,7 +164,9 @@ class response():
                                                                 n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
                                                                 moe = np.array(self._moe), coulomb = coulomb_integrals,
                                                                 exchange = exchange_integrals,
-                                                                multiplicity = multiplicity[0], tp_inv = 0, verbose = self._verbose)
+                                                                multiplicity = multiplicity[0], tp_inv = 0,
+                                                                time_object = driver_time,
+                                                                verbose = self._verbose)
             else:
                 raise ValueError("***ERROR \n\n\
                         Only is implemeted principal propagator of lineal response\n\
@@ -167,13 +175,14 @@ class response():
             #Response calculate
             calculate_lineal_reponse(n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
             principal_propagator = principal_propagator, gpvs = gpvs, all_responses = self._allr,
-            verbose = self._verbose)
+            time_object = driver_time, verbose = self._verbose)
 
             if self._verbose > 10:
-                print_time(name = "Response Calculation", delta_time = (time() - start))
+                driver_time.add_name_delta_time(name = "Response Calculation", delta_time = (time() - start))
+                driver_time.printing()
             print_title(name = f"END REPONSE CALCULATION")
 
 if __name__ == "__main__":
     wfn = wave_function("../tests/molden_file/LiH.molden")
-    r = response(wfn, properties = [["fc","fc"]], multiplicity=[[3,3]]) #,all_responses=False,verbose=12)
+    r = response(wfn, properties = [["fc","fc"]], multiplicity=[[3,3]], verbose=12)
     r.rpa()

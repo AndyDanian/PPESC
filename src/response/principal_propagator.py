@@ -3,7 +3,8 @@ from libr import *
 def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = None,
                                         moe: np.array = None, coulomb: np.array = None,
                                         exchange: np.array = None, multiplicity: str = None,
-                                        tp_inv: int = 0, verbose: int = 0):
+                                        tp_inv: int = 0, time_object: drv_time = None,
+                                        verbose: int = 0):
     """
     Build principal propagator for lineal response at rpa level
 
@@ -73,8 +74,8 @@ def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = N
     inverse_time = time() - start
 
     if verbose > 10:
-        print_time(name = f"Build Principal Propagator", delta_time = build_time, tailer = False)
-        print_time(name = f"Inverse", delta_time = inverse_time, header = False)
+        time_object.add_name_delta_time(name = f"Build Principal Propagator", delta_time = build_time)
+        time_object.add_name_delta_time(name = f"Inverse", delta_time = inverse_time)
 
     if verbose > 20:
         if tp_inv == 0:

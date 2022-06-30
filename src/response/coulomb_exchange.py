@@ -1,6 +1,8 @@
 from libr import *
 
-def get_coulomb_exchange_integrals(wf: wave_function = None, verbose: int = 0,
+def get_coulomb_exchange_integrals(wf: wave_function = None,
+                                    time_object: drv_time = None,
+                                    verbose: int = 0,
                                     verbose_int: int = 0):
     """
     Get exchange and coulomb integrals from atomic tow-body integrals
@@ -95,7 +97,7 @@ def get_coulomb_exchange_integrals(wf: wave_function = None, verbose: int = 0,
                         exchange[b,i,a,j] = exchange[a,j,b,i]
 
     if verbose > 10:
-        print_time(name = f"Coulomb and Exchange", delta_time = (time() - start))
+        time_object.add_name_delta_time(name = f"Coulomb and Exchange", delta_time = (time() - start))
 
     if verbose > 20:
 

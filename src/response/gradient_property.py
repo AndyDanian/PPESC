@@ -22,6 +22,7 @@ def print_gradient_property_vector(gpvs: list = None, multiplicity: str or int =
 
 def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
                                     multiplicity: str or int = None,
+                                    time_object: drv_time = None,
                                     verbose: int = 0, verbose_int: int = 0):
     """
     Calculate of gradient property vectos in rpa approximation
@@ -54,7 +55,7 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
     if len(gpvs) > 1: all_responses = True # To activate responses among all integrals
 
     if verbose > 10:
-        print_time(name = f"Build GPV {property}", delta_time = (time() - start))
+        time_object.add_name_delta_time(name = f"Build GPV {property}", delta_time = (time() - start))
 
     if verbose > 30:
         print_gradient_property_vector(gpvs = gpvs, multiplicity = multiplicity)
