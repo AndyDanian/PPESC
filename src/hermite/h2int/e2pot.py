@@ -1,7 +1,7 @@
 from lib2h import *
 
 ############# Calculate the electron repulsion integrals ########################
-def e2pot(coord, exp, center, lx, ly, lz, output, dalton_normalization):
+def e2pot(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """
     Electron repulsion integrals
 
@@ -14,6 +14,7 @@ def e2pot(coord, exp, center, lx, ly, lz, output, dalton_normalization):
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
         dalton_normalization (bool): it is used the dalton normalization formule
+        drive_time (drv_object): Object to manage the time
 
     Return:
         e2pot (array): array 4d with atomic integrals
@@ -109,7 +110,7 @@ def e2pot(coord, exp, center, lx, ly, lz, output, dalton_normalization):
             l = 0
 
     if output > 0:
-        print_time(
+        driver_time.add_name_delta_time(
             name = f"Electron Repulsion Atomic Integrals ({count})", delta_time = (time() - start)
         )
 

@@ -1,7 +1,7 @@
 from lib1h import *
 
 #################### Calculate the overlap integrals ########################
-def overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization):
+def overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """
     Overlap integrals
 
@@ -15,6 +15,7 @@ def overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization):
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
         dalton_normalization (bool): it is used the dalton normalization formule
+        drive_time (drv_object): Object to manage the time
 
     Return:
         overlap (array): array 2d with atomic integrals
@@ -77,7 +78,7 @@ def overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization):
             count += 1
 
     if output > 0:
-        print_time(name = f"Overlap Atomic Integrals", delta_time = (time() - start))
+        driver_time.add_name_delta_time(name = f"Overlap Atomic Integrals", delta_time = (time() - start))
 
     return overlap
 

@@ -39,7 +39,7 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
     # atomic integrals
     calculate_integral = eint(wf)
     integrals_1b, symmetries_1b = calculate_integral.integration_onebody(
-    integrals_names = [property], output = verbose_int)
+    integrals_names = [property], verbose = verbose_int)
 
     # molecular integrals
     n_mo_occ = wf.mo_occ

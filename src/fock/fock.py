@@ -223,11 +223,11 @@ class fock():
             print("\n\n*** Calculating: kinetic, nucpot and electron repulsion atomic integrals")
             integrals_onebody, symmetries = calculate_integrals.integration_onebody(
                 integrals_names = ["kinetic", "nucpot"],
-                integrals_properties = None, output = verbose_integrals,
+                integrals_properties = None, verbose = verbose_integrals,
                 dalton_normalization = dalton_normalization)
 
             integrals_twobody: dict = calculate_integrals.integration_twobody(
-                integrals_names = ["e2pot"], output = verbose_integrals,
+                integrals_names = ["e2pot"], verbose = verbose_integrals,
                 dalton_normalization = False
             )
             intee = integrals_twobody["e2pot"]

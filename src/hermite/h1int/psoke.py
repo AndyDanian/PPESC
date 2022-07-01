@@ -1,6 +1,6 @@
 from lib1h import *
 
-def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization):
+def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """
     Kinetic energy correction to the paramagnetic spin-orbit atomic integrals
 
@@ -15,6 +15,7 @@ def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_norm
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
         dalton_normalization (bool): it is used the dalton normalization formule
+        drive_time (drv_object): Object to manage the time
 
     Return:
         psoke (array): array 1d with atomic integrals
@@ -262,7 +263,7 @@ def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_norm
             )
             count += 1
     if output > 10:
-        print_time(name = f"Kinetic-Energy Correction to the Paramagnetic \
+        driver_time.add_name_delta_time(name = f"Kinetic-Energy Correction to the Paramagnetic \
             Spin-Orbit Atomic Integrals, for {spatial_sym} Spatial Symmetry",
             delta_time = (time() - start))
 

@@ -40,9 +40,17 @@ class eint:
     ##################################################################
 
     def integration_onebody(
-        self, integrals_names: list = None, integrals_properties: dict = None, output: int = 0,
+        self, integrals_names: list = None, integrals_properties: dict = None, verbose: int = 0,
         gauge: list  = None, dipole: list = None, dalton_normalization: bool = False
     ):
+
+        print_title(name = "HERMITE: ONE BODY")
+
+        if verbose > 10:
+            driver_time = drv_time()
+            start = time()
+        else:
+            driver_time = None
 
         if not integrals_names:
             raise ValueError("***Error \n\n what integral do you want?")
@@ -60,7 +68,7 @@ class eint:
                     Integrals implemented: \n\
                         {integral_symmetry.keys()}")
 
-        # output dictionaries
+        # verbose dictionaries
         integrals: dict = {}
         symmetries: dict = {}
 
@@ -113,8 +121,9 @@ class eint:
                         ly = self._ly,
                         lz = self._lz,
                         name = integral_name,
-                        output = output,
-                        dalton_normalization = dalton_normalization
+                        verbose = verbose,
+                        dalton_normalization = dalton_normalization,
+                        driver_time = driver_time
                     )
                 elif integral_name.lower() in ["nucpot", "fc"]:
 
@@ -134,8 +143,9 @@ class eint:
                             ly = self._ly,
                             lz = self._lz,
                             name = integral_name,
-                            output = output,
+                            verbose = verbose,
                             dalton_normalization = dalton_normalization,
+                            driver_time = driver_time,
                             # Special information
                             atom = atom,
                         )
@@ -165,8 +175,9 @@ class eint:
                         ly = self._ly,
                         lz = self._lz,
                         name = integral_name,
-                        output = output,
+                        verbose = verbose,
                         dalton_normalization = dalton_normalization,
+                        driver_time = driver_time,
                         # Special information
                         magnetic_xyz = magnetic_xyz,
                         r_gauge = r_gauge,
@@ -209,8 +220,9 @@ class eint:
                         ly = self._ly,
                         lz = self._lz,
                         name = integral_name,
-                        output = output,
+                        verbose = verbose,
                         dalton_normalization = dalton_normalization,
+                        driver_time = driver_time,
                         # Special information
                         spatial_sym = spatial_component,
                         atom = atom,
@@ -262,8 +274,9 @@ class eint:
                             ly = self._ly,
                             lz = self._lz,
                             name = integral_name,
-                            output = output,
+                            verbose = verbose,
                             dalton_normalization = dalton_normalization,
+                            driver_time = driver_time,
                             # Special information
                             magnetic_xyz = magnetic_xyz,
                             spatial_sym = spatial_component,
@@ -277,22 +290,26 @@ class eint:
             for label, integral in integrals.items():
                 integrals_matrix[label] = cto_gto_h1(np.array(vector_to_matrix(self._n, integral, symmetries[label])),
                         np.array(self._angular_moments))
-            if output > 20:
+            if verbose > 20:
                 print_title(name = "One--body integrals with gto--primitives")
                 print_matriz_integrated(integrals = integrals_matrix, symmetries = symmetries)
         else:
             for label, integral in integrals.items():
                 integrals_matrix[label] = np.array(vector_to_matrix(self._n, integral, symmetries[label]))
-            if output > 20:
+            if verbose > 20:
                 print_title(name = "One--body integrals with cto--primitives")
                 print_matriz_integrated(integrals = integrals_matrix, symmetries = symmetries)
 
+        if verbose > 10:
+            driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
+            driver_time.printing()
+        print_title(name = f"END HERMITE: ONE BODY")
 
         return integrals_matrix, symmetries
 
 
     def integration_twobody(
-        self, integrals_names: list = None, output: int = 0,
+        self, integrals_names: list = None, verbose: int = 0,
         dalton_normalization: bool = False
     ):
         """
@@ -301,6 +318,15 @@ class eint:
         Implemented:
             repulsion integrals
         """
+
+        print_title(name = "HERMITE: TWO BODY")
+
+        if verbose > 10:
+            driver_time = drv_time()
+            start = time()
+        else:
+            driver_time = None
+
 
         if integrals_names == None:
             integral_name: str = "e2pot"
@@ -317,25 +343,32 @@ class eint:
             ly = self._ly,
             lz = self._lz,
             name = integral_name,
-            output = output,
-            dalton_normalization = dalton_normalization
+            verbose = verbose,
+            dalton_normalization = dalton_normalization,
+            driver_time = driver_time
         )
 
         integrals_two_body = {}
-        if output > 100 and self._cartessian:
+        if verbose > 100 and self._cartessian:
             for label, integral in integrals_2_cart.items():
                 integrals_two_body[label] = np.array(integral)
             print("="*80,"\nTwo--body integrals with cto--primitives\n","="*80)
             print(integrals_two_body["e2pot"])
 
+        # Cartessian to Spherical
         if not self._cartessian:
             for label, integral in integrals_2_cart.items():
                 integrals_two_body[label] = cto_gto_h2(np.array(integral),
                         np.array(self._angular_moments))
 
-        if output > 100:
+        if verbose > 100:
             print("="*80,"\nTwo--body integrals with gto--primitives\n","="*80)
             print(integrals_two_body["e2pot"])
+
+        if verbose > 10:
+            driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
+            driver_time.printing()
+        print_title(name = f"END HERMITE: TWO BODY")
 
         return integrals_two_body
 
@@ -344,7 +377,7 @@ class eint:
 if __name__ == "__main__":
     wf = wave_function("../tests/molden_file/LiH.molden")
     s = eint(wf)
-    one = True
+    one = False
     if one:
         integrals, symmetries = s.integration_onebody(integrals_names = ["sd 2 1"],
                     # {
@@ -362,6 +395,6 @@ if __name__ == "__main__":
                     # "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                     # "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                     # },
-                    output = 21, dalton_normalization=False)
+                    verbose = 21, dalton_normalization=False)
     else:
-        integrals = s.integration_twobody(["e2pot"], output=11, dalton_normalization=False)
+        integrals = s.integration_twobody(["e2pot"], verbose=11, dalton_normalization=False)

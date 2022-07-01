@@ -1,12 +1,12 @@
 from lib1h import *
 
-def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, ly, lz, output, dalton_normalization):
+def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """
     Diamagnetic nuclear shielding tensor atomic integrals
 
     Args:
         coord (list): list 2d with coordinates of the atoms
-        gauge (list): list 1d with gauge coordinates 
+        gauge (list): list 1d with gauge coordinates
         spatial_sym (int): spatial symmetry index
         magnetic_component (int): magnetic component
         atom (int): atomic index
@@ -17,6 +17,7 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
         dalton_normalization (bool): it is used the dalton normalization formule
+        drive_time (drv_object): Object to manage the time
 
     Return:
         angmom (array): array 2d with atomic integrals
@@ -225,7 +226,7 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
             count += 1
 
     if output > 0:
-        print_time(
+        driver_time.add_name_delta_time(
             name = f"Diamagnetic Nuclear Shielding Tensor Atomic Integrals \
                 for {magnetic_component} Magnetic Component and {spatial_sym} Spatial Symmetry",
                 delta_time = (time() - start)

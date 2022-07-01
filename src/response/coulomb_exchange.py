@@ -22,7 +22,7 @@ def get_coulomb_exchange_integrals(wf: wave_function = None,
     # atomic integrals
     calculate_integral = eint(wf)
     at2in: np.array = np.array(calculate_integral.integration_twobody(
-        integrals_names = ["e2pot"], output = verbose_int,
+        integrals_names = ["e2pot"], verbose = verbose_int,
     )["e2pot"])
 
     # Coulomb and Exchange
@@ -136,7 +136,7 @@ def ao_2_mo(wf: wave_function = None, verbose: int = 0):
     # atomic integrals
     calculate_integral = eint(wf)
     at2in: np.array = np.array(calculate_integral.integration_twobody(
-        integrals_names = ["e2pot"], output = verbose,
+        integrals_names = ["e2pot"], verbose = verbose,
     )["e2pot"])
 
     # Coulomb and Exchange

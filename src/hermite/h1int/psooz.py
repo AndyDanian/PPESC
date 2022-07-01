@@ -1,6 +1,6 @@
 from lib1h import *
 
-def psooz(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, ly, lz, output, dalton_normalization):
+def psooz(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """
     Orbital-Zeeman correction to the paramagnetic spin-orbit atomic integrals
 
@@ -17,6 +17,7 @@ def psooz(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, 
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
         dalton_normalization (bool): it is used the dalton normalization formule
+        drive_time (drv_object): Object to manage the time
 
     Return:
         psooz (array): array 1d with atomic integrals
@@ -280,7 +281,7 @@ def psooz(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, 
             count += 1
 
     if output > 10:
-        print_time(name = f"Orbital-Zeeman Correction to the Paramagnetic Spin-Orbit Atomic Integrals, \
+        driver_time.add_name_delta_time(name = f"Orbital-Zeeman Correction to the Paramagnetic Spin-Orbit Atomic Integrals, \
         for {magnetic_component} Magnetic Component, {spatial_sym} Spatial Symmetry, and {atom}-th Atom",
         delta_time = (time() - start))
 

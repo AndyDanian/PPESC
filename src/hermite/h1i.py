@@ -42,8 +42,9 @@ def h1i(
     ly: list = None,
     lz: list = None,
     name: str = None,
-    output: int = 0,
+    verbose: int = 0,
     dalton_normalization: bool = None,
+    driver_time: drv_time = None,
     atom: list = None,
     magnetic_xyz: int = None,
     spatial_sym: int = None,
@@ -55,15 +56,13 @@ def h1i(
 
     Args:
         integrla (str): Integral name to calculate
-        output (int): Output level for integral calculation
-        0: Nothing
-        1: Print calculation time
-        11: Print the integrals
-        atoms (int): atom number to Rk
+        verbose (int): verbose level for integral calculation
+        drive_time (drv_object): Object to manage the time
+
     """
 
     if name.lower() == "overlap":
-        integral: list = overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = overlap(coord, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
 
         # Comprobation of the basis set
         # mo_integral = self.molecular_matrix(integral, sym)
@@ -79,37 +78,37 @@ def h1i(
         #         ne,
         #     )
     elif name.lower() == "nucpot":
-        integral: list = nucpot(charge, atom, coord, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = nucpot(charge, atom, coord, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "kinetic":
-        integral: list = kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = kinetic(coord, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "angmom":
-        integral: list = angmom(coord, r_gauge, magnetic_xyz, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = angmom(coord, r_gauge, magnetic_xyz, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "sd":
-        integral: list = sd(coord, magnetic_xyz, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = sd(coord, magnetic_xyz, spatial_sym, atom, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "fc":
-        integral: list = fc(coord, atom, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = fc(coord, atom, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "darwin":
-        integral: list = darwin(charge, coord, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = darwin(charge, coord, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "massvelo":
-        integral: list = massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = massvelo(coord, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "nelfld":
-        integral: list = nelfld(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = nelfld(coord, spatial_sym, atom, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "diplen":
-        integral: list = diplen(coord, magnetic_xyz, r_dipole, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = diplen(coord, magnetic_xyz, r_dipole, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "dipvel":
-        integral: list = dipvel(coord, magnetic_xyz, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = dipvel(coord, magnetic_xyz, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "pso":
-        integral: list = pso(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = pso(coord, spatial_sym, atom, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "nstcgo":
-        integral: list = nstcgo(coord, r_gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = nstcgo(coord, r_gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "dnske":
-        integral: list = dnske(coord, r_gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = dnske(coord, r_gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "psoke":
-        integral: list = psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "psooz":
-        integral: list = psooz(coord, r_gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = psooz(coord, r_gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "ozke":
-        integral: list = ozke(coord, r_gauge, magnetic_xyz, exp, center, lx, ly, lz, output, dalton_normalization)
+        integral: list = ozke(coord, r_gauge, magnetic_xyz, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     return integral
 
     # def molecular_matrix(self, integral: list = None, sym: str = None):

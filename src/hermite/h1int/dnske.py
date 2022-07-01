@@ -1,6 +1,6 @@
 from lib1h import *
 
-def dnske(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, ly, lz, output, dalton_normalization):
+def dnske(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """
     Kinetic-energy correction to the diamagnetic contribution to nuclear shielding atomic integrals
 
@@ -17,6 +17,7 @@ def dnske(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, 
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
         dalton_normalization (bool): it is used the dalton normalization formule
+        drive_time (drv_object): Object to manage the time
 
     Return:
         angmom (array): array 2d with atomic integrals
@@ -636,7 +637,7 @@ def dnske(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, 
             )
             count += 1
     if output > 10:
-        print_time(name = f"Kinetic-Energy Correction to the Diamagnetic Contribution to Nuclear Shielding, \
+        driver_time.add_name_delta_time(name = f"Kinetic-Energy Correction to the Diamagnetic Contribution to Nuclear Shielding, \
         for {magnetic_component} Magnetic Component and {spatial_sym} Spatial Symmetry", delta_time = (time() - start))
 
     return dnske

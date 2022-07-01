@@ -1,12 +1,12 @@
 from lib1h import *
 
-def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalton_normalization):
+def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """
     Calculates the kinetic energy correction to the orbital Zeeman operator
 
     Args:
         coord (list): list 2d with coordinates of the atoms
-        gauge (list): list 1d with gauge coordinates 
+        gauge (list): list 1d with gauge coordinates
         magnetic_component (int): magnetic component
         exp (list): list 1d with the exponentials
         center (list): list 1d with the center of the gaussian
@@ -15,6 +15,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
         dalton_normalization (bool): it is used the dalton normalization formule
+        drive_time (drv_object): Object to manage the time
 
     Return:
         ozke (array): array 1d with atomic integrals
@@ -485,7 +486,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
             count += 1
 
     if output > 10:
-        print_time("Calculates the Kinetic Energy Correction to the Orbital Zeeman Operator, \
+        driver_time.add_name_delta_time("Calculates the Kinetic Energy Correction to the Orbital Zeeman Operator, \
         {magnetic_component} Magnetic Component", delta_time = (time() - start))
 
     return ozke
