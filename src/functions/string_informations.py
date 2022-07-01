@@ -9,6 +9,17 @@ def print_title(name: str = None):
     print("*** ", name.upper().center(70), " ***")
     print("*" * 80)
 
+def print_subtitle(name: str = None):
+    """
+    Print titles
+
+    Args:
+        name (str): Title name
+    """
+    print(name.title().center(70))
+    print(("-" * 40).center(70))
+
+
 def print_time(name: str = None, delta_time: float = None,
                 header: bool = True, tailer: bool = True):
     """"

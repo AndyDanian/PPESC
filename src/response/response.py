@@ -12,7 +12,7 @@ class response():
     def __init__(self, wf: wave_function = None, moe: list = None,
                     gradient_properties: dict = None, two_integrals: list or array = None,
                     properties: list = None, multiplicity: list = None,
-                    all_responses: bool = None, verbose: int = 0):
+                    verbose: int = 0):
         """
         Reponse object
 
@@ -49,13 +49,6 @@ class response():
                     ...
                 ]
         multiplicity (list(list)): Multiplicity of each property
-        all_response (bool): Activate the different response among one set
-                            of operators
-                            Example, if is True:
-                            [A,B] then is get <<A;A>>, <<A;B>>, and <<B,B>>
-
-                            Example, if is False:
-                            [A,B] then is get <<A;B>>
         verbose (int): Print level
         """
 
@@ -76,16 +69,45 @@ class response():
         self._gp = gradient_properties
         self._multiplicity = multiplicity
         self._tintegrals = two_integrals
-        self._allr = all_responses
         self._verbose = verbose
 
         if not self._gp:
             self._gp = {}
-
+    ################################################################################################
+    # ATTRIBUTES
+    ################################################################################################
+    @property
+    def lineal_multiplicites(self) -> list:
+        "Multiplicites"
+        return [ms if isinstance(ms, int) else ms.lower() for ms in self._multiplicity]
+    @property
+    def lineal_singlet(self) -> bool:
+        "Singlet Multiplicity"
+        if 1 in self.lineal_multiplicites:
+            return True
+        if "singlet" in self.lineal_multiplicites:
+            return True
+        return False
+    @property
+    def lineal_triplet(self) -> bool:
+        "Triplet Multiplicity"
+        if 3 in self.lineal_multiplicites:
+            return True
+        if "triplet" in self.lineal_multiplicites:
+            return True
+        return False
+    @property
+    def properties(self) -> list:
+        "Properties different to calcualte"
+        return [name for name in {name for p in self._properties for name in p}]
+    @property
+    def lineal_multiplicity_properties(self) -> dict:
+        "Properties with its multiplicity"
+        return {p: self._multiplicity[int(count/2)] for count, pro in enumerate(self._properties) for p in pro}
     ################################################################################################
     # METHODS
     ################################################################################################
-    def rpa(self, verbose_integrals: int = 0):
+    def rpa(self, verbose_integrals: int = -1):
         """
         Calculate reponse at random phase approximation
 
@@ -100,89 +122,112 @@ class response():
             driver_time = None
 
         print("\nLevel approximation: RPA \n")
-        for iresponse, response in enumerate(self._properties):
 
-            if response_type[str(len(response))] != "lineal":
+        #Principal Propagator
+        # - Two integrals
+        if not self._tintegrals:
+            coulomb_integrals, exchange_integrals = get_coulomb_exchange_integrals(self._wf,
+                                                    time_object = driver_time,
+                                                    verbose = self._verbose,
+                                                    verbose_int = verbose_integrals)
+        else:
+            raise ValueError("Falta implementar que obtenga las integrales desde 2i dadas")
+
+        # - Molecular orbital energies
+        if not self._moe:
+            self._moe = self._wf.mo_energies
+
+        # - Build PP
+        multiplicity = {"singlet": self.lineal_singlet, "triplet": self.lineal_triplet}
+
+        for ms in self.lineal_multiplicites:
+            if not ms in [1,3,"singlet","triplet"]:
+                raise ValueError(f"***ERROR\n\n\
+                    The multiplicity is not implemented {ms}")
+
+        principal_propagator = {}
+        for name, ms in multiplicity.items():
+            if ms:
+                principal_propagator[name] = get_principal_propagator_lineal_rpa(
+                                                            n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
+                                                            moe = np.array(self._moe), coulomb = coulomb_integrals,
+                                                            exchange = exchange_integrals,
+                                                            multiplicity = name, tp_inv = 0,
+                                                            time_object = driver_time,
+                                                            verbose = self._verbose)
+
+        # Gradient Property Vector
+        gpvs: dict = {}
+        for property in self.properties:
+            if not self._gp or property not in self._gp.keys():
+                temp_gpvs = gradient_property_vector_rpa(wf = self._wf,
+                                    property = property, time_object = driver_time,
+                                    verbose = self._verbose, verbose_int = verbose_integrals,
+                                    multiplicity=self.lineal_multiplicity_properties[property])
+
+                for name, value in temp_gpvs.items():
+                    gpvs[name] = value
+            else:
+                gpvs = read_gradient_property_vector_rpa(wf = self._gp, property = property,
+                                    verbose = self._verbose,
+                                    multiplicity=self.lineal_multiplicity_properties[property])
+
+        #Calculate of Response
+        for iresponse, property in enumerate(self._properties):
+
+            # Type of response
+            if response_type[str(len(property))] != "lineal":
                 raise ValueError("***Error \n\n\
                         Response isn't implemete. The lineal response is unique\n\
                         implemeted, i.e., reponse between 2 properties. Then, the\n\
                         reponse array only might be [[A,B],[C,D],...]")
 
-            print(f"     Response Type: {response_type[str(len(response))]}")
-            if response_type[str(len(response))] == "lineal":
-                print(f"     Properties: <<{response[0].upper()};{response[1].upper()}>>")
+            print(f"     Response Type: {response_type[str(len(property))]}")
+
+            # Properties pair
+            operator_a: list = []
+            operator_b: list = []
+            for name in gpvs.keys():
+                if property[0] in name:
+                    operator_a.append(name)
+                if property[1] in name:
+                    operator_b.append(name)
+
+            if response_type[str(len(property))] == "lineal":
+                for index_a, name_a in enumerate(operator_a):
+                    for index_b, name_b in enumerate(operator_b):
+                        if index_a > index_b and name_a.split()[0] == name_b.split()[0]:
+                            continue
+                        print(f"     Lineal Response: <<{name_a.upper()};{name_b.upper()}>>")
 
             #Multiplicity
-            if isinstance(self._multiplicity, list):
-                if not self._multiplicity[iresponse]:
-                    raise ValueError(f"*** ERROR\n\n\
-                        Multiplicity array, {len(self._multiplicity)}, is lower than\n\
-                        properties array, {len(self._properties)}.\n\
-                        ")
-                else:
-                    multiplicity: list = self._multiplicity[iresponse]
+            if not self._multiplicity[iresponse]:
+                raise ValueError(f"*** ERROR\n\n\
+                    Multiplicity array, {len(self._multiplicity)}, is lower than\n\
+                    properties array, {len(self._properties)}.\n\
+                    ")
+            else:
+                multiplicity: str = self._multiplicity[iresponse]
 
-            multiplicity_s = []
-            for mult in multiplicity:
-                if isinstance(mult, int):
-                    multiplicity_s.append(multiplicity_string[mult])
-                else:
-                    multiplicity_s.append(mult)
+            if isinstance(multiplicity, int):
+                multiplicity_s = multiplicity_string[multiplicity]
+            else:
+                multiplicity_s = multiplicity
             print(f"     Multiplicity: {multiplicity_s}")
 
-            # Gradient Property Vector
-            for count, property in enumerate(response):
-                if count > 0 and property in response[:count]:
-                    continue
-                if not self._gp or property not in self._gp.keys():
-                    temp_all_responses, gpvs = gradient_property_vector_rpa(wf = self._wf,
-                                        property = property, time_object = driver_time,
-                                        verbose = self._verbose, verbose_int = verbose_integrals,
-                                        multiplicity=multiplicity[count])
-                    if self._allr == None:
-                        self._allr = temp_all_responses
-                else:
-                    gpvs: dict = read_gradient_property_vector_rpa(wf = self._gp, property = property,
-                                        verbose = self._verbose, multiplicity=multiplicity[count])
-                    if self._allr == None:
-                        self._allr = False
-
-            #Principal Propagator
-            # - two integrals
-            if not self._tintegrals:
-                coulomb_integrals, exchange_integrals = get_coulomb_exchange_integrals(self._wf,
-                                                        time_object = driver_time,
-                                                        verbose = self._verbose,
-                                                        verbose_int = verbose_integrals)
-            else:
-                raise ValueError("Falta implementar que obtenga las integrales desde 2i dadas")
-            # - Build PP
-            if response_type[str(len(response))] == "lineal":
-                if not self._moe:
-                    self._moe = self._wf.mo_energies
-                principal_propagator: np.array = get_principal_propagator_lineal_rpa(
-                                                                n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
-                                                                moe = np.array(self._moe), coulomb = coulomb_integrals,
-                                                                exchange = exchange_integrals,
-                                                                multiplicity = multiplicity[0], tp_inv = 0,
-                                                                time_object = driver_time,
-                                                                verbose = self._verbose)
-            else:
-                raise ValueError("***ERROR \n\n\
-                        Only is implemeted principal propagator of lineal response\n\
-                        at rpa level.")
-
             #Response calculate
-            calculate_lineal_reponse(n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
-            principal_propagator = principal_propagator, gpvs = gpvs, all_responses = self._allr,
+            calculate_lineal_reponse(
+            operator_a = operator_a, operator_b = operator_b,
+            n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
+            principal_propagator = principal_propagator[multiplicity_s.lower()], gpvs = gpvs,
             time_object = driver_time, verbose = self._verbose)
 
-            if self._verbose > 10:
-                driver_time.add_name_delta_time(name = "Response Calculation", delta_time = (time() - start))
-                driver_time.printing()
-            print_title(name = f"END REPONSE CALCULATION")
+        if self._verbose > 10:
+            driver_time.add_name_delta_time(name = "Response Calculation", delta_time = (time() - start))
+            driver_time.printing()
+        print_title(name = f"END REPONSE CALCULATION")
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/LiH.molden")
-    r = response(wfn, properties = [["fc","fc"]], multiplicity=[[3,3]], verbose=12)
+    wfn = wave_function("../tests/molden_file/H2_s.molden")
+    r = response(wfn, properties = [["fc","fc"], ["fc","kinetic"]], multiplicity=[3,3], verbose=0)
     r.rpa()

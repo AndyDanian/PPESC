@@ -99,7 +99,7 @@ def get_coulomb_exchange_integrals(wf: wave_function = None,
     if verbose > 10:
         time_object.add_name_delta_time(name = f"Coulomb and Exchange", delta_time = (time() - start))
 
-    if verbose > 20:
+    if verbose > 50:
 
         print("Coulomb and Exchange".center(70))
         print(("-"*30).center(70))
@@ -197,7 +197,7 @@ def ao_2_mo(wf: wave_function = None, verbose: int = 0):
                             mo2i[i,j,a,b] = mo2i[a,b,j,i]
                             mo2i[i,j,b,a] = mo2i[a,b,j,i]
 
-    if verbose > 20:
+    if verbose > 50:
 
         print("Molecular Obrital Two Body Integrals".center(70))
         print(("-"*30).center(70))

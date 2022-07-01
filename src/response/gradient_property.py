@@ -35,7 +35,6 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
         verbose (int): Print level.
     """
     start = time()
-    all_responses: bool = False
     # atomic integrals
     calculate_integral = eint(wf)
     integrals_1b, symmetries_1b = calculate_integral.integration_onebody(
@@ -52,15 +51,13 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
         # gradient porperty vector
         gpvs[name] = [2.0*mo_integral[i][a + n_mo_occ] for i in range(n_mo_occ) for a in range(n_mo_virt)]
 
-    if len(gpvs) > 1: all_responses = True # To activate responses among all integrals
-
     if verbose > 10:
         time_object.add_name_delta_time(name = f"Build GPV {property}", delta_time = (time() - start))
 
     if verbose > 30:
         print_gradient_property_vector(gpvs = gpvs, multiplicity = multiplicity)
 
-    return all_responses, gpvs
+    return gpvs
 
 def read_gradient_property_vector_rpa(gpvs: dict = None, property: str = None,
                                     multiplicity: str or int = None, verbose: int = 0):

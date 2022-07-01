@@ -12,7 +12,7 @@ def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: s
         name (str): name of the integral
         matriz_sym (str): Matriz symmetric of atomic integrals
     """
-    print_title(name = name)
+    print_subtitle(name = name)
 
     ZERO = 1.0E-7
 

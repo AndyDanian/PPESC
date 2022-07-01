@@ -1,14 +1,17 @@
 from libr import *
 
-def calculate_lineal_reponse(n_mo_occ: int = None, n_mo_virt: int = None,
+def calculate_lineal_reponse(operator_a: list = None, operator_b: list = None,
+                            n_mo_occ: int = None, n_mo_virt: int = None,
                             principal_propagator: np.array = None, gpvs: dict = None,
-                            all_responses: bool = False, time_object: drv_time = None,
+                            time_object: drv_time = None,
                             verbose: int = 0):
     """
     Calculate of the path and total value of lienal response
 
     Args:
     ----
+    operator_a (list): Name of the operator in the left
+    operator_b (list): Name of the operator in the right
     n_mo_occ (int): Ocuppied molecular orbitals
     n_mo_virt (int): Virtual molecular orbitals
     moe (np.array, 1d): Molecular orbital energies
@@ -16,26 +19,19 @@ def calculate_lineal_reponse(n_mo_occ: int = None, n_mo_virt: int = None,
     exchange (np.array): Exchange integrals
     multiplicity (str): Multiplicity response
     tp_inv (int): Type of inverse: 0/numpy or 1/series
-    all_response (bool): Activate the different response among one set
-                        of operators
-                        Example, if is True:
-                        [A,B] then is get <<A;A>>, <<A;B>>, and <<B,B>>
     verbose (int): Print level
     """
     rotations: int = n_mo_occ*n_mo_virt
-    names_gpv: list = [name for name in gpvs.keys()]
-    values_gpv: list = [v for v in gpvs.values()]
-    n_gpv: int = len(names_gpv)
 
     start = time()
 
-    for index_gpv_left in range(n_gpv):
-        for index_gpv_right in range(index_gpv_left, n_gpv):
-            if not all_responses and index_gpv_left == index_gpv_right:
+    for index_a, op_a in enumerate(operator_a):
+        for index_b, op_b in enumerate(operator_b):
+            if index_a > index_b and op_a.split()[0] == op_b.split()[0]:
                 continue
 
             if verbose > 20:
-                title(name = f"PATHS: <<{names_gpv[index_gpv_left]},{names_gpv[index_gpv_right]}>>")
+                print_subtitle(name = f"PATHS: <<{op_a},{op_b}>>")
 
             ipath: int = 0
             vpathT: float = 0.0E+0
@@ -52,8 +48,8 @@ def calculate_lineal_reponse(n_mo_occ: int = None, n_mo_virt: int = None,
                             t = b + n_mo_occ
 
                             appb =\
-                                values_gpv[index_gpv_left][a+i*n_mo_virt]\
-                                *values_gpv[index_gpv_right][b+j*n_mo_virt]
+                                gpvs[op_a][a+i*n_mo_virt]\
+                                *gpvs[op_b][b+j*n_mo_virt]
                             # A_{i,s} PP_{i,s,j,t} B_{t,j}
                             appb = appb*principal_propagator[irow,icol]
 
@@ -82,7 +78,7 @@ def calculate_lineal_reponse(n_mo_occ: int = None, n_mo_virt: int = None,
 
             print()
             print(('='*40).center(70))
-            print(f'-<<{names_gpv[index_gpv_left]};{names_gpv[index_gpv_right]}>>  =  {-vpathT:.6f}'.center(70))
+            print(f'-<<{op_a};{op_b}>>  =  {-vpathT:.6f}'.center(70))
             print(('='*40).center(70))
 
     if verbose > 10:
