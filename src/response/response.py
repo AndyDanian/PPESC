@@ -75,23 +75,23 @@ class response():
     # ATTRIBUTES
     ################################################################################################
     @property
-    def lineal_multiplicites(self) -> list:
+    def multiplicites(self) -> list:
         "Multiplicites"
-        return [ms if isinstance(ms, int) else ms.lower() for ms in self._multiplicity]
+        return [m if isinstance(m, int) else m.lower() for ms in self._multiplicity for m in ms]
     @property
     def lineal_singlet(self) -> bool:
         "Singlet Multiplicity"
-        if 1 in self.lineal_multiplicites:
+        if 1 in self.multiplicites:
             return True
-        if "singlet" in self.lineal_multiplicites:
+        if "singlet" in self.multiplicites:
             return True
         return False
     @property
     def lineal_triplet(self) -> bool:
         "Triplet Multiplicity"
-        if 3 in self.lineal_multiplicites:
+        if 3 in self.multiplicites:
             return True
-        if "triplet" in self.lineal_multiplicites:
+        if "triplet" in self.multiplicites:
             return True
         return False
     @property
@@ -115,13 +115,25 @@ class response():
             response.append(response_type[str(len(property))])
         return response
     @property
-    def multiplicity_string(self)-> list:
+    def lineal_multiplicity_string(self)-> list:
         ms = []
         for multiplicity in self._multiplicity:
-            if isinstance(multiplicity, int):
-                ms.append(multiplicity_string[multiplicity])
-            else:
-                ms.append(multiplicity)
+            if len(multiplicity) == 1:
+                if isinstance(multiplicity[0], int):
+                    ms.append(multiplicity_string[multiplicity[0]])
+                else:
+                    ms.append(multiplicity[0])
+        return ms
+    @property
+    def quadratic_multiplicity_string(self)-> list:
+        ms = []
+        for multiplicity in self._multiplicity:
+            if len(multiplicity) == 2:
+                for m in multiplicity:
+                    if isinstance(m, int):
+                        ms.append(multiplicity_string[m])
+                    else:
+                        ms.append(m)
         return ms
     ################################################################################################
     # METHODS
@@ -143,8 +155,8 @@ class response():
         # - Build PP
         multiplicity = {"singlet": self.lineal_singlet, "triplet": self.lineal_triplet}
 
-        for ms in self.lineal_multiplicites:
-            if not ms in [1,3,"singlet","triplet"]:
+        for ms in self.lineal_multiplicity_string:
+            if not ms.lower() in [1,3,"singlet","triplet"]:
                 raise ValueError(f"***ERROR\n\n\
                     The multiplicity is not implemented {ms}")
 
@@ -211,7 +223,6 @@ class response():
         print("\nLevel approximation: RPA \n")
 
         tr = self.type_response
-        mult = self.multiplicity_string
         #Principal Propagator
         principal_propagator = self.principal_propagator(driver_time = driver_time, verbose_integrals = verbose_integrals)
         # Gradient Property Vector
@@ -219,20 +230,26 @@ class response():
         # Average
         avs = self.average_value(self._properties, verbose_average = verbose_average, verbose_integrals = verbose_integrals)
         #Calculate of Response
+        countl = 0
+        countq = 0
         for iresponse, property in enumerate(self._properties):
 
             # Type of response
             print(f"     Response Type: {tr[iresponse]}")
-            print(f"     Multiplicity: {mult[iresponse]}")
+            # Properties pair
+            operator_a: list = []
+            operator_b: list = []
+            operator_c: list = []
+            for name in gpvs.keys():
+                if property[0] in name:
+                    operator_a.append(name)
+                if property[1] in name:
+                    operator_b.append(name)
+                if tr[iresponse] == "quadratic" and property[2] in name:
+                    operator_c.append(name)
+
             if tr[iresponse] == "lineal":
-                # Properties pair
-                operator_a: list = []
-                operator_b: list = []
-                for name in gpvs.keys():
-                    if property[0] in name:
-                        operator_a.append(name)
-                    if property[1] in name:
-                        operator_b.append(name)
+                print(f"     Multiplicity: {self.lineal_multiplicity_string[countl]}")
                 for index_a, name_a in enumerate(operator_a):
                     for index_b, name_b in enumerate(operator_b):
                         if index_a > index_b and name_a.split()[0] == name_b.split()[0]:
@@ -242,8 +259,20 @@ class response():
                 calculate_lineal_reponse(
                 operator_a = operator_a, operator_b = operator_b,
                 n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
-                principal_propagator = principal_propagator[mult[iresponse].lower()], gpvs = gpvs,
+                principal_propagator = principal_propagator[self.lineal_multiplicity_string[countl].lower()], gpvs = gpvs,
                 time_object = driver_time, verbose = self._verbose)
+                countl += 1
+            elif tr[iresponse] == "quadratic":
+                print(f"     Multiplicity: {self.quadratic_multiplicity_string[countq]} {self.quadratic_multiplicity_string[countq + 1]}")
+                for index_a, name_a in enumerate(operator_a):
+                    for index_b, name_b in enumerate(operator_b):
+                        if index_a > index_b and name_a.split()[0] == name_b.split()[0]:
+                            continue
+                        for index_c, name_c in enumerate(operator_c):
+                            if index_b > index_c and name_a.split()[0] == name_b.split()[0]:
+                                continue
+                            print(f"     Quadratic Response: <<{name_a.upper()};{name_b.upper()},{name_c.upper()}>>")
+                countq += 2
 
         if self._verbose > 10:
             driver_time.add_name_delta_time(name = "Response Calculation", delta_time = (time() - start))
@@ -252,5 +281,5 @@ class response():
 
 if __name__ == "__main__":
     wfn = wave_function("../tests/molden_file/H2_s.molden")
-    r = response(wfn, properties = [["fc","fc","fc"], ["fc","kinetic"]], multiplicity=[3,3], verbose=0)
+    r = response(wfn, properties = [["fc","fc","fc"], ["fc","kinetic"]], multiplicity=[[3,3],[1]], verbose=0)
     r.rpa()
