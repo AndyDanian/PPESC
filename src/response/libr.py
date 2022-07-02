@@ -25,6 +25,9 @@ sys.path.append(
     os.fspath(PARENT_PATH / ("hermite"))
     )
 sys.path.append(
+    os.fspath(PARENT_PATH / ("average"))
+    )
+sys.path.append(
     os.fspath(PARENT_PATH / ("fock"))
     )
 sys.path.append(
@@ -50,3 +53,6 @@ from print_matrix import *
 from integral_parameters import *
 from string_informations import *
 from drv_time import *
+
+# average
+from average import *

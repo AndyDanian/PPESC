@@ -52,9 +52,10 @@ class average():
         for name, atomic_int in integrals_1b.items():
             mo_integral[name] = np.matmul(mo_coeff_T,np.matmul(np.array(atomic_int), mo_coeff_T.T))
 
-        for name, average in mo_integral.items():
-            print_result(name = f"Average {name.title()}",
-            value = f"{sum([average[i][i] for i in range(n_mo_occ)]):.8f}")
+        if verbose >= 0:
+            for name, average in mo_integral.items():
+                print_result(name = f"Average {name.title()}",
+                value = f"{sum([average[i][i] for i in range(n_mo_occ)]):.8f}")
 
         if verbose > 10:
             driver_time.add_name_delta_time(name = f"Average Value", delta_time = (time() - start))
@@ -63,7 +64,9 @@ class average():
         if verbose >= 0:
             print_title("End Average Value")
 
+        return mo_integral
+
 if __name__ == "__main__":
     wfn = wave_function("../tests/molden_file/H2_s.molden")
     av = average(wfn)
-    av.calculate_average(property = ["kinetic"])
+    av.calculate_average(property = ["fc"])

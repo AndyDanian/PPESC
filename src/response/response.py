@@ -160,7 +160,7 @@ class response():
                                                             verbose = self._verbose)
 
         return principal_propagator
-
+    #*******************************************
     def gradient_property_vector(self, driver_time: drv_time = None, verbose_integrals: int = -1):
         gpvs: dict = {}
         for property in self.properties:
@@ -177,8 +177,21 @@ class response():
                                     verbose = self._verbose,
                                     multiplicity=self.lineal_multiplicity_properties[property])
         return gpvs
-
-    def rpa(self, verbose_integrals: int = -1):
+    #*******************************************
+    def average_value(self, properties: list = None, verbose_average: int = -1, verbose_integrals: int = -1):
+        if "quadratic" in self.type_response:
+            av_object = average(self._wf)
+            for count, t in enumerate(self.type_response):
+                if t == "quadratic":
+                    for counta, p in enumerate(properties[count]):
+                        if counta > 0 and p in properties[count][0]:
+                            continue
+                        if counta > 1 and p in properties[count][1]:
+                            continue
+                        avs = av_object.calculate_average(property = [p], verbose = verbose_average, verbose_integrals = verbose_integrals)
+        return avs
+    #*******************************************
+    def rpa(self, verbose_integrals: int = -1, verbose_average: int = -1):
         """
         Calculate reponse at random phase approximation
 
@@ -197,20 +210,20 @@ class response():
 
         print("\nLevel approximation: RPA \n")
 
-        #Principal Propagator
-        principal_propagator = self.principal_propagator(driver_time = driver_time, verbose_integrals = verbose_integrals)
-
-        # Gradient Property Vector
-        gpvs = self.gradient_property_vector(driver_time = driver_time, verbose_integrals = verbose_integrals)
-
-        #Calculate of Response
         tr = self.type_response
         mult = self.multiplicity_string
+        #Principal Propagator
+        principal_propagator = self.principal_propagator(driver_time = driver_time, verbose_integrals = verbose_integrals)
+        # Gradient Property Vector
+        gpvs = self.gradient_property_vector(driver_time = driver_time, verbose_integrals = verbose_integrals)
+        # Average
+        avs = self.average_value(self._properties, verbose_average = verbose_average, verbose_integrals = verbose_integrals)
+        #Calculate of Response
         for iresponse, property in enumerate(self._properties):
 
             # Type of response
             print(f"     Response Type: {tr[iresponse]}")
-
+            print(f"     Multiplicity: {mult[iresponse]}")
             if tr[iresponse] == "lineal":
                 # Properties pair
                 operator_a: list = []
@@ -225,15 +238,12 @@ class response():
                         if index_a > index_b and name_a.split()[0] == name_b.split()[0]:
                             continue
                         print(f"     Lineal Response: <<{name_a.upper()};{name_b.upper()}>>")
-
-            print(f"     Multiplicity: {mult[iresponse]}")
-
-            #Response calculate
-            calculate_lineal_reponse(
-            operator_a = operator_a, operator_b = operator_b,
-            n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
-            principal_propagator = principal_propagator[mult[iresponse].lower()], gpvs = gpvs,
-            time_object = driver_time, verbose = self._verbose)
+                #Response calculate
+                calculate_lineal_reponse(
+                operator_a = operator_a, operator_b = operator_b,
+                n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
+                principal_propagator = principal_propagator[mult[iresponse].lower()], gpvs = gpvs,
+                time_object = driver_time, verbose = self._verbose)
 
         if self._verbose > 10:
             driver_time.add_name_delta_time(name = "Response Calculation", delta_time = (time() - start))
@@ -242,5 +252,5 @@ class response():
 
 if __name__ == "__main__":
     wfn = wave_function("../tests/molden_file/H2_s.molden")
-    r = response(wfn, properties = [["fc","fc"], ["fc","kinetic"]], multiplicity=[3,3], verbose=0)
+    r = response(wfn, properties = [["fc","fc","fc"], ["fc","kinetic"]], multiplicity=[3,3], verbose=0)
     r.rpa()
