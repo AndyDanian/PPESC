@@ -1,3 +1,4 @@
+from coulomb_exchange import *
 from libr import *
 
 def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = None,
@@ -82,3 +83,39 @@ def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = N
             name = "Principal Propagator Inverse (Numpy)."
         print_triangle_matrix(integral = pp, name = name,  matriz_sym = "square")
     return pp
+
+def drv_principal_propagator(driver_time: drv_time = None, moe: list = None,
+                            n_mo_occ: int = None, n_mo_virt: int = None,
+                            coulomb: np.array = None, exchange: np.array = None,
+                            multiplicity_pp: dict = None, tp_inv: int  = None,
+                            verbose: int  = 0):
+    """
+    Driver to build the principal propagator
+
+    Args:
+    ----
+    driver_time (drv_time): Object relationed with the manage of the time
+    n_mo_occ (int): Ocuppied molecular orbitals
+    n_mo_virt (int): Virtual molecular orbitals
+    moe (list): Molecular orbital energies
+    coulomb (np.array): Coulomb integrals in molecular base
+    Exchange (np.array): Exchange integrals in molecular base
+    multiplicity_pp (dict): Indicate if is neccesary calculate singlet or triplet principal
+                            propagator
+    tp_inv (int): Type of inverse: 0/numpy or 1/series
+    verbose (int): Print level
+    verbose_integrals (int): Print level for hermite module
+    """
+    # - Build PP
+    principal_propagator = {}
+    for name, ms in multiplicity_pp.items():
+        if ms:
+            principal_propagator[name] = get_principal_propagator_lineal_rpa(
+                                                        n_mo_occ = n_mo_occ, n_mo_virt = n_mo_virt,
+                                                        moe = np.array(moe), coulomb = coulomb,
+                                                        exchange = exchange,
+                                                        multiplicity = name, tp_inv = tp_inv,
+                                                        time_object = driver_time,
+                                                        verbose = verbose)
+
+    return principal_propagator

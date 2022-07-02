@@ -4,6 +4,7 @@ from gradient_property import *
 from coulomb_exchange import *
 from principal_propagator import *
 from lineal_response import *
+from quadratic_response import *
 from libr import *
 
 multiplicity_string = {1:"Singlet", 3:"Triplet"}
@@ -11,7 +12,8 @@ multiplicity_string = {1:"Singlet", 3:"Triplet"}
 class response():
     def __init__(self, wf: wave_function = None, moe: list = None,
                     gradient_properties: dict = None, two_integrals: list or array = None,
-                    properties: list = None, multiplicity: list = None,
+                    properties: list = None, property_multiplicity: list = None,
+                    pp_multiplicity: list = None,
                     verbose: int = 0):
         """
         Reponse object
@@ -48,7 +50,8 @@ class response():
                     ["FC 1", "FC 2"], <-- Lineal Response
                     ...
                 ]
-        multiplicity (list(list)): Multiplicity of each property
+        pp_multiplicity (list(list)): Multiplicity to build the principal propagator
+        property_multiplicity (list(list)): Multiplicity for each property
         verbose (int): Print level
         """
 
@@ -65,7 +68,8 @@ class response():
         self._properties = properties
         self._moe = moe
         self._gp = gradient_properties
-        self._multiplicity = multiplicity
+        self._pp_multiplicity = pp_multiplicity
+        self._p_multiplicity = property_multiplicity
         self._tintegrals = two_integrals
         self._verbose = verbose
 
@@ -75,33 +79,32 @@ class response():
     # ATTRIBUTES
     ################################################################################################
     @property
-    def multiplicites(self) -> list:
+    def principal_propagator_multiplicites(self) -> list:
         "Multiplicites"
-        return [m if isinstance(m, int) else m.lower() for ms in self._multiplicity for m in ms]
+        return [m if isinstance(m, int) else m.lower() for ms in self._pp_multiplicity for m in ms]
     @property
     def lineal_singlet(self) -> bool:
         "Singlet Multiplicity"
-        if 1 in self.multiplicites:
+        if 1 in self.principal_propagator_multiplicites:
             return True
-        if "singlet" in self.multiplicites:
+        if "singlet" in self.principal_propagator_multiplicites:
             return True
         return False
     @property
     def lineal_triplet(self) -> bool:
         "Triplet Multiplicity"
-        if 3 in self.multiplicites:
+        if 3 in self.principal_propagator_multiplicites:
             return True
-        if "triplet" in self.multiplicites:
+        if "triplet" in self.principal_propagator_multiplicites:
             return True
         return False
+    @property
+    def property_multiplicity(self) -> dict:
+        return {p: m for pro, ms in zip(self._properties, self._p_multiplicity) for p, m in zip(pro, ms)}
     @property
     def properties(self) -> list:
         "Properties different to calcualte"
         return [name for name in {name for p in self._properties for name in p}]
-    @property
-    def lineal_multiplicity_properties(self) -> dict:
-        "Properties with its multiplicity"
-        return {p: self._multiplicity[int(count/2)] for count, pro in enumerate(self._properties) for p in pro}
     @property
     def type_response(self) -> list:
         "Response Type"
@@ -117,7 +120,7 @@ class response():
     @property
     def lineal_multiplicity_string(self)-> list:
         ms = []
-        for multiplicity in self._multiplicity:
+        for multiplicity in self._pp_multiplicity:
             if len(multiplicity) == 1:
                 if isinstance(multiplicity[0], int):
                     ms.append(multiplicity_string[multiplicity[0]])
@@ -127,7 +130,7 @@ class response():
     @property
     def quadratic_multiplicity_string(self)-> list:
         ms = []
-        for multiplicity in self._multiplicity:
+        for multiplicity in self._pp_multiplicity:
             if len(multiplicity) == 2:
                 for m in multiplicity:
                     if isinstance(m, int):
@@ -138,71 +141,6 @@ class response():
     ################################################################################################
     # METHODS
     ################################################################################################
-    def principal_propagator(self, driver_time: drv_time = None, verbose_integrals: int = -1):
-        # - Two integrals
-        if not self._tintegrals:
-            coulomb_integrals, exchange_integrals = get_coulomb_exchange_integrals(self._wf,
-                                                    time_object = driver_time,
-                                                    verbose = self._verbose,
-                                                    verbose_int = verbose_integrals)
-        else:
-            raise ValueError("Falta implementar que obtenga las integrales desde 2i dadas")
-
-        # - Molecular orbital energies
-        if not self._moe:
-            self._moe = self._wf.mo_energies
-
-        # - Build PP
-        multiplicity = {"singlet": self.lineal_singlet, "triplet": self.lineal_triplet}
-
-        for ms in self.lineal_multiplicity_string:
-            if not ms.lower() in [1,3,"singlet","triplet"]:
-                raise ValueError(f"***ERROR\n\n\
-                    The multiplicity is not implemented {ms}")
-
-        principal_propagator = {}
-        for name, ms in multiplicity.items():
-            if ms:
-                principal_propagator[name] = get_principal_propagator_lineal_rpa(
-                                                            n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
-                                                            moe = np.array(self._moe), coulomb = coulomb_integrals,
-                                                            exchange = exchange_integrals,
-                                                            multiplicity = name, tp_inv = 0,
-                                                            time_object = driver_time,
-                                                            verbose = self._verbose)
-
-        return principal_propagator
-    #*******************************************
-    def gradient_property_vector(self, driver_time: drv_time = None, verbose_integrals: int = -1):
-        gpvs: dict = {}
-        for property in self.properties:
-            if not self._gp or property not in self._gp.keys():
-                temp_gpvs = gradient_property_vector_rpa(wf = self._wf,
-                                    property = property, time_object = driver_time,
-                                    verbose = self._verbose, verbose_int = verbose_integrals,
-                                    multiplicity=self.lineal_multiplicity_properties[property])
-
-                for name, value in temp_gpvs.items():
-                    gpvs[name] = value
-            else:
-                gpvs = read_gradient_property_vector_rpa(wf = self._gp, property = property,
-                                    verbose = self._verbose,
-                                    multiplicity=self.lineal_multiplicity_properties[property])
-        return gpvs
-    #*******************************************
-    def average_value(self, properties: list = None, verbose_average: int = -1, verbose_integrals: int = -1):
-        if "quadratic" in self.type_response:
-            av_object = average(self._wf)
-            for count, t in enumerate(self.type_response):
-                if t == "quadratic":
-                    for counta, p in enumerate(properties[count]):
-                        if counta > 0 and p in properties[count][0]:
-                            continue
-                        if counta > 1 and p in properties[count][1]:
-                            continue
-                        avs = av_object.calculate_average(property = [p], verbose = verbose_average, verbose_integrals = verbose_integrals)
-        return avs
-    #*******************************************
     def rpa(self, verbose_integrals: int = -1, verbose_average: int = -1):
         """
         Calculate reponse at random phase approximation
@@ -223,13 +161,36 @@ class response():
         print("\nLevel approximation: RPA \n")
 
         tr = self.type_response
+
+        # - Molecular orbital energies
+        if not self._moe:
+            self._moe = self._wf.mo_energies
+        # - Two integrals
+        if not self._tintegrals:
+            coulomb_integrals, exchange_integrals = get_coulomb_exchange_integrals(self._wf,
+                                                time_object = driver_time,
+                                                verbose = self._verbose,
+                                                verbose_int = verbose_integrals)
+        else:
+            raise ValueError("Falta implementar que obtenga las integrales desde 2i dadas")
         #Principal Propagator
-        principal_propagator = self.principal_propagator(driver_time = driver_time, verbose_integrals = verbose_integrals)
-        # Gradient Property Vector
-        gpvs = self.gradient_property_vector(driver_time = driver_time, verbose_integrals = verbose_integrals)
-        # Average
-        avs = self.average_value(self._properties, verbose_average = verbose_average, verbose_integrals = verbose_integrals)
-        #Calculate of Response
+        for ms in self.lineal_multiplicity_string:
+            if not ms.lower() in [1,3,"singlet","triplet"]:
+                raise ValueError(f"***ERROR\n\n\
+                    The multiplicity {ms} is not implemented for principal propagator")
+        principal_propagator = drv_principal_propagator(driver_time = driver_time, moe = self._moe,
+                                                        n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
+                                                        coulomb = coulomb_integrals, exchange = exchange_integrals,
+                                                        multiplicity_pp = {"singlet": self.lineal_singlet, "triplet": self.lineal_triplet},
+                                                        tp_inv = 0, verbose = self._verbose)
+        # Gradient Property Vector and Average Values
+        if "quadratic" in self.quadratic_multiplicity_string:
+            average = True
+        else:
+            average = False
+        avs, mo_virtuals, gpvs = drv_gradient_property_vector(wf = self._wf, properties =self.properties, gpv_in = self._gp, driver_time = driver_time,
+                                            properties_multiplicity = self.property_multiplicity, average = average,
+                                            verbose = self._verbose, verbose_integrals = verbose_integrals)
         countl = 0
         countq = 0
         for iresponse, property in enumerate(self._properties):
@@ -272,6 +233,14 @@ class response():
                             if index_b > index_c and name_a.split()[0] == name_b.split()[0]:
                                 continue
                             print(f"     Quadratic Response: <<{name_a.upper()};{name_b.upper()},{name_c.upper()}>>")
+                #
+                calculate_quadratic_response(
+                operator_a = operator_a, operator_b = operator_b, operator_c = operator_c,
+                n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
+                principal_propagator_a = principal_propagator[self.quadratic_multiplicity_string[countq].lower()],
+                principal_propagator_b = principal_propagator[self.quadratic_multiplicity_string[countq + 1].lower()],
+                avs = avs, mo_virtuals = mo_virtuals, gpvs = gpvs,
+                time_object = driver_time, verbose = self._verbose)
                 countq += 2
 
         if self._verbose > 10:
@@ -281,5 +250,5 @@ class response():
 
 if __name__ == "__main__":
     wfn = wave_function("../tests/molden_file/H2_s.molden")
-    r = response(wfn, properties = [["fc","fc","fc"], ["fc","kinetic"]], multiplicity=[[3,3],[1]], verbose=0)
+    r = response(wfn, properties = [["fc","fc","fc"], ["fc","kinetic"]], property_multiplicity = [[3,3,3],[3,1]], pp_multiplicity=[[3,3],[1]], verbose=0)
     r.rpa()

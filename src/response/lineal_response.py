@@ -6,7 +6,7 @@ def calculate_lineal_reponse(operator_a: list = None, operator_b: list = None,
                             time_object: drv_time = None,
                             verbose: int = 0):
     """
-    Calculate of the path and total value of lienal response
+    Calculate of the path and total value of stactic lineal response
 
     Args:
     ----
@@ -14,11 +14,8 @@ def calculate_lineal_reponse(operator_a: list = None, operator_b: list = None,
     operator_b (list): Name of the operator in the right
     n_mo_occ (int): Ocuppied molecular orbitals
     n_mo_virt (int): Virtual molecular orbitals
-    moe (np.array, 1d): Molecular orbital energies
-    coulomb (np.arra, 4d): Coulomb integrals
-    exchange (np.array): Exchange integrals
-    multiplicity (str): Multiplicity response
-    tp_inv (int): Type of inverse: 0/numpy or 1/series
+    principal_propagator_a (np.array): Inverse of the principal propagator
+    time_object (drv_time): Manage time calculation
     verbose (int): Print level
     """
     rotations: int = n_mo_occ*n_mo_virt
@@ -31,7 +28,7 @@ def calculate_lineal_reponse(operator_a: list = None, operator_b: list = None,
                 continue
 
             if verbose > 20:
-                print_subtitle(name = f"PATHS: <<{op_a},{op_b}>>")
+                print_subtitle(name = f"PATHS: <<{op_a};{op_b}>>")
 
             ipath: int = 0
             vpathT: float = 0.0E+0
