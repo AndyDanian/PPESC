@@ -76,10 +76,7 @@ def calculate_lineal_reponse(operator_a: list = None, operator_b: list = None,
                         print(f'Total {spath:.6f}')
                         print()
 
-            print()
-            print(('='*40).center(70))
-            print(f'-<<{op_a};{op_b}>>  =  {-vpathT:.6f}'.center(70))
-            print(('='*40).center(70))
+            print_result(name = f'-<<{op_a};{op_b}>>', value = f'{-vpathT:.6f}')
 
     if verbose > 10:
         name = f"Lineal Response"

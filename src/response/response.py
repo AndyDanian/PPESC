@@ -52,8 +52,6 @@ class response():
         verbose (int): Print level
         """
 
-        print_title(name = "RESPONSE CALCULATION")
-
         if not wf or (not moe and not gradient_properties and not properties
             and not multiplicity):
             raise ValueError("** ERROR \n\n\
@@ -104,26 +102,31 @@ class response():
     def lineal_multiplicity_properties(self) -> dict:
         "Properties with its multiplicity"
         return {p: self._multiplicity[int(count/2)] for count, pro in enumerate(self._properties) for p in pro}
+    @property
+    def type_response(self) -> list:
+        "Response Type"
+        response = []
+        for property in self._properties:
+            if len(property) > 3:
+                raise ValueError("***Error \n\n\
+                        Response isn't implemete. The lineal and quadractic response\n\
+                        is unique implemeted, i.e., reponse between 2 properties. Then ,\n\
+                        the reponse array only might be [[A,B],[C,D,E],...]")
+            response.append(response_type[str(len(property))])
+        return response
+    @property
+    def multiplicity_string(self)-> list:
+        ms = []
+        for multiplicity in self._multiplicity:
+            if isinstance(multiplicity, int):
+                ms.append(multiplicity_string[multiplicity])
+            else:
+                ms.append(multiplicity)
+        return ms
     ################################################################################################
     # METHODS
     ################################################################################################
-    def rpa(self, verbose_integrals: int = -1):
-        """
-        Calculate reponse at random phase approximation
-
-        Args:
-        ----
-        verbose_integrals (int): Print level for integrals calculation
-        """
-        if self._verbose > 10:
-            driver_time = drv_time()
-            start = time()
-        else:
-            driver_time = None
-
-        print("\nLevel approximation: RPA \n")
-
-        #Principal Propagator
+    def principal_propagator(self, driver_time: drv_time = None, verbose_integrals: int = -1):
         # - Two integrals
         if not self._tintegrals:
             coulomb_integrals, exchange_integrals = get_coulomb_exchange_integrals(self._wf,
@@ -156,7 +159,9 @@ class response():
                                                             time_object = driver_time,
                                                             verbose = self._verbose)
 
-        # Gradient Property Vector
+        return principal_propagator
+
+    def gradient_property_vector(self, driver_time: drv_time = None, verbose_integrals: int = -1):
         gpvs: dict = {}
         for property in self.properties:
             if not self._gp or property not in self._gp.keys():
@@ -171,55 +176,63 @@ class response():
                 gpvs = read_gradient_property_vector_rpa(wf = self._gp, property = property,
                                     verbose = self._verbose,
                                     multiplicity=self.lineal_multiplicity_properties[property])
+        return gpvs
+
+    def rpa(self, verbose_integrals: int = -1):
+        """
+        Calculate reponse at random phase approximation
+
+        Args:
+        ----
+        verbose_integrals (int): Print level for integrals calculation
+        """
+
+        print_title(name = "RESPONSE CALCULATION")
+
+        if self._verbose > 10:
+            driver_time = drv_time()
+            start = time()
+        else:
+            driver_time = None
+
+        print("\nLevel approximation: RPA \n")
+
+        #Principal Propagator
+        principal_propagator = self.principal_propagator(driver_time = driver_time, verbose_integrals = verbose_integrals)
+
+        # Gradient Property Vector
+        gpvs = self.gradient_property_vector(driver_time = driver_time, verbose_integrals = verbose_integrals)
 
         #Calculate of Response
+        tr = self.type_response
+        mult = self.multiplicity_string
         for iresponse, property in enumerate(self._properties):
 
             # Type of response
-            if response_type[str(len(property))] != "lineal":
-                raise ValueError("***Error \n\n\
-                        Response isn't implemete. The lineal response is unique\n\
-                        implemeted, i.e., reponse between 2 properties. Then, the\n\
-                        reponse array only might be [[A,B],[C,D],...]")
+            print(f"     Response Type: {tr[iresponse]}")
 
-            print(f"     Response Type: {response_type[str(len(property))]}")
-
-            # Properties pair
-            operator_a: list = []
-            operator_b: list = []
-            for name in gpvs.keys():
-                if property[0] in name:
-                    operator_a.append(name)
-                if property[1] in name:
-                    operator_b.append(name)
-
-            if response_type[str(len(property))] == "lineal":
+            if tr[iresponse] == "lineal":
+                # Properties pair
+                operator_a: list = []
+                operator_b: list = []
+                for name in gpvs.keys():
+                    if property[0] in name:
+                        operator_a.append(name)
+                    if property[1] in name:
+                        operator_b.append(name)
                 for index_a, name_a in enumerate(operator_a):
                     for index_b, name_b in enumerate(operator_b):
                         if index_a > index_b and name_a.split()[0] == name_b.split()[0]:
                             continue
                         print(f"     Lineal Response: <<{name_a.upper()};{name_b.upper()}>>")
 
-            #Multiplicity
-            if not self._multiplicity[iresponse]:
-                raise ValueError(f"*** ERROR\n\n\
-                    Multiplicity array, {len(self._multiplicity)}, is lower than\n\
-                    properties array, {len(self._properties)}.\n\
-                    ")
-            else:
-                multiplicity: str = self._multiplicity[iresponse]
-
-            if isinstance(multiplicity, int):
-                multiplicity_s = multiplicity_string[multiplicity]
-            else:
-                multiplicity_s = multiplicity
-            print(f"     Multiplicity: {multiplicity_s}")
+            print(f"     Multiplicity: {mult[iresponse]}")
 
             #Response calculate
             calculate_lineal_reponse(
             operator_a = operator_a, operator_b = operator_b,
             n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
-            principal_propagator = principal_propagator[multiplicity_s.lower()], gpvs = gpvs,
+            principal_propagator = principal_propagator[mult[iresponse].lower()], gpvs = gpvs,
             time_object = driver_time, verbose = self._verbose)
 
         if self._verbose > 10:

@@ -14,11 +14,22 @@ def print_subtitle(name: str = None):
     Print titles
 
     Args:
-        name (str): Title name
+        name (str): Subtitle name
     """
     print(name.title().center(70))
     print(("-" * 40).center(70))
 
+def print_result(name: str = None, value: float = None):
+    """
+    Print titles
+
+    Args:
+        name (str): Calculation name
+        value (float, int): Calculation value
+    """
+    print(('='*40).ljust(70))
+    print(f'{name}: {value}'.ljust(70))
+    print(('='*40).ljust(70))
 
 def print_time(name: str = None, delta_time: float = None,
                 header: bool = True, tailer: bool = True):
