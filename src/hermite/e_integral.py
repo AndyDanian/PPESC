@@ -88,24 +88,24 @@ class eint:
         if "spinorbit" in [name for int_name in integrals_names for name in int_name.split()]:
             spinorbit_integrals: bool = True
             temp_names: list = []
-            spinorbit_label: list = []
+            activate_all_pso: bool = False
             for name in integrals_names:
                 if "spinorbit" not in name:
                     temp_names.append(name)
                 else:
-                    spinorbit_label.append(name)
                     if len(name.split(" ")) > 1 and "pso" not in [int_name for int_name in integrals_names]:
-                        if name.split()[1] == "1": spin_x = True
-                        if name.split()[1] == "2": spin_y = True
-                        if name.split()[1] == "3": spin_z = True
+                        if name.split()[1] == "1": spino_x: bool = True
+                        if name.split()[1] == "2": spino_y: bool = True
+                        if name.split()[1] == "3": spino_z: bool = True
                         temp_names += ["pso " + str(int(name.lower().split()[1]) + i*3)
                                         for i in range(number_atoms)
                                         if "pso " + str(int(name.lower().split()[1]) + i*3) not in integrals_names]
                     elif "pso" not in [int_name for int_name in integrals_names]:
                         spino_x = spino_y = spino_z = True
                         temp_names.append("pso")
-            integrals_names = temp_names
-        ####
+                        activate_all_pso = True
+            if activate_all_pso:
+                integrals_names = [name for name in temp_names if "pso " not in name]
 
         for int_name in integrals_names:
             if len(int_name.split(" ")) > 1:
