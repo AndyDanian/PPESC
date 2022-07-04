@@ -41,7 +41,7 @@ def print_virtuals(virtuals: list = None, n_mo_v: int = None):
     for name, values in virtuals.items():
         print_subtitle(name = f" Virtuales Values {name}")
         for i in range(n_mo_v):
-            print(*[values[j+i*n_mo_v] for j in range(n_mo_v)],end="")
+            print(*[f"{values[j+i*n_mo_v]:.6f}" for j in range(n_mo_v)],end="\n")
         print()
 
 def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,

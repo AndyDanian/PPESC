@@ -1,5 +1,6 @@
 
 
+from tabnanny import verbose
 from libr import *
 from gradient_property import *
 from coulomb_exchange import *
@@ -179,7 +180,7 @@ class response():
     ################################################################################################
     # METHODS
     ################################################################################################
-    def rpa(self, verbose_integrals: int = -1, verbose_average: int = -1):
+    def rpa(self, driver_time: drv_time = None):
         """
         Calculate reponse at random phase approximation
 
@@ -188,68 +189,31 @@ class response():
         verbose_integrals (int): Print level for integrals calculation
         """
 
-        print_title(name = "RESPONSE CALCULATION")
+        print_subtitle(name = "RPA")
 
         if self._verbose > 10:
-            driver_time = drv_time()
             start = time()
-        else:
-            driver_time = None
 
-        print("\nLevel approximation: RPA \n")
-
-        tr = self.type_response
-
-        # - Molecular orbital energies
-        if not self._moe:
-            self._moe = self._wf.mo_energies
-        # - Two integrals
-        if not self._tintegrals:
-            coulomb_integrals, exchange_integrals = get_coulomb_exchange_integrals(self._wf,
-                                                time_object = driver_time,
-                                                verbose = self._verbose,
-                                                verbose_int = verbose_integrals)
-        else:
-            raise ValueError("Falta implementar que obtenga las integrales desde 2i dadas")
-        #Principal Propagator
-        for ms in self.lineal_multiplicity_string:
-            if not ms.lower() in [1,3,"singlet","triplet"]:
-                raise ValueError(f"***ERROR\n\n\
-                    The multiplicity {ms} is not implemented for principal propagator")
-        principal_propagator = drv_principal_propagator(driver_time = driver_time, moe = self._moe,
-                                                        n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
-                                                        coulomb = coulomb_integrals, exchange = exchange_integrals,
-                                                        multiplicity_pp = {"singlet": self.principal_propagator_singlet,
-                                                        "triplet": self.principal_propagator_triplet},
-                                                        tp_inv = 0, verbose = self._verbose)
-        # Gradient Property Vector and Average Values
-        if "quadratic" in self.type_response:
-            average = True
-        else:
-            average = False
-        avs, mo_virtuals, gpvs = drv_gradient_property_vector(wf = self._wf, properties =self.properties, gpv_in = self._gp, driver_time = driver_time,
-                                            properties_multiplicity = self.property_multiplicity, average = average,
-                                            verbose = self._verbose, verbose_integrals = verbose_integrals)
         countl = countlp = 0
         countq = countqp = 0
         for iresponse, property in enumerate(self._properties):
 
             # Type of response
-            print_subtitle(name = "Specification of Response Calculation")
-            print(f"     Response Type: {tr[iresponse].title()}")
+            print_ljust(name = "Response Calculation Specification")
+            print(f"     Response Type: {self.type_response[iresponse].title()}")
             # Properties pair
             operator_a: list = []
             operator_b: list = []
             operator_c: list = []
-            for name in gpvs.keys():
+            for name in self.gpvs.keys():
                 if property[0] in name:
                     operator_a.append(name)
                 if property[1] in name:
                     operator_b.append(name)
-                if tr[iresponse] == "quadratic" and property[2] in name:
+                if self.type_response[iresponse] == "quadratic" and property[2] in name:
                     operator_c.append(name)
 
-            if tr[iresponse] == "lineal":
+            if self.type_response[iresponse] == "lineal":
                 print(f"     Properties: {self.lineal_properties[countlp]}, {self.lineal_properties[countlp + 1]}")
                 print("     Property Multiplicity: ",self.lineal_property_multiplicity[countlp],", ",
                                                     self.lineal_property_multiplicity[countlp + 1])
@@ -264,10 +228,10 @@ class response():
                 calculate_lineal_reponse(
                 operator_a = operator_a, operator_b = operator_b,
                 n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
-                principal_propagator = principal_propagator[self.lineal_multiplicity_string[countl].lower()], gpvs = gpvs,
-                time_object = driver_time, verbose = self._verbose)
+                principal_propagator = self.principal_propagator[self.lineal_multiplicity_string[countl].lower()],
+                gpvs = self.gpvs, time_object = driver_time, verbose = self._verbose)
                 countl += 1
-            elif tr[iresponse] == "quadratic":
+            elif self.type_response[iresponse] == "quadratic":
             #
                 print(f"     Properties: {self.quadratic_properties[countqp]}, {self.quadratic_properties[countqp + 1]} , {self.quadratic_properties[countqp + 2]}")
                 print("     Property Multiplicity: ",self.quadratic_property_multiplicity[countqp],", ",
@@ -288,11 +252,63 @@ class response():
                 calculate_quadratic_response(
                 operator_a = operator_a, operator_b = operator_b, operator_c = operator_c,
                 n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
-                principal_propagator_a = principal_propagator[self.quadratic_multiplicity_string[countq].lower()],
-                principal_propagator_b = principal_propagator[self.quadratic_multiplicity_string[countq + 1].lower()],
-                avs = avs, mo_virtuals = mo_virtuals, gpvs = gpvs,
+                principal_propagator_a = self.principal_propagator[self.quadratic_multiplicity_string[countq].lower()],
+                principal_propagator_b = self.principal_propagator[self.quadratic_multiplicity_string[countq + 1].lower()],
+                avs = self.avs, mo_virtuals = self.mo_virtuals, gpvs = self.gpvs,
                 time_object = driver_time, verbose = self._verbose)
                 countq += 2
+
+        if self._verbose > 10:
+            driver_time.add_name_delta_time(name = "RPA", delta_time = (time() - start))
+
+    def drv_reponse_calculation(self, principal_propagator_approximation: str = None, verbose_integrals: int = -1):
+        """
+        Manage of response calculation
+        Args:
+            principal_propagator_approximation (str): Approximation to principal propagator: PZOA, RPA, HRPA
+        """
+
+        print_title(name = f"REPONSE CALCULATION")
+
+        if self._verbose > 10:
+            driver_time = drv_time()
+            start = time()
+        else:
+            driver_time = None
+
+        # - Molecular orbital energies
+        if not self._moe:
+            self._moe = self._wf.mo_energies
+
+        # - Two integrals
+        if not self._tintegrals:
+            coulomb_integrals, exchange_integrals = get_coulomb_exchange_integrals(self._wf,
+                                                time_object = driver_time,
+                                                verbose = self._verbose,
+                                                verbose_int = verbose_integrals)
+        #Principal Propagator
+        for ms in self.lineal_multiplicity_string:
+            if not ms.lower() in [1,3,"singlet","triplet"]:
+                raise ValueError(f"***ERROR\n\n\
+                    The multiplicity {ms} is not implemented for principal propagator")
+        self.principal_propagator = drv_principal_propagator(driver_time = driver_time, moe = self._moe,
+                                                        n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
+                                                        coulomb = coulomb_integrals, exchange = exchange_integrals,
+                                                        multiplicity_pp = {"singlet": self.principal_propagator_singlet,
+                                                        "triplet": self.principal_propagator_triplet},
+                                                        tp_inv = 0, verbose = self._verbose)
+        # Gradient Property Vector and Average Values
+        if "quadratic" in self.type_response:
+            average = True
+        else:
+            average = False
+        self.avs, self.mo_virtuals, self.gpvs = drv_gradient_property_vector(wf = self._wf, properties =self.properties,
+                                            gpv_in = self._gp, driver_time = driver_time,
+                                            properties_multiplicity = self.property_multiplicity, average = average,
+                                            verbose = self._verbose, verbose_integrals = verbose_integrals)
+        # Run Response
+        if principal_propagator_approximation.lower() == "rpa": self.rpa(driver_time = driver_time)
+
 
         if self._verbose > 10:
             driver_time.add_name_delta_time(name = "Response Calculation", delta_time = (time() - start))
@@ -301,5 +317,5 @@ class response():
 
 if __name__ == "__main__":
     wfn = wave_function("../tests/molden_file/H2_STO2G.molden")
-    r = response(wfn, properties = [["kinetic","fc","fc"], ["fc","fc"]], verbose=21)
-    r.rpa()
+    r = response(wfn, properties = [["psooz 1 x","psooz 4 x"]], verbose=31)
+    r.drv_reponse_calculation(principal_propagator_approximation="rpa",verbose_integrals=31)

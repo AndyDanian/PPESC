@@ -4,7 +4,7 @@ Author: Mgs Andy Zapata
 
 from libint import *
 
-def cto_gto_h1(Mxyz: list = None, TP_A: list = None, verbose: int = 0):
+def cto_gto_h1(Mxyz: list = None, TP_A: list = None, verbose: int = 0, driver_time: object = None):
     """
     Convert cartesian to spherical integrals
 
@@ -12,6 +12,7 @@ def cto_gto_h1(Mxyz: list = None, TP_A: list = None, verbose: int = 0):
     Mxyz [array, float]: Cartesian integrals
     TP_A [array, string]: Symbol associated with main quantum number
     verbose (int): Print level
+    driver_time (drv_time): Manage driver time object
 
     Return:
     Mrtp [array, float]: Spherical integrals
@@ -300,5 +301,5 @@ def cto_gto_h1(Mxyz: list = None, TP_A: list = None, verbose: int = 0):
             icol += 13
             jcol += 28
     if verbose > 10:
-        print_time(name = f"One--Body CTOs--GTOs", delta_time = (time() - start))
+        driver_time.add_name_delta_time(name = f"One--Body CTOs--GTOs", delta_time = (time() - start))
     return Mrtp

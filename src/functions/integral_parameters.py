@@ -21,14 +21,20 @@ def integral_1b_parameters(atoms_number: int = None, integral_name: str = None, 
     property_split = integral_name.lower().split()
 
     if len(property_split) > 1:
-        if spatial_symmetry[property_split[0]] == 1:
-            spatial_symmetries = [int(property_split[1]) - 1]
-        if magnetic[property_split[0]] == 1:
-            magnetic_components = [int(property_split[1]) - 1]
         if spatial_symmetry[property_split[0]] == 1 and magnetic[property_split[0]] == 1:
             spatial_symmetries = [int(property_split[1]) - 1]
-            magnetic_components = [int(property_split[2]) - 1]
-        if property_split[0] in ["fc", "nucpot"]:
+            if property_split[2].isnumeric():
+                magnetic_components = [int(property_split[2]) - 1]
+            else:
+                magnetic_components = [i for i, b in magnetic_axes.items() if b == property_split[2]]
+        elif spatial_symmetry[property_split[0]] == 1:
+            spatial_symmetries = [int(property_split[1]) - 1]
+        elif magnetic[property_split[0]] == 1:
+            if property_split[1].isnumeric():
+                magnetic_components = [int(property_split[1]) - 1]
+            else:
+                magnetic_components = [i for i, b in magnetic_axes.items() if b == property_split[1]]
+        elif property_split[0] in ["fc", "nucpot"]:
             atoms = [int(property_split[1]) - 1]
 
     return r_gauge, r_dipole, magnetic_components, spatial_symmetries, atoms

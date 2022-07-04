@@ -83,8 +83,32 @@ class eint:
         if dipole is not None:
             r_dipole = dipole
 
+        ## SpinOrbit is the sum of the PSO integrals
+        spinorbit_integrals: bool = False
+        if "spinorbit" in [name for int_name in integrals_names for name in int_name.split()]:
+            spinorbit_integrals: bool = True
+            temp_names: list = []
+            spinorbit_label: list = []
+            for name in integrals_names:
+                if "spinorbit" not in name:
+                    temp_names.append(name)
+                else:
+                    spinorbit_label.append(name)
+                    if len(name.split(" ")) > 1 and "pso" not in [int_name for int_name in integrals_names]:
+                        if name.split()[1] == "1": spin_x = True
+                        if name.split()[1] == "2": spin_y = True
+                        if name.split()[1] == "3": spin_z = True
+                        temp_names += ["pso " + str(int(name.lower().split()[1]) + i*3)
+                                        for i in range(number_atoms)
+                                        if "pso " + str(int(name.lower().split()[1]) + i*3) not in integrals_names]
+                    elif "pso" not in [int_name for int_name in integrals_names]:
+                        spino_x = spino_y = spino_z = True
+                        temp_names.append("pso")
+            integrals_names = temp_names
+        ####
+
         for int_name in integrals_names:
-            if len(integral_name.split(" ")) > 1:
+            if len(int_name.split(" ")) > 1:
                 integral_name = int_name.lower().split()[0]
             else:
                 integral_name = int_name
@@ -105,7 +129,6 @@ class eint:
             else: # When is indicated in the name the magnetic or symmetry name or atom
                 r_gauge, r_dipole, magnetic_components, spatial_symmetries, atoms =\
                     integral_1b_parameters(atoms_number = number_atoms, integral_name = int_name)
-
 
             if spatial_symmetry[integral_name.lower()] == 0 and magnetic[integral_name.lower()] == 0:
 
@@ -285,12 +308,56 @@ class eint:
                             r_gauge = r_gauge
                         )
 
+        ### SpinOrbit Calculation
+        if spinorbit_integrals:
+            temp_spinorbit_integrals: dict = {}
+            if spino_x:
+                symmetries["spinorbit x"] = "antisym"
+                for a in range(number_atoms):
+                    if a == 0:
+                        temp_spinorbit_integrals["spinorbit x"] = [
+                                        self._charge[a] * value for value in integrals["pso " + str(1 + a*3)]
+                                        ]
+                    else:
+                        temp_spinorbit_integrals["spinorbit x"] = [
+                                    old + self._charge[a] * new
+                                    for old, new in
+                                        zip(temp_spinorbit_integrals["spinorbit x"], integrals["pso " + str(1 + a*3)])]
+                driver_time.add_name_delta_time(name = "Spin-Orbit X AO", delta_time = (time() - start))
+            if spino_y:
+                symmetries["spinorbit y"] = "antisym"
+                for a in range(number_atoms):
+                    if a == 0:
+                        temp_spinorbit_integrals["spinorbit y"] = [
+                                        self._charge[a] * value for value in integrals["pso " + str(2 + a*3)]
+                                        ]
+                    else:
+                        temp_spinorbit_integrals["spinorbit y"] = [
+                                    old + self._charge[a] * new
+                                    for old, new in
+                                        zip(temp_spinorbit_integrals["spinorbit y"], integrals["pso " + str(2 + a*3)])]
+                driver_time.add_name_delta_time(name = "Spin-Orbit Y AO", delta_time = (time() - start))
+            if spino_z:
+                symmetries["spinorbit z"] = "antisym"
+                for a in range(number_atoms):
+                    if a == 0:
+                        temp_spinorbit_integrals["spinorbit z"] = [
+                                        self._charge[a] * value for value in integrals["pso " + str(3 + a*3)]
+                                        ]
+                    else:
+                        temp_spinorbit_integrals["spinorbit z"] = [
+                                    old + self._charge[a] * new
+                                    for old, new in
+                                        zip(temp_spinorbit_integrals["spinorbit z"], integrals["pso " + str(3 + a*3)])]
+                driver_time.add_name_delta_time(name = "Spin-Orbit Z AO", delta_time = (time() - start))
+            integrals.update(temp_spinorbit_integrals)
+
         # Print integral
         integrals_matrix = {}
         if not self._cartessian:
             for label, integral in integrals.items():
                 integrals_matrix[label] = cto_gto_h1(np.array(vector_to_matrix(self._n, integral, symmetries[label])),
-                        np.array(self._angular_moments))
+                        np.array(self._angular_moments), driver_time = driver_time)
             if verbose > 20:
                 print_title(name = "One--body integrals with gto--primitives")
                 print_matriz_integrated(integrals = integrals_matrix, symmetries = symmetries)
@@ -363,7 +430,7 @@ class eint:
         if not self._cartessian:
             for label, integral in integrals_2_cart.items():
                 integrals_two_body[label] = cto_gto_h2(np.array(integral),
-                        np.array(self._angular_moments))
+                        np.array(self._angular_moments), driver_time = driver_time)
 
         if verbose > 100:
             print("="*80,"\nTwo--body integrals with gto--primitives\n","="*80)
@@ -381,11 +448,11 @@ class eint:
 
 
 if __name__ == "__main__":
-    wf = wave_function("../tests/molden_file/H2_STO2G.molden")
+    wf = wave_function("../tests/molden_file/LiH.molden")
     s = eint(wf)
     one = True
     if one:
-        integrals, symmetries = s.integration_onebody(integrals_names = ["fc", "kinetic"],
+        integrals, symmetries = s.integration_onebody(integrals_names = ["spinorbit", "pso 3"],
                     # {
                     # "nucpot":{"atoms":[0]},
                     # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},

@@ -78,7 +78,7 @@ def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = N
         time_object.add_name_delta_time(name = f"Build Principal Propagator", delta_time = build_time)
         time_object.add_name_delta_time(name = f"Inverse", delta_time = inverse_time)
 
-    if verbose > 20:
+    if verbose > 30:
         if tp_inv == 0:
             name = "Principal Propagator Inverse (Numpy)."
         print_triangle_matrix(integral = pp, name = name,  matriz_sym = "square")

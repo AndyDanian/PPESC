@@ -11,14 +11,25 @@ def print_title(name: str = None):
 
 def print_subtitle(name: str = None):
     """
-    Print titles
+    Print subtitles format
 
     Args:
         name (str): Subtitle name
     """
     print()
-    print(name.title().center(70))
+    print(name.center(70))
     print(("-" * 40).center(70))
+
+def print_ljust(name:str = None):
+    """
+    Print left justyifique format
+
+    Args:
+        name (str): name
+    """
+    print()
+    print(name.ljust(70))
+    print(("-" * 40).ljust(70))
 
 def print_result(name: str = None, value: float = None):
     """
