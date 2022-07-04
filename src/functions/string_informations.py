@@ -16,6 +16,7 @@ def print_subtitle(name: str = None):
     Args:
         name (str): Subtitle name
     """
+    print()
     print(name.title().center(70))
     print(("-" * 40).center(70))
 

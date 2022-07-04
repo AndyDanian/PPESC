@@ -1,11 +1,11 @@
 
 
+from libr import *
 from gradient_property import *
 from coulomb_exchange import *
 from principal_propagator import *
 from lineal_response import *
 from quadratic_response import *
-from libr import *
 
 multiplicity_string = {1:"Singlet", 3:"Triplet"}
 
@@ -68,8 +68,27 @@ class response():
         self._properties = properties
         self._moe = moe
         self._gp = gradient_properties
-        self._pp_multiplicity = pp_multiplicity
+
         self._p_multiplicity = property_multiplicity
+        if self._p_multiplicity is None:
+            self._p_multiplicity: list = []
+            for property in self._properties:
+                temp: list = []
+                for p in property:
+                    temp.append(property_multiplicities[p.lower().split()[0]])
+                self._p_multiplicity.append(temp)
+        self._pp_multiplicity = pp_multiplicity
+        if self._pp_multiplicity is None:
+            self._pp_multiplicity: list = []
+            for pm in self._p_multiplicity:
+                if len(pm) == 2:
+                    self._pp_multiplicity.append([pm[1]])
+                elif len(pm) == 3:
+                    self._pp_multiplicity.append(pm[1:3])
+                else:
+                    raise ValueError("***ERROR\n\n Response is not implemeted.\n\n\
+                        Only is implemeted lineal and quadratic response.")
+
         self._tintegrals = two_integrals
         self._verbose = verbose
 
@@ -83,7 +102,7 @@ class response():
         "Multiplicites"
         return [m if isinstance(m, int) else m.lower() for ms in self._pp_multiplicity for m in ms]
     @property
-    def lineal_singlet(self) -> bool:
+    def principal_propagator_singlet(self) -> bool:
         "Singlet Multiplicity"
         if 1 in self.principal_propagator_multiplicites:
             return True
@@ -91,7 +110,7 @@ class response():
             return True
         return False
     @property
-    def lineal_triplet(self) -> bool:
+    def principal_propagator_triplet(self) -> bool:
         "Triplet Multiplicity"
         if 3 in self.principal_propagator_multiplicites:
             return True
@@ -100,11 +119,30 @@ class response():
         return False
     @property
     def property_multiplicity(self) -> dict:
-        return {p: m for pro, ms in zip(self._properties, self._p_multiplicity) for p, m in zip(pro, ms)}
+        return {p: m if isinstance(m, str) else multiplicity_string[m]
+                for pro, ms in zip(self._properties, self._p_multiplicity) for p, m in zip(pro, ms)}
+    @property
+    def lineal_property_multiplicity(self) -> dict:
+        return [m if isinstance(m, str) else multiplicity_string[m]
+                for ms in self._p_multiplicity
+                if len(ms) == 2 for m in ms]
+    @property
+    def quadratic_property_multiplicity(self) -> dict:
+        return [m if isinstance(m, str) else multiplicity_string[m]
+                for ms in self._p_multiplicity
+                if len(ms) == 3 for m in ms]
     @property
     def properties(self) -> list:
         "Properties different to calcualte"
         return [name for name in {name for p in self._properties for name in p}]
+    @property
+    def lineal_properties(self) -> list:
+        "Properties different to calcualte to lineal response"
+        return [name for p in self._properties if len(p) == 2 for name in p]
+    @property
+    def quadratic_properties(self) -> list:
+        "Properties different to calcualte to lineal quadratic"
+        return [name for p in self._properties if len(p) == 3 for name in p]
     @property
     def type_response(self) -> list:
         "Response Type"
@@ -181,22 +219,24 @@ class response():
         principal_propagator = drv_principal_propagator(driver_time = driver_time, moe = self._moe,
                                                         n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
                                                         coulomb = coulomb_integrals, exchange = exchange_integrals,
-                                                        multiplicity_pp = {"singlet": self.lineal_singlet, "triplet": self.lineal_triplet},
+                                                        multiplicity_pp = {"singlet": self.principal_propagator_singlet,
+                                                        "triplet": self.principal_propagator_triplet},
                                                         tp_inv = 0, verbose = self._verbose)
         # Gradient Property Vector and Average Values
-        if "quadratic" in self.quadratic_multiplicity_string:
+        if "quadratic" in self.type_response:
             average = True
         else:
             average = False
         avs, mo_virtuals, gpvs = drv_gradient_property_vector(wf = self._wf, properties =self.properties, gpv_in = self._gp, driver_time = driver_time,
                                             properties_multiplicity = self.property_multiplicity, average = average,
                                             verbose = self._verbose, verbose_integrals = verbose_integrals)
-        countl = 0
-        countq = 0
+        countl = countlp = 0
+        countq = countqp = 0
         for iresponse, property in enumerate(self._properties):
 
             # Type of response
-            print(f"     Response Type: {tr[iresponse]}")
+            print_subtitle(name = "Specification of Response Calculation")
+            print(f"     Response Type: {tr[iresponse].title()}")
             # Properties pair
             operator_a: list = []
             operator_b: list = []
@@ -210,7 +250,11 @@ class response():
                     operator_c.append(name)
 
             if tr[iresponse] == "lineal":
-                print(f"     Multiplicity: {self.lineal_multiplicity_string[countl]}")
+                print(f"     Properties: {self.lineal_properties[countlp]}, {self.lineal_properties[countlp + 1]}")
+                print("     Property Multiplicity: ",self.lineal_property_multiplicity[countlp],", ",
+                                                    self.lineal_property_multiplicity[countlp + 1])
+                countlp += 2
+                print(f"     Principal Propagator Multiplicity: {self.lineal_multiplicity_string[countl]}")
                 for index_a, name_a in enumerate(operator_a):
                     for index_b, name_b in enumerate(operator_b):
                         if index_a > index_b and name_a.split()[0] == name_b.split()[0]:
@@ -224,13 +268,20 @@ class response():
                 time_object = driver_time, verbose = self._verbose)
                 countl += 1
             elif tr[iresponse] == "quadratic":
-                print(f"     Multiplicity: {self.quadratic_multiplicity_string[countq]} {self.quadratic_multiplicity_string[countq + 1]}")
+            #
+                print(f"     Properties: {self.quadratic_properties[countqp]}, {self.quadratic_properties[countqp + 1]} , {self.quadratic_properties[countqp + 2]}")
+                print("     Property Multiplicity: ",self.quadratic_property_multiplicity[countqp],", ",
+                                                    self.quadratic_property_multiplicity[countqp + 1],", ",
+                                                    self.quadratic_property_multiplicity[countqp + 2])
+                countqp += 3
+                print("     Principal Propagator Multiplicity: ",self.quadratic_multiplicity_string[countq],", ",
+                                                                self.quadratic_multiplicity_string[countq + 1])
                 for index_a, name_a in enumerate(operator_a):
                     for index_b, name_b in enumerate(operator_b):
                         if index_a > index_b and name_a.split()[0] == name_b.split()[0]:
                             continue
                         for index_c, name_c in enumerate(operator_c):
-                            if index_b > index_c and name_a.split()[0] == name_b.split()[0]:
+                            if index_b > index_c and name_b.split()[0] == name_b.split()[0]:
                                 continue
                             print(f"     Quadratic Response: <<{name_a.upper()};{name_b.upper()},{name_c.upper()}>>")
                 #
@@ -249,6 +300,6 @@ class response():
         print_title(name = f"END REPONSE CALCULATION")
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/H2_s.molden")
-    r = response(wfn, properties = [["fc","fc","fc"], ["fc","kinetic"]], property_multiplicity = [[3,3,3],[3,1]], pp_multiplicity=[[3,3],[1]], verbose=0)
+    wfn = wave_function("../tests/molden_file/H2_STO2G.molden")
+    r = response(wfn, properties = [["kinetic","fc","fc"], ["fc","fc"]], verbose=21)
     r.rpa()

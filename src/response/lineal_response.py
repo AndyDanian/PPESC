@@ -32,8 +32,6 @@ def calculate_lineal_reponse(operator_a: list = None, operator_b: list = None,
 
             ipath: int = 0
             vpathT: float = 0.0E+0
-            irow: int = 0
-            icol: int = 0
             for i in range(n_mo_occ):
                 for a in range(n_mo_virt):
                     s = a + n_mo_occ
@@ -48,26 +46,24 @@ def calculate_lineal_reponse(operator_a: list = None, operator_b: list = None,
                                 gpvs[op_a][a+i*n_mo_virt]\
                                 *gpvs[op_b][b+j*n_mo_virt]
                             # A_{i,s} PP_{i,s,j,t} B_{t,j}
-                            appb = appb*principal_propagator[irow,icol]
+                            appb = appb*principal_propagator[a+i*n_mo_virt,b+j*n_mo_virt]
 
                             vpathT += appb
 
                             if verbose > 20 and count == 0:
                                 print(f" # ".center(8),f"i".center(8),
-                                    f"s".center(8),f"j".center(8),
-                                    f"t".center(8))
+                                    f"s".center(8),
+                                    f"t".center(8),f"j".center(8))
                             if verbose > 20 and abs(appb) > 0.1:
-                                print(f"{count + 1}".center(8),f"{i}".center(8),
-                                    f"{s}".center(8),f"{j}".center(8),
-                                    f"{t}".center(8),f"{appb:.6f}".center(16))
+                                print(f"{count + 1}".center(8),f"{i + 1}".center(8),
+                                    f"{s + 1}".center(8),f"{t + 1}".center(8),
+                                    f"{j + 1}".center(8),f"{appb:.6f}".center(16)
+                                    )
 
                             spath += appb
                             count += 1
                             ipath += 1
 
-                            icol +=1
-                            if icol == rotations: irow += 1
-                            if icol == rotations: icol = 0
                     if verbose > 20:
                         print("-"*60)
                         print(f'Total {spath:.6f}')

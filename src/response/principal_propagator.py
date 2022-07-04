@@ -61,8 +61,8 @@ def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = N
                             Multiplicity can be 1/singlet or 3/triplet")
 
                     icol = icol + 1
-                    if icol > rotations-1 : irow += 1
-                    if icol > rotations-1 : icol  = 0
+                    if icol > rotations-1 : irow += 1 # new row is equivalent to a change of i and a-index
+                    if icol > rotations-1 : icol  = 0 #
 
     build_time = time() - start
 

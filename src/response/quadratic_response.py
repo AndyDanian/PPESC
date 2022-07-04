@@ -5,7 +5,7 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                             n_mo_occ: int = None, n_mo_virt: int = None,
                             principal_propagator_a: np.array = None,
                             principal_propagator_b: np.array = None,
-                            gpvs: dict = None,
+                            avs: dict = None, mo_virtuals: dict = None ,gpvs: dict = None,
                             time_object: drv_time = None,
                             verbose: int = 0):
     """
@@ -23,6 +23,8 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
     n_mo_virt (int): Virtual molecular orbitals
     principal_propagator_a (np.array): Inverse of the first principal propagator
     principal_propagator_b (np.array): Inverse of the second principal propagator
+    avs (dict): dictionary with average value
+    mo_virtuals (dict): Values in molecular orbitals of the virtuals orbitals
     time_object (drv_time): Manage time calculation
     verbose (int): Print level
     """
@@ -43,49 +45,78 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
 
                 ipath: int = 0
                 vpathT: float = 0.0E+0
-                irow: int = 0
-                icol: int = 0
                 for i in range(n_mo_occ):
+                    #  ---- Virtual index ----
                     for a in range(n_mo_virt):
                         s = a + n_mo_occ
-
                         count = 0
                         spath = 0.0E+0
-                        for j in range(n_mo_occ):
-                            for b in range(n_mo_virt):
-                                t = b + n_mo_occ
+                        for b in range(n_mo_virt):
+                            t = b + n_mo_occ
+                            for c in range(n_mo_virt):
+                                u = c + n_mo_occ
+                                for d in range(n_mo_virt):
+                                    v = d + n_mo_occ
+                    #  ---- END Virtual ----
+                                    for j in range(n_mo_occ):
 
-                                appb =\
-                                    gpvs[op_a][a+i*n_mo_virt]\
-                                    *gpvs[op_b][b+j*n_mo_virt]
-                                # A_{i,s} PP_{i,s,j,t} B_{t,j}
-                                appb = appb*principal_propagator[irow,icol]
+                                        if b == c:
+                                            vavs_b = avs[op_b]
+                                            vavs_a = avs[op_a]
+                                        else:
+                                            vavs_b = 0.0
+                                            vavs_a = 0.0
+                                        appb1 =\
+                                            (gpvs[op_a][a+i*n_mo_virt]
+                                            # PP_{ia,jb}^-1
+                                            *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
+                                            *(mo_virtuals[op_b][c+b*n_mo_virt] - vavs_b)
+                                            # PP_{ic,jd}^-1
+                                            *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
+                                            *gpvs[op_c][d+j*n_mo_virt])
+                                        appb2 =\
+                                            (gpvs[op_c][c+i*n_mo_virt]
+                                            # PP_{ia,jb}^-1
+                                            *principal_propagator_a[c+i*n_mo_virt,d+j*n_mo_virt]
+                                            *(mo_virtuals[op_b][d+a*n_mo_virt] - vavs_b)
+                                            # PP_{ic,jd}^-1
+                                            *principal_propagator_b[a+i*n_mo_virt,b+j*n_mo_virt]
+                                            *gpvs[op_a][b+j*n_mo_virt])
+                                        appb3 =\
+                                            (gpvs[op_b][a+i*n_mo_virt]
+                                            # PP_{ia,jb}^-1
+                                            *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
+                                            *(mo_virtuals[op_a][c+b*n_mo_virt] - vavs_a)
+                                            # PP_{ic,jd}^-1
+                                            *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
+                                            *gpvs[op_c][d+j*n_mo_virt])
+                                        appb = appb1 + appb2 + appb3
 
-                                vpathT += appb
+                                        vpathT += appb
 
-                                if verbose > 20 and count == 0:
-                                    print(f" # ".center(8),f"i".center(8),
-                                        f"s".center(8),f"j".center(8),
-                                        f"t".center(8))
-                                if verbose > 20 and abs(appb) > 0.1:
-                                    print(f"{count + 1}".center(8),f"{i}".center(8),
-                                        f"{s}".center(8),f"{j}".center(8),
-                                        f"{t}".center(8),f"{appb:.6f}".center(16))
+                                        if verbose > 20 and count == 0:
+                                            print(f" # ".center(6),f"i".center(6),
+                                                f"s".center(6),
+                                                f"t".center(6),f"u".center(6),
+                                                f"v".center(6),f"j".center(6),)
+                                        if verbose > 20 and abs(appb) > 0.1:
+                                            print(f"{count + 1}".center(6),f"{i + 1}".center(6),
+                                                f"{s + 1}".center(6),
+                                                f"{t + 1}".center(6),f"{u + 1}".center(6),
+                                                f"{v + 1}".center(6),f"{j + 1}".center(6),
+                                                f"{appb:.6f}".center(16))
 
-                                spath += appb
-                                count += 1
-                                ipath += 1
+                                        spath += appb
+                                        count += 1
+                                        ipath += 1
 
-                                icol +=1
-                                if icol == rotations: irow += 1
-                                if icol == rotations: icol = 0
                         if verbose > 20:
                             print("-"*60)
                             print(f'Total {spath:.6f}')
                             print()
 
-            print_result(name = f'-<<{op_a};{op_b}>>', value = f'{-vpathT:.6f}')
+                print_result(name = f'-<<{op_a};{op_b},{op_c}>>', value = f'{-vpathT:.6f}')
 
     if verbose > 10:
-        name = f"Lineal Response"
+        name = f"Quadratic Response"
         time_object.add_name_delta_time(name = name,  delta_time=(time() - start))

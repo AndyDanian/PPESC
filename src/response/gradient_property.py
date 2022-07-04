@@ -19,11 +19,35 @@ def print_gradient_property_vector(gpvs: list = None, multiplicity: str or int =
             else:
                 print(f"{count+1}".center(10),f"{value:.6f}".rjust(20),f"{value:.6f}".rjust(20))
 
+def print_avs(avs: list = None):
+    """
+    Print averages values
+
+    Args:
+    ----
+        avs (dict): Average values
+    """
+    for name, value in avs.items():
+        print_result(name = f" Average Value {name}", value = value)
+
+def print_virtuals(virtuals: list = None, n_mo_v: int = None):
+    """
+    Print virtuales values in molecular orbital base
+
+    Args:
+    ----
+        virtuals (dict): Virtual value in molecular orbital
+    """
+    for name, values in virtuals.items():
+        print_subtitle(name = f" Virtuales Values {name}")
+        for i in range(n_mo_v):
+            print(*[values[j+i*n_mo_v] for j in range(n_mo_v)],end="")
+        print()
 
 def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
                                     multiplicity: str or int = None,
                                     time_object: drv_time = None,
-                                    average: bool = False,
+                                    average: bool = None,
                                     verbose: int = 0, verbose_int: int = 0):
     """
     Calculate of gradient property vectos in rpa approximation
@@ -55,7 +79,7 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
         mo_integral = np.matmul(mo_coeff_T,np.matmul(np.array(atomic_int), mo_coeff_T.T))
         if average:
             avs[name] = sum([mo_integral[i][i] for i in range(n_mo_occ)])
-            mo_virtuals[name] = [mo_integral[a][b] for a in range(n_mo_virt) for b in range(n_mo_virt)]
+            mo_virtuals[name] = [mo_integral[a + n_mo_occ][b + n_mo_occ] for a in range(n_mo_virt) for b in range(n_mo_virt)]
         # gradient porperty vector
         gpvs[name] = [2.0*mo_integral[i][a + n_mo_occ] for i in range(n_mo_occ) for a in range(n_mo_virt)]
 
@@ -64,6 +88,9 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
 
     if verbose > 30:
         print_gradient_property_vector(gpvs = gpvs, multiplicity = multiplicity)
+        if average:
+            print_avs(avs = avs)
+            print_virtuals(virtuals = mo_virtuals, n_mo_v = n_mo_virt)
 
     return avs, mo_virtuals, gpvs
 
