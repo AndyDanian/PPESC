@@ -109,7 +109,7 @@ def e2pot(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver_t
             k += 1
             l = 0
 
-    if output > 0:
+    if output > 10:
         driver_time.add_name_delta_time(
             name = f"Electron Repulsion Atomic Integrals ({count})", delta_time = (time() - start)
         )

@@ -109,6 +109,8 @@ def h1i(
         integral: list = psooz(coord, r_gauge, spatial_sym, magnetic_xyz, atom, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     elif name.lower() == "ozke":
         integral: list = ozke(coord, r_gauge, magnetic_xyz, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
+    elif name.lower() == "laplacian":
+        integral: list = laplacian(coord, magnetic_xyz, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time)
     return integral
 
     # def molecular_matrix(self, integral: list = None, sym: str = None):

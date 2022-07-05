@@ -64,7 +64,7 @@ def darwin(charge, coord, exp, center, lx, ly, lz, output, dalton_normalization,
                     * dw
                 )
                 count += 1
-    if output > 0:
+    if output > 10:
         driver_time.add_name_delta_time(
             name = f"Darwin Atomic Integrals", delta_time = (time() - start)
         )

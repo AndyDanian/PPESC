@@ -225,7 +225,7 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
             )
             count += 1
 
-    if output > 0:
+    if output > 10:
         driver_time.add_name_delta_time(
             name = f"Diamagnetic Nuclear Shielding Tensor Atomic Integrals \
                 for {magnetic_component} Magnetic Component and {spatial_sym} Spatial Symmetry",

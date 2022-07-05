@@ -67,7 +67,7 @@ def nucpot(charge, atom, coord, exp, center, lx, ly, lz, output, dalton_normaliz
             )
 
             count += 1
-    if output > 0:
+    if output > 10:
         driver_time.add_name_delta_time(
             name = f"Potential Nucleu Atomic Integrals for {atom + 1}-th Atom",
             delta_time = (time() - start)

@@ -261,11 +261,13 @@ class response():
         if self._verbose > 10:
             driver_time.add_name_delta_time(name = "RPA", delta_time = (time() - start))
 
-    def drv_reponse_calculation(self, principal_propagator_approximation: str = None, verbose_integrals: int = -1):
+    def drv_reponse_calculation(self, principal_propagator_approximation: str = "rpa", verbose_integrals: int = -1):
         """
         Manage of response calculation
         Args:
             principal_propagator_approximation (str): Approximation to principal propagator: PZOA, RPA, HRPA
+                                                    by default to do RPA calculation
+            verbose_integrals (int): Print level to hermite module
         """
 
         print_title(name = f"REPONSE CALCULATION")
@@ -317,5 +319,5 @@ class response():
 
 if __name__ == "__main__":
     wfn = wave_function("../tests/molden_file/H2_STO2G.molden")
-    r = response(wfn, properties = [["psooz 1 x","psooz 4 x"]], verbose=31)
-    r.drv_reponse_calculation(principal_propagator_approximation="rpa",verbose_integrals=31)
+    r = response(wfn, properties = [["fc 1","kinetic"]], verbose=31)
+    r.drv_reponse_calculation(principal_propagator_approximation="rpa")

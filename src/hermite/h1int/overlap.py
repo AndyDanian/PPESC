@@ -77,7 +77,7 @@ def overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
             )
             count += 1
 
-    if output > 0:
+    if output > 10:
         driver_time.add_name_delta_time(name = f"Overlap Atomic Integrals", delta_time = (time() - start))
 
     return overlap
