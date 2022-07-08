@@ -317,47 +317,13 @@ class eint:
 
         ### SpinOrbit Calculation
         if spinorbit_integrals:
-            temp_spinorbit_integrals: dict = {}
-            if spino_x:
-                symmetries["spinorbit x"] = "antisym"
-                for a in range(number_atoms):
-                    if a == 0:
-                        temp_spinorbit_integrals["spinorbit x"] = [
-                                        self._charge[a] * value for value in integrals["pso " + str(1 + a*3)]
-                                        ]
-                    else:
-                        temp_spinorbit_integrals["spinorbit x"] = [
-                                    old + self._charge[a] * new
-                                    for old, new in
-                                        zip(temp_spinorbit_integrals["spinorbit x"], integrals["pso " + str(1 + a*3)])]
-                driver_time.add_name_delta_time(name = "Spin-Orbit X AO", delta_time = (time() - start))
-            if spino_y:
-                symmetries["spinorbit y"] = "antisym"
-                for a in range(number_atoms):
-                    if a == 0:
-                        temp_spinorbit_integrals["spinorbit y"] = [
-                                        self._charge[a] * value for value in integrals["pso " + str(2 + a*3)]
-                                        ]
-                    else:
-                        temp_spinorbit_integrals["spinorbit y"] = [
-                                    old + self._charge[a] * new
-                                    for old, new in
-                                        zip(temp_spinorbit_integrals["spinorbit y"], integrals["pso " + str(2 + a*3)])]
-                driver_time.add_name_delta_time(name = "Spin-Orbit Y AO", delta_time = (time() - start))
-            if spino_z:
-                symmetries["spinorbit z"] = "antisym"
-                for a in range(number_atoms):
-                    if a == 0:
-                        temp_spinorbit_integrals["spinorbit z"] = [
-                                        self._charge[a] * value for value in integrals["pso " + str(3 + a*3)]
-                                        ]
-                    else:
-                        temp_spinorbit_integrals["spinorbit z"] = [
-                                    old + self._charge[a] * new
-                                    for old, new in
-                                        zip(temp_spinorbit_integrals["spinorbit z"], integrals["pso " + str(3 + a*3)])]
-                driver_time.add_name_delta_time(name = "Spin-Orbit Z AO", delta_time = (time() - start))
-            integrals.update(temp_spinorbit_integrals)
+            so_integrals, so_symmetries = spin_orbit(integrals = integrals, number_atoms = number_atoms,
+                                                    charge = self._charge,
+                                                    spino_x = spino_x, spino_y = spino_y, spino_z = spino_z,
+                                                    driver_time = driver_time, verbose = verbose)
+            integrals.update(so_integrals)
+            symmetries.update(so_symmetries)
+
 
         # Print integral
         integrals_matrix = {}
@@ -459,7 +425,7 @@ if __name__ == "__main__":
     s = eint(wf)
     one = True
     if one:
-        integrals, symmetries = s.integration_onebody(integrals_names = ["laplacian"],
+        integrals, symmetries = s.integration_onebody(integrals_names = ["spinorbit"],
                     # {
                     # "nucpot":{"atoms":[0]},
                     # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},

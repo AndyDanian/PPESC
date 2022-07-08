@@ -70,6 +70,7 @@ from psoke import *    # Kinetic-energy correction to the paramagnetic spin-orbi
 from psooz import *    # Orbital-Zeeman correction to the paramagnetic spin-orbit to nuclear shielding
 from ozke import *     # Calculates the kinetic energy correction to the orbital Zeeman operator
 from laplacian import * # Calculate different double derivatives
+from spinorbit import * # Calculate SpinOrbit integrals
 
 # h2int: Two--Body hermite integrals
 from e2pot import *
