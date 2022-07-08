@@ -9,4 +9,8 @@ integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", 
 "dipvel": "antisym", "pso": "antisym", "nstcgo": "sym", "dnske": "sym", "psoke": "square",
 "psooz": "square", "ozke": "antisym", "spinorbit": "antisym", "laplacian": "sym"}
 
+# Separated magnetic axes of cartessian component (laplacian), i. e., to make a cartessian component by
+# separated in e_integral.py
+
 magnetic_axes: dict = {0:"x", 1:"y", 2:"z"}
+spatial_components: dict = {0:"x", 1:"y", 2:"z", 3:"xy", 4:"xz", 5:"yz"}

@@ -34,7 +34,7 @@ Integrals implemented using point nucleu, cartessian primitives and until i shel
     * Orbital-zeeman correction to the paramagnetic spin-orbit 
     * Kinetic energy correction to the orbital zeeman
     * Spin-orbit
-    * Laplacian by components
+    * Laplacian: Dxx, Dyy, Dzz, Dxy, Dxz, and Dzz
 
 * Two--body
     * Electron repulsion

@@ -179,12 +179,19 @@ class eint:
                 for b_i in magnetic_components:
 
                     if type(b_i) == int:
-                        integral_label: str = (integral_name.lower() + " " + magnetic_axes[b_i])
+                        if integral_name.lower() == "laplacian":
+                            integral_label: str = (integral_name.lower() + " " + spatial_components[b_i])
+                        else:
+                            integral_label: str = (integral_name.lower() + " " + magnetic_axes[b_i])
                         magnetic_xyz: int = b_i
                     else:
                         integral_label: str = (
                             integral_name.lower() + " " + b_i)
-                        magnetic_xyz: int = (list(magnetic_axes.keys())
+                        if integral_name.lower() == "laplacian":
+                            magnetic_xyz: int = (list(spatial_components.keys())
+                                            [list(spatial_components.values()).index(b_i)])
+                        else:
+                            magnetic_xyz: int = (list(magnetic_axes.keys())
                                             [list(magnetic_axes.values()).index(b_i)])
 
                     symmetries[integral_label] = integral_symmetry[integral_name.lower()]
