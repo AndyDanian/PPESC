@@ -35,6 +35,7 @@ Integrals implemented using point nucleu, cartessian primitives and until i shel
     * Kinetic energy correction to the orbital zeeman
     * Spin-orbit
     * Laplacian: Dxx, Dyy, Dzz, Dxy, Dxz, and Dzz
+    * External magnetic-field dependence of the spin–orbit operator integrals
 
 * Two--body
     * Electron repulsion

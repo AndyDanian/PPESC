@@ -31,7 +31,7 @@ def integral_1b_parameters(atoms_number: int = None, integral_name: str = None, 
             if property_split[2].isnumeric():
                 magnetic_components = [int(property_split[2]) - 1]
             else:
-                if property_split.lower() == "laplacian":
+                if property_split == "laplacian":
                     magnetic_components = [i for i, x in spatial_components.items() if x == property_split[2]]
                 else:
                     magnetic_components = [i for i, b in magnetic_axes.items() if b == property_split[2]]
@@ -45,7 +45,7 @@ def integral_1b_parameters(atoms_number: int = None, integral_name: str = None, 
             if property_split[1].isnumeric():
                 magnetic_components = [int(property_split[1]) - 1]
             else:
-                if property_split.lower() == "laplacian":
+                if property_split == "laplacian":
                     magnetic_components = [i for i, x in spatial_components.items() if x == property_split[2]]
                 else:
                     magnetic_components = [i for i, b in magnetic_axes.items() if b == property_split[1]]
@@ -54,4 +54,3 @@ def integral_1b_parameters(atoms_number: int = None, integral_name: str = None, 
             atoms = [int(property_split[1]) - 1]
 
     return r_gauge, r_dipole, magnetic_components, spatial_symmetries, atoms
-    #return all_response, parameters

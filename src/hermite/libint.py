@@ -71,6 +71,7 @@ from psooz import *    # Orbital-Zeeman correction to the paramagnetic spin-orbi
 from ozke import *     # Calculates the kinetic energy correction to the orbital Zeeman operator
 from laplacian import * # Calculate different double derivatives
 from spinorbit import * # Calculate SpinOrbit integrals
+from sofiel import *    # External magnetic-field dependence of the spin-orbit operator integrals
 
 # h2int: Two--Body hermite integrals
 from e2pot import *
