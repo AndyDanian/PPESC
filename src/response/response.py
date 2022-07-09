@@ -12,10 +12,7 @@ multiplicity_string = {1:"Singlet", 3:"Triplet"}
 
 class response():
     def __init__(self, wf: wave_function = None, moe: list = None,
-                    gradient_properties: dict = None, two_integrals: list or array = None,
-                    properties: list = None, property_multiplicity: list = None,
-                    pp_multiplicity: list = None,
-                    verbose: int = 0):
+                    gradient_properties: dict = None, two_integrals: list or array = None):
         """
         Reponse object
 
@@ -66,32 +63,10 @@ class response():
                     ")
 
         self._wf = wf
-        self._properties = properties
         self._moe = moe
         self._gp = gradient_properties
 
-        self._p_multiplicity = property_multiplicity
-        if self._p_multiplicity is None:
-            self._p_multiplicity: list = []
-            for property in self._properties:
-                temp: list = []
-                for p in property:
-                    temp.append(property_multiplicities[p.lower().split()[0]])
-                self._p_multiplicity.append(temp)
-        self._pp_multiplicity = pp_multiplicity
-        if self._pp_multiplicity is None:
-            self._pp_multiplicity: list = []
-            for pm in self._p_multiplicity:
-                if len(pm) == 2:
-                    self._pp_multiplicity.append([pm[1]])
-                elif len(pm) == 3:
-                    self._pp_multiplicity.append(pm[1:3])
-                else:
-                    raise ValueError("***ERROR\n\n Response is not implemeted.\n\n\
-                        Only is implemeted lineal and quadratic response.")
-
         self._tintegrals = two_integrals
-        self._verbose = verbose
 
         if not self._gp:
             self._gp = {}
@@ -261,7 +236,9 @@ class response():
         if self._verbose > 10:
             driver_time.add_name_delta_time(name = "RPA", delta_time = (time() - start))
 
-    def drv_reponse_calculation(self, principal_propagator_approximation: str = "rpa", verbose_integrals: int = -1):
+    def drv_reponse_calculation(self, principal_propagator_approximation: str = "rpa", properties: list = None,
+                                property_multiplicity: list = None, pp_multiplicity: list = None, verbose: int = 0,
+                                verbose_integrals: int = -1):
         """
         Manage of response calculation
         Args:
@@ -269,6 +246,28 @@ class response():
                                                     by default to do RPA calculation
             verbose_integrals (int): Print level to hermite module
         """
+
+        self._properties = properties
+        self._p_multiplicity = property_multiplicity
+        if self._p_multiplicity is None:
+            self._p_multiplicity: list = []
+            for property in self._properties:
+                temp: list = []
+                for p in property:
+                    temp.append(property_multiplicities[p.lower().split()[0]])
+                self._p_multiplicity.append(temp)
+        self._pp_multiplicity = pp_multiplicity
+        if self._pp_multiplicity is None:
+            self._pp_multiplicity: list = []
+            for pm in self._p_multiplicity:
+                if len(pm) == 2:
+                    self._pp_multiplicity.append([pm[1]])
+                elif len(pm) == 3:
+                    self._pp_multiplicity.append(pm[1:3])
+                else:
+                    raise ValueError("***ERROR\n\n Response is not implemeted.\n\n\
+                        Only is implemeted lineal and quadratic response.")
+        self._verbose = verbose
 
         print_title(name = f"REPONSE CALCULATION")
 
@@ -319,5 +318,5 @@ class response():
 
 if __name__ == "__main__":
     wfn = wave_function("../tests/molden_file/H2_STO2G.molden")
-    r = response(wfn, properties = [["fc 1","kinetic"]], verbose=31)
-    r.drv_reponse_calculation(principal_propagator_approximation="rpa")
+    r = response(wfn)
+    r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["fc 1","kinetic"]], verbose=31)
