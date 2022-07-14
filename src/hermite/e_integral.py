@@ -41,7 +41,7 @@ class eint:
 
     def integration_onebody(
         self, integrals_names: list = None, integrals_properties: dict = None, verbose: int = 0,
-        gauge: list  = None, dipole: list = None, dalton_normalization: bool = False
+        gaugeo: list  = None, dipole: list = None, dalton_normalization: bool = False
     ):
 
         if verbose >= 0:
@@ -78,11 +78,6 @@ class eint:
             print(f"*** WARNING\n\n\
             System has a lot atoms ({len(atoms)}), then calculate can take very much time")
 
-        if gauge is not None:
-            r_gauge = gauge
-        if dipole is not None:
-            r_dipole = dipole
-
         ## SpinOrbit is the sum of the PSO integrals
         spinorbit_integrals: bool = False
         if "spinorbit" in [name for int_name in integrals_names for name in int_name.split()]:
@@ -90,17 +85,23 @@ class eint:
             temp_names: list = []
             activate_all_pso: bool = False
             spino_x = spino_y = spino_z = False
+            old_integrals_names: list = integrals_names
             for name in integrals_names:
                 if "spinorbit" not in name:
                     temp_names.append(name)
                 else:
                     if len(name.split(" ")) > 1 and "pso" not in [int_name for int_name in integrals_names]:
-                        if name.split()[1] == "1": spino_x: bool = True
-                        if name.split()[1] == "2": spino_y: bool = True
-                        if name.split()[1] == "3": spino_z: bool = True
-                        temp_names += ["pso " + str(int(name.lower().split()[1]) + i*3)
+                        if name.split()[1] == "1" or name.split()[1] == "x": spino_x: bool = True
+                        if name.split()[1] == "2" or name.split()[1] == "y": spino_y: bool = True
+                        if name.split()[1] == "3" or name.split()[1] == "z": spino_z: bool = True
+
+                        if (name.split()[1]).isalpha():
+                            spatial_axe: int = [i for i ,r in magnetic_axes.items() if r == name.split()[1]][0]
+                        else:
+                            spatial_axe: int = int(name.split()[1])
+                        temp_names += ["pso " + str(spatial_axe + 1 + i*3)
                                         for i in range(number_atoms)
-                                        if "pso " + str(int(name.lower().split()[1]) + i*3) not in integrals_names]
+                                        if "pso " + str(spatial_axe + 1 + i*3) not in integrals_names]
                     elif "pso" not in [int_name for int_name in integrals_names]:
                         spino_x = spino_y = spino_z = True
                         temp_names.append("pso")
@@ -118,6 +119,7 @@ class eint:
             activate_all_nstcgo: bool = False
             sofiel_xx = sofiel_xy = sofiel_xz = sofiel_yy = sofiel_yz = sofiel_zz =\
                 sofiel_yx = sofiel_zx = sofiel_zy = False
+            old_integrals_names: list = integrals_names
             for name in integrals_names:
                 if "sofiel" not in name:
                     temp_names.append(name)
@@ -191,9 +193,10 @@ class eint:
                         spatial_symmetries = [s - 1 for s  in integrals_properties[integral_name]["spatial_symmetries"]]
                     if "atoms" in integrals_properties[integral_name].keys():
                         atoms = [a - 1 for a in integrals_properties[integral_name]["atoms"]]
-            else: # When is indicated in the name the magnetic or symmetry name or atom
+            else:
                 r_gauge, r_dipole, magnetic_components, spatial_symmetries, atoms =\
-                    integral_1b_parameters(atoms_number = number_atoms, integral_name = int_name)
+                                integral_1b_parameters(atoms_number = number_atoms, integral_name = int_name,
+                                                        gaugeo = gaugeo, dipole = dipole)
 
             if spatial_symmetry[integral_name.lower()] == 0 and magnetic[integral_name.lower()] == 0:
 
@@ -299,7 +302,7 @@ class eint:
                     elif coordinate == 2:
                         spatial_component: int = 2
                     else:
-                        raise ValueError("*** Error\n\n \
+                        raise ValueError(f"*** Error\n\n \
                             spatial component doesn't exist, {spatial_component}")
 
                     integral_label: str = str(
@@ -395,21 +398,31 @@ class eint:
 
         ### SpinOrbit Calculation
         if spinorbit_integrals:
+            temp_integrals_matrix: dict = {}
             so_integrals, so_symmetries = spin_orbit(integrals = integrals_matrix, number_atoms = number_atoms,
                                                     charge = self._charge, nprim = self._wf.primitives_number,
                                                     spino_x = spino_x, spino_y = spino_y, spino_z = spino_z,
                                                     driver_time = driver_time, verbose = verbose)
-            integrals_matrix.update(so_integrals)
+            # Errase pso
+            temp_integrals_matrix = {name: value for name, value in integrals_matrix.items()
+                                    if name.lower().split()[0] in old_integrals_names}
+            integrals_matrix = so_integrals
+            integrals_matrix.update(temp_integrals_matrix)
             symmetries.update(so_symmetries)
         ### SOFIEL Calculation
         if sofiel_integrals:
+            temp_integrals_matrix: dict = {}
             sf_integrals,  sf_symmetries = sofiel(integrals = integrals_matrix, number_atoms = number_atoms,
                                                 charge = self._charge, nprim = self._wf.primitives_number,
                                                 sofiel_xx = sofiel_xx, sofiel_yy = sofiel_yy, sofiel_zz = sofiel_zz,
                                                 sofiel_xy = sofiel_xy, sofiel_xz = sofiel_xz, sofiel_yz = sofiel_yz,
                                                 sofiel_yx = sofiel_yx, sofiel_zx = sofiel_zx, sofiel_zy = sofiel_zy,
                                                 driver_time = driver_time, verbose = verbose)
-            integrals_matrix.update(sf_integrals)
+            # Errase nstcgo
+            temp_integrals_matrix = {name: value for name, value in integrals_matrix.items()
+                                    if name.lower().split()[0] in old_integrals_names}
+            integrals_matrix = sf_integrals
+            integrals_matrix.update(temp_integrals_matrix)
             symmetries.update(sf_symmetries)
 
         # Print Integrals
@@ -505,7 +518,7 @@ if __name__ == "__main__":
     s = eint(wf)
     one = True
     if one:
-        integrals, symmetries = s.integration_onebody(integrals_names = ["sd 1 x"],
+        integrals, symmetries = s.integration_onebody(integrals_names = ["sofiel xx"],
                     # {
                     # "nucpot":{"atoms":[0]},
                     # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},

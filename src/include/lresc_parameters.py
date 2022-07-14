@@ -1,105 +1,166 @@
+# LRESC CONSTANTS
+M: float = 1000000.0
+C: float = 137.0359998
+ALPHA: float = 1.0/C
+ALPHA2: float = ALPHA*ALPHA
+lresc_scale = {"fckin": M*ALPHA2*ALPHA2, "sdkinxx": -M*ALPHA2*ALPHA2/4.0/4.0, #one 1./4. is because old lresc didn't eliminate this constant in the calculate the dptovl in the dalton
+        "sdkinyy": -M*ALPHA2*ALPHA2/4.0/4.0, "sdkinzz": -M*ALPHA2*ALPHA2/4.0/4.0,
+        "fcbso": -M*ALPHA2*ALPHA2/4.0, "sdbsoxx": -M*ALPHA2*ALPHA2/4.0,
+        "sdbsoyy": -M*ALPHA2*ALPHA2/4.0, "sdbsozz": -M*ALPHA2*ALPHA2/4.0,
+        "lpsokin": M*ALPHA2*ALPHA2/2.0, "lkinpso": M*ALPHA2*ALPHA2,
+        "lfcso": -M*ALPHA2/4.0, "lsdsoxx": -M*ALPHA2/4.0,
+        "lsdsoyy": -M*ALPHA2/4.0, "lsdsozz": -M*ALPHA2/4.0,
+        "lpsomv": -M*ALPHA2/2.0, "lpsodw": -M*ALPHA2/2.0}
+lresc = {"fckin": -M*ALPHA2*ALPHA2, "sdkinxx": M*ALPHA2*ALPHA2/2.0,
+        "sdkinyy": M*ALPHA2*ALPHA2/2.0, "sdkinzz": M*ALPHA2*ALPHA2/2.0,
+        "fcbso": 2.0*M*ALPHA2*ALPHA2, "sdbsoxx": 2.0*M*ALPHA2*ALPHA2,
+        "sdbsoyy": 2.0*M*ALPHA2*ALPHA2, "sdbsozz": 2.0*M*ALPHA2*ALPHA2,
+        "lpsokin": M*ALPHA2*ALPHA2/8.0, "lkinpso": M*ALPHA2*ALPHA2/8.0,
+        "lfcso": M*ALPHA2/2.0, "lsdsoxx": M*ALPHA2/2.0,
+        "lsdsoyy": M*ALPHA2/2.0, "lsdsozz": M*ALPHA2/2.0,
+        "lpsomv": M*ALPHA2/2.0, "lpsodw": M*ALPHA2/2.0}
+lresc_constants = {"lresc_scale": lresc_scale, "lresc": lresc}
 ###### Paramagnetic Corrections
 # -- Lineal Response
 # - Triplet
 # FcKin
-fckin = ["fc " + str(1 + a), "kinetic"]
+fckin = {"fckin" : lambda a: ["kinetic", "fc " + str(1 + a)]}
 # SdKinxx
-sd1xddxx = ["sd " + str(1 + 3*a) + " x", "laplacian 1"] #In old LRESC used DPTOVL, which according of DALTON
-sd1xddxy = ["sd " + str(1 + 3*a) + " x", "laplacian 4"] #source is -1/4*ddi, !falta las cruzadas
-sd1xddxz = ["sd " + str(1 + 3*a) + " x", "laplacian 5"]
-sd1yddxx = ["sd " + str(1 + 3*a) + " y", "laplacian 1"]
-sd1yddxy = ["sd " + str(1 + 3*a) + " y", "laplacian 4"]
-sd1yddxz = ["sd " + str(1 + 3*a) + " y", "laplacian 5"]
-sd1zddxx = ["sd " + str(1 + 3*a) + " z", "laplacian 1"]
-sd1zddxy = ["sd " + str(1 + 3*a) + " z", "laplacian 4"]
-sd1zddxz = ["sd " + str(1 + 3*a) + " z", "laplacian 5"]
+sdkinxx = {
+"sd1xddxx" : lambda a: ["laplacian xx", "sd " + str(1 + 3*a) + " x"], #In old LRESC used DPTOVL, which according of DALTON
+"sd1xddxy" : lambda a: ["laplacian xy", "sd " + str(1 + 3*a) + " x"], #source is -1/4*ddi, !falta las cruzadas
+"sd1xddxz" : lambda a: ["laplacian xz", "sd " + str(1 + 3*a) + " x"],
+"sd1yddxx" : lambda a: ["laplacian xx", "sd " + str(1 + 3*a) + " y"],
+"sd1yddxy" : lambda a: ["laplacian xy", "sd " + str(1 + 3*a) + " y"],
+"sd1yddxz" : lambda a: ["laplacian xz", "sd " + str(1 + 3*a) + " y"],
+"sd1zddxx" : lambda a: ["laplacian xx", "sd " + str(1 + 3*a) + " z"],
+"sd1zddxy" : lambda a: ["laplacian xy", "sd " + str(1 + 3*a) + " z"],
+"sd1zddxz" : lambda a: ["laplacian xz", "sd " + str(1 + 3*a) + " z"],
+}
 # SdKinyy
-sd2xddyx = ["sd " + str(2 + 3*a) + " x", "laplacian 4"] # dxy
-sd2xddyy = ["sd " + str(2 + 3*a) + " x", "laplacian 2"] # dyy
-sd2xddyz = ["sd " + str(2 + 3*a) + " x", "laplacian 6"] # dyz
-sd2yddyx = ["sd " + str(2 + 3*a) + " y", "laplacian 4"]
-sd2yddyy = ["sd " + str(2 + 3*a) + " y", "laplacian 2"]
-sd2yddyz = ["sd " + str(2 + 3*a) + " y", "laplacian 6"]
-sd2zddyx = ["sd " + str(2 + 3*a) + " z", "laplacian 4"]
-sd2zddyy = ["sd " + str(2 + 3*a) + " z", "laplacian 2"]
-sd2zddyz = ["sd " + str(2 + 3*a) + " z", "laplacian 6"]
+sdkinyy = {
+"sd2xddyx" : lambda a: ["laplacian xy", "sd " + str(2 + 3*a) + " x"], # dxy
+"sd2xddyy" : lambda a: ["laplacian yy", "sd " + str(2 + 3*a) + " x"], # dyy
+"sd2xddyz" : lambda a: ["laplacian yz", "sd " + str(2 + 3*a) + " x"], # dyz
+"sd2yddyx" : lambda a: ["laplacian xy", "sd " + str(2 + 3*a) + " y"],
+"sd2yddyy" : lambda a: ["laplacian yy", "sd " + str(2 + 3*a) + " y"],
+"sd2yddyz" : lambda a: ["laplacian yz", "sd " + str(2 + 3*a) + " y"],
+"sd2zddyx" : lambda a: ["laplacian xy", "sd " + str(2 + 3*a) + " z"],
+"sd2zddyy" : lambda a: ["laplacian yy", "sd " + str(2 + 3*a) + " z"],
+"sd2zddyz" : lambda a: ["laplacian yz", "sd " + str(2 + 3*a) + " z"],
+}
 # SdKinzz
-sd3xddzx = ["sd " + str(3 + 3*a) + " x", "laplacian 5"] # dxz
-sd3xddzy = ["sd " + str(3 + 3*a) + " x", "laplacian 6"] # dyz
-sd3xddzz = ["sd " + str(3 + 3*a) + " x", "laplacian 3"] # dzz
-sd3yddzx = ["sd " + str(3 + 3*a) + " y", "laplacian 5"]
-sd3yddzy = ["sd " + str(3 + 3*a) + " y", "laplacian 6"]
-sd3yddzz = ["sd " + str(3 + 3*a) + " y", "laplacian 3"]
-sd3zddzx = ["sd " + str(3 + 3*a) + " z", "laplacian 5"]
-sd3zddzy = ["sd " + str(3 + 3*a) + " z", "laplacian 6"]
-sd3zddzz = ["sd " + str(3 + 3*a) + " z", "laplacian 3"]
+sdkinzz = {
+"sd3xddzx" : lambda a: ["laplacian xz", "sd " + str(3 + 3*a) + " x"], # dxz
+"sd3xddzy" : lambda a: ["laplacian yz", "sd " + str(3 + 3*a) + " x"], # dyz
+"sd3xddzz" : lambda a: ["laplacian zz", "sd " + str(3 + 3*a) + " x"], # dzz
+"sd3yddzx" : lambda a: ["laplacian xz", "sd " + str(3 + 3*a) + " y"],
+"sd3yddzy" : lambda a: ["laplacian yz", "sd " + str(3 + 3*a) + " y"],
+"sd3yddzz" : lambda a: ["laplacian zz", "sd " + str(3 + 3*a) + " y"],
+"sd3zddzx" : lambda a: ["laplacian xz", "sd " + str(3 + 3*a) + " z"],
+"sd3zddzy" : lambda a: ["laplacian yz", "sd " + str(3 + 3*a) + " z"],
+"sd3zddzz" : lambda a: ["laplacian zz", "sd " + str(3 + 3*a) + " z"],
+}
 # FcBso
-fcsofielxx = ["fc " + str(1 + a), "sofiel xx"]
-fcsofielyy = ["fc " + str(1 + a), "sofiel yy"]
-fcsofielzz = ["fc " + str(1 + a), "sofiel zz"]
+fcbso = {
+"fcsofielxx" : lambda a: ["fc " + str(1 + a), "sofiel xx"],
+"fcsofielyy" : lambda a: ["fc " + str(1 + a), "sofiel yy"],
+"fcsofielzz" : lambda a: ["fc " + str(1 + a), "sofiel zz"],
+}
 # SdBsoxx
-sd1xsofielxx = ["sd " + str(1 + 3*a) + " x", "sofiel xx"]
-sd1xsofielxy = ["sd " + str(1 + 3*a) + " x", "sofiel xy"]
-sd1xsofielxz = ["sd " + str(1 + 3*a) + " x", "sofiel xz"]
-sd1ysofielxx = ["sd " + str(1 + 3*a) + " y", "sofiel xx"]
-sd1ysofielxy = ["sd " + str(1 + 3*a) + " y", "sofiel xy"]
-sd1ysofielxz = ["sd " + str(1 + 3*a) + " y", "sofiel xz"]
-sd1zsofielxx = ["sd " + str(1 + 3*a) + " z", "sofiel xx"]
-sd1zsofielxy = ["sd " + str(1 + 3*a) + " z", "sofiel xy"]
-sd1zsofielxz = ["sd " + str(1 + 3*a) + " z", "sofiel xz"]
+sdbsoxx = {
+"sd1xsofielxx" : lambda a: ["sd " + str(1 + 3*a) + " x", "sofiel xx"],
+"sd1xsofielxy" : lambda a: ["sd " + str(1 + 3*a) + " x", "sofiel xy"],
+"sd1xsofielxz" : lambda a: ["sd " + str(1 + 3*a) + " x", "sofiel xz"],
+"sd1ysofielxx" : lambda a: ["sd " + str(1 + 3*a) + " y", "sofiel xx"],
+"sd1ysofielxy" : lambda a: ["sd " + str(1 + 3*a) + " y", "sofiel xy"],
+"sd1ysofielxz" : lambda a: ["sd " + str(1 + 3*a) + " y", "sofiel xz"],
+"sd1zsofielxx" : lambda a: ["sd " + str(1 + 3*a) + " z", "sofiel xx"],
+"sd1zsofielxy" : lambda a: ["sd " + str(1 + 3*a) + " z", "sofiel xy"],
+"sd1zsofielxz" : lambda a: ["sd " + str(1 + 3*a) + " z", "sofiel xz"],
+}
 # SdBsoyy
-sd2xsofielyx = ["sd " + str(2 + 3*a) + " x", "sofiel yx"]
-sd2xsofielyy = ["sd " + str(2 + 3*a) + " x", "sofiel yy"]
-sd2xsofielyz = ["sd " + str(2 + 3*a) + " x", "sofiel yz"]
-sd2ysofielyx = ["sd " + str(2 + 3*a) + " y", "sofiel yx"]
-sd2ysofielyy = ["sd " + str(2 + 3*a) + " y", "sofiel yy"]
-sd2ysofielyz = ["sd " + str(2 + 3*a) + " y", "sofiel yz"]
-sd2zsofielyx = ["sd " + str(2 + 3*a) + " z", "sofiel yx"]
-sd2zsofielyy = ["sd " + str(2 + 3*a) + " z", "sofiel yy"]
-sd2zsofielyz = ["sd " + str(2 + 3*a) + " z", "sofiel yz"]
+sdbsoyy = {
+"sd2xsofielyx" : lambda a: ["sd " + str(2 + 3*a) + " x", "sofiel yx"],
+"sd2xsofielyy" : lambda a: ["sd " + str(2 + 3*a) + " x", "sofiel yy"],
+"sd2xsofielyz" : lambda a: ["sd " + str(2 + 3*a) + " x", "sofiel yz"],
+"sd2ysofielyx" : lambda a: ["sd " + str(2 + 3*a) + " y", "sofiel yx"],
+"sd2ysofielyy" : lambda a: ["sd " + str(2 + 3*a) + " y", "sofiel yy"],
+"sd2ysofielyz" : lambda a: ["sd " + str(2 + 3*a) + " y", "sofiel yz"],
+"sd2zsofielyx" : lambda a: ["sd " + str(2 + 3*a) + " z", "sofiel yx"],
+"sd2zsofielyy" : lambda a: ["sd " + str(2 + 3*a) + " z", "sofiel yy"],
+"sd2zsofielyz" : lambda a: ["sd " + str(2 + 3*a) + " z", "sofiel yz"],
+}
 # SdBsozz
-sd3xsofielzx = ["sd " + str(3 + 3*a) + " x", "sofiel zx"]
-sd3xsofielzy = ["sd " + str(3 + 3*a) + " x", "sofiel zy"]
-sd3xsofielzz = ["sd " + str(3 + 3*a) + " x", "sofiel zz"]
-sd3ysofielzx = ["sd " + str(3 + 3*a) + " y", "sofiel zx"]
-sd3ysofielzy = ["sd " + str(3 + 3*a) + " y", "sofiel zy"]
-sd3ysofielzz = ["sd " + str(3 + 3*a) + " y", "sofiel zz"]
-sd3zsofielzx = ["sd " + str(3 + 3*a) + " z", "sofiel zx"]
-sd3zsofielzy = ["sd " + str(3 + 3*a) + " z", "sofiel zy"]
-sd3zsofielzz = ["sd " + str(3 + 3*a) + " z", "sofiel zz"]
+sdbsozz = {
+"sd3xsofielzx" : lambda a: ["sd " + str(3 + 3*a) + " x", "sofiel zx"],
+"sd3xsofielzy" : lambda a: ["sd " + str(3 + 3*a) + " x", "sofiel zy"],
+"sd3xsofielzz" : lambda a: ["sd " + str(3 + 3*a) + " x", "sofiel zz"],
+"sd3ysofielzx" : lambda a: ["sd " + str(3 + 3*a) + " y", "sofiel zx"],
+"sd3ysofielzy" : lambda a: ["sd " + str(3 + 3*a) + " y", "sofiel zy"],
+"sd3ysofielzz" : lambda a: ["sd " + str(3 + 3*a) + " y", "sofiel zz"],
+"sd3zsofielzx" : lambda a: ["sd " + str(3 + 3*a) + " z", "sofiel zx"],
+"sd3zsofielzy" : lambda a: ["sd " + str(3 + 3*a) + " z", "sofiel zy"],
+"sd3zsofielzz" : lambda a: ["sd " + str(3 + 3*a) + " z", "sofiel zz"],
+}
+triplet_lineal_responses = {"fckin": fckin, "sdkinxx": sdkinxx, "sdkinyy": sdkinyy, "sdkinzz": sdkinzz,
+                        "fcbso": fcbso, "sdbsoxx":sdbsoxx, "sdbsoyy": sdbsoyy, "sdbsozz": sdbsozz}
 # - Singlet
 # L-PsoKin
-angmomxpsoke1 = ["angmom 1, psoke " + str(1 + a*3)]
-angmomypsoke2 = ["angmom 2, psoke " + str(2 + a*3)]
-angmomzpsoke3 = ["angmom 3, psoke " + str(3 + a*3)]
+lpsokin = {
+"angmomxpsoke1" : lambda a: ["angmom x", "psoke " + str(1 + a*3)],
+"angmomypsoke2" : lambda a: ["angmom y", "psoke " + str(2 + a*3)],
+"angmomzpsoke3" : lambda a: ["angmom z", "psoke " + str(3 + a*3)],
+}
 # Lkin-Pso
-psoxozke1 = ["pso " + str(1 + 3*a) + ", ozke 1"]
-psoyozke2 = ["pso " + str(2 + 3*a) + ", ozke 2"]
-psozozke3 = ["pso " + str(3 + 3*a) + ", ozke 3"]
+lkinpso = {
+"psoxozke1" : lambda a: ["pso " + str(1 + 3*a), "ozke x"],
+"psoyozke2" : lambda a: ["pso " + str(2 + 3*a), "ozke y"],
+"psozozke3" : lambda a: ["pso " + str(3 + 3*a), "ozke z"],
+}
+singlet_lineal_responses = {"lpsokin": lpsokin, "lkinpso": lkinpso}
 # -- Quadratic Responses
 # - Triplet
 # LFcSO
-angmomxfcspinox = ["angmom 1, fc " + str(1 + a) + ", spinorbit 1"]
-angmomyfcspinoy = ["angmom 2, fc " + str(1 + a) + ", spinorbit 2"]
-angmomzfcspinoz = ["angmom 3, fc " + str(1 + a) + ", spinorbit 3"]
+lfcso = {
+"angmomxfcspinox" : lambda a: ["angmom x", "fc " + str(1 + a), "spinorbit x"],
+"angmomyfcspinoy" : lambda a: ["angmom y", "fc " + str(1 + a), "spinorbit y"],
+"angmomzfcspinoz" : lambda a: ["angmom z", "fc " + str(1 + a), "spinorbit z"],
+}
 # LSdSOxx
-angmomxsd1xspinox = ["angmom 1, sd " + str(1 + 3*a) + "1, spinorbit 1"]
-angmomysd1yspinoy = ["angmom 1, sd " + str(1 + 3*a) + "2, spinorbit 2"]
-angmomzsd1zspinoz = ["angmom 1, sd " + str(1 + 3*a) + "3, spinorbit 3"]
+lsdsoxx = {
+"angmomxsd1xspinox" : lambda a: ["angmom x", "sd " + str(1 + 3*a) + " x", "spinorbit x"],
+"angmomysd1yspinoy" : lambda a: ["angmom x", "sd " + str(1 + 3*a) + " y", "spinorbit y"],
+"angmomzsd1zspinoz" : lambda a: ["angmom x", "sd " + str(1 + 3*a) + " z", "spinorbit z"],
+}
 # LSdSOyy
-angmomxsd2xspinox = ["angmom 2, sd " + str(2 + 3*a) + "1, spinorbit 1"]
-angmomysd2yspinoy = ["angmom 2, sd " + str(2 + 3*a) + "2, spinorbit 2"]
-angmomzsd2zspinoz = ["angmom 2, sd " + str(2 + 3*a) + "3, spinorbit 3"]
+lsdsoyy = {
+"angmomxsd2xspinox" : lambda a: ["angmom y", "sd " + str(2 + 3*a) + " x", "spinorbit x"],
+"angmomysd2yspinoy" : lambda a: ["angmom y", "sd " + str(2 + 3*a) + " y", "spinorbit y"],
+"angmomzsd2zspinoz" : lambda a: ["angmom y", "sd " + str(2 + 3*a) + " z", "spinorbit z"],
+}
 # LSdSOzz
-angmomxsd3xspinox = ["angmom 3, sd " + str(3 + 3*a) + "1, spinorbit 1"]
-angmomysd3yspinoy = ["angmom 3, sd " + str(3 + 3*a) + "2, spinorbit 2"]
-angmomzsd3zspinoz = ["angmom 3, sd " + str(3 + 3*a) + "3, spinorbit 3"]
+lsdsozz = {
+"angmomxsd3xspinox" : lambda a: ["angmom z", "sd " + str(3 + 3*a) + " x", "spinorbit x"],
+"angmomysd3yspinoy" : lambda a: ["angmom z", "sd " + str(3 + 3*a) + " y", "spinorbit y"],
+"angmomzsd3zspinoz" : lambda a: ["angmom z", "sd " + str(3 + 3*a) + " z", "spinorbit z"],
+}
+triplet_quadratic_responses = {"lfcso": lfcso, "lsdsoxx": lsdsoxx, "lsdsoyy": lsdsoyy, "lsdsozz": lsdsozz}
 # - Singlet
 # LpsoMv
-angmomxpso1massvelo = ["angmom 1, pso " + str(1 + 3*a) + ", massvelo"]
-angmomypso2massvelo = ["angmom 2, pso " + str(2 + 3*a) + ", massvelo"]
-angmomzpso3massvelo = ["angmom 3, pso " + str(3 + 3*a) + ", massvelo"]
+lpsomv = {
+"angmomxpso1massvelo" : lambda a: ["angmom x", "pso " + str(1 + 3*a), "massvelo"],
+"angmomypso2massvelo" : lambda a: ["angmom y", "pso " + str(2 + 3*a), "massvelo"],
+"angmomzpso3massvelo" : lambda a: ["angmom z", "pso " + str(3 + 3*a), "massvelo"],
+}
 # LpsoDw
-angmomxpso1darwin = ["angmom 1, pso " + str(1 + 3*a) + ", darwin"]
-angmomypso2darwin = ["angmom 2, pso " + str(2 + 3*a) + ", darwin"]
-angmomzpso3darwin = ["angmom 3, pso " + str(3 + 3*a) + ", darwin"]
+lpsodw = {
+"angmomxpso1darwin" : lambda a: ["angmom x", "pso " + str(1 + 3*a), "darwin"],
+"angmomypso2darwin" : lambda a: ["angmom y", "pso " + str(2 + 3*a), "darwin"],
+"angmomzpso3darwin" : lambda a: ["angmom z", "pso " + str(3 + 3*a), "darwin"],
+}
+singlet_quadratic_responses = {"lpsomv" : lpsomv, "lpsodw": lpsodw}
+
+# if __name__ == "__main__":
+#     for sd in sdkinxx.values():
+#         print(sd(1))

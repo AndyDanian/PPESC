@@ -124,9 +124,14 @@ class wave_function():
         return len(self.exponents)
 
     @property
+    def primitives_number_sph(self) -> int:
+        "Primitive number"
+        return len([exp for mol in self._basis for at in mol for l, exps in at.items() for exp in exps for i in range(angular_number_sph[l])])
+
+    @property
     def mo_virt(self) -> int:
         "Molecular Orbital Occupied Number"
-        return self.primitives_number - len([mo["occupation"] for mo in self._mos if mo["occupation"] > 0])
+        return len([mo["occupation"] for mo in self._mos if mo["occupation"] == 0.0])
 
     @property
     def primitives_centers(self) -> list:

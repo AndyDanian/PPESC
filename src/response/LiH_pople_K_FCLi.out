@@ -1,0 +1,79 @@
+Molden's file is valid.
+*** Warning VER ESTO MEJORAR
+                    Each atom is a molecule. You can group atoms put on the same index
+                    into molden file in section [Atoms], second column. Example: 
+
+                    O 1 8 0.0 0.0 0.0
+                    H 1 1 0.0 0.0 0.0
+                    H 1 1 0.0 0.0 0.0
+
+*** There are l higher p, then is neccesary re-organize mo coefficient ***
+*** when is used DALTON, which will done ***
+********************************************************************************
+***                           REPONSE CALCULATION                            ***
+********************************************************************************
+********************************************************************************
+***                            HERMITE: TWO BODY                             ***
+********************************************************************************
+
+tttttttttttttttttttt hours:minutes:seconds tttttttttttttttttttt
+Electron Repulsion Atomic Integrals (355037) Time: 0:1:18.359 
+Hermite Calculation Time: 0:1:22.055                          
+ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt 
+
+********************************************************************************
+***                          END HERMITE: TWO BODY                           ***
+********************************************************************************
+********************************************************************************
+***                            HERMITE: ONE BODY                             ***
+********************************************************************************
+
+tttttttttttttttttttt hours:minutes:seconds tttttttttttttttttttt
+Fermi--contact Atomic Integrals for 1-th Atom Time: 0:0:0.047 
+Hermite Calculation Time: 0:0:0.052                           
+ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt 
+
+********************************************************************************
+***                          END HERMITE: ONE BODY                           ***
+********************************************************************************
+********************************************************************************
+***                            HERMITE: ONE BODY                             ***
+********************************************************************************
+
+tttttttttttttttttttt hours:minutes:seconds tttttttttttttttttttt
+Kinetic Atomic Integrals Time: 0:0:0.085                      
+Hermite Calculation Time: 0:0:0.087                           
+ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt 
+
+********************************************************************************
+***                          END HERMITE: ONE BODY                           ***
+********************************************************************************
+
+                                 RPA                                  
+               ----------------------------------------               
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: kinetic, fc 1
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<KINETIC;FC 1>>
+========================================                              
+-<<kinetic;fc 1>>: 405.888328                                         
+========================================                              
+
+tttttttttttttttttttt hours:minutes:seconds tttttttttttttttttttt
+Coulomb and Exchange Time: 0:3:35.283                         
+Build Principal Propagator Time: 0:0:0.008                    
+Inverse Time: 0:0:0.004                                       
+Build GPV fc 1 Time: 0:0:0.053                                
+Build GPV kinetic Time: 0:0:0.087                             
+Lineal Response Time: 0:0:0.005                               
+RPA Time: 0:0:0.005                                           
+Response Calculation Time: 0:3:35.441                         
+ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt 
+
+********************************************************************************
+***                         END REPONSE CALCULATION                          ***
+********************************************************************************

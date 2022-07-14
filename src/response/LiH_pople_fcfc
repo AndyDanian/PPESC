@@ -1,0 +1,50 @@
+Molden's file is valid.
+*** Warning VER ESTO MEJORAR
+                    Each atom is a molecule. You can group atoms put on the same index
+                    into molden file in section [Atoms], second column. Example: 
+
+                    O 1 8 0.0 0.0 0.0
+                    H 1 1 0.0 0.0 0.0
+                    H 1 1 0.0 0.0 0.0
+
+*** There are l higher p, then is neccesary re-organize mo coefficient ***
+*** when is used DALTON, which will done ***
+********************************************************************************
+***                           REPONSE CALCULATION                            ***
+********************************************************************************
+
+                                 RPA                                  
+               ----------------------------------------               
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: fc, fc
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<FC 1;FC 1>>
+     Lineal Response: <<FC 1;FC 2>>
+     Lineal Response: <<FC 2;FC 2>>
+========================================                              
+-<<fc 1;fc 1>>: 29342.668625                                          
+========================================                              
+========================================                              
+-<<fc 1;fc 2>>: -49.296642                                            
+========================================                              
+========================================                              
+-<<fc 2;fc 2>>: 231.372803                                            
+========================================                              
+
+tttttttttttttttttttt hours:minutes:seconds tttttttttttttttttttt
+Coulomb and Exchange Time: 0:3:26.302                         
+Build Principal Propagator Time: 0:0:0.008                    
+Inverse Time: 0:0:0.001                                       
+Build GPV fc Time: 0:0:0.111                                  
+Lineal Response Time: 0:0:0.025                               
+RPA Time: 0:0:0.025                                           
+Response Calculation Time: 0:3:26.446                         
+ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt 
+
+********************************************************************************
+***                         END REPONSE CALCULATION                          ***
+********************************************************************************

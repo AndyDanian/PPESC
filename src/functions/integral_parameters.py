@@ -1,6 +1,8 @@
 from libf import *
 
-def integral_1b_parameters(atoms_number: int = None, integral_name: str = None, verbose: int = 0):
+def integral_1b_parameters(atoms_number: int = None, integral_name: str = None,
+                            gaugeo: list = None, dipole: list = None,
+                            verbose: int = 0):
     """
     Build dictionary with information neccesary to calculate of the
     integrals
@@ -8,11 +10,15 @@ def integral_1b_parameters(atoms_number: int = None, integral_name: str = None, 
     Args:
         wf (wave_function): Wave Function object
         integral_name (str): Integral name.
+        gauge (list): Gauge origen
+        dipole (list): Dipole origen
         verbose (int): Print level.
     """
     # Default values for integrals properties ######################################################
-    r_gauge: list = [0.0,0.0,0.0]
-    r_dipole: list = [0.0,0.0,0.0]
+    if gaugeo: r_gauge: list = gaugeo
+    else: r_gauge: list = [0.0,0.0,0.0]
+    if dipole: r_dipole: list = dipole
+    else: r_dipole: list = [0.0,0.0,0.0]
     atoms_number: int = atoms_number
     atoms: list = [atom for atom in range(atoms_number)]
     if integral_name.lower() == "laplacian":
@@ -31,10 +37,7 @@ def integral_1b_parameters(atoms_number: int = None, integral_name: str = None, 
             if property_split[2].isnumeric():
                 magnetic_components = [int(property_split[2]) - 1]
             else:
-                if property_split == "laplacian":
-                    magnetic_components = [i for i, x in spatial_components.items() if x == property_split[2]]
-                else:
-                    magnetic_components = [i for i, b in magnetic_axes.items() if b == property_split[2]]
+                magnetic_components = [i for i, b in magnetic_axes.items() if b == property_split[2]]
 
         # label symmetry
         elif spatial_symmetry[property_split[0]] == 1  and magnetic[property_split[0]] == 0:
@@ -45,8 +48,9 @@ def integral_1b_parameters(atoms_number: int = None, integral_name: str = None, 
             if property_split[1].isnumeric():
                 magnetic_components = [int(property_split[1]) - 1]
             else:
-                if property_split == "laplacian":
-                    magnetic_components = [i for i, x in spatial_components.items() if x == property_split[2]]
+                if "laplacian" in property_split:
+                    magnetic_components = [property_split[1] if property_split[1].isnumeric() else
+                                            i for i, x in spatial_components.items() if x == property_split[1]]
                 else:
                     magnetic_components = [i for i, b in magnetic_axes.items() if b == property_split[1]]
 

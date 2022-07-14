@@ -27,12 +27,13 @@ def get_coulomb_exchange_integrals(wf: wave_function = None,
 
     # Coulomb and Exchange
     mo_coeff = np.array(wf.mo_coefficients)
-    nprim = wf.primitives_number
     n_mo_occ = wf.mo_occ
     n_mo_virt = wf.mo_virt
+    nprim = n_mo_occ + n_mo_virt
 
     coulomb = np.zeros((n_mo_virt,n_mo_virt,n_mo_occ,n_mo_occ),dtype=float)
     exchange = np.zeros((n_mo_virt,n_mo_occ,n_mo_virt,n_mo_occ),dtype=float)
+
     for a in range(n_mo_virt):
         s = a + n_mo_occ
 

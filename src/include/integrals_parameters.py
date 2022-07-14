@@ -13,4 +13,4 @@ integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", 
 # separated in e_integral.py
 
 magnetic_axes: dict = {0:"x", 1:"y", 2:"z"}
-spatial_components: dict = {0:"x", 1:"y", 2:"z", 3:"xy", 4:"xz", 5:"yz"}
+spatial_components: dict = {0:"xx", 1:"yy", 2:"zz", 3:"xy", 4:"xz", 5:"yz"}
