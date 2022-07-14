@@ -342,7 +342,7 @@ class response():
         return responses_values
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/LiH_s.molden")
+    wfn = wave_function("../tests/molden_file/H2_STO2G.molden")
     r = response(wfn)
     r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["kinetic","fc 1","fc 2"]], property_multiplicity=[[3,3,3]],
                                 pp_multiplicity=[[3,3]],

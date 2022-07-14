@@ -59,8 +59,8 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                                 u = c + n_mo_occ
                                 for d in range(n_mo_virt):
                                     v = d + n_mo_occ
-                    #  ---- END Virtual ----
                                     for j in range(n_mo_occ):
+                    #  ---- END Virtual ----
 
                                         if b == c:
                                             vavs_c = mo_occupied[op_c][j+i*n_mo_occ]
@@ -76,7 +76,7 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                                             (gpvs[op_a][a+i*n_mo_virt]
                                             # PP_{ia,jb}^-1
                                             *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
-                                            *(mo_virtuals[op_b][b+c*n_mo_virt] - vavs_b)
+                                            *(mo_virtuals[op_b][c+b*n_mo_virt] - vavs_b)
                                             # PP_{ic,jd}^-1
                                             *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
                                             *gpvs[op_c][d+j*n_mo_virt+nrot])
@@ -85,7 +85,7 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                                             (gpvs[op_b][a+i*n_mo_virt]
                                             # PP_{ia,jb}^-1
                                             *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
-                                            *(mo_virtuals[op_a][b+c*n_mo_virt] - vavs_a)
+                                            *(mo_virtuals[op_a][c+b*n_mo_virt] - vavs_a)
                                             # PP_{ic,jd}^-1
                                             *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
                                             *gpvs[op_c][d+j*n_mo_virt+nrot])
@@ -138,7 +138,7 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                                             (gpvs[op_c][c+i*n_mo_virt]
                                             # PP_{ia,jb}^-1
                                             *principal_propagator_a[c+i*n_mo_virt,d+j*n_mo_virt]
-                                            *(mo_virtuals[op_b][a+d*n_mo_virt] - vavs_b)
+                                            *(mo_virtuals[op_b][d+a*n_mo_virt] - vavs_b)
                                             # PP_{ic,jd}^-1
                                             *principal_propagator_b[a+i*n_mo_virt,b+j*n_mo_virt]
                                             *gpvs[op_a][b+j*n_mo_virt+nrot])
@@ -147,7 +147,7 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                                             (gpvs[op_b][c+i*n_mo_virt]
                                             # PP_{ia,jb}^-1
                                             *principal_propagator_a[c+i*n_mo_virt,d+j*n_mo_virt]
-                                            *(mo_virtuals[op_c][a+d*n_mo_virt] - vavs_c)
+                                            *(mo_virtuals[op_c][d+a*n_mo_virt] - vavs_c)
                                             # PP_{ic,jd}^-1
                                             *principal_propagator_b[a+i*n_mo_virt,b+j*n_mo_virt]
                                             *gpvs[op_a][b+j*n_mo_virt+nrot])
@@ -155,7 +155,7 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                                         appb: float = appb1 + appb2 + appb3 + appb4 + appb5 + appb6
                                         #appb: float = appb1 + appb3 + appb4 + appb6
 
-                                        vpathT += appb1
+                                        vpathT += appb
 
                                         if verbose > 20 and count == 0:
                                             print(f" # ".center(6),f"i".center(6),
