@@ -106,7 +106,7 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                                             *(mo_virtuals[op_a][c+b*n_mo_virt] - vavs_a)
                                             # PP_{ic,jd}^-1
                                             *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
-                                            *gpvs[op_b][d+j*n_mo_virt+nrot])
+                                            *gpvs[op_b][d+j*n_mo_virt+nrot]) #si se quita nrot se reproduce el signo de H2_s Kin,FcLi,FcH
                                         # <i|C|c>P_{ic,jd}(<d|B|a>-d_{ad}<i|B|j>)P_{ia,jb}<b|A|j>
                                         # appb2 =\
                                         #     (gpvs[op_c][a+i*n_mo_virt]
@@ -125,7 +125,7 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                                         #     # PP_{ic,jd}^-1
                                         #     *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
                                         #     *gpvs[op_a][d+j*n_mo_virt+nrot])
-#
+
                                         if a == d:
                                             vavs_c = mo_occupied[op_c][j+i*n_mo_occ]
                                             vavs_b = mo_occupied[op_b][j+i*n_mo_occ]
@@ -153,7 +153,7 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                                             *gpvs[op_a][b+j*n_mo_virt+nrot])
 #
                                         appb: float = appb1 + appb2 + appb3 + appb4 + appb5 + appb6
-                                        #appb: float = appb1 + appb3 + appb4 + appb6
+                                        #print(appb1, appb2, appb3, appb4, appb5, appb6)
 
                                         vpathT += appb
 
@@ -179,7 +179,7 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                             print()
 
                 print_result(name = f'-<<{op_a};{op_b},{op_c}>>', value = f'{-vpathT:.6f}')
-                quadratic_responses[f'-<<{op_a};{op_b},{op_c}>>'] = vpathT
+                quadratic_responses[f'<<{op_a};{op_b},{op_c}>>'] = vpathT
 
     if verbose > 10:
         name = f"Quadratic Response"

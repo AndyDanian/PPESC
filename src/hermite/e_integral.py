@@ -106,10 +106,14 @@ class eint:
                         spino_x = spino_y = spino_z = True
                         temp_names.append("pso")
                         activate_all_pso = True
+                    elif "pso" in [int_name for int_name in integrals_names]:
+                        spino_x = spino_y = spino_z = True
+                        activate_all_pso = True
             if activate_all_pso:
                 integrals_names = [name for name in temp_names if "pso " not in name]
             else:
                 integrals_names = temp_names
+
 
         ## SOFIEL is the sum of the NSTCGO integrals
         sofiel_integrals: bool = False
@@ -168,6 +172,10 @@ class eint:
                         sofiel_xx = sofiel_yy = sofiel_zz = sofiel_xy = sofiel_xz = sofiel_yz =\
                             sofiel_yx = sofiel_zx = sofiel_zy = True
                         temp_names.append("nstcgo")
+                        activate_all_nstcgo = True
+                    elif "nstcgo" in [int_name for int_name in integrals_names]:
+                        sofiel_xx = sofiel_yy = sofiel_zz = sofiel_xy = sofiel_xz = sofiel_yz =\
+                            sofiel_yx = sofiel_zx = sofiel_zy = True
                         activate_all_nstcgo = True
             if activate_all_nstcgo:
                 integrals_names = [name for name in temp_names if "nstcgo " not in name]
@@ -514,11 +522,11 @@ class eint:
 
 
 if __name__ == "__main__":
-    wf = wave_function("../tests/molden_file/LiH.molden")
+    wf = wave_function("../tests/molden_file/LiH_STO2G.molden")
     s = eint(wf)
     one = True
     if one:
-        integrals, symmetries = s.integration_onebody(integrals_names = ["sofiel xx"],
+        integrals, symmetries = s.integration_onebody(integrals_names = ["angmom x"],
                     # {
                     # "nucpot":{"atoms":[0]},
                     # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},

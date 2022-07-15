@@ -14,6 +14,7 @@ def vector_to_matrix(n: int = None, vector: list = None, sym: str = None):
         matrix (list): array of 2D
     """
 
+
     if sym == "antisym":
         coef = -1.0
     else:

@@ -83,7 +83,11 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
             mo_virtuals[name] = [mo_integral[a + n_mo_occ][b + n_mo_occ] for a in range(n_mo_virt) for b in range(n_mo_virt)]
         # gradient porperty vector
         gpvs[name] = [2.0*mo_integral[i][a + n_mo_occ] for i in range(n_mo_occ) for a in range(n_mo_virt)]
-        gpvs[name] += [-value if multiplicity in ["Triplet", "triplet", 3] else value for value in gpvs[name]]
+        gpvs[name] += [-2.0*mo_integral[a + n_mo_occ][i]
+                        if multiplicity in ["Triplet", "triplet", 3]
+                        else 2.0*mo_integral[a + n_mo_occ][i]
+                        for i in range(n_mo_occ) for a in range(n_mo_virt)]
+
 
     if verbose > 10:
         time_object.add_name_delta_time(name = f"Build GPV {property}", delta_time = (time() - start))

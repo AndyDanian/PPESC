@@ -48,8 +48,7 @@ def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = N
                     if (isinstance(multiplicity, str) and multiplicity.lower() == "singlet") or\
                         (isinstance(multiplicity, int) and multiplicity == 1):
 
-                        w[irow,icol] =\
-                            -delta_moe - exchange[a,j,b,i] + coulomb[a,b,j,i]
+                        w[irow,icol] = -delta_moe - exchange[a,j,b,i] + coulomb[a,b,j,i]
 
                     elif (isinstance(multiplicity, str) and multiplicity.lower() == "triplet") or\
                         (isinstance(multiplicity, int) and multiplicity == 3):  #<ab|ji> + <aj|bi>
