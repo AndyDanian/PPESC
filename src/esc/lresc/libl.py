@@ -48,6 +48,9 @@ from response_parameters import *
 
 # response
 from response import *
+from coulomb_exchange import *
+from principal_propagator import *
+from gradient_property import *
 
 # functions
 from print_matrix import *

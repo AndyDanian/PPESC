@@ -36,6 +36,7 @@ Integrals implemented using point nucleu, cartessian primitives and until i shel
     * Spin-orbit
     * Laplacian: Dxx, Dyy, Dzz, Dxy, Dxz, and Dzz
     * External magnetic-field dependence of the spin–orbit operator integrals
+    * PA²P
 
 * Two--body
     * Electron repulsion

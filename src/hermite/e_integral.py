@@ -520,13 +520,12 @@ class eint:
         return integrals_two_body
 
 
-
 if __name__ == "__main__":
-    wf = wave_function("../tests/molden_file/LiH_STO2G.molden")
+    wf = wave_function("../tests/molden_file/H2_s.molden")
     s = eint(wf)
     one = True
     if one:
-        integrals, symmetries = s.integration_onebody(integrals_names = ["angmom x"],
+        integrals, symmetries = s.integration_onebody(integrals_names = ["pnstcgop"], #gaugeo=[0.000,0.0000,0.0586476414],
                     # {
                     # "nucpot":{"atoms":[0]},
                     # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},

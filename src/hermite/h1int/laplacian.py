@@ -61,6 +61,11 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
         b: int = 2
         c: int = 0
 
+    if component >= 0 and component <= 2:
+        FSIGN: float = -1.0
+    else:
+        FSIGN: float = 1.0
+
     count = 0
     for i in range(total_nprim):
 
@@ -181,7 +186,7 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
                 )
 
             ddi[count] = (
-                normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                FSIGN * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * (sij * skl * smn)
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)

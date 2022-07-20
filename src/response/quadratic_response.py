@@ -5,6 +5,7 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                             n_mo_occ: int = None, n_mo_virt: int = None,
                             principal_propagator_a: np.array = None,
                             principal_propagator_b: np.array = None,
+                            principal_propagator_c: np.array = None,
                             avs: dict = None, mo_occupied: dict = None,
                             mo_virtuals: dict = None ,gpvs: dict = None,
                             time_object: drv_time = None,
@@ -24,6 +25,7 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
     n_mo_virt (int): Virtual molecular orbitals
     principal_propagator_a (np.array): Inverse of the first principal propagator
     principal_propagator_b (np.array): Inverse of the second principal propagator
+    principal_propagator_b (np.array): Inverse of the third principal propagator
     avs (dict): dictionary with average value
     mo_occupied (dict): Values in molecular orbitals of the occupied orbitals
     mo_virtuals (dict): Values in molecular orbitals of the virtuals orbitals
@@ -47,6 +49,10 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
 
                 ipath: int = 0
                 vpathT: float = 0.0E+0
+                vpathTa: float = 0.0E+0
+                vpathTb: float = 0.0E+0
+                vpathTc: float = 0.0E+0
+                vpathTd: float = 0.0E+0
                 for i in range(n_mo_occ):
                     #  ---- Virtual index ----
                     for a in range(n_mo_virt):
@@ -78,16 +84,16 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                                             *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
                                             *(mo_virtuals[op_b][c+b*n_mo_virt] - vavs_b)
                                             # PP_{ic,jd}^-1
-                                            *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
+                                            *principal_propagator_c[c+i*n_mo_virt,d+j*n_mo_virt]
                                             *gpvs[op_c][d+j*n_mo_virt+nrot])
                                         # <i|B|a>P_{ia,jb}(<b|A|c>-d_{cb}<i|A|j>)P_{ic,jd}<d|C|j>
                                         appb3 =\
                                             (gpvs[op_b][a+i*n_mo_virt]
                                             # PP_{ia,jb}^-1
-                                            *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
+                                            *principal_propagator_b[a+i*n_mo_virt,b+j*n_mo_virt]
                                             *(mo_virtuals[op_a][c+b*n_mo_virt] - vavs_a)
                                             # PP_{ic,jd}^-1
-                                            *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
+                                            *principal_propagator_c[c+i*n_mo_virt,d+j*n_mo_virt]
                                             *gpvs[op_c][d+j*n_mo_virt+nrot])
                                         # <i|A|a>P_{ia,jb}(<b|C|c>-d_{cb}<i|C|j>)P_{ic,jd}<d|B|j>
                                         appb4 =\
@@ -102,29 +108,11 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                                         appb6 =\
                                             (gpvs[op_c][a+i*n_mo_virt]
                                             # PP_{ia,jb}^-1
-                                            *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
+                                            *principal_propagator_c[a+i*n_mo_virt,b+j*n_mo_virt]
                                             *(mo_virtuals[op_a][c+b*n_mo_virt] - vavs_a)
                                             # PP_{ic,jd}^-1
                                             *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
-                                            *gpvs[op_b][d+j*n_mo_virt+nrot]) #si se quita nrot se reproduce el signo de H2_s Kin,FcLi,FcH
-                                        # <i|C|c>P_{ic,jd}(<d|B|a>-d_{ad}<i|B|j>)P_{ia,jb}<b|A|j>
-                                        # appb2 =\
-                                        #     (gpvs[op_c][a+i*n_mo_virt]
-                                        #     # PP_{ia,jb}^-1
-                                        #     *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
-                                        #     *(mo_virtuals[op_b][c+b*n_mo_virt] - vavs_b)
-                                        #     # PP_{ic,jd}^-1
-                                        #     *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
-                                        #     *gpvs[op_a][d+j*n_mo_virt+nrot])
-                                        # # <i|B|c>P_{ic,jd}(<d|C|a>-d_{ad}<i|C|j>)P_{ia,jb}<b|A|j>
-                                        # appb5 =\
-                                        #     (gpvs[op_b][a+i*n_mo_virt]
-                                        #     # PP_{ia,jb}^-1
-                                        #     *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
-                                        #     *(mo_virtuals[op_c][c+b*n_mo_virt] - vavs_c)
-                                        #     # PP_{ic,jd}^-1
-                                        #     *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
-                                        #     *gpvs[op_a][d+j*n_mo_virt+nrot])
+                                            *gpvs[op_b][d+j*n_mo_virt+nrot])
 
                                         if a == d:
                                             vavs_c = mo_occupied[op_c][j+i*n_mo_occ]
@@ -137,32 +125,35 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                                         appb2 =\
                                             (gpvs[op_c][c+i*n_mo_virt]
                                             # PP_{ia,jb}^-1
-                                            *principal_propagator_a[c+i*n_mo_virt,d+j*n_mo_virt]
-                                            *(mo_virtuals[op_b][d+a*n_mo_virt] - vavs_b)
+                                            *principal_propagator_c[c+i*n_mo_virt,d+j*n_mo_virt]
+                                            *(mo_virtuals[op_b][a+d*n_mo_virt] - vavs_b)
                                             # PP_{ic,jd}^-1
-                                            *principal_propagator_b[a+i*n_mo_virt,b+j*n_mo_virt]
+                                            *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
                                             *gpvs[op_a][b+j*n_mo_virt+nrot])
                                         # <i|B|c>P_{ic,jd}(<d|C|a>-d_{ad}<i|C|j>)P_{ia,jb}<b|A|j>
                                         appb5 =\
                                             (gpvs[op_b][c+i*n_mo_virt]
                                             # PP_{ia,jb}^-1
-                                            *principal_propagator_a[c+i*n_mo_virt,d+j*n_mo_virt]
-                                            *(mo_virtuals[op_c][d+a*n_mo_virt] - vavs_c)
+                                            *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
+                                            *(mo_virtuals[op_c][a+d*n_mo_virt] - vavs_c)
                                             # PP_{ic,jd}^-1
-                                            *principal_propagator_b[a+i*n_mo_virt,b+j*n_mo_virt]
+                                            *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
                                             *gpvs[op_a][b+j*n_mo_virt+nrot])
 #
-                                        appb: float = appb1 + appb2 + appb3 + appb4 + appb5 + appb6
-                                        #print(appb1, appb2, appb3, appb4, appb5, appb6)
+                                        appb: float = -0.5*(appb1 + appb2 + appb3 + appb4 + appb5 + appb6)
 
                                         vpathT += appb
+                                        vpathTa += -0.5*(appb1 + appb2)
+                                        vpathTb += -0.5*(appb4 + appb5)
+                                        vpathTc += -0.5*(appb3)
+                                        vpathTd += -0.5*(appb6)
 
                                         if verbose > 20 and count == 0:
                                             print(f" # ".center(6),f"i".center(6),
                                                 f"s".center(6),
                                                 f"t".center(6),f"u".center(6),
                                                 f"v".center(6),f"j".center(6),)
-                                        if verbose > 20: # and abs(appb) > 0.1:
+                                        if verbose > 20 and abs(appb) > 0.1:
                                             print(f"{count + 1}".center(6),f"{i + 1}".center(6),
                                                 f"{s + 1}".center(6),
                                                 f"{t + 1}".center(6),f"{u + 1}".center(6),
@@ -179,6 +170,7 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                             print()
 
                 print_result(name = f'-<<{op_a};{op_b},{op_c}>>', value = f'{-vpathT:.6f}')
+                print(" a b c d",vpathTa,vpathTb,vpathTc,vpathTd)
                 quadratic_responses[f'<<{op_a};{op_b},{op_c}>>'] = vpathT
 
     if verbose > 10:

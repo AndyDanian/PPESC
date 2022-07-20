@@ -213,7 +213,6 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
                         coord[atom][2],
                     )
                 )
-            # ! Falta poner el -1^e+g+f en la recurrencia de nuclear_attraction
             nstcgo[count] = (
                 normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
