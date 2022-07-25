@@ -44,7 +44,6 @@ class lresc():
             atoms = [*range(self._wf.atom_number)]
 
         # NR and Corrections
-        # Not Isotropoic Value
         all_responses, all_averages = \
             run_shielding_lresc(wf = self._wf, lresc_amounts = lresc_amounts,
                                     atom = atoms, lresc_consts = lresc_consts,
@@ -52,11 +51,15 @@ class lresc():
                                     driver_time = driver_time, verbose = verbose,
                                     verbose_integrals = verbose_integrals)
 
-        if isotropic:
-            isotropic_responses, isotropic_averages = get_shielding_isotropic(all_responses = all_responses,
-                                            all_averages = all_averages)
-            print_lresc_values(responses = isotropic_responses, averages = isotropic_averages,
-                        name= "Isotropic", atom_label = self._wf.atomic_symbols)
+        # Isotropoic and Anisitropic Value
+        isotropic_responses, isotropic_averages = get_shielding_isotropic(all_responses = all_responses,
+                                        all_averages = all_averages)
+        anisotropic_responses, anisotropic_averages = get_shielding_anisotropic(all_responses = all_responses,
+                                        all_averages = all_averages)
+        # Print results
+        print_lresc_values(isotropic_responses = isotropic_responses, isotropic_averages = isotropic_averages,
+                            anisotropic_responses = anisotropic_responses, anisotropic_averages = anisotropic_averages,
+                            atom_label = self._wf.atomic_symbols)
 
 
         if verbose > 10:
@@ -65,6 +68,6 @@ class lresc():
         print_title(name = f"END LRESC CALCULATION")
 
 if __name__ == "__main__":
-    wfn = wave_function("../../tests/molden_file/H2_STO2G.molden")
+    wfn = wave_function("../../tests/molden_file/H2_s.molden")
     lr = lresc(wfn)
-    lr.drv_lresc(verbose=1, lresc_constant = "lresc_scale") #, lresc_amounts = ["lpsomv"])
+    lr.drv_lresc(verbose=1, lresc_constant = "lresc_scale", lresc_amounts = ["lpsomv"])

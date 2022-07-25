@@ -21,9 +21,6 @@ sys.path.append(
     os.fspath(PROJECT / ("functions"))
     )
 sys.path.append(
-    os.fspath(PROJECT / ("include"))
-    )
-sys.path.append(
     os.fspath(HERMITE_PATH / ("h1int"))
     )
 sys.path.append(

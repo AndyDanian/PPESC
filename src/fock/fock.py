@@ -212,6 +212,8 @@ class fock():
         https://towardsdatascience.com/python-lists-are-sometimes-much-faster-than-numpy-heres-a-proof-4b3dad4653ad
         """
 
+        start = time()
+
         if not wf and (not intk  or not inten or intee or not mocoef):
             raise ValueError("***Error\n\n\
                 It's neccesary the wave function or kinetic, e->-<nucleu interactoin, electron \n\
@@ -236,7 +238,11 @@ class fock():
             mocoef: list = [list(value) for value in zip(*wf.mo_coefficients)]
 
             if not nprim:
-                nprim = wf.primitives_number
+                if wf._cartessian_primitive:
+                    nprim: int = wf.primitives_number
+                else:
+                    nprim: int = wf.primitives_number_sph
+
 
             intk: list = integrals_onebody["kinetic"]
             inten: dict = {}
@@ -262,14 +268,17 @@ class fock():
         eom: list = self.run_hf_fock_calculate(intk = intk, inten = inten, intee = intee, mocoef = mocoef,
                     nprim = nprim, natoms = natoms, ne = ne, charge = charge, coord = coord, verbose = verbose)
 
+        if verbose > 10:
+            print_time(name = f"Hartree-Fock Energy", delta_time = (time() - start))
+
         return eom
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/LiH_STO2G.molden")
+    wfn = wave_function("../tests/molden_file/H2_ccpvqz.molden")
 
     print("\n Calculate MO energies used wave function \n")
     eom_values = fock()
-    eom_values.calculate_hf_moe(wfn, verbose=21)
+    eom_values.calculate_hf_moe(wfn, verbose=21, verbose_integrals=11)
 
 # H2 STO-1G
 #@    Final HF energy:              -0.160779200015

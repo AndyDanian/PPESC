@@ -4,7 +4,9 @@ Program written in Python 3.9.10 to calculate response properties in different a
 
 * RPA
 
-Now, only static principal propagator and, lineal and response response
+Now, only static principal propagator and, lineal and quadratic responses
+
+LRESC and PPESC for shielding is implemented. LRESC have two version, one version is with some constants by scale factor, instead another version is without scale factor.
 
 # Installation
 

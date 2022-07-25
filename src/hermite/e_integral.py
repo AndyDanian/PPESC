@@ -397,9 +397,11 @@ class eint:
         # Transform integrals from cto to sph
         integrals_matrix = {}
         if not self._cartessian:
+            start_cto: float = time()
             for label, integral in integrals.items():
                 integrals_matrix[label] = cto_gto_h1(np.array(vector_to_matrix(self._n, integral, symmetries[label])),
-                        np.array(self._angular_moments), driver_time = driver_time)
+                        np.array(self._angular_moments))
+            time_cto: float = time() - start_cto
         else:
             for label, integral in integrals.items():
                 integrals_matrix[label] = np.array(vector_to_matrix(self._n, integral, symmetries[label]))
@@ -443,6 +445,7 @@ class eint:
 
         # Time
         if verbose > 10:
+            driver_time.add_name_delta_time(name = f"One--Body CTOs--GTOs", delta_time = time_cto)
             driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
             driver_time.printing()
 
@@ -502,15 +505,17 @@ class eint:
 
         # Cartessian to Spherical
         if not self._cartessian:
+            start_cto: float = time()
             for label, integral in integrals_2_cart.items():
                 integrals_two_body[label] = cto_gto_h2(np.array(integral),
-                        np.array(self._angular_moments), driver_time = driver_time)
-
+                        np.array(self._angular_moments))
+            time_cto = time() - start_cto
         if verbose > 100:
             print("="*80,"\nTwo--body integrals with gto--primitives\n","="*80)
             print(integrals_two_body["e2pot"])
 
         if verbose > 10:
+            driver_time.add_name_delta_time(name = f"Two--Body CTOs--GTOs", delta_time = time_cto)
             driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
             driver_time.printing()
 
@@ -521,9 +526,9 @@ class eint:
 
 
 if __name__ == "__main__":
-    wf = wave_function("../tests/molden_file/H2_s.molden")
+    wf = wave_function("../tests/molden_file/H2_ccpvtz.molden")
     s = eint(wf)
-    one = True
+    one = False
     if one:
         integrals, symmetries = s.integration_onebody(integrals_names = ["pnstcgop"], #gaugeo=[0.000,0.0000,0.0586476414],
                     # {

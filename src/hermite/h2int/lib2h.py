@@ -18,6 +18,18 @@ sys.path.append(
 sys.path.append(
     os.fspath(PROJECT /("functions"))
     )
+sys.path.append(
+    os.fspath(PROJECT /("io"))
+    )
+sys.path.append(
+    os.fspath(PROJECT /("include"))
+    )
+sys.path.append(
+    os.fspath(PROJECT /("fock"))
+    )
+sys.path.append(
+    os.fspath(HERMITE_PATH /("h1int"))
+    )
 
 import numpy as np
 
@@ -31,3 +43,6 @@ from nuclear_attraction import *
 from electron_repulsion import *
 #functions
 from string_informations import *
+from drv_time import *
+#functions
+from wave_function import *

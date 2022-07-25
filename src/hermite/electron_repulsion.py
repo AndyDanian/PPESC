@@ -1,7 +1,9 @@
 import numpy as  np
+from numba import njit
 
 from lib2h import *
 
+@njit
 def electron_repulsion(
     # Alpha and Beta centers
     i, k, m, j, l, n, alpha, beta, Ax, Ay, Az, Bx, By, Bz,
@@ -9,10 +11,10 @@ def electron_repulsion(
     u, v, w, x, y, z, gamma, delta, Cx, Cy, Cz, Dx, Dy, Dz
 ):
     """
-    Recurrence to calculate the integrates the electron repulsion 
+    Recurrence to calculate the integrates the electron repulsion
                 int phi_i phi_j 1/r phi_k phi_l dt
 
-    Equation 9.9.33 from Molecular Electronic-Structure Theory. T Helgaker, et al. 
+    Equation 9.9.33 from Molecular Electronic-Structure Theory. T Helgaker, et al.
     """
     p = alpha + beta  # center one gaussian, composite p's exponents (alpha, beta)
     q = gamma + delta # center one gaussian, composite q's exponents (gamma, delta)
@@ -33,7 +35,7 @@ def electron_repulsion(
 
     pq = p*q/(p+q)
 
-    RPQ = np.linalg.norm([Px - Qx, Py - Qy, Pz - Qz])
+    RPQ = np.linalg.norm(np.array([Px - Qx, Py - Qy, Pz - Qz]))
 
     suma = 0.0
     for t in range(i + j + 1):
@@ -62,5 +64,5 @@ def electron_repulsion(
                                     RPQ,
                                 )
                             )
-    suma *= 2.0*np.power(np.pi,2.5)/(p*q*np.sqrt(p + q)) 
+    suma *= 2.0*np.power(np.pi,2.5)/(p*q*np.sqrt(p + q))
     return suma

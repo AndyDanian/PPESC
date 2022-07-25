@@ -1,9 +1,11 @@
 
 import numpy as np
 from scipy.special import hyp1f1
+from numba import njit #neccesary to install numba-scipy for can use hyp1f1
 
 from eij import *
 
+@njit
 def R(t, mu, nu, n, p, PKx, PKy, PKz, Rpc):
     T = p * Rpc * Rpc
     pot = 0.0
@@ -27,7 +29,7 @@ def R(t, mu, nu, n, p, PKx, PKy, PKz, Rpc):
         pot += PKx * R(t - 1, mu, nu, n + 1, p, PKx, PKy, PKz, Rpc)
     return pot
 
-
+@njit
 def nuclear_attraction(
     i, k, m, j, l, n, e, f, g, alpha, beta, Ax, Ay, Az, Bx, By, Bz, Kx, Ky, Kz
 ):
@@ -45,7 +47,7 @@ def nuclear_attraction(
     Pz = alpha * Az + beta * Bz
     Pz = Pz / p
 
-    Rpk = np.linalg.norm([Px - Kx, Py - Ky, Pz - Kz])
+    Rpk = np.linalg.norm(np.array([Px - Kx, Py - Ky, Pz - Kz]))
 
     suma = 0.0
     for t in range(i + j + 1):

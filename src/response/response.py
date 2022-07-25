@@ -369,7 +369,6 @@ if __name__ == "__main__":
     # r.drv_reponse_calculation(principal_propagator_approximation="rpa",
     #         properties = [["angmom x","fc 1","spinorbit x"],["angmom x","sd 1 x","spinorbit x"],["angmom x","sd 1 z","spinorbit z"],["angmom y","sd 2 y","spinorbit y"]
     #         ,["angmom z","sd 3 x","spinorbit x"],["angmom x", "pso 1", "massvelo"],["angmom x", "pso 1", "darwin"]],
-    #                             #property_multiplicity=[[1,3,3]],
     #                             pp_multiplicity=[[1,3,3],[1,3,3],[1,3,3],[1,3,3],[1,3,3],[1,1,1],[1,1,1]],gaugeo=[0.000,0.0000,0.0586476414],
     #                             verbose=11)
 
@@ -385,13 +384,11 @@ if __name__ == "__main__":
     # ["kinetic","fc 1","fc 2"],
     # ["kinetic","fc 1","fc 2"], ["angmom x","fc 1","spinorbit x"],
     # ["kinetic","kinetic","kinetic"],
-    r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["kinetic","fc 1","fc 2"],["angmom x","pso 1","massvelo"]],
-                                gaugeo=[0.000000000000, 0.000000000000, -0.545857052],
-                                #property_multiplicity=[[3,3,3]],
-                            pp_multiplicity=[[1,3,3],[1,1,1]], #,[1,3,3],[1,3,3],[3,3,3],[1,1,1]],
-                                verbose=12)
+    # r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["kinetic","fc 1","fc 2"],["angmom x","pso 1","massvelo"]],
+    #                             gaugeo=[0.000000000000, 0.000000000000, -0.545857052],
+    #                         pp_multiplicity=[[1,3,3],[1,1,1]], #,[1,3,3],[1,3,3],[3,3,3],[1,1,1]],
+    #                             verbose=12)
 
-    # r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["pso 1","pso 1"], ["sd 1 x","sd 1 x"], ["fc 1","fc 1"], ["fc 1","fc 2"]],
-    # #, property_multiplicity=[[1,1], [1,1], [3,3]],
-    #                             pp_multiplicity=[[1], [3], [3], [3]],
-    #                             verbose=11)
+    r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["pso 1","pso 1"], ["sd 1 x","sd 1 x"], ["fc","fc"]],
+                                pp_multiplicity=[[1], [3], [3]],
+                                verbose=21)
