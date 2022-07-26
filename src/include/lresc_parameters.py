@@ -17,7 +17,7 @@ lresc_scale = {
         "lsdsoyy": -M*ALPHA2/4.0, "lsdsozz": -M*ALPHA2/4.0,
         "lpsomv": -M*ALPHA2/2.0, "lpsodw": -M*ALPHA2/2.0,
         # NR
-        "dianr": M*ALPHA2/2.0,
+        "dianr": M*ALPHA2,
         # diamagnetic
         "fc": -7.0*M*ALPHA2*ALPHA2/16.0, "psooz": -M*ALPHA2*ALPHA2*0.5,
         "dnske": 10.0*M*ALPHA2*ALPHA2*ALPHA,
@@ -37,7 +37,7 @@ lresc = {
         "lsdsoyy": M*ALPHA2/2.0, "lsdsozz": M*ALPHA2/2.0,
         "lpsomv": M*ALPHA2/2.0, "lpsodw": M*ALPHA2/2.0,
         # NR
-        "dianr": M*ALPHA2/2.0,
+        "dianr": M*ALPHA2,
         # diamagnetic
         "fc": -M*ALPHA2*ALPHA2/8.0, "psooz": -M*ALPHA2*ALPHA2*0.5,
         "dnske": 2.0*M*ALPHA2*ALPHA2/3.0,
