@@ -274,7 +274,7 @@ class fock():
         return eom
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/H2_ccpvqz.molden")
+    wfn = wave_function("../tests/molden_file/H2_augccpvqz.molden")
 
     print("\n Calculate MO energies used wave function \n")
     eom_values = fock()

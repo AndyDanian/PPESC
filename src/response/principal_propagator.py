@@ -51,19 +51,19 @@ def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = N
                         (isinstance(multiplicity, int) and multiplicity == 1):
 
                         if quadratic:
-                            QUADRATIC_COEF: float = 3.0 #Reproduce quadratic response with dalton
+                            QUADRATIC_COEF: float = 1.0 #3.0 #Reproduce quadratic response with dalton
                             SIGN: float = 1.0
                         else:
                             QUADRATIC_COEF: float = 1.0
-                            SIGN: float = -1.0 #To reproduce sign H2 6311++g** <<pso 1, pso 1>>
+                            SIGN: float = 1.0 #-1.0 #To reproduce sign H2 6311++g** <<pso 1, pso 1>>
 
                         w[irow,icol] = (SIGN*(
-                            -delta_moe - QUADRATIC_COEF*exchange[a,j,b,i] + coulomb[a,b,j,i]))
+                            delta_moe + exchange[a,j,b,i] - coulomb[a,b,j,i]))
 
                     elif (isinstance(multiplicity, str) and multiplicity.lower() == "triplet") or\
                         (isinstance(multiplicity, int) and multiplicity == 3):  #<ab|ji> + <aj|bi>
 
-                        w[irow,icol] = -delta_moe + coulomb[a,b,j,i] + exchange[a,j,b,i]
+                        w[irow,icol] = delta_moe - coulomb[a,b,j,i] - exchange[a,j,b,i]
 
                     else:
                         raise ValueError("***ERROR\n\n\

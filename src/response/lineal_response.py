@@ -3,7 +3,7 @@ from numba import njit
 
 # Equivalente a indicar
 # @jit(nopython=True)
-@njit
+# @njit
 def get_lineal_response(n_mo_occ: int = None, n_mo_virt: int = None,
                         n_rotation: int = None,
                         opa: np.array = None, opb: np.array = None,
@@ -29,9 +29,9 @@ def get_lineal_response(n_mo_occ: int = None, n_mo_virt: int = None,
             appb = -0.5*(
                     opa[ia]*
                     pp[ia,jb]*
-                    opb[jb+n_rotation]
+                    opb[jb]
                 +
-                    opb[jb]*
+                    opb[jb+n_rotation]*
                     pp[jb,ia]*
                     opa[ia+n_rotation]
                 )
@@ -57,15 +57,15 @@ def get_lineal_response(n_mo_occ: int = None, n_mo_virt: int = None,
                 b  = 0
                 j += 1
 
+        if verbose > 20:
+            print("-"*60)
+            print("Total ",spath)
+            print()
         a += 1
         if a == n_mo_virt:
             a  = 0
             i += 1
 
-    if verbose > 20:
-        print("-"*60)
-        print("Total ",spath)
-        print()
     return vpathT
 
 def calculate_lineal_reponse(operator_a: list = None, operator_b: list = None,

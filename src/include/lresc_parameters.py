@@ -8,7 +8,7 @@ lresc_scale = {
         # NR
         "paranr": M*ALPHA2/2.0,
         # paramagnetic
-        "fckin": M*ALPHA2*ALPHA2, "sdkinxx": -M*ALPHA2*ALPHA2/4.0/4.0, #one 1./4. is because old lresc didn't eliminate this constant in the calculate the dptovl in the dalton
+        "fckin": M*ALPHA2*ALPHA2/3.0, "sdkinxx": -M*ALPHA2*ALPHA2/4.0/4.0, #one 1./4. is because old lresc didn't eliminate this constant in the calculate the dptovl in the dalton
         "sdkinyy": -M*ALPHA2*ALPHA2/4.0/4.0, "sdkinzz": -M*ALPHA2*ALPHA2/4.0/4.0,
         "fcbso": -M*ALPHA2*ALPHA2/4.0, "sdbsoxx": -M*ALPHA2*ALPHA2/4.0,
         "sdbsoyy": -M*ALPHA2*ALPHA2/4.0, "sdbsozz": -M*ALPHA2*ALPHA2/4.0,
@@ -203,7 +203,7 @@ dianr = {
 diamagnetic_nr = {"dianr": dianr}
 ## - Averages
 # - Fc
-fc = {"fc": lambda a: ["fc " + str(a)]}
+fc = {"fc": lambda a: ["fc " + str(1 + a)]}
 # - PsoOZ
 psooz = {
 "psooz1x": lambda a : ["psooz " + str(1 + 3*a) + " x"],

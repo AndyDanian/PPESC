@@ -526,11 +526,11 @@ class eint:
 
 
 if __name__ == "__main__":
-    wf = wave_function("../tests/molden_file/H2_s.molden")
+    wf = wave_function("../tests/molden_file/H2_augccpvqz.molden")
     s = eint(wf)
-    one = True
+    one = False
     if one:
-        integrals, symmetries = s.integration_onebody(integrals_names = ["laplacian xx"], #gaugeo=[0.000,0.0000,0.0586476414],
+        integrals, symmetries = s.integration_onebody(integrals_names = ["pso 5"], gaugeo=[0.000, 0.0000, -0.545857052],
                     # {
                     # "nucpot":{"atoms":[0]},
                     # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},

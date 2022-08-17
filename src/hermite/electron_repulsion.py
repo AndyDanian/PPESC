@@ -1,9 +1,7 @@
 import numpy as  np
-from numba import njit
 
 from lib2h import *
 
-@njit
 def electron_repulsion(
     # Alpha and Beta centers
     i, k, m, j, l, n, alpha, beta, Ax, Ay, Az, Bx, By, Bz,
@@ -36,7 +34,6 @@ def electron_repulsion(
     pq = p*q/(p+q)
 
     RPQ = np.linalg.norm(np.array([Px - Qx, Py - Qy, Pz - Qz]))
-
     suma = 0.0
     for t in range(i + j + 1):
         for mu in range(k + l + 1):

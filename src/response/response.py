@@ -384,11 +384,26 @@ if __name__ == "__main__":
     # ["kinetic","fc 1","fc 2"],
     # ["kinetic","fc 1","fc 2"], ["angmom x","fc 1","spinorbit x"],
     # ["kinetic","kinetic","kinetic"],
-    # r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["kinetic","fc 1","fc 2"],["angmom x","pso 1","massvelo"]],
-    #                             gaugeo=[0.000000000000, 0.000000000000, -0.545857052],
+    r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["kinetic","kinetic","kinetic"],["kinetic","fc 1","fc 2"],
+                                    ["angmom x","pso 1","massvelo"],["angmom x","fc 1","spinorbit x"]],
+                                gaugeo=[0.000000000000, 0.000000000000, -0.545857052],
     #                         pp_multiplicity=[[1,3,3],[1,1,1]], #,[1,3,3],[1,3,3],[3,3,3],[1,1,1]],
-    #                             verbose=12)
+                                verbose=12)
 
-    r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["pso 1","pso 1"], ["sd 1 x","sd 1 x"], ["fc","fc"]],
-                                pp_multiplicity=[[1], [3], [3]],
-                                verbose=21)
+    # r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["pso","pso"]],
+    #                             pp_multiplicity=[[1]],
+    #                             verbose=11)
+    # r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["sd","sd"]],
+    #                             pp_multiplicity=[[3]],
+    #                             verbose=11)
+    r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["pso 1", "ozke x"],["pso 2", "ozke y"],["pso 3", "ozke z"],
+                                ["nstcgo 1 x", "darwin"],["fc","fc"],["sd 1 x","sd 1 x"]],
+                                #gaugeo = [0,0,0.058647641],
+                                gaugeo = [0.000, 0.0000, -0.545857052],
+                                #pp_multiplicity=[[1],[1],[1]],
+                                verbose=1)
+
+
+    # r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["kinetic","kinetic","kinetic"]],
+    #                             pp_multiplicity=[[3,3,3]],
+    #                             verbose=11)

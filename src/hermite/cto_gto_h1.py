@@ -1,12 +1,9 @@
-from numba import njit
-
 from libint import *
 from constants_cto_gto import *
 """
 Author: Mgs Andy Zapata
 """
 
-@njit
 def cto_gto_h1(Mxyz: np.array = None, TP_A: np.array = None):
     """
     Convert cartesian to spherical integrals

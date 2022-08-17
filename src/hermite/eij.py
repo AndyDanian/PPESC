@@ -1,7 +1,5 @@
 from numpy import exp
-from numba import njit
 
-@njit
 def E(i, j, t, r, alpha, beta):
     """
     Hermite coefficient

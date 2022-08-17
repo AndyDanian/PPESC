@@ -54,6 +54,9 @@ class average():
         for name, atomic_int in integrals_1b.items():
             mo_integral[name] = np.matmul(mo_coeff_T,np.matmul(np.array(atomic_int), mo_coeff_T.T))
             averages[name] = 2.0*sum([mo_integral[name][i][i] for i in range(n_mo_occ)])
+        # Print
+        if verbose > 10:
+            print_matriz_integrated(integrals = mo_integral, symmetries = symmetries_1b)
 
         if verbose >= 0:
             for name, average in averages.items():
@@ -62,7 +65,7 @@ class average():
 
         if verbose > 10:
             driver_time.add_name_delta_time(name = f"Average Value", delta_time = (time() - start))
-            driver_printing()
+            driver_time.printing()
 
         if verbose >= 0:
             print_title("End Average Value")
@@ -70,6 +73,6 @@ class average():
         return averages
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/H2_s.molden")
+    wfn = wave_function("../tests/molden_file/LiH_STO2G.molden")
     av = average(wfn)
-    av.calculate_average(property = ["fc"])
+    av.calculate_average(property = ["pso 005"], verbose = 11, gaugeo=[0,0,-0.545857052])

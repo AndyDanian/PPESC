@@ -120,7 +120,7 @@ def get_lineal_response(responses: dict = None, type_correction: dict = None,
             value: dict = {}
             for label in amount.keys():
                 # it's multiplicated by minus the value like dalton do in the responses
-                value[label] = 0.5*ppesc_consts[name]*(
+                value[label] = -0.5*ppesc_consts[name]*(
                                     list(gpvs[name][label].values())[0][rotation_i_a]*
                                     pp_left*
                                     list(gpvs[name][label].values())[1][rotation_j_b+rotations]
@@ -188,8 +188,6 @@ def run_shielding_lresc(wf: wave_function = None, ppesc_amounts: list = None,
     # end principal propagator
 
     gpvs: dict = {}
-    occ_op_occ: dict = {}
-    vir_op_vir: dict = {}
     all_averages: dict = {}
     for a in atom:
         gaugeo: list = wf.coordinates[a]
@@ -263,14 +261,14 @@ def get_shielding_isotropic(all_responses: dict = None, all_averages: dict = Non
     isotropic_averages: dict = {}
 
     if all_responses:
-        isotropic_atom: dict = None
         for atom, dict_corrections in  all_responses.items():
-            isotropic: dict = {}
+            isotropic_atom: dict = None
             for correction, components_values in dict_corrections.items():
+                isotropic: dict = {}
                 isotropic[correction] = sum(components_values.values())/3.0
             #
-            if not isotropic_atom: isotropic_atom = isotropic
-            else: isotropic_atom.update(isotropic)
+                if not isotropic_atom: isotropic_atom = isotropic
+                else: isotropic_atom.update(isotropic)
             #
             isotropic_responses[atom] = isotropic_atom
             if "sddxx" in isotropic_responses[atom].keys():
@@ -278,17 +276,17 @@ def get_shielding_isotropic(all_responses: dict = None, all_averages: dict = Non
                                 isotropic_responses[atom]["sddyy"] +isotropic_responses[atom]["sddzz"])
 
     if all_averages:
-        isotropic_atom: dict = None
         for atom, dict_corrections in  all_averages.items():
-            isotropic: dict = {}
+            isotropic_atom: dict = None
             for correction, components_values in dict_corrections.items():
-                if "fc" != correction:
+                isotropic: dict = {}
+                if correction not in "fc":
                     isotropic[correction] = sum(components_values.values())/3.0
                 else:
                     isotropic["fc"] = sum(components_values.values())
             #
-            if not isotropic_atom: isotropic_atom = isotropic
-            else: isotropic_atom.update(isotropic)
+                if not isotropic_atom: isotropic_atom = isotropic
+                else: isotropic_atom.update(isotropic)
             #
             isotropic_averages[atom] = isotropic_atom
 
@@ -307,10 +305,10 @@ def get_shielding_anisotropic(all_responses: dict = None, all_averages: dict = N
     z_sign: float = -1.0
 
     if all_responses:
-        anisotropic_atom: dict = None
         for atom, dict_corrections in  all_responses.items():
-            anisotropic: dict = {}
+            anisotropic_atom: dict = None
             for correction, components_values in dict_corrections.items():
+                anisotropic: dict = {}
                 if len(components_values) == 3 and correction not in ["sddxx", "sddyy", "sddzz"]:
                     anisotropic[correction] = sum([value if name not in z_component else -value
                                                 for name, value in components_values.items()])
@@ -318,8 +316,8 @@ def get_shielding_anisotropic(all_responses: dict = None, all_averages: dict = N
                     anisotropic[correction] = sum(components_values.values())
 
             #
-            if not anisotropic_atom: anisotropic_atom = anisotropic
-            else: anisotropic_atom.update(anisotropic)
+                if not anisotropic_atom: anisotropic_atom = anisotropic
+                else: anisotropic_atom.update(anisotropic)
             #
             anisotropic_responses[atom] = anisotropic_atom
             if "sddxx" in anisotropic_responses[atom].keys():
@@ -327,18 +325,18 @@ def get_shielding_anisotropic(all_responses: dict = None, all_averages: dict = N
                                 anisotropic_responses[atom]["sddyy"] + z_sign*anisotropic_responses[atom]["sddzz"])
 
     if all_averages:
-        anisotropic_atom: dict = None
         for atom, dict_corrections in  all_averages.items():
-            anisotropic: dict = {}
+            anisotropic_atom: dict = None
             for correction, components_values in dict_corrections.items():
+                anisotropic: dict = {}
                 if correction != "fc":
                     anisotropic[correction] = sum([value if name not in z_component else -value
                                                 for name, value in components_values.items()])
                 else:
                     anisotropic["fc"] = sum(components_values.values())
             #
-            if not anisotropic_atom: anisotropic_atom = anisotropic
-            else: anisotropic_atom.update(anisotropic)
+                if not anisotropic_atom: anisotropic_atom = anisotropic
+                else: anisotropic_atom.update(anisotropic)
             #
             anisotropic_averages[atom] = anisotropic_atom
 

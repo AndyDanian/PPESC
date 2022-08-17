@@ -68,6 +68,6 @@ class lresc():
         print_title(name = f"END LRESC CALCULATION")
 
 if __name__ == "__main__":
-    wfn = wave_function("../../tests/molden_file/H2_s.molden")
+    wfn = wave_function("../../tests/molden_file/LiH_pople.molden")
     lr = lresc(wfn)
-    lr.drv_lresc(verbose=1, lresc_constant = "lresc_scale", lresc_amounts = ["lpsomv"])
+    lr.drv_lresc(verbose=1, lresc_constant = "lresc_scale") #, lresc_amounts = ["lpsomv", "lpsodw", "lfcso", "lsdsoxx"])

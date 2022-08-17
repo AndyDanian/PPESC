@@ -149,12 +149,12 @@ def get_lineal_response(responses: dict = None, type_correction: dict = None,
             value: dict = {}
             for label in amount.keys():
                 # it's multiplicated by minus the value like dalton do in the responses
-                value[label] = 0.5*lresc_consts[name]*(
+                value[label] = -0.5*lresc_consts[name]*(
                                     list(gpvs[name][label].values())[0][rotation_i_a]*
                                     pp_left*
-                                    list(gpvs[name][label].values())[1][rotation_j_b+rotations]
+                                    list(gpvs[name][label].values())[1][rotation_j_b]
                                 +
-                                    list(gpvs[name][label].values())[1][rotation_j_b]*
+                                    list(gpvs[name][label].values())[1][rotation_j_b+rotations]*
                                     pp_right*
                                     list(gpvs[name][label].values())[0][rotation_i_a+rotations]
                                 )
@@ -323,6 +323,8 @@ def run_shielding_lresc(wf: wave_function = None, lresc_amounts: list = None,
             vir_op_vir[a] = atom_vir_op_vir
 
     all_responses: dict = {}
+    lineal_responses: dict = {}
+    quadratic_responses: dict = {}
     rotations: int = nocc*nvir
     for i in range(nocc):
         for a in range(nvir):
@@ -331,7 +333,7 @@ def run_shielding_lresc(wf: wave_function = None, lresc_amounts: list = None,
                 for b in range(nvir):
                     t = b + nocc
 
-                    if singlet or triplet:
+                    if singlet or responses_amounts["triplet_lineal_amount"]:
                         for at in atom:
                             atom_responses: dict = {}
                             for label, activate in responses_amounts.items():
@@ -342,8 +344,8 @@ def run_shielding_lresc(wf: wave_function = None, lresc_amounts: list = None,
                                     else:
                                         pp_left: float = lineal_pp["singlet"][a+i*nvir,b+j*nvir]
                                         pp_right: float = lineal_pp["singlet"][b+j*nvir,a+i*nvir]
-                                    if at not in all_responses.keys(): path_responses: dict = {}
-                                    else: path_responses: dict = all_responses[at]
+                                    if at not in lineal_responses.keys(): path_responses: dict = {}
+                                    else: path_responses: dict = lineal_responses[at]
                                     temp_value: dict = {}
                                     temp_value = get_lineal_response(
                                         responses = path_responses, type_correction = label_amounts[label],
@@ -353,7 +355,7 @@ def run_shielding_lresc(wf: wave_function = None, lresc_amounts: list = None,
                                         pp_left = pp_left, pp_right = pp_right
                                     )
                                 if activate: atom_responses.update(temp_value)
-                            all_responses[at] = atom_responses
+                            lineal_responses[at] = atom_responses
 
                     for c in range(nvir):
                         if not responses_amounts["triplet_quadratic_amount"] and not  responses_amounts["singlet_quadratic_amount"]:
@@ -365,7 +367,7 @@ def run_shielding_lresc(wf: wave_function = None, lresc_amounts: list = None,
                             for at in atom:
                                 atom_responses: dict = {}
                                 for label, activate in responses_amounts.items():
-                                    if activate and "quadratic" in label:
+                                    if activate and ("triplet_quadratic_amount" == label or "singlet_quadratic_amount" == label):
                                         pp_a: list = [quadratic_pp["singlet"][a+i*nvir,b+j*nvir],
                                                     quadratic_pp["singlet"][c+i*nvir,d+j*nvir]]
                                         if "triplet" in label:
@@ -374,8 +376,8 @@ def run_shielding_lresc(wf: wave_function = None, lresc_amounts: list = None,
                                         else:
                                             pp_b: list = [quadratic_pp["singlet"][a+i*nvir,b+j*nvir],
                                                     quadratic_pp["singlet"][c+i*nvir,d+j*nvir]]
-                                        if at not in all_responses.keys(): path_responses: dict = {}
-                                        else: path_responses: dict = all_responses[at]
+                                        if at not in quadratic_responses.keys(): path_responses: dict = {}
+                                        else: path_responses: dict = quadratic_responses[at]
                                         temp_value: dict = {}
                                         temp_value = get_quadratic_response(
                                             responses = path_responses,
@@ -388,8 +390,15 @@ def run_shielding_lresc(wf: wave_function = None, lresc_amounts: list = None,
                                             d_bc = b == c, d_ad = a == d, pp_op_a = pp_a, pp_op_b = pp_b
                                         )
                                     if activate: atom_responses.update(temp_value)
-                                if at in all_responses.keys(): all_responses[at].update(atom_responses)
-                                else: all_responses[at] = atom_responses
+                                quadratic_responses[at] = atom_responses
+
+    for at in atom:
+        if singlet or responses_amounts["triplet_lineal_amount"]: all_responses[at] = lineal_responses[at]
+        if responses_amounts["triplet_quadratic_amount"] and responses_amounts["singlet_quadratic_amount"]:
+            if at in all_responses.keys():
+                all_responses[at].update(quadratic_responses[at])
+            else:
+                all_responses[at] = quadratic_responses[at]
 
     if verbose > 10:
         driver_time.add_name_delta_time(name = "Paramagnetic Calculations", delta_time = (time() - start))
@@ -402,17 +411,17 @@ def get_shielding_isotropic(all_responses: dict = None, all_averages: dict = Non
     isotropic_averages: dict = {}
 
     if all_responses:
-        isotropic_atom: dict = None
         for atom, dict_corrections in  all_responses.items():
-            isotropic: dict = {}
+            isotropic_atom: dict = None
             for correction, components_values in dict_corrections.items():
+                isotropic: dict = {}
                 if "fckin" != correction:
                     isotropic[correction] = sum(components_values.values())/3.0
                 else:
                     isotropic["fckin"] = sum(components_values.values())
             #
-            if not isotropic_atom: isotropic_atom = isotropic
-            else: isotropic_atom.update(isotropic)
+                if not isotropic_atom: isotropic_atom = isotropic
+                else: isotropic_atom.update(isotropic)
             #
             isotropic_responses[atom] = isotropic_atom
             if "sdkinxx" in isotropic_responses[atom].keys():
@@ -426,17 +435,17 @@ def get_shielding_isotropic(all_responses: dict = None, all_averages: dict = Non
                                 isotropic_responses[atom]["lsdsoyy"] +isotropic_responses[atom]["lsdsozz"])
 
     if all_averages:
-        isotropic_atom: dict = None
         for atom, dict_corrections in  all_averages.items():
-            isotropic: dict = {}
+            isotropic_atom: dict = None
             for correction, components_values in dict_corrections.items():
+                isotropic: dict = {}
                 if "fc" != correction:
                     isotropic[correction] = sum(components_values.values())/3.0
                 else:
                     isotropic["fc"] = sum(components_values.values())
             #
-            if not isotropic_atom: isotropic_atom = isotropic
-            else: isotropic_atom.update(isotropic)
+                if not isotropic_atom: isotropic_atom = isotropic
+                else: isotropic_atom.update(isotropic)
             #
             isotropic_averages[atom] = isotropic_atom
 
@@ -456,10 +465,10 @@ def get_shielding_anisotropic(all_responses: dict = None, all_averages: dict = N
     z_sign: float = -1.0
 
     if all_responses:
-        anisotropic_atom: dict = None
         for atom, dict_corrections in  all_responses.items():
-            anisotropic: dict = {}
+            anisotropic_atom: dict = None
             for correction, components_values in dict_corrections.items():
+                anisotropic: dict = {}
                 if len(components_values) == 3 and correction not in ["lsdsoxx", "lsdsoyy", "lsdsozz"]:
                     anisotropic[correction] = sum([value if name not in z_component else -value
                                                 for name, value in components_values.items()])
@@ -467,8 +476,8 @@ def get_shielding_anisotropic(all_responses: dict = None, all_averages: dict = N
                     anisotropic[correction] = sum(components_values.values())
 
             #
-            if not anisotropic_atom: anisotropic_atom = anisotropic
-            else: anisotropic_atom.update(anisotropic)
+                if not anisotropic_atom: anisotropic_atom = anisotropic
+                else: anisotropic_atom.update(anisotropic)
             #
             anisotropic_responses[atom] = anisotropic_atom
             if "sdkinxx" in anisotropic_responses[atom].keys():
@@ -482,18 +491,18 @@ def get_shielding_anisotropic(all_responses: dict = None, all_averages: dict = N
                                 anisotropic_responses[atom]["lsdsoyy"] + z_sign*anisotropic_responses[atom]["lsdsozz"])
 
     if all_averages:
-        anisotropic_atom: dict = None
         for atom, dict_corrections in  all_averages.items():
-            anisotropic: dict = {}
+            anisotropic_atom: dict = None
             for correction, components_values in dict_corrections.items():
+                anisotropic: dict = {}
                 if correction != "fc":
                     anisotropic[correction] = sum([value if name not in z_component else -value
                                                 for name, value in components_values.items()])
                 else:
                     anisotropic["fc"] = sum(components_values.values())
             #
-            if not anisotropic_atom: anisotropic_atom = anisotropic
-            else: anisotropic_atom.update(anisotropic)
+                if not anisotropic_atom: anisotropic_atom = anisotropic
+                else: anisotropic_atom.update(anisotropic)
             #
             anisotropic_averages[atom] = anisotropic_atom
 
