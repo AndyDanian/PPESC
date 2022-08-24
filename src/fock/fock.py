@@ -27,6 +27,7 @@ class fock():
     ################################################################################################
 
     def run_hf_fock_calculate(self, intk: list = None, inten: dict = None, intee: list = None,
+                            relativity_correction: bool = False, intdw: list = None, intmv: list = None,
                             mocoef: list = None, nprim: int = None, natoms: int = None, ne: int = None,
                             charge: list = None, coord: list = None, verbose: int = 0):
         """
@@ -38,6 +39,9 @@ class fock():
         intk (list): 2d array with atomic kinetic integrals
         inten (dict): dictionary of 2d arrays with atomic electron--nucleus interactions integrals
         intk (list): 2d array with atomic electron repulsion integrals
+        relativity_correction (bool): Activate of Massvelo, Darwin, and Spin-Orbit corrections
+        intdw (list): 2d array with atomic Darwin integrals
+        intmv (list): 2d array with atomic Massvelo integrals
         mocoef (list): 2d array with molecular obital coefficients
         nprim (int): primitive number
         natoms (int): atoms number
@@ -81,6 +85,7 @@ class fock():
                 for atom_en in inten.values():
                     ven += atom_en[i][j]
                 hcore[i][j] = intk[i][j] + ven
+
         if verbose > 30:
             print_triangle_matrix(integral = hcore, name = "Core Hamiltonian Matrix", matriz_sym = "sym")
 
@@ -99,16 +104,26 @@ class fock():
         #Matriz Fock
         time_start_fock_ao = time()
         fock: list = [[0 for zero in range(nprim)]for zero in range(nprim)]
+
+        if relativity_correction:
+            fock_rc: list = [[0 for zero in range(nprim)]for zero in range(nprim)]
+
         for i  in range(nprim):
             for j  in range(nprim):
                 fock[i][j] = hcore[i][j] + g[i][j]
+                if relativity_correction:
+                    fock_rc[i][j] = fock[i][j] + intdw[i][j] + intmv[i][j]
         if verbose > 30:
             print_triangle_matrix(integral = fock, name = "Fock Matrix in AO", matriz_sym = "square")
 
         #FOCK
         #AO TO MO
-        fock_mo = np.matmul(np.array(mocoef).T,np.matmul(np.array(fock),np.array(mocoef)))
+        fock_mo: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(fock),np.array(mocoef)))
         eom: list = [value for irow, row in enumerate(fock_mo)
+                    for icol, value in enumerate(row) if irow == icol]
+        if relativity_correction:
+            fock_mo_rc = np.matmul(np.array(mocoef).T,np.matmul(np.array(fock_rc),np.array(mocoef)))
+            eom_rc: list = [value for irow, row in enumerate(fock_mo_rc)
                     for icol, value in enumerate(row) if irow == icol]
         #Nuleu Repulsion
         time_start_te = time()
@@ -124,10 +139,13 @@ class fock():
                 vnn += charge[i]*charge[k]/distance_magnitud
 
         #Electronic energy
-        electronic_energy = 0.0
+        electronic_energy: float = 0.0
+        electronic_energy_rc: float = 0.0
         for i in range(nprim):
             for j in range(nprim):
                 electronic_energy += 0.5*density_matrix[i][j]*(hcore[i][j] + fock[i][j])
+                if relativity_correction:
+                    electronic_energy_rc += 0.5*density_matrix[i][j]*(hcore[i][j] + intdw[i][j] + intmv[i][j] + fock_rc[i][j])
 
         if verbose <= 10 or not verbose:
             print(f"\n Print the first 20 Hartree--Fock molecular orbitals energies: \n")
@@ -154,6 +172,24 @@ class fock():
                 #end="",
             )
 
+        if relativity_correction:
+            print(f"\n\nHartree--Fock molecular orbital energies with relativities corrections: \n")
+            if nprim % 5 != 0:
+                rows += 1
+
+            for row in range(rows):
+                if (row+1)*5 < nprim:
+                    columns = (row + 1)*5
+                else:
+                    columns = nprim
+
+                print(
+                    *[str("{:.6f}".format(eom_rc[i])).center(14)
+                    for i in range(row*5, columns)],
+                    #end="",
+                )
+
+
         print("\n")
         print(40*"=")
         gap = eom[ne2]-eom[ne2-1]
@@ -168,6 +204,27 @@ class fock():
         print(f"Nuclear energy: {vnn}")
         print(f"Total energy (HF): {electronic_energy + vnn} \n")
         print(40*"=")
+        if relativity_correction:
+            print()
+            print(40*"=")
+            avdw: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(intdw),np.array(mocoef)))
+            avmv: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(intmv),np.array(mocoef)))
+            totaldw: float = 0.0
+            totalmv: float = 0.0
+            for i in range(ne2):
+                totaldw += 2.0*avdw[i][i]
+                totalmv += 2.0*avmv[i][i]
+
+            total: float = totaldw + totalmv
+            print(f"Darwin Correction : {totaldw:.10f} au")
+            print(f"Massvelo Correction : {totalmv:.10f} au")
+            print()
+            print(f"Total Relativistic Corrections : {total:.10f} au ({total/(electronic_energy + vnn) * 100:.4f}%)")
+            # Sumar Mv y Dw desde la construcción de la matrix de Fock, arroja el mismo resultado que
+            # cuando solo sumo los valores medios de Mv y Dw al valor de la energía electrónica
+            print(f"Non-Relativistic + Relativistic Corrections : {electronic_energy_rc + vnn:.10f} au")
+
+
         if verbose > 10:
             print_time(name = f"Density Matrix", delta_time = (time() - time_start_dm), tailer = False)
             print_time(name = f"Core Hamiltonian", delta_time = (time() - time_start_ch), header = False, tailer = False)
@@ -182,6 +239,7 @@ class fock():
     def calculate_hf_moe(self, wf: dict = None, intk: list = None, inten: dict = None, intee: list = None,
                         mocoef: list = None, nprim: int = None, natoms: int = None, ne: int = None,
                         charge: list = None, coord: list = None, dalton_normalization: bool = False,
+                        relativity_correction: bool = False,
                         verbose: int = 0, verbose_integrals: int = 0):
         """
         Driver to calculate Hartree--Fock molecular orbital energies
@@ -200,6 +258,7 @@ class fock():
         charge (list): atomic charges
         coord (list): 2d array with atomic coordinates
         dalton_normalization (bool): Use dalton normalization to d, f, ...
+        relativity_correction (bool): Activate of Massvelo, Darwin, and Spin-Orbit corrections
         verbose (int): print level
         verbose_integrals (int): print level for integral calculation
 
@@ -223,8 +282,15 @@ class fock():
         if wf and (not intk  or not inten or intee or not mocoef):
             calculate_integrals = eint(wf)
             print("\n\n*** Calculating: kinetic, nucpot and electron repulsion atomic integrals")
+
+            if relativity_correction:
+                print("\n\n Relativity correction Massvelo and Darwin will be calculate \n\n")
+                integral_list: list = ["kinetic", "nucpot", "darwin", "massvelo"]
+            else:
+                integral_list: list = ["kinetic", "nucpot"]
+
             integrals_onebody, symmetries = calculate_integrals.integration_onebody(
-                integrals_names = ["kinetic", "nucpot"],
+                integrals_names = integral_list,
                 integrals_properties = None, verbose = verbose_integrals,
                 dalton_normalization = dalton_normalization)
 
@@ -243,12 +309,15 @@ class fock():
                 else:
                     nprim: int = wf.primitives_number_sph
 
-
             intk: list = integrals_onebody["kinetic"]
             inten: dict = {}
             for name, values in integrals_onebody.items():
                 if name != "kinetic":
                     inten[name] = values
+
+            if relativity_correction:
+                intdw: list = integrals_onebody["darwin"]
+                intmv: list = integrals_onebody["massvelo"]
 
             if not charge:
                 charge = wf.atomic_numbers
@@ -265,8 +334,12 @@ class fock():
                 Information insufficient. It is necesary: primitives or atoms or\n\
                     electrons number or charges or coordinates")
 
-        eom: list = self.run_hf_fock_calculate(intk = intk, inten = inten, intee = intee, mocoef = mocoef,
-                    nprim = nprim, natoms = natoms, ne = ne, charge = charge, coord = coord, verbose = verbose)
+        eom: list = self.run_hf_fock_calculate(intk = intk, inten = inten, intee = intee,
+                                                relativity_correction = relativity_correction,
+                                                intdw = intdw, intmv = intmv,
+                                                mocoef = mocoef, nprim = nprim, natoms = natoms,
+                                                ne = ne, charge = charge, coord = coord,
+                                                verbose = verbose)
 
         if verbose > 10:
             print_time(name = f"Hartree-Fock Energy", delta_time = (time() - start))
@@ -274,11 +347,11 @@ class fock():
         return eom
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/H2_augccpvqz.molden")
+    wfn = wave_function("../tests/molden_file/HI_I6311x_H2g.molden")
 
     print("\n Calculate MO energies used wave function \n")
     eom_values = fock()
-    eom_values.calculate_hf_moe(wfn, verbose=21, verbose_integrals=11)
+    eom_values.calculate_hf_moe(wfn, verbose=21, verbose_integrals=11, relativity_correction=True)
 
 # H2 STO-1G
 #@    Final HF energy:              -0.160779200015
