@@ -80,8 +80,8 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
             mo_occupied[name] = [mo_integral[a][b] for a in range(n_mo_occ) for b in range(n_mo_occ)]
             mo_virtuals[name] = [mo_integral[a + n_mo_occ][b + n_mo_occ] for a in range(n_mo_virt) for b in range(n_mo_virt)]
         # gradient porperty vector
-        gpvs[name] = [2.0*mo_integral[i][a + n_mo_occ] for i in range(n_mo_occ) for a in range(n_mo_virt)]
-        gpvs[name] += [-2.0*mo_integral[a + n_mo_occ][i]
+        gpvs[name] = [2.0*mo_integral[a + n_mo_occ][i] for i in range(n_mo_occ) for a in range(n_mo_virt)]
+        gpvs[name] += [-2.0*mo_integral[i][a + n_mo_occ]
                         for i in range(n_mo_occ) for a in range(n_mo_virt)]
 
 

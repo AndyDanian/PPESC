@@ -473,5 +473,5 @@ subroutine i2e(ee, counter, coord, mlx, mly, mlz, center, expon, n)
                             ee(v,u,q,p) = ee(p,q,u,v)
                     endif
     1 continue
-    write(*,*) " Cantidad de I2 calculadas ",counter
+    !write(*,*) " Cantidad de I2 calculadas ",counter
 end subroutine i2e

@@ -26,10 +26,10 @@ def vector_to_matrix(n: int = None, vector: list = None, sym: str = None):
     for x in vector:
         if sym == "square":
             matrix[row][col] = x
-            col += 1
-            if col == n:
-                col = 0
-                row += 1
+            row += 1
+            if row == n:
+                row = 0
+                col += 1
         else:
             matrix[col + row][row] = x
             matrix[row][col + row] = coef * x

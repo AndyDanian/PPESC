@@ -72,7 +72,7 @@ def psoke(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_norm
                 else:
                     l_x, l_y, l_z = r_x_b, r_y_b, r_z_b
                     r_x, r_y, r_z = r_x_c, r_y_c, r_z_c
-                    sign: float = -1.0
+                    sign: float = 1.0
                     der_l: float = float(der_l_b[j])
                 idj_jdi.append(
                     2.0 * exp[j] * nuclear_attraction(

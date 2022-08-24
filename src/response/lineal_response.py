@@ -1,5 +1,4 @@
 from libr import *
-from numba import njit
 
 # Equivalente a indicar
 # @jit(nopython=True)
@@ -23,7 +22,7 @@ def get_lineal_response(n_mo_occ: int = None, n_mo_virt: int = None,
         for jb in range(n_rotation):
             t = b + n_mo_occ
 
-            # -0.5*(<i|A|a>P_{ia,jb}^{-1}<b|B|j>
+            # 0.5*(<i|A|a>P_{ia,jb}^{-1}<b|B|j>
             # +
             # <i|B|b>P_{jb,ia}^{-1}<a|A|j>)
             appb = -0.5*(

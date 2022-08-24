@@ -1,0 +1,1169 @@
+Molden's file is valid.
+*** Warning VER ESTO MEJORAR
+                    Each atom is a molecule. You can group atoms put on the same index
+                    into molden file in section [Atoms], second column. Example: 
+
+                    O 1 8 0.0 0.0 0.0
+                    H 1 1 0.0 0.0 0.0
+                    H 1 1 0.0 0.0 0.0
+
+*** There are l higher p, then is neccesary re-organize mo coefficient ***
+*** when is used DALTON, which will done ***
+********************************************************************************
+***                           REPONSE CALCULATION                            ***
+********************************************************************************
+
+                                 RPA                                  
+               ----------------------------------------               
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: angmom x, pso 1
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<ANGMOM X;PSO 1>>
+========================================                              
+-<<angmom x;pso 1>>: -1.035730                                        
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: angmom y, pso 2
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<ANGMOM Y;PSO 2>>
+========================================                              
+-<<angmom y;pso 2>>: -1.035730                                        
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: angmom z, pso 3
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<ANGMOM Z;PSO 3>>
+========================================                              
+-<<angmom z;pso 3>>: -0.000000                                        
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: pso 1, ozke x
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<PSO 1;OZKE X>>
+========================================                              
+-<<pso 1;ozke x>>: 0.280743                                           
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: pso 2, ozke y
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<PSO 2;OZKE Y>>
+========================================                              
+-<<pso 2;ozke y>>: 0.280743                                           
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: pso 3, ozke z
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<PSO 3;OZKE Z>>
+========================================                              
+-<<pso 3;ozke z>>: 0.000000                                           
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: angmom x, psoke 1
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<ANGMOM X;PSOKE 1>>
+========================================                              
+-<<angmom x;psoke 1>>: 1.669844                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: angmom y, psoke 2
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<ANGMOM Y;PSOKE 2>>
+========================================                              
+-<<angmom y;psoke 2>>: 1.669844                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: angmom z, psoke 3
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<ANGMOM Z;PSOKE 3>>
+========================================                              
+-<<angmom z;psoke 3>>: 0.000000                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xx, sd 1 x
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XX;SD 1 X>>
+========================================                              
+-<<laplacian xx;sd 1 x>>: -0.253373                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xy, sd 1 x
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XY;SD 1 X>>
+========================================                              
+-<<laplacian xy;sd 1 x>>: -0.000000                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xz, sd 1 x
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XZ;SD 1 X>>
+========================================                              
+-<<laplacian xz;sd 1 x>>: -0.000000                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xx, sd 1 y
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XX;SD 1 Y>>
+========================================                              
+-<<laplacian xx;sd 1 y>>: -0.000000                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xy, sd 1 y
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XY;SD 1 Y>>
+========================================                              
+-<<laplacian xy;sd 1 y>>: -0.062716                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xz, sd 1 y
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XZ;SD 1 Y>>
+========================================                              
+-<<laplacian xz;sd 1 y>>: -0.000000                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xx, sd 1 z
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XX;SD 1 Z>>
+========================================                              
+-<<laplacian xx;sd 1 z>>: 0.000000                                    
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xy, sd 1 z
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XY;SD 1 Z>>
+========================================                              
+-<<laplacian xy;sd 1 z>>: 0.000000                                    
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xz, sd 1 z
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XZ;SD 1 Z>>
+========================================                              
+-<<laplacian xz;sd 1 z>>: 0.089662                                    
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xy, sd 2 x
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XY;SD 2 X>>
+========================================                              
+-<<laplacian xy;sd 2 x>>: -0.062716                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian yy, sd 2 x
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN YY;SD 2 X>>
+========================================                              
+-<<laplacian yy;sd 2 x>>: -0.000000                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian yz, sd 2 x
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN YZ;SD 2 X>>
+========================================                              
+-<<laplacian yz;sd 2 x>>: 0.000000                                    
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xy, sd 2 y
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XY;SD 2 Y>>
+========================================                              
+-<<laplacian xy;sd 2 y>>: -0.000000                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian yy, sd 2 y
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN YY;SD 2 Y>>
+========================================                              
+-<<laplacian yy;sd 2 y>>: -0.253373                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian yz, sd 2 y
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN YZ;SD 2 Y>>
+========================================                              
+-<<laplacian yz;sd 2 y>>: -0.000000                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xy, sd 2 z
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XY;SD 2 Z>>
+========================================                              
+-<<laplacian xy;sd 2 z>>: -0.000000                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian yy, sd 2 z
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN YY;SD 2 Z>>
+========================================                              
+-<<laplacian yy;sd 2 z>>: -0.000000                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian yz, sd 2 z
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN YZ;SD 2 Z>>
+========================================                              
+-<<laplacian yz;sd 2 z>>: 0.089662                                    
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xz, sd 3 x
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XZ;SD 3 X>>
+========================================                              
+-<<laplacian xz;sd 3 x>>: 0.089662                                    
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian yz, sd 3 x
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN YZ;SD 3 X>>
+========================================                              
+-<<laplacian yz;sd 3 x>>: 0.000000                                    
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian zz, sd 3 x
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN ZZ;SD 3 X>>
+========================================                              
+-<<laplacian zz;sd 3 x>>: 0.000000                                    
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xz, sd 3 y
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XZ;SD 3 Y>>
+========================================                              
+-<<laplacian xz;sd 3 y>>: 0.000000                                    
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian yz, sd 3 y
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN YZ;SD 3 Y>>
+========================================                              
+-<<laplacian yz;sd 3 y>>: 0.089662                                    
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian zz, sd 3 y
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN ZZ;SD 3 Y>>
+========================================                              
+-<<laplacian zz;sd 3 y>>: -0.000000                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian xz, sd 3 z
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN XZ;SD 3 Z>>
+========================================                              
+-<<laplacian xz;sd 3 z>>: 0.000000                                    
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian yz, sd 3 z
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN YZ;SD 3 Z>>
+========================================                              
+-<<laplacian yz;sd 3 z>>: 0.000000                                    
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: laplacian zz, sd 3 z
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<LAPLACIAN ZZ;SD 3 Z>>
+========================================                              
+-<<laplacian zz;sd 3 z>>: 0.277578                                    
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: kinetic, fc 1
+     Property Multiplicity:  Singlet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<KINETIC;FC 1>>
+========================================                              
+-<<kinetic;fc 1>>: 405.888328                                         
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: fc 1, sofiel xx
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<FC 1;SOFIEL XX>>
+========================================                              
+-<<fc 1;sofiel xx>>: 140.593315                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: fc 1, sofiel yy
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<FC 1;SOFIEL YY>>
+========================================                              
+-<<fc 1;sofiel yy>>: 140.593315                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: fc 1, sofiel zz
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<FC 1;SOFIEL ZZ>>
+========================================                              
+-<<fc 1;sofiel zz>>: 152.056154                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 1 x, sofiel xx
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 1 X;SOFIEL XX>>
+========================================                              
+-<<sd 1 x;sofiel xx>>: -0.134470                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 1 x, sofiel yx
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 1 X;SOFIEL YX>>
+========================================                              
+-<<sd 1 x;sofiel yx>>: -0.000000                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 1 x, sofiel zx
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 1 X;SOFIEL ZX>>
+========================================                              
+-<<sd 1 x;sofiel zx>>: 0.000000                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 1 y, sofiel xx
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 1 Y;SOFIEL XX>>
+========================================                              
+-<<sd 1 y;sofiel xx>>: -0.000000                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 1 y, sofiel yx
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 1 Y;SOFIEL YX>>
+========================================                              
+-<<sd 1 y;sofiel yx>>: -0.017565                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 1 y, sofiel zx
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 1 Y;SOFIEL ZX>>
+========================================                              
+-<<sd 1 y;sofiel zx>>: 0.000000                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 1 z, sofiel xx
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 1 Z;SOFIEL XX>>
+========================================                              
+-<<sd 1 z;sofiel xx>>: 0.000000                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 1 z, sofiel yx
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 1 Z;SOFIEL YX>>
+========================================                              
+-<<sd 1 z;sofiel yx>>: 0.000000                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 1 z, sofiel zx
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 1 Z;SOFIEL ZX>>
+========================================                              
+-<<sd 1 z;sofiel zx>>: -0.322640                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 2 x, sofiel xy
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 2 X;SOFIEL XY>>
+========================================                              
+-<<sd 2 x;sofiel xy>>: -0.017565                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 2 x, sofiel yy
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 2 X;SOFIEL YY>>
+========================================                              
+-<<sd 2 x;sofiel yy>>: -0.000000                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 2 x, sofiel zy
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 2 X;SOFIEL ZY>>
+========================================                              
+-<<sd 2 x;sofiel zy>>: -0.000000                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 2 y, sofiel xy
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 2 Y;SOFIEL XY>>
+========================================                              
+-<<sd 2 y;sofiel xy>>: -0.000000                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 2 y, sofiel yy
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 2 Y;SOFIEL YY>>
+========================================                              
+-<<sd 2 y;sofiel yy>>: -0.134470                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 2 y, sofiel zy
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 2 Y;SOFIEL ZY>>
+========================================                              
+-<<sd 2 y;sofiel zy>>: 0.000000                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 2 z, sofiel xy
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 2 Z;SOFIEL XY>>
+========================================                              
+-<<sd 2 z;sofiel xy>>: -0.000000                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 2 z, sofiel yy
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 2 Z;SOFIEL YY>>
+========================================                              
+-<<sd 2 z;sofiel yy>>: 0.000000                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 2 z, sofiel zy
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 2 Z;SOFIEL ZY>>
+========================================                              
+-<<sd 2 z;sofiel zy>>: -0.322640                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 3 x, sofiel xz
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 3 X;SOFIEL XZ>>
+========================================                              
+-<<sd 3 x;sofiel xz>>: -0.090901                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 3 x, sofiel yz
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 3 X;SOFIEL YZ>>
+========================================                              
+-<<sd 3 x;sofiel yz>>: -0.000000                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 3 x, sofiel zz
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 3 X;SOFIEL ZZ>>
+========================================                              
+-<<sd 3 x;sofiel zz>>: 0.000000                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 3 y, sofiel xz
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 3 Y;SOFIEL XZ>>
+========================================                              
+-<<sd 3 y;sofiel xz>>: 0.000000                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 3 y, sofiel yz
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 3 Y;SOFIEL YZ>>
+========================================                              
+-<<sd 3 y;sofiel yz>>: -0.090901                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 3 y, sofiel zz
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 3 Y;SOFIEL ZZ>>
+========================================                              
+-<<sd 3 y;sofiel zz>>: 0.000000                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 3 z, sofiel xz
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 3 Z;SOFIEL XZ>>
+========================================                              
+-<<sd 3 z;sofiel xz>>: -0.000000                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 3 z, sofiel yz
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 3 Z;SOFIEL YZ>>
+========================================                              
+-<<sd 3 z;sofiel yz>>: -0.000000                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: sd 3 z, sofiel zz
+     Property Multiplicity:  Triplet ,  Triplet
+     Principal Propagator Multiplicity: Triplet
+     Lineal Response: <<SD 3 Z;SOFIEL ZZ>>
+========================================                              
+-<<sd 3 z;sofiel zz>>: 0.024764                                       
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom x, fc 1 , spinorbit x
+     Property Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Principal Propagator Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Quadratic Response: <<ANGMOM X;FC 1,SPINORBIT X>>
+========================================                              
+-<<angmom x;fc 1,spinorbit x>>: 0.000602                              
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom y, fc 1 , spinorbit y
+     Property Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Principal Propagator Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Quadratic Response: <<ANGMOM Y;FC 1,SPINORBIT Y>>
+========================================                              
+-<<angmom y;fc 1,spinorbit y>>: 0.000602                              
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom z, fc 1 , spinorbit z
+     Property Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Principal Propagator Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Quadratic Response: <<ANGMOM Z;FC 1,SPINORBIT Z>>
+========================================                              
+-<<angmom z;fc 1,spinorbit z>>: 0.000000                              
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom x, sd 1 x , spinorbit x
+     Property Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Principal Propagator Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Quadratic Response: <<ANGMOM X;SD 1 X,SPINORBIT X>>
+========================================                              
+-<<angmom x;sd 1 x,spinorbit x>>: 0.000020                            
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom x, sd 1 y , spinorbit y
+     Property Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Principal Propagator Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Quadratic Response: <<ANGMOM X;SD 1 Y,SPINORBIT Y>>
+========================================                              
+-<<angmom x;sd 1 y,spinorbit y>>: -0.000041                           
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom x, sd 1 z , spinorbit z
+     Property Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Principal Propagator Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Quadratic Response: <<ANGMOM X;SD 1 Z,SPINORBIT Z>>
+========================================                              
+-<<angmom x;sd 1 z,spinorbit z>>: 0.000045                            
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom y, sd 2 x , spinorbit x
+     Property Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Principal Propagator Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Quadratic Response: <<ANGMOM Y;SD 2 X,SPINORBIT X>>
+========================================                              
+-<<angmom y;sd 2 x,spinorbit x>>: -0.000041                           
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom y, sd 2 y , spinorbit y
+     Property Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Principal Propagator Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Quadratic Response: <<ANGMOM Y;SD 2 Y,SPINORBIT Y>>
+========================================                              
+-<<angmom y;sd 2 y,spinorbit y>>: 0.000020                            
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom y, sd 2 z , spinorbit z
+     Property Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Principal Propagator Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Quadratic Response: <<ANGMOM Y;SD 2 Z,SPINORBIT Z>>
+========================================                              
+-<<angmom y;sd 2 z,spinorbit z>>: 0.000045                            
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom z, sd 3 x , spinorbit x
+     Property Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Principal Propagator Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Quadratic Response: <<ANGMOM Z;SD 3 X,SPINORBIT X>>
+========================================                              
+-<<angmom z;sd 3 x,spinorbit x>>: 0.000023                            
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom z, sd 3 y , spinorbit y
+     Property Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Principal Propagator Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Quadratic Response: <<ANGMOM Z;SD 3 Y,SPINORBIT Y>>
+========================================                              
+-<<angmom z;sd 3 y,spinorbit y>>: 0.000023                            
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom z, sd 3 z , spinorbit z
+     Property Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Principal Propagator Multiplicity:  Singlet ,  Triplet ,  Triplet
+     Quadratic Response: <<ANGMOM Z;SD 3 Z,SPINORBIT Z>>
+========================================                              
+-<<angmom z;sd 3 z,spinorbit z>>: 0.000000                            
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom x, pso 1 , massvelo
+     Property Multiplicity:  Singlet ,  Singlet ,  Singlet
+     Principal Propagator Multiplicity:  Singlet ,  Singlet ,  Singlet
+     Quadratic Response: <<ANGMOM X;PSO 1,MASSVELO>>
+========================================                              
+-<<angmom x;pso 1,massvelo>>: -0.000139                               
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom y, pso 2 , massvelo
+     Property Multiplicity:  Singlet ,  Singlet ,  Singlet
+     Principal Propagator Multiplicity:  Singlet ,  Singlet ,  Singlet
+     Quadratic Response: <<ANGMOM Y;PSO 2,MASSVELO>>
+========================================                              
+-<<angmom y;pso 2,massvelo>>: -0.000139                               
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom z, pso 3 , massvelo
+     Property Multiplicity:  Singlet ,  Singlet ,  Singlet
+     Principal Propagator Multiplicity:  Singlet ,  Singlet ,  Singlet
+     Quadratic Response: <<ANGMOM Z;PSO 3,MASSVELO>>
+========================================                              
+-<<angmom z;pso 3,massvelo>>: -0.000000                               
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom x, pso 1 , darwin
+     Property Multiplicity:  Singlet ,  Singlet ,  Singlet
+     Principal Propagator Multiplicity:  Singlet ,  Singlet ,  Singlet
+     Quadratic Response: <<ANGMOM X;PSO 1,DARWIN>>
+========================================                              
+-<<angmom x;pso 1,darwin>>: 0.000070                                  
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom y, pso 2 , darwin
+     Property Multiplicity:  Singlet ,  Singlet ,  Singlet
+     Principal Propagator Multiplicity:  Singlet ,  Singlet ,  Singlet
+     Quadratic Response: <<ANGMOM Y;PSO 2,DARWIN>>
+========================================                              
+-<<angmom y;pso 2,darwin>>: 0.000070                                  
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Quadratic
+     Properties: angmom z, pso 3 , darwin
+     Property Multiplicity:  Singlet ,  Singlet ,  Singlet
+     Principal Propagator Multiplicity:  Singlet ,  Singlet ,  Singlet
+     Quadratic Response: <<ANGMOM Z;PSO 3,DARWIN>>
+========================================                              
+-<<angmom z;pso 3,darwin>>: 0.000000                                  
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: nstcgo 1 x, darwin
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<NSTCGO 1 X;DARWIN>>
+========================================                              
+-<<nstcgo 1 x;darwin>>: 0.001300                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: nstcgo 2 y, darwin
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<NSTCGO 2 Y;DARWIN>>
+========================================                              
+-<<nstcgo 2 y;darwin>>: 0.001300                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: nstcgo 3 z, darwin
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<NSTCGO 3 Z;DARWIN>>
+========================================                              
+-<<nstcgo 3 z;darwin>>: 0.001311                                      
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: nstcgo 1 x, massvelo
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<NSTCGO 1 X;MASSVELO>>
+========================================                              
+-<<nstcgo 1 x;massvelo>>: -0.002068                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: nstcgo 2 y, massvelo
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<NSTCGO 2 Y;MASSVELO>>
+========================================                              
+-<<nstcgo 2 y;massvelo>>: -0.002068                                   
+========================================                              
+
+Response Calculation Specification                                    
+----------------------------------------                              
+     Response Type: Lineal
+     Properties: nstcgo 3 z, massvelo
+     Property Multiplicity:  Singlet ,  Singlet
+     Principal Propagator Multiplicity: Singlet
+     Lineal Response: <<NSTCGO 3 Z;MASSVELO>>
+========================================                              
+-<<nstcgo 3 z;massvelo>>: -0.002083                                   
+========================================                              
+
+tttttttttttttttttttt hours:minutes:seconds tttttttttttttttttttt
+Coulomb and Exchange Time: 0:2:12.039                         
+Build Principal Propagator Time: 0:0:0.006                    
+Inverse Time: 0:0:0.063                                       
+Build Principal Propagator Time: 0:0:0.023                    
+Inverse Time: 0:0:0.000                                       
+Build GPV ozke z Time: 0:0:0.233                              
+Build GPV laplacian xy Time: 0:0:0.023                        
+Build GPV laplacian xz Time: 0:0:0.023                        
+Build GPV psoke 3 Time: 0:0:6.319                             
+Build GPV sd 3 x Time: 0:0:0.071                              
+Build GPV spinorbit y Time: 0:0:0.531                         
+Build GPV fc 1 Time: 0:0:0.021                                
+Build GPV pso 2 Time: 0:0:0.256                               
+Build GPV sofiel zx Time: 0:0:0.336                           
+Build GPV sofiel yz Time: 0:0:0.336                           
+Build GPV laplacian yy Time: 0:0:0.026                        
+Build GPV sd 1 y Time: 0:0:0.071                              
+Build GPV darwin Time: 0:0:0.040                              
+Build GPV sd 2 x Time: 0:0:0.071                              
+Build GPV sd 1 x Time: 0:0:0.226                              
+Build GPV sofiel xx Time: 0:0:0.723                           
+Build GPV sd 3 z Time: 0:0:0.226                              
+Build GPV nstcgo 2 y Time: 0:0:0.334                          
+Build GPV sofiel xy Time: 0:0:0.346                           
+Build GPV sd 1 z Time: 0:0:0.071                              
+Build GPV angmom y Time: 0:0:0.031                            
+Build GPV psoke 1 Time: 0:0:6.287                             
+Build GPV nstcgo 1 x Time: 0:0:0.344                          
+Build GPV psoke 2 Time: 0:0:6.315                             
+Build GPV sd 2 z Time: 0:0:0.072                              
+Build GPV sofiel yx Time: 0:0:0.340                           
+Build GPV laplacian yz Time: 0:0:0.023                        
+Build GPV massvelo Time: 0:0:0.269                            
+Build GPV pso 3 Time: 0:0:0.268                               
+Build GPV ozke x Time: 0:0:0.167                              
+Build GPV sd 3 y Time: 0:0:0.071                              
+Build GPV spinorbit z Time: 0:0:0.534                         
+Build GPV laplacian zz Time: 0:0:0.029                        
+Build GPV angmom z Time: 0:0:0.034                            
+Build GPV angmom x Time: 0:0:0.034                            
+Build GPV sofiel xz Time: 0:0:0.355                           
+Build GPV kinetic Time: 0:0:0.049                             
+Build GPV sd 2 y Time: 0:0:0.225                              
+Build GPV nstcgo 3 z Time: 0:0:0.353                          
+Build GPV sofiel yy Time: 0:0:0.697                           
+Build GPV sofiel zz Time: 0:0:0.699                           
+Build GPV sofiel zy Time: 0:0:0.339                           
+Build GPV ozke y Time: 0:0:0.164                              
+Build GPV spinorbit x Time: 0:0:0.527                         
+Build GPV pso 1 Time: 0:0:0.257                               
+Build GPV laplacian xx Time: 0:0:0.030                        
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.007                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.007                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.007                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.007                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.007                               
+Lineal Response Time: 0:0:0.007                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.007                               
+Lineal Response Time: 0:0:0.007                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Quadratic Response Time: 0:1:12.502                           
+Quadratic Response Time: 0:1:12.869                           
+Quadratic Response Time: 0:1:13.058                           
+Quadratic Response Time: 0:1:12.400                           
+Quadratic Response Time: 0:1:13.374                           
+Quadratic Response Time: 0:1:13.225                           
+Quadratic Response Time: 0:1:12.666                           
+Quadratic Response Time: 0:1:13.096                           
+Quadratic Response Time: 0:1:13.033                           
+Quadratic Response Time: 0:1:12.419                           
+Quadratic Response Time: 0:1:13.162                           
+Quadratic Response Time: 0:1:13.524                           
+Quadratic Response Time: 0:1:12.710                           
+Quadratic Response Time: 0:1:12.883                           
+Quadratic Response Time: 0:1:12.679                           
+Quadratic Response Time: 0:1:12.544                           
+Quadratic Response Time: 0:1:12.619                           
+Quadratic Response Time: 0:1:13.032                           
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+Lineal Response Time: 0:0:0.008                               
+RPA Time: 0:21:52.505                                         
+Response Calculation Time: 0:24:33.432                        
+ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt 
+
+********************************************************************************
+***                         END REPONSE CALCULATION                          ***
+********************************************************************************

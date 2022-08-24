@@ -148,7 +148,6 @@ def get_lineal_response(responses: dict = None, type_correction: dict = None,
         if corrections[name]:
             value: dict = {}
             for label in amount.keys():
-                # it's multiplicated by minus the value like dalton do in the responses
                 value[label] = -0.5*lresc_consts[name]*(
                                     list(gpvs[name][label].values())[0][rotation_i_a]*
                                     pp_left*
