@@ -104,31 +104,16 @@ class fock():
         #Matriz Fock
         time_start_fock_ao = time()
         fock: list = [[0 for zero in range(nprim)]for zero in range(nprim)]
-        if relativity_correction:
-            fock_rc: list = [[0 for zero in range(nprim)]for zero in range(nprim)]
-
         for i  in range(nprim):
             for j  in range(nprim):
                 fock[i][j] = hcore[i][j] + g[i][j]
-                if relativity_correction:
-                    fock_rc[i][j] = fock[i][j] + intmv[i][j] + intdw[i][j]
         if verbose > 30:
             print_triangle_matrix(integral = fock, name = "Fock Matrix in AO", matriz_sym = "square")
-            if relativity_correction:
-                print_triangle_matrix(integral = fock_rc,
-                                name = "Fock Matrix in AO with Darwin and Massvelo Correction",
-                                matriz_sym = "square")
 
         #FOCK
         #AO TO MO
         fock_mo: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(fock),np.array(mocoef)))
-        eom: list = [value for irow, row in enumerate(fock_mo)
-                    for icol, value in enumerate(row) if irow == icol]
-
-        if relativity_correction:
-            fock_mo_rc: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(fock_rc),np.array(mocoef)))
-            eom_rc: list = [value for irow, row in enumerate(fock_mo_rc)
-                    for icol, value in enumerate(row) if irow == icol]
+        eom: list = [fock_mo[i][i] for i in range(nprim)]
         #Nuleu Repulsion
         time_start_te = time()
         vnn = 0.0
@@ -144,12 +129,9 @@ class fock():
 
         #Electronic energy
         electronic_energy: float = 0.0
-        electronic_energy_rc: float = 0.0
         for i in range(nprim):
             for j in range(nprim):
                 electronic_energy += 0.5*density_matrix[i][j]*(hcore[i][j] + fock[i][j])
-                if relativity_correction:
-                    electronic_energy_rc += 0.5*density_matrix[i][j]*(hcore[i][j] + intdw[i][j] + intmv[i][j] + fock_rc[i][j])
 
         if verbose <= 10 or not verbose:
             print(f"\n Print the first 20 Hartree--Fock molecular orbitals energies: \n")
@@ -176,32 +158,14 @@ class fock():
                 #end="",
             )
 
-        if relativity_correction:
-            print(f"\n\nHartree--Fock molecular orbital energies with relativities corrections: \n")
-            if nprim % 5 != 0:
-                rows += 1
-
-            for row in range(rows):
-                if (row+1)*5 < nprim:
-                    columns = (row + 1)*5
-                else:
-                    columns = nprim
-
-                print(
-                    *[str("{:.4f}".format(eom_rc[i])).center(14)
-                    for i in range(row*5, columns)],
-                    #end="",
-                )
-
-
         print("\n")
-        print(40*"=")
+
         gap = eom[ne2]-eom[ne2-1]
-        print(f"  E(LUMO):  {eom[ne2]} au")
-        print(f"- E(HOMO):  {eom[ne2-1]}   au")
-        print(f"----------------------------")
-        print(f"    gap  :  {gap}        au")
-        print(40*"=")
+        print(f"  E(LUMO): ",f"{eom[ne2]:4f}".center(24)," au")
+        print("- E(HOMO): ",f"{eom[ne2-1]:4f}".center(24)," au")
+        print(f"-"*40)
+        print("    gap  : ",f"{gap:4f}".center(24)," au")
+
         print("\n")
         print(40*"=")
         print(f"\nElectronic energy: {electronic_energy}")
@@ -209,15 +173,71 @@ class fock():
         print(f"Total energy (HF): {electronic_energy + vnn} \n")
         print(40*"=")
         if relativity_correction:
+
+            if verbose <= 10 or not verbose:
+                print(f"\nPrint the first 20 Hartree--Fock molecular orbitals energies with\n\
+                        relativities corrections: \n")
+                if float(nprim/3) >= 3:
+                    rows: int = 3
+                else:
+                    rows: int = int(nprim/4)
+            else:
+                print(f"\n\nHartree--Fock molecular orbitals energies with relativities corrections: \n")
+                rows: int = int(nprim/3)
+
+            intmv_mo: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(intmv),np.array(mocoef)))
+            intdw_mo: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(intdw),np.array(mocoef)))
+
+            if nprim % 3 != 0:
+                rows += 1
+
+            for row in range(rows):
+                if (row+1)*3 < nprim:
+                    columns = (row + 1)*3
+                else:
+                    columns = nprim
+                print(
+                    *[str("{:.6f}({:.3f}%)".format(eom[i] + intmv_mo[i][i] + intdw_mo[i][i],
+                        (intmv_mo[i][i] + intdw_mo[i][i])/abs(eom[i] + intmv_mo[i][i] + intdw_mo[i][i])*100)).center(28)
+                        for i in range(row*3, columns)],
+                    #end="",
+                )
             print()
-            print(40*"=")
-            avdw: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(intdw),np.array(mocoef)))
-            avmv: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(intmv),np.array(mocoef)))
+            print("Note: Between parethesis is the relativity correction in porcentage\n\
+                    (formule: relativity correction/ABS(Total)*100)")
+            print()
+
+            for i in range(nprim):
+                eom[i] += intmv_mo[i][i]+intdw_mo[i][i]
+            gap = eom[ne2] - eom[ne2-1]
+            print(f"  E(LUMO): ",f"{eom[ne2]:4f}".center(24)," au")
+            print("- E(HOMO): ",f"{eom[ne2-1]:4f}".center(24)," au")
+            print(f"-"*40)
+            print("    gap  : ",f"{gap:4f}".center(24)," au")
+
+            count = 0
+            for i in range(ne2, nprim):
+                if eom[i] < 0.0:
+                    count += 1
+            if count > 0:
+                print("*"*70)
+                print("***WARNING***")
+                if count == 1:
+                    print(f"The last virtual orbital energy is negative.\n\n")
+                    print(f"Then, there is a exponent in the basis set very high, in general,")
+                else:
+                    print(f"The last {count} virtual orbitals energies are negative.\n\n")
+                    print(f"Then, there are exponents in the basis set very high, in general,")
+                print(f"they are associated with S atomic orbitals.")
+                print("*"*70)
+
+            print()
+            print(80*"=")
             totaldw: float = 0.0
             totalmv: float = 0.0
             for i in range(ne2):
-                totaldw += 2.0*avdw[i][i]
-                totalmv += 2.0*avmv[i][i]
+                totaldw += 2.0*intdw_mo[i][i]
+                totalmv += 2.0*intmv_mo[i][i]
 
             total: float = totaldw + totalmv
             print(f"Darwin Correction : {totaldw:.10f} au")
@@ -226,7 +246,8 @@ class fock():
             print(f"Total Relativistic Corrections : {total:.10f} au ({total/(electronic_energy + vnn) * 100:.4f}%)")
             # Sumar Mv y Dw desde la construcción de la matrix de Fock, arroja el mismo resultado que
             # cuando solo sumo los valores medios de Mv y Dw al valor de la energía electrónica
-            print(f"Non-Relativistic + Relativistic Corrections : {electronic_energy_rc + vnn:.10f} au")
+            print(f"Non-Relativistic + Relativistic Corrections : {electronic_energy + vnn + total:.10f} au")
+            print(80*"=")
 
 
         if verbose > 10:
@@ -351,7 +372,7 @@ class fock():
         return eom
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/HI_v2z.molden")
+    wfn = wave_function("../tests/molden_file/HF_v2z.molden")
 
     print("\n Calculate MO energies used wave function \n")
     eom_values = fock()

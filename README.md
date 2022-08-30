@@ -48,5 +48,6 @@ PPotential integrals use boys function.
 # Fock Matriz 
 
 * Fock--Matrix Implemented
-    * Hartree--Fock 
+    * Hartree--Fock
+    * Add Massvelocity and Darwin to Hartree--Fock energies 
   
