@@ -173,7 +173,7 @@ def e2pot(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver_t
     return e2pot
 
 if __name__ == "__main__":
-    wf = wave_function("../../tests/molden_file/H2_augccpvqz.molden")
+    wf = wave_function("../../tests/molden_file/H2.molden")
     ## print wave function informatio
     print("\n Coordinates \n",wf.coordinates)
     print("\n # primtives \n ",wf.primitives_number)

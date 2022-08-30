@@ -104,7 +104,6 @@ class fock():
         #Matriz Fock
         time_start_fock_ao = time()
         fock: list = [[0 for zero in range(nprim)]for zero in range(nprim)]
-
         if relativity_correction:
             fock_rc: list = [[0 for zero in range(nprim)]for zero in range(nprim)]
 
@@ -112,17 +111,22 @@ class fock():
             for j  in range(nprim):
                 fock[i][j] = hcore[i][j] + g[i][j]
                 if relativity_correction:
-                    fock_rc[i][j] = fock[i][j] + intdw[i][j] + intmv[i][j]
+                    fock_rc[i][j] = fock[i][j] + intmv[i][j] + intdw[i][j]
         if verbose > 30:
             print_triangle_matrix(integral = fock, name = "Fock Matrix in AO", matriz_sym = "square")
+            if relativity_correction:
+                print_triangle_matrix(integral = fock_rc,
+                                name = "Fock Matrix in AO with Darwin and Massvelo Correction",
+                                matriz_sym = "square")
 
         #FOCK
         #AO TO MO
         fock_mo: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(fock),np.array(mocoef)))
         eom: list = [value for irow, row in enumerate(fock_mo)
                     for icol, value in enumerate(row) if irow == icol]
+
         if relativity_correction:
-            fock_mo_rc = np.matmul(np.array(mocoef).T,np.matmul(np.array(fock_rc),np.array(mocoef)))
+            fock_mo_rc: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(fock_rc),np.array(mocoef)))
             eom_rc: list = [value for irow, row in enumerate(fock_mo_rc)
                     for icol, value in enumerate(row) if irow == icol]
         #Nuleu Repulsion
@@ -184,7 +188,7 @@ class fock():
                     columns = nprim
 
                 print(
-                    *[str("{:.6f}".format(eom_rc[i])).center(14)
+                    *[str("{:.4f}".format(eom_rc[i])).center(14)
                     for i in range(row*5, columns)],
                     #end="",
                 )
@@ -312,7 +316,7 @@ class fock():
             intk: list = integrals_onebody["kinetic"]
             inten: dict = {}
             for name, values in integrals_onebody.items():
-                if name != "kinetic":
+                if "pot" in name:
                     inten[name] = values
 
             if relativity_correction:
@@ -347,11 +351,11 @@ class fock():
         return eom
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/HI_I6311x_H2g.molden")
+    wfn = wave_function("../tests/molden_file/HI_v2z.molden")
 
     print("\n Calculate MO energies used wave function \n")
     eom_values = fock()
-    eom_values.calculate_hf_moe(wfn, verbose=21, verbose_integrals=11, relativity_correction=True)
+    eom_values.calculate_hf_moe(wfn, verbose=11, verbose_integrals=1, relativity_correction=True)
 
 # H2 STO-1G
 #@    Final HF energy:              -0.160779200015

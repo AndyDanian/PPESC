@@ -526,11 +526,11 @@ class eint:
 
 
 if __name__ == "__main__":
-    wf = wave_function("../tests/molden_file/LiH_STO2G.molden")
+    wf = wave_function("../tests/molden_file/HCl_v2z.molden")
     s = eint(wf)
-    one = True
+    one = False
     if one:
-        integrals, symmetries = s.integration_onebody(integrals_names = ["psoke"], gaugeo=[0.000, 0.0000, -0.545857052],
+        integrals, symmetries = s.integration_onebody(integrals_names = ["massvelo"],
                     # {
                     # "nucpot":{"atoms":[0]},
                     # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
@@ -548,4 +548,4 @@ if __name__ == "__main__":
                     # },
                     verbose = 21, dalton_normalization=False)
     else:
-        integrals = s.integration_twobody(["e2pot"], verbose=11, dalton_normalization=False)
+        integrals = s.integration_twobody(["e2pot"], verbose=10, dalton_normalization=False)

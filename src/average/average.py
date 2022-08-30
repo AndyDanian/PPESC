@@ -73,6 +73,6 @@ class average():
         return averages
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/LiH_STO2G.molden")
+    wfn = wave_function("../tests/molden_file/HF_v2z.molden")
     av = average(wfn)
-    av.calculate_average(property = ["pso 005"], verbose = 11, gaugeo=[0,0,-0.545857052])
+    av.calculate_average(property = ["massvelo", "darwin"], verbose = 11)
