@@ -24,12 +24,14 @@ class ppesc():
     def drv_ppesc(self, principal_propagator_approximation: str = "rpa",
                     atoms: list = None,
                     ppesc_amounts: list = None,
-                    isotropic: bool = True,
-                    verbose: int = 0, verbose_integrals: int = -1):
+                    tensor: bool = False,
+                    scalar_correction: bool = True,
+                    ani_axe: str or int = None,
+                    verbose: int = 0, verbose_response: int = -1,
+                    verbose_average: int = -1, verbose_fock: int = 1):
         """
         Manage the PPESC calculation
         """
-
         print_title(name = "PPESC")
 
         if verbose > 10:
@@ -43,22 +45,38 @@ class ppesc():
 
         # NR and Corrections
         all_responses, all_averages = \
-            run_shielding_lresc(wf = self._wf, ppesc_amounts = ppesc_amounts,
-                                    atom = atoms, ppesc_consts = ppesc_constants,
-                                    principal_propagator_approximation = principal_propagator_approximation,
-                                    driver_time = driver_time, verbose = verbose,
-                                    verbose_integrals = verbose_integrals)
+            run_shielding(wf = self._wf, ppesc_amounts = ppesc_amounts,
+                            atom = atoms, ppesc_consts = ppesc_constants,
+                            scalar_correction = scalar_correction,
+                            principal_propagator_approximation = principal_propagator_approximation,
+                            tensor = tensor,
+                            driver_time = driver_time, verbose = verbose,
+                            verbose_response = verbose_response,
+                            verbose_average=verbose_average,
+                            verbose_fock=verbose_fock)
 
         # Isotropoic and Anisitropic Value
-        isotropic_responses, isotropic_averages = get_shielding_isotropic(all_responses = all_responses,
-                                        all_averages = all_averages)
-        anisotropic_responses, anisotropic_averages = get_shielding_anisotropic(all_responses = all_responses,
-                                        all_averages = all_averages)
-        # Print results
-        print_lresc_values(isotropic_responses = isotropic_responses, isotropic_averages = isotropic_averages,
-                            anisotropic_responses = anisotropic_responses, anisotropic_averages = anisotropic_averages,
-                            atom_label = self._wf.atomic_symbols)
-
+        isotropic_responses, isotropic_averages,\
+        anisotropic_responses, anisotropic_averages = (
+                                        get_shielding_iso_ani(all_responses = all_responses,
+                                        all_averages = all_averages, tensor = tensor,
+                                        ani_axe = ani_axe)
+                                        )
+        if not tensor:
+            # Print results
+            print_ppesc_values(isotropic_responses = isotropic_responses,
+                                isotropic_averages = isotropic_averages,
+                                anisotropic_responses = anisotropic_responses,
+                                anisotropic_averages = anisotropic_averages,
+                                ani_axe = ani_axe,
+                                atom_label = self._wf.atomic_symbols, verbose = verbose)
+        else:
+            print_ppesc_tensor(responses_tensor = all_responses, averages_tensor = all_averages,
+                                isotropic_responses = isotropic_responses,
+                                isotropic_averages = isotropic_averages,
+                                anisotropic_responses = anisotropic_responses,
+                                anisotropic_averages = anisotropic_averages, ani_axe = ani_axe,
+                                atom_label = self._wf.atomic_symbols)
 
         if verbose > 10:
             driver_time.add_name_delta_time(name = "PPESC", delta_time = (time() - start))
@@ -66,6 +84,6 @@ class ppesc():
         print_title(name = f"END LRESC CALCULATION")
 
 if __name__ == "__main__":
-    wfn = wave_function("../../tests/molden_file/HCl_v2z.molden")
+    wfn = wave_function("../../tests/molden_file/HF_v2z.molden")
     lr = ppesc(wfn)
-    lr.drv_ppesc(verbose=11) #, ppesc_amounts = ["dianr"])
+    lr.drv_ppesc(verbose=11, scalar_correction=False, tensor=True)

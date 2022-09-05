@@ -11,6 +11,7 @@ class fock():
         ----
 
         eom (list): Molecular orbitals energies
+        at2in (bool): Indicate if is neccesary return the two body integrals
         """
 
         if not eom or None in eom:
@@ -264,7 +265,7 @@ class fock():
     def calculate_hf_moe(self, wf: dict = None, intk: list = None, inten: dict = None, intee: list = None,
                         mocoef: list = None, nprim: int = None, natoms: int = None, ne: int = None,
                         charge: list = None, coord: list = None, dalton_normalization: bool = False,
-                        relativity_correction: bool = False,
+                        relativity_correction: bool = False, at2in: bool = False,
                         verbose: int = 0, verbose_integrals: int = 0):
         """
         Driver to calculate Hartree--Fock molecular orbital energies
@@ -369,7 +370,10 @@ class fock():
         if verbose > 10:
             print_time(name = f"Hartree-Fock Energy", delta_time = (time() - start))
 
-        return eom
+        if at2in:
+            return eom, intee
+        else:
+            return eom
 
 if __name__ == "__main__":
     wfn = wave_function("../tests/molden_file/HF_v2z.molden")

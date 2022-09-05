@@ -2,6 +2,7 @@ from libr import *
 
 def get_coulomb_exchange_integrals(wf: wave_function = None,
                                     time_object: drv_time = None,
+                                    at2in: np.array = None,
                                     verbose: int = 0,
                                     verbose_int: int = 0):
     """
@@ -20,10 +21,13 @@ def get_coulomb_exchange_integrals(wf: wave_function = None,
     """
     start = time()
     # atomic integrals
-    calculate_integral = eint(wf)
-    at2in: np.array = np.array(calculate_integral.integration_twobody(
-        integrals_names = ["e2pot"], verbose = verbose_int,
-    )["e2pot"])
+    print("at2in ",type(at2in),at2in.size,at2in)
+    if not at2in:
+        calculate_integral = eint(wf)
+        at2in: np.array = np.array(calculate_integral.integration_twobody(
+            integrals_names = ["e2pot"], verbose = verbose_int,
+        )["e2pot"])
+
 
     # Coulomb and Exchange
     mo_coeff = np.array(wf.mo_coefficients)

@@ -11,6 +11,7 @@ multiplicity_string = {1:"Singlet", 3:"Triplet"}
 
 class response():
     def __init__(self, wf: wave_function = None, moe: list = None,
+                    at2in: list or np.array = None,
                     gradient_properties: dict = None,
                     coulomb_integrals: np.array = None,
                     exchange_integrals: np.array = None):
@@ -74,6 +75,8 @@ class response():
 
         self.principal_propagator = {"singlet": np.array([]), "triplet": np.array([])}
         self.q_principal_propagator = {"singlet": np.array([])}
+
+        self._at2in = np.array(at2in)
 
         if not self._gp:
             self._gp = {}
@@ -171,7 +174,8 @@ class response():
         verbose_integrals (int): Print level for integrals calculation
         """
 
-        print_subtitle(name = "RPA")
+        if self._verbose >= 0:
+            print_subtitle(name = "RPA")
 
         if self._verbose > 10:
             start = time()
@@ -248,7 +252,7 @@ class response():
                 principal_propagator_a = pp_a,
                 principal_propagator_b = pp_b,
                 principal_propagator_c = pp_c,
-                #avs = self.avs, 
+                #avs = self.avs,
                 mo_occupied = self.mo_occupied, mo_virtuals = self.mo_virtuals, gpvs = self.gpvs,
                 time_object = driver_time, verbose = self._verbose)
                 countq += 3
@@ -310,12 +314,6 @@ class response():
         if not self._moe:
             self._moe = self._wf.mo_energies
 
-        # - Two integrals
-        if not self._coulomb_integrals.size or not self._exchange_integrals.size:
-            self._coulomb_integrals, self._exchange_integrals = get_coulomb_exchange_integrals(self._wf,
-                                                time_object = driver_time,
-                                                verbose = self._verbose,
-                                                verbose_int = verbose_integrals)
         #Principal Propagator
         for ms in self.lineal_multiplicity_string:
             if not ms.lower() in [1,3,"singlet","triplet"]:
@@ -332,6 +330,15 @@ class response():
         if ((not self.principal_propagator["triplet"].size and self.principal_propagator_triplet)
             or (not self.principal_propagator["singlet"].size and self.principal_propagator_singlet)
             or (not self.q_principal_propagator["singlet"].size and quadratic)):
+
+            # - Two integrals
+            if not self._coulomb_integrals.size or not self._exchange_integrals.size:
+                self._coulomb_integrals, self._exchange_integrals = get_coulomb_exchange_integrals(self._wf,
+                                                time_object = driver_time,
+                                                at2in = self._at2in,
+                                                verbose = self._verbose,
+                                                verbose_int = verbose_integrals)
+
             dict_principal_propagator = drv_principal_propagator(driver_time = driver_time, moe = self._moe,
                                                         n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
                                                         coulomb = self._coulomb_integrals, exchange = self._exchange_integrals,

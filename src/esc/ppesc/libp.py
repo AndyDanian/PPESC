@@ -36,6 +36,10 @@ sys.path.append(
 sys.path.append(
     os.fspath(PROJECT_PATH / ("average"))
     )
+sys.path.append(
+    os.fspath(PROJECT_PATH / ("fock"))
+    )
+
 
 import numpy as np
 
@@ -57,6 +61,10 @@ from print_matrix import *
 from integral_parameters import *
 from string_informations import *
 from drv_time import *
+from hiddenprint import *
 
 # average
 from average import *
+
+# fock
+from fock import *

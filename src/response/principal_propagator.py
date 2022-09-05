@@ -20,7 +20,11 @@ def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = N
     multiplicity (str): Multiplicity response
     tp_inv (int): Type of inverse: 0/numpy or 1/series
     quadratic (bool): Quadratic response
-    verbose (int): Print level
+    verbose (int): Print level, 2D array
+
+    Return:
+    ------
+    pp (np.array) : Principal propagator
     """
 
     D1: float = 1.0E+0

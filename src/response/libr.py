@@ -53,6 +53,7 @@ from print_matrix import *
 from integral_parameters import *
 from string_informations import *
 from drv_time import *
+from hiddenprint import *
 
 # average
 from average import *
