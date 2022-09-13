@@ -77,6 +77,7 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
         mo_integral = np.matmul(mo_coeff_T,np.matmul(np.array(atomic_int), mo_coeff_T.T))
         if average:
             #avs[name] = 2.0*sum([mo_integral[i][i] for i in range(n_mo_occ)])
+            #mo_occupied[name] = [avs[name] for a in range(n_mo_occ) for b in range(n_mo_occ)]
             mo_occupied[name] = [mo_integral[a][b] for a in range(n_mo_occ) for b in range(n_mo_occ)]
             mo_virtuals[name] = [mo_integral[a + n_mo_occ][b + n_mo_occ] for a in range(n_mo_virt) for b in range(n_mo_virt)]
         # gradient porperty vector

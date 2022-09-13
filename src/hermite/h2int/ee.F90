@@ -875,7 +875,7 @@ recursive function hermite_coefficient(i, j, t, r, alpha, beta) result(eij)
         end if
 end function hermite_coefficient
 
-recursive function nuclear_repulsion(t, mu, nu, n, p, PKx, PKy, PKz, Rpc) result(pot)
+recursive function R(t, mu, nu, n, p, PKx, PKy, PKz, Rpc) result(pot)
     integer, intent(in) :: t, mu, nu, n
     double precision, intent(in) :: p, PKx, PKy, PKz, Rpc
 
@@ -888,21 +888,21 @@ recursive function nuclear_repulsion(t, mu, nu, n, p, PKx, PKy, PKz, Rpc) result
             pot = pot + (-2.0 * p)**n*Boys_func(n, x)
     else if ((t == mu) .and. (mu == 0)) then
         if (nu > 1) then
-            pot = pot + (nu - 1) * nuclear_repulsion(t, mu, nu - 2, n + 1, p, PKx, PKy, PKz, Rpc)
+            pot = pot + (nu - 1) * R(t, mu, nu - 2, n + 1, p, PKx, PKy, PKz, Rpc)
         endif
-        pot = pot + PKz * nuclear_repulsion(t, mu, nu - 1, n + 1, p, PKx, PKy, PKz, Rpc)
+        pot = pot + PKz * R(t, mu, nu - 1, n + 1, p, PKx, PKy, PKz, Rpc)
     else if (t == 0) then
         if (mu > 1) then
-            pot = pot + (mu - 1) * nuclear_repulsion(t, mu - 2, nu, n + 1, p, PKx, PKy, PKz, Rpc)
+            pot = pot + (mu - 1) * R(t, mu - 2, nu, n + 1, p, PKx, PKy, PKz, Rpc)
         endif
-        pot = pot + PKy * nuclear_repulsion(t, mu - 1, nu, n + 1, p, PKx, PKy, PKz, Rpc)
+        pot = pot + PKy * R(t, mu - 1, nu, n + 1, p, PKx, PKy, PKz, Rpc)
     else
         if (t > 1) then
-            pot = pot + (t - 1) * nuclear_repulsion(t - 2, mu, nu, n + 1, p, PKx, PKy, PKz, Rpc)
+            pot = pot + (t - 1) * R(t - 2, mu, nu, n + 1, p, PKx, PKy, PKz, Rpc)
         endif
-        pot = pot + PKx * nuclear_repulsion(t - 1, mu, nu, n + 1, p, PKx, PKy, PKz, Rpc)
+        pot = pot + PKx * R(t - 1, mu, nu, n + 1, p, PKx, PKy, PKz, Rpc)
     end if
-end function nuclear_repulsion
+end function R
 
 function electron_repulsion( &
     ! Alpha and Beta centers
@@ -920,7 +920,7 @@ function electron_repulsion( &
 
     double precision :: suma
 
-    double precision hermite_coefficient, nuclear_repulsion
+    double precision hermite_coefficient, R
 
     double precision :: p, q, pq, Px, Py, Pz, Qx, Qy, Qz, pi, RPQ
     integer :: t, mu, nu, phi, tau, theta
@@ -954,29 +954,84 @@ function electron_repulsion( &
                 do 1 phi = 1, u + x + 1
                     do 1 tau = 1, v + y + 1
                         do 1 theta = 1, w + z + 1
-                            suma = suma + (&
-                                hermite_coefficient(i, j, t-1, Ax - Bx, alpha, beta)&
-                                * hermite_coefficient(k, l, mu-1, Ay - By, alpha, beta)&
-                                * hermite_coefficient(m, n, nu-1, Az - Bz, alpha, beta)&
-                                * hermite_coefficient(u, x, phi-1, Cx - Dx, gamma, delta)&
-                                * hermite_coefficient(v, y, tau-1, Cy - Dy, gamma, delta)&
-                                * hermite_coefficient(w, z, theta-1, Cz - Dz, gamma, delta)&
-                                * (-1)**(phi+tau+theta-3)&
-                                * nuclear_repulsion(&
-                                    t + phi - 2,&
-                                    mu + tau - 2,&
-                                    nu + theta - 2,&
-                                    0,&
-                                    pq,&
-                                    Px - Qx,&
-                                    Py - Qy,&
-                                    Pz - Qz,&
-                                    RPQ)&
+                            suma = suma + (                                                 &
+                                hermite_coefficient(i, j, t-1, Ax - Bx, alpha, beta)        &
+                                * hermite_coefficient(k, l, mu-1, Ay - By, alpha, beta)     &
+                                * hermite_coefficient(m, n, nu-1, Az - Bz, alpha, beta)     &
+                                * hermite_coefficient(u, x, phi-1, Cx - Dx, gamma, delta)   &
+                                * hermite_coefficient(v, y, tau-1, Cy - Dy, gamma, delta)   &
+                                * hermite_coefficient(w, z, theta-1, Cz - Dz, gamma, delta) &
+                                * (-1)**(phi+tau+theta-3)                                   &
+                                * R(                                                        &
+                                    t + phi - 2,                                            &
+                                    mu + tau - 2,                                           &
+                                    nu + theta - 2,                                         &
+                                    0,                                                      &
+                                    pq,                                                     &
+                                    Px - Qx,                                                &
+                                    Py - Qy,                                                &
+                                    Pz - Qz,                                                &
+                                    RPQ)                                                    &
                             )
 
     1 continue
     suma = suma * 2.0*pi**(2.5)/(p*q*dsqrt(p + q))
 end function electron_repulsion
+
+
+function nuclear_attraction(                                                  &
+    i, k, m, j, l, n, e, f, g, alpha, beta, Ax, Ay, Az, Bx, By, Bz, Kx, Ky, Kz&
+    ) result(suma)
+    !"""
+    !Recurrence to calculate the integrate that include 1/r
+    !
+    !Equation 9.9.32 from Molecular Electronic-Structure Theory. T Helgaker, et al.
+    !"""
+    integer, intent(in) :: i, k, m, j, l, n, e, f, g
+    double precision, intent(in) :: alpha, beta
+    double precision, intent(in) :: Ax, Ay, Az, Bx, By, Bz, Kx, Ky, Kz
+
+    double precision :: suma
+    double precision :: hermite_coefficient, R
+
+    integer :: t, mu, nu
+    double precision :: p, Px, Py, Pz, RpK
+
+    p = alpha + beta
+
+    Px = alpha * Ax + beta * Bx
+    Px = Px / p
+    Py = alpha * Ay + beta * By
+    Py = Py / p
+    Pz = alpha * Az + beta * Bz
+    Pz = Pz / p
+
+    Rpk = dsqrt((Px - Kx)*(Px - Kx) + (Py - Ky)*(Py - Ky) + (Pz - Kz)*(Pz - Kz))
+
+    suma = 0.0D0
+    do 1 t = 1, i + j + 1
+        do 1 mu = 1, k + l + 1
+            do 1 nu = 1, m + n + 1
+                suma = suma + (                                              &
+                    hermite_coefficient(i, j, t-1, Ax - Bx, alpha, beta)     &
+                    * hermite_coefficient(k, l, mu-1, Ay - By, alpha, beta)  &
+                    * hermite_coefficient(m, n, nu-1, Az - Bz, alpha, beta)  &
+                    * R(                                                     &
+                        t + e - 1,                                           &
+                        mu + f - 1,                                          &
+                        nu + g - 1,                                          &
+                        0,                                                   &
+                        p,                                                   &
+                        Px - Kx,                                             &
+                        Py - Ky,                                             &
+                        Pz - Kz,                                             &
+                        Rpk                                                  &
+                    )                                                        &
+                )
+    1 continue
+    suma = suma * (-1) ** (e + f + g)
+end function nuclear_attraction
+
 
 function null_integral(a,b,c,d,i,j,k,l,m,n,r,s,t,u,v,w,coord) result (calculate)
 
@@ -1140,3 +1195,25 @@ subroutine i2e(ee, counter, coord, mlx, mly, mlz, center, expon, n)
     1 continue
     !write(*,*) " Cantidad de I2 calculadas ",counter
 end subroutine i2e
+!
+function gaussian_mult(i, k, m, j, l, n, Ax, Ay, Az, Bx, By, Bz, alpha, beta, Kx, Ky, Kz) result(gg)
+    integer, intent(in) :: i, k, m, j, l, n
+    double precision, intent(in) :: Ax, Ay, Az, Bx, By, Bz
+    double precision, intent(in) :: alpha, beta
+    double precision, intent(in) :: Kx, Ky, Kz
+
+    double precision :: gg, gij, gkl, gmn
+    ! <phi|delta(rk)|phi> = <phi|delta(x-Kx,y-Ky,z-Kz)|phi> =
+    ! (xk-Ax)^i(yk-Ay)^k(zk-Az)^mexp(-alpha*(rk-A)^2) *
+    ! (xk-Bx)^j(yk-By)^l(zk-Bz)^nexp(-alpha*(rk-B)^2)
+    gij = dexp(-alpha * (Kx - Ax) ** 2) * dexp(-beta * (Kx - Bx) ** 2)
+    gij = power((Kx - Ax), i) * power((Kx - Bx), j) * gij
+
+    gkl = dexp(-alpha * (Ky - Ay) ** 2) * dexp(-beta * (Ky - By) ** 2)
+    gkl = power((Ky - Ay), k) * power((Ky - By), l) * gkl
+
+    gmn = dexp(-alpha * (Kz - Az) ** 2) * dexp(-beta * (Kz - Bz) ** 2)
+    gmn = power((Kz - Az), m) * power((Kz - Bz), n) * gmn
+
+    gg = gij * gkl * gmn
+end function gaussian_mult

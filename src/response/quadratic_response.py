@@ -15,7 +15,8 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
 
     <<A; B, C>> = sum_k sum_n [<0|A|k>PP_a^-1(<k|B|n> - d_{kn} <0|B|0>)PP_b^-1<n|C|0>
                                 + <0|C|n>PP_a^-1(<n|B|k> - d_{kn} <0|B|0>)PP_b^-1<k|A|0>
-                                + <0|C|k>PP_a^-1(<k|A|n> - d_{kn} <0|A|0>)PP_b^-1<n|B|0>]
+                                + <0|C|k>PP_a^-1(<k|A|n> - d_{kn} <0|A|0>)PP_b^-1<n|B|0>
+                                + Pertubation]
     Args:
     ----
     operator_a (list): Name of the first operator
@@ -44,158 +45,23 @@ def calculate_quadratic_response(operator_a: list = None, operator_b: list = Non
                 if index_b > index_c and op_b.split()[0] == op_c.split()[0]:
                     continue
 
-                if verbose > 20:
-                    print_subtitle(name = f"PATHS: <<{op_a};{op_b},{op_c}>>")
-
-                ipath: int = 0
-                vpathT: float = 0.0E+0
-                vpathTa: float = 0.0E+0
-                vpathTb: float = 0.0E+0
-                vpathTc: float = 0.0E+0
-                vpathTd: float = 0.0E+0
-                i: int = 0
-                a: int = 0
-                s: int = 0
-                for ia in range(nrot):
-                    s = a + n_mo_occ
-
-                    count = 0
-                    spath = 0.0E+0
-                    j: int = 0
-                    b: int = 0
-                    t: int = 0
-                    for jb in range(nrot):
-                        t = b + n_mo_occ
-
-                        u: int = 0
-                        v: int = 0
-                        c: int = 0
-                        d: int = 0
-                        for cd in range(n_mo_virt*n_mo_virt):
-                            u = c + n_mo_occ
-                            v = d + n_mo_occ
-
-                            if b == c:
-                                vavs_c: float = mo_occupied[op_c][j+i*n_mo_occ]
-                                vavs_b: float = mo_occupied[op_b][j+i*n_mo_occ]
-                                vavs_a: float = mo_occupied[op_a][j+i*n_mo_occ]
-                            else:
-                                vavs_c: float = 0.0
-                                vavs_b: float = 0.0
-                                vavs_a: float = 0.0
-
-                            appb1 = appb2 = appb3 = appb4 = appb5 = appb6 =0.0
-                            # <i|A|a>P_{ia,jb}(<b|B|c>-d_{cb}<i|B|j>)P_{ic,jd}<d|C|j>
-                            appb1 =\
-                                (gpvs[op_a][a+i*n_mo_virt]
-                                # PP_{ia,jb}^-1
-                                *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
-                                *(mo_virtuals[op_b][c+b*n_mo_virt] - vavs_b)
-                                # PP_{ic,jd}^-1
-                                *principal_propagator_c[c+i*n_mo_virt,d+j*n_mo_virt]
-                                *gpvs[op_c][d+j*n_mo_virt+nrot])
-                            # <i|B|a>P_{ia,jb}(<b|A|c>-d_{cb}<i|A|j>)P_{ic,jd}<d|C|j>
-                            appb3 =\
-                                (gpvs[op_b][a+i*n_mo_virt]
-                                # PP_{ia,jb}^-1
-                                *principal_propagator_b[a+i*n_mo_virt,b+j*n_mo_virt]
-                                *(mo_virtuals[op_a][c+b*n_mo_virt] - vavs_a)
-                                # PP_{ic,jd}^-1
-                                *principal_propagator_c[c+i*n_mo_virt,d+j*n_mo_virt]
-                                *gpvs[op_c][d+j*n_mo_virt+nrot])
-                            # <i|A|a>P_{ia,jb}(<b|C|c>-d_{cb}<i|C|j>)P_{ic,jd}<d|B|j>
-                            appb4 =\
-                                (gpvs[op_a][a+i*n_mo_virt]
-                                # PP_{ia,jb}^-1
-                                *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
-                                *(mo_virtuals[op_c][c+b*n_mo_virt] - vavs_c)
-                                # PP_{ic,jd}^-1
-                                *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
-                                *gpvs[op_b][d+j*n_mo_virt+nrot])
-                            # <i|C|a>P_{ia,jb}(<b|A|c>-d_{cb}<i|A|j>)P_{ic,jd}<d|B|j>
-                            appb6 =\
-                                (gpvs[op_c][a+i*n_mo_virt]
-                                # PP_{ia,jb}^-1
-                                *principal_propagator_c[a+i*n_mo_virt,b+j*n_mo_virt]
-                                *(mo_virtuals[op_a][c+b*n_mo_virt] - vavs_a)
-                                # PP_{ic,jd}^-1
-                                *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
-                                *gpvs[op_b][d+j*n_mo_virt+nrot])
-                            #####
-#
-                            if a == d:
-                                vavs_c: float = mo_occupied[op_c][j+i*n_mo_occ]
-                                vavs_b: float = mo_occupied[op_b][j+i*n_mo_occ]
-                            else:
-                                vavs_c: float = 0.0
-                                vavs_b: float = 0.0
-#
-                            # <i|C|c>P_{ic,jd}(<d|B|a>-d_{ad}<i|B|j>)P_{ia,jb}<b|A|j>
-                            appb2 =\
-                                (gpvs[op_c][c+i*n_mo_virt]
-                                # PP_{ia,jb}^-1
-                                *principal_propagator_c[c+i*n_mo_virt,d+j*n_mo_virt]
-                                *(mo_virtuals[op_b][a+d*n_mo_virt] - vavs_b)
-                                # PP_{ic,jd}^-1
-                                *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
-                                *gpvs[op_a][b+j*n_mo_virt+nrot])
-                            # <i|B|c>P_{ic,jd}(<d|C|a>-d_{ad}<i|C|j>)P_{ia,jb}<b|A|j>
-                            appb5 =\
-                                (gpvs[op_b][c+i*n_mo_virt]
-                                # PP_{ia,jb}^-1
-                                *principal_propagator_b[c+i*n_mo_virt,d+j*n_mo_virt]
-                                *(mo_virtuals[op_c][a+d*n_mo_virt] - vavs_c)
-                                # PP_{ic,jd}^-1
-                                *principal_propagator_a[a+i*n_mo_virt,b+j*n_mo_virt]
-                                *gpvs[op_a][b+j*n_mo_virt+nrot])
-#
-                            appb: float = 0.5*(appb1 + appb2 + appb3 + appb4 + appb5 + appb6)
-
-                            vpathT += appb
-                            # vpathTa += -0.5*(appb1 + appb2)
-                            # vpathTb += -0.5*(appb4 + appb5)
-                            # vpathTc += -0.5*(appb3)
-                            # vpathTd += -0.5*(appb6)
-
-                            if verbose > 20 and count == 0:
-                                print(f" # ".center(6),f"i".center(6),
-                                    f"s".center(6),
-                                    f"t".center(6),f"u".center(6),
-                                    f"v".center(6),f"j".center(6),)
-                            if verbose > 20 and abs(appb) > 0.1:
-                                print(f"{count + 1}".center(6),f"{i + 1}".center(6),
-                                    f"{s + 1}".center(6),
-                                    f"{t + 1}".center(6),f"{u + 1}".center(6),
-                                    f"{v + 1}".center(6),f"{j + 1}".center(6),
-                                    f"{appb:.6f}".center(16))
-
-                            spath += appb
-                            count += 1
-                            ipath += 1
-
-                            d += 1
-                            if d == n_mo_virt:
-                                d = 0
-                                c += 1
-                        b += 1
-                        if b == n_mo_virt:
-                            b = 0
-                            j += 1
-
-                    if verbose > 20:
-                        print("-"*60)
-                        print(f'Total {spath:.6f}')
-                        print()
-
-                    a += 1
-                    if a == n_mo_virt:
-                        a = 0
-                        i += 1
-
+                vpathT = quadratic_sum(gpva=gpvs[op_a],gpvb=gpvs[op_b],gpvc=gpvs[op_c],
+                                        iaj=mo_occupied[op_a],
+                                        ibj=mo_occupied[op_b],
+                                        icj=mo_occupied[op_c],
+                                        sat=mo_virtuals[op_a],
+                                        sbt=mo_virtuals[op_b],
+                                        sct=mo_virtuals[op_c],
+                                        ppa = np.asfortranarray(principal_propagator_a),
+                                        ppb = np.asfortranarray(principal_propagator_b),
+                                        ppc = np.asfortranarray(principal_propagator_c),
+                                        verbose=verbose,
+                                        nocc=n_mo_occ,nvir=n_mo_virt
+                                        )
 
                 print_result(name = f'-<<{op_a};{op_b},{op_c}>>', value = f'{-vpathT:.6f}')
-                # print(" a b c d",vpathTa,vpathTb,vpathTc,vpathTd)
                 quadratic_responses[f'<<{op_a};{op_b},{op_c}>>'] = vpathT
+
 
     if verbose > 10:
         name = f"Quadratic Response"

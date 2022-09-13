@@ -175,19 +175,18 @@ class fock():
         print(40*"=")
         if relativity_correction:
 
+            intmv_mo: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(intmv),np.array(mocoef)))
+            intdw_mo: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(intdw),np.array(mocoef)))
             if verbose <= 10 or not verbose:
                 print(f"\nPrint the first 20 Hartree--Fock molecular orbitals energies with\n\
                         relativities corrections: \n")
                 if float(nprim/3) >= 3:
                     rows: int = 3
                 else:
-                    rows: int = int(nprim/4)
+                    rows: int = int(nprim/3)
             else:
                 print(f"\n\nHartree--Fock molecular orbitals energies with relativities corrections: \n")
                 rows: int = int(nprim/3)
-
-            intmv_mo: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(intmv),np.array(mocoef)))
-            intdw_mo: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(intdw),np.array(mocoef)))
 
             if nprim % 3 != 0:
                 rows += 1

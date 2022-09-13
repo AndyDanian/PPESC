@@ -53,7 +53,7 @@ def correction_to_calculate(ppesc_amounts: list = None, tensor: bool = False):
         "paranr": "paranr" in ppesc_amounts,
         # Lineal -- Triplet
         "fclap": "fclap" in ppesc_amounts, "sddxx": "sddxx" in ppesc_amounts,
-        "sdkinyy": "sddyy" in ppesc_amounts,"sddzz": "sddzz" in ppesc_amounts,
+        "sddyy": "sddyy" in ppesc_amounts,"sddzz": "sddzz" in ppesc_amounts,
         "sddxy": "sddxy" in ppesc_amounts, "sddxz": "sddxz" in ppesc_amounts,
         "sddyx": "sddyx" in ppesc_amounts, "sddyz": "sddyz" in ppesc_amounts,
         "sddzx": "sddzx" in ppesc_amounts, "sddzy": "sddzy" in ppesc_amounts,
@@ -69,14 +69,14 @@ def correction_to_calculate(ppesc_amounts: list = None, tensor: bool = False):
         }, {"dia_nr": dia_nr, "dia_avs": diaavs}
 
 def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
-                        ppesc_consts: dict = None, atom: list = None,
-                        principal_propagator_approximation: str = None,
-                        driver_time: drv_time = None, verbose: int = 0,
-                        tensor: bool = False,
-                        scalar_correction: bool = None,
-                        verbose_response: int = -1,
-                        verbose_average: int = -1,
-                        verbose_fock: int = 1):
+                    ppesc_consts: dict = None, atom: list = None,
+                    principal_propagator_approximation: str = None,
+                    driver_time: drv_time = None, verbose: int = 0,
+                    tensor: bool = False,
+                    scalar_correction: bool = None,
+                    verbose_response: int = -1,
+                    verbose_average: int = -1,
+                    verbose_fock: int = 1):
     """
     Calculate all ppesc_amounts values
 
@@ -87,11 +87,17 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
         {
         para_nr: NR paramagnetic amounts
                 {"paranr": paranr}
-                            paranr = {
-                                    "lxpso1": lambda a: ["angmom x", "pso " + str(1 + 3*a)],
-                                    "lypso2": lambda a: ["angmom y", "pso " + str(2 + 3*a)],
-                                    "lzpso3": lambda a: ["angmom z", "pso " + str(3 + 3*a)],
-                                    }
+                            paranr = [
+                                    lambda a: ["angmom x", "pso " + str(1 + 3*a)],
+                                    lambda a: ["angmom y", "pso " + str(1 + 3*a)],
+                                    lambda a: ["angmom z", "pso " + str(1 + 3*a)],
+                                    lambda a: ["angmom x", "pso " + str(2 + 3*a)],
+                                    lambda a: ["angmom y", "pso " + str(2 + 3*a)],
+                                    lambda a: ["angmom z", "pso " + str(2 + 3*a)],
+                                    lambda a: ["angmom x", "pso " + str(3 + 3*a)],
+                                    lambda a: ["angmom y", "pso " + str(3 + 3*a)],
+                                    lambda a: ["angmom z", "pso " + str(3 + 3*a)],
+                                    ]
         dia_nr : NR diamagnetic amounts
                 {"dianr": dianr}
         triplet_lineal_amount: Correction type triplet response associated with
@@ -109,7 +115,7 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
 
     Args:
         wf (wave_function): Wave function object
-        paramagneitc (list): Paramagnetic amount to calculate
+        ppesc_amounts (list): Paramagnetic amount to calculate
         ppesc_consts (dict): Dictionary with constants for differente amounts
         atom (list): Atom index to calculate the shielding
         principal_propagator_approximation (str): Approximation
@@ -146,6 +152,7 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
 
         lineal_response: response = response(wf = wf, moe = moe, at2in = at_2_in)
         if verbose_response < 0: hidden_prints_other_object.__exit__(True,True,True)
+        driver_time.add_name_delta_time(name = "One-Body Mv and Dw Corrections to Energy", delta_time = (time() - start))
     else:
         moe: list = wf.mo_energies
         if verbose_response > 0: hidden_prints_other_object.__exit__(True,True,True)
@@ -156,10 +163,13 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
     all_responses: dict = {}
     av: average = average(wf)
 
+    delta_average: float = 0.0
+    delta_response: float = 0.0
     for a in atom:
         gaugeo: list = wf.coordinates[a]
 
         # Avarage calculation
+        start_average: float = time()
         if verbose_response <= 0 and verbose_average > 0:
             hidden_prints_other_object.__exit__(True,True,True)
         else:
@@ -196,9 +206,11 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
                         atom_av[name] = temp_av_a
         all_averages[a] = atom_av
         if verbose_average < 0: hidden_prints_other_object.__exit__(True,True,True)
+        delta_average += time() - start_average
         # End Average calculation
 
         # Response calculation
+        start_response: float = time()
         if verbose_average <= 0 and verbose_response > 0:
             hidden_prints_other_object.__exit__(True,True,True)
         else:
@@ -254,15 +266,18 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
             if "fclap" in atom_responses.keys():
                 temp: float = atom_responses["fclap"]
                 atom_responses["fclap"] = [temp[0],0.0,0.0,0.0,temp[1],0.0,0.0,0.0,temp[2]]
+        # Remove components of sdlap
         all_responses[a] =  {
-                                name: values
-                                for name, values in atom_responses.items()
-                                if name not in sdlap_components
+                                name: atom_responses[name]
+                                for name in name_order_responses
                             }
+        delta_response += time() - start_response
         if verbose_response < 0: hidden_prints_other_object.__exit__(True,True,True)
         # End Response calculation
 
     if verbose > 10:
+        driver_time.add_name_delta_time(name = "Averages Amounts Calculations", delta_time = delta_average)
+        driver_time.add_name_delta_time(name = "Responses Amounts Calculations", delta_time = delta_response)
         driver_time.add_name_delta_time(name = "PPESC Amounts Calculations", delta_time = (time() - start))
 
     return all_responses, all_averages
@@ -331,90 +346,85 @@ def get_shielding_iso_ani(all_responses: dict = None, all_averages: dict = None,
 def print_ppesc_brief(isotropic_responses: dict = None, isotropic_averages: dict = None,
                     anisotropic_responses: dict = None, anisotropic_averages: dict = None
                     ):
+    """
+    Brief information about LRESC's results
 
+    Args:
+    ----
+        isotropic_responses (dict): Isotropic values of different ppesc's responses
+        isotropic_averages (dict): Isotropic values of different ppesc's averages
+        anisotropic_responses (dict): Anisotropic values of different ppesc's responses
+        anisotropic_averages (dict): Anisotropic values of different ppesc's averages
+    """
     # Brief results
-        # -- isotropic
-        paranr: float = isotropic_responses["paranr"]
-        dianr: float = isotropic_averages["dianr"]
-        lresc_para: float = sum([correction for label, correction in isotropic_responses.items()
-                            if label not in ["paranr"]])
-        lresc_dia: float = (sum([correction for label, correction in isotropic_averages.items()
-                        if label not in ["dianr"]]))
-        ligand_correction: float = sum([correction for label, correction in isotropic_responses.items()
-                            if label in ["lpsokin", "lkinpso"]])
-        core_correction: float = (sum([correction for label, correction in isotropic_averages.items()
-                            if label not in ["dianr"]])
-                            + sum([correction for label, correction in isotropic_responses.items()
-                        if label not in ["lpsokin", "lkinpso"]]))
-        # -- anisotropic
-        ani_paranr: float = anisotropic_responses["paranr"]
-        ani_dianr: float = anisotropic_averages["dianr"]
-        ani_lresc_para = sum([correction for label, correction in anisotropic_responses.items()
-                            if label not in ["paranr"]])
-        ani_lresc_dia = (sum([correction for label, correction in anisotropic_averages.items()
-                        if label not in ["dianr"]]))
-        ani_ligand_correction = sum([correction for label, correction in anisotropic_responses.items()
-                            if label in ["lpsokin", "lkinpso"]])
-        ani_core_correction = (sum([correction for label, correction in anisotropic_averages.items()
-                            if label not in ["dianr"]])
-                            + sum([correction for label, correction in anisotropic_responses.items()
-                        if label not in ["lpsokin", "lkinpso"]]))
+    # -- isotropic
+    paranr: float = isotropic_responses["paranr"]
+    dianr: float = isotropic_averages["dianr"]
+    lresc_para: float = sum([correction for label, correction in isotropic_responses.items()
+                        if label not in ["paranr"]])
+    lresc_dia: float = (sum([correction for label, correction in isotropic_averages.items()
+                    if label not in ["dianr"]]))
+    ligand_correction: float = sum([correction for label, correction in isotropic_responses.items()
+                        if label in ["lpsokin", "lkinpso"]])
+    core_correction: float = (sum([correction for label, correction in isotropic_averages.items()
+                        if label not in ["dianr"]])
+                        + sum([correction for label, correction in isotropic_responses.items()
+                    if label not in ["lpsokin", "lkinpso"]]))
+    # -- anisotropic
+    ani_paranr: float = anisotropic_responses["paranr"]
+    ani_dianr: float = anisotropic_averages["dianr"]
+    ani_lresc_para = sum([correction for label, correction in anisotropic_responses.items()
+                        if label not in ["paranr"]])
+    ani_lresc_dia = (sum([correction for label, correction in anisotropic_averages.items()
+                    if label not in ["dianr"]]))
+    ani_ligand_correction = sum([correction for label, correction in anisotropic_responses.items()
+                        if label in ["lpsokin", "lkinpso"]])
+    ani_core_correction = (sum([correction for label, correction in anisotropic_averages.items()
+                        if label not in ["dianr"]])
+                        + sum([correction for label, correction in anisotropic_responses.items()
+                    if label not in ["lpsokin", "lkinpso"]]))
 
-        print("    " + "NR".center(21) + "Corrections".center(21) + "Total".center(31))
-        print("    " + "Para".center(10) + " " + "Dia".center(10) + " "
-                "Para".center(10) + " " + "Dia".center(10) + " "
-                "NR".center(10) + " " + "Corrections".center(10) + " "
-                "PPESC".center(10))
-        print("-"*80)
-        # Iso
-        print("iso " + f"{paranr:.4f}".center(10) + " " + f"{dianr:.4f}".center(10) + " "
-        f"{lresc_para:.4f}".center(10) + " " + f"{lresc_dia:.4f}".center(10) + " "
-        f"{paranr+dianr:.4f}".center(10) + " " + f"{lresc_para + lresc_dia:.4f}".center(10)
-        + " " + f"{paranr+dianr+lresc_para+lresc_dia:.4f}".center(10))
-        # Ani
-        print("ani " + f"{ani_paranr:.4f}".center(10) + " " + f"{ani_dianr:.4f}".center(10) + " "
-        f"{ani_lresc_para:.4f}".center(10) + " " + f"{ani_lresc_dia:.4f}".center(10) + " "
-        f"{ani_paranr+ani_dianr:.4f}".center(10) + " " + f"{ani_lresc_para + ani_lresc_dia:.4f}".center(10)
-        + " " + f"{ani_paranr+ani_dianr+ani_lresc_para+ani_lresc_dia:.4f}".center(10))
+    print("    " + "NR".center(21) + "Corrections".center(21) + "Total".center(31))
+    print("    " + "Para".center(10) + " " + "Dia".center(10) + " "
+            "Para".center(10) + " " + "Dia".center(10) + " "
+            "NR".center(10) + " " + "Corrections".center(10) + " "
+            "PPESC".center(10))
+    print("-"*80)
+    # Iso
+    print("iso " + f"{paranr:.4f}".center(10) + " " + f"{dianr:.4f}".center(10) + " "
+    f"{lresc_para:.4f}".center(10) + " " + f"{lresc_dia:.4f}".center(10) + " "
+    f"{paranr+dianr:.4f}".center(10) + " " + f"{lresc_para + lresc_dia:.4f}".center(10)
+    + " " + f"{paranr+dianr+lresc_para+lresc_dia:.4f}".center(10))
+    # Ani
+    print("ani " + f"{ani_paranr:.4f}".center(10) + " " + f"{ani_dianr:.4f}".center(10) + " "
+    f"{ani_lresc_para:.4f}".center(10) + " " + f"{ani_lresc_dia:.4f}".center(10) + " "
+    f"{ani_paranr+ani_dianr:.4f}".center(10) + " " + f"{ani_lresc_para + ani_lresc_dia:.4f}".center(10)
+    + " " + f"{ani_paranr+ani_dianr+ani_lresc_para+ani_lresc_dia:.4f}".center(10))
 
-        print(" "*25 + "-"*21)
-        print("    " + " "*21 + "Ligand".center(10) + " " + "Core".center(10))
-        print(" "*25 + "-"*21)
-        print("iso " + " "*21 + f"{ligand_correction:.4f}".center(10) + " " + f"{core_correction:.4f}".center(10))
-        print("ani " + " "*21 + f"{ani_ligand_correction:.4f}".center(10) + " " + f"{ani_core_correction:.4f}".center(10))
-
+    print(" "*25 + "-"*21)
+    print("    " + " "*21 + "Ligand".center(10) + " " + "Core".center(10))
+    print(" "*25 + "-"*21)
+    print("iso " + " "*21 + f"{ligand_correction:.4f}".center(10) + " " + f"{core_correction:.4f}".center(10))
+    print("ani " + " "*21 + f"{ani_ligand_correction:.4f}".center(10) + " " + f"{ani_core_correction:.4f}".center(10))
 
 def print_ppesc_values(isotropic_responses: dict = None, isotropic_averages: dict = None,
                         anisotropic_responses: dict = None, anisotropic_averages: dict = None,
-                        ani_axe: str or int = None,
                         atom_label: list = None, verbose: int = 0):
     """
     Driver print isotropic and anisotropic results
 
     Args:
-        isotropic_responses (dict):
-        isotropic_averages (dict):
-        anisotropic_averages (dict):
-        anisotropic_responses (dict):
-        atom_label (list):
+    ----
+        isotropic_responses (dict): Isotropic values of different ppesc's responses
+                                    of all atoms
+        isotropic_averages (dict): Isotropic values of different ppesc's averages
+                                    of all atoms
+        anisotropic_responses (dict): Anisotropic values of different ppesc's responses
+                                    of all atoms
+        anisotropic_averages (dict): Anisotropic values of different ppesc's averages
+                                    of all atoms
+        atom_label (list): Atoms' number
     """
-
-    print()
-    print(f"Isotropic Values [ppm]".center(76), "\n", "and".center(76), "\n", "Anisotropic Values [ppm]".center(76))
-    print(("-"*40).center(76))
-    print("Anisotropic is with respect ",ani_axe," axe.")
-
-    if len(isotropic_averages) < 5:
-        verbose = 11
-
-    if verbose > 10:
-        print("Values were multiplied by respectively constants according PPESC theory.")
-        print("Paramagnetic corrections:")
-        print("     * Singlet: ",ppesc_label["lpsokin"],ppesc_label["lkinpso"])
-        print("     * Triplet: ",ppesc_label["fclap"],ppesc_label["sdlap"])
-        print("Diamagnetic corrections:")
-        print("      *Averages: ",ppesc_label["fc"],ppesc_label["sd"],ppesc_label["psooz"],
-                ppesc_label["dnske"], ppesc_label["pnstcgop"])
 
     for atom in isotropic_responses.keys():
 
@@ -461,20 +471,24 @@ def print_ppesc_values(isotropic_responses: dict = None, isotropic_averages: dic
 def print_ppesc_tensor(responses_tensor: dict = None, averages_tensor: list = None,
                         isotropic_responses: dict = None, isotropic_averages: dict = None,
                         anisotropic_responses: dict = None, anisotropic_averages: dict = None,
-                        ani_axe: str or int = None,
                         atom_label: list = None):
+    """
+    Driver the tensor print
 
-    print(f"Tensor Values [ppm]".center(101))
-    print(("-"*40).center(76))
-    print("Anisotropic is with respect ",ani_axe," axe.")
-    print("Values were multiplied by respectively constants according PPESC theory.")
-    print("Paramagnetic corrections:")
-    print("     * Singlet: ",ppesc_label["lpsokin"],ppesc_label["lkinpso"])
-    print("     * Triplet: ",ppesc_label["fclap"],ppesc_label["sdlap"])
-    print("Diamagnetic corrections:")
-    print("      *Averages: ",ppesc_label["fc"],ppesc_label["sd"],ppesc_label["psooz"],
-            ppesc_label["dnske"], ppesc_label["pnstcgop"])
-
+    Args:
+    ----
+        responses_tensor (dict): Tensor of different ppesc's responses
+        averages_tensor (list): Tensor of different ppesc's averages
+        isotropic_responses (dict): Isotropic values of different ppesc's responses
+                                    of all atoms
+        isotropic_averages (dict): Isotropic values of different ppesc's averages
+                                    of all atoms
+        anisotropic_responses (dict): Anisotropic values of different ppesc's responses
+                                    of all atoms
+        anisotropic_averages (dict): Anisotropic values of different ppesc's averages
+                                    of all atoms
+        atom_label (list): Atoms' number
+    """
     for atom in responses_tensor.keys():
 
         if atom > 0:

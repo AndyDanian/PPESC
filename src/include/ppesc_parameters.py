@@ -25,6 +25,11 @@ ppesc_constants = {
         "pnstcgop": -M*ALPHA2*ALPHA2*0.25,
         #"a2dw": M*ALPHA2, "a2mv": M*ALPHA2
         }
+#
+name_order_responses = [
+"paranr", "fclap", "sdlap",
+"lpsokin", "lkinpso"
+]
 ###### Paramagnetic
 # - NR
 paranr = [

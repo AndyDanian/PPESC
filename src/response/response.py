@@ -379,32 +379,14 @@ if __name__ == "__main__":
     #                             pp_multiplicity=[[1,3,3],[1,3,3],[1,3,3],[1,3,3],[1,3,3],[1,1,1],[1,1,1]],gaugeo=[0.000,0.0000,0.0586476414],
     #                             verbose=11)
 
-
-    # r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [
-    # ["sd 1 z","sofiel zx"],
-    # ["sd 3 x","sofiel xz"],
-    # ["sd 3 y","sofiel yz"],
-    # ["sd 2 z","sofiel zy"],
-    # ],
-    #gaugeo=[0.000000000000, 0.000000000000, -0.545857052],)
-    # r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [
-    # ["kinetic","fc 1","fc 2"],
-    # ["kinetic","fc 1","fc 2"], ["angmom x","fc 1","spinorbit x"],
-    # ["kinetic","kinetic","kinetic"],
-    # r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["kinetic","kinetic","kinetic"],["kinetic","fc 1","fc 2"],
-    #                                 ["angmom x","pso 1","massvelo"],["angmom x","fc 1","spinorbit x"]],
-    #                             gaugeo=[0.000000000000, 0.000000000000, -0.545857052],
-    # #                         pp_multiplicity=[[1,3,3],[1,1,1]], #,[1,3,3],[1,3,3],[3,3,3],[1,1,1]],
-    #                             verbose=12)
-
-    # r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["pso","pso"]],
-    #                             pp_multiplicity=[[1]],
-    #                             verbose=11)
-    # r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["sd","sd"]],
-    #                             pp_multiplicity=[[3]],
-    #                             verbose=11)
-    a = 0
-    r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [
+    run = False
+    if run:
+        r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["fc 1","fc 2"],["kinetic", "fc 1","fc 2"]],
+                                #gaugeo=[0.0,0.0,1.4045523587],
+                                verbose=11)
+    else:
+        a = 0
+        r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [
                                                                                     ["angmom x", "pso " + str(1 + 3*a)],
                                                                                     ["angmom y", "pso " + str(2 + 3*a)],
                                                                                     ["angmom z", "pso " + str(3 + 3*a)],

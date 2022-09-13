@@ -21,13 +21,11 @@ def get_coulomb_exchange_integrals(wf: wave_function = None,
     """
     start = time()
     # atomic integrals
-    print("at2in ",type(at2in),at2in.size,at2in)
-    if not at2in:
+    if at2in.size == 1:
         calculate_integral = eint(wf)
         at2in: np.array = np.array(calculate_integral.integration_twobody(
             integrals_names = ["e2pot"], verbose = verbose_int,
         )["e2pot"])
-
 
     # Coulomb and Exchange
     mo_coeff = np.array(wf.mo_coefficients)
