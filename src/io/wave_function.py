@@ -35,6 +35,15 @@ class wave_function():
             cartessian_primitive (bool): if True, the molecular orbitals are in cartessian
         """
 
+        print("*"*80)
+        print("PROGRAM NAME".center(80))
+        print("version 0.0".center(80))
+        print("2022".center(80))
+        print("Authors:".ljust(80))
+        print("         Andy Zapata".ljust(80))
+        print("*"*80)
+        print()
+
         if not filename:
             if not coord or not basis or not mos or not cartessian_primitive:
                 raise ValueError(
@@ -60,6 +69,8 @@ class wave_function():
             self._basis = basis
             self._mos = mos
             self._cartessian_primitive = cartessian_primitive
+
+        self.wave_function_information()
     ##################################################################
     # ATRIBUTES
     ##################################################################
@@ -179,6 +190,21 @@ class wave_function():
         return angular_momentums
 
     @property
+    def amount_angular_momentums_by_atom(self) -> dict:
+        "Amount of each Angular Momentum"
+        l_atom: list = []
+        for mol in self._basis:
+            for at in mol:
+                angular_momentums: dict = {}
+                for l, exp in at.items():
+                    if l in angular_momentums.keys():
+                        angular_momentums[l] += len(exp)
+                    else:
+                        angular_momentums[l] = len(exp)
+                l_atom.append(angular_momentums)
+        return l_atom
+
+    @property
     def mo_coefficients(self) -> list:
         "Molecular Orbital Coefficients"
         return [mo["coefficients"] for mo in self._mos]
@@ -187,6 +213,40 @@ class wave_function():
     def mo_energies(self) -> list:
         "Molecular Orbitals Energies"
         return [mo["energy"] for mo in self._mos]
+    ##################################################################
+    # METHODS
+    ##################################################################
+    def wave_function_information(self):
+        """
+        Print information about wave function and molecule
+        """
+
+        print("System ")
+        print("-"*50)
+        if np.max(self.coordinates) > 9999: 
+            form: str = "{:.4e}"
+        else:
+            form: str = "{:.4f}"        
+        len_s = [len(s) for s in self.atomic_symbols]
+        if np.max(len_s) > 5:
+            forms: str = "{:" + str(np.max(len_s)) + "s}"
+        else:
+            forms: str = "{:5s}"
+        for s, xyz in zip(self.atomic_symbols, self.coordinates):
+            print(f"        ", forms.format(s).center(5), *[str(form.format(x)).center(9) for x in xyz])
+        print("-"*50)
+        print()
+
+        print("Primitive Informaiton")
+        print("-"*50)
+        total = 0
+        for s, b in zip(self.atomic_symbols, self.amount_angular_momentums_by_atom):
+            print(forms.format(s).center(5), *[str(c) + n for n, c in b.items()])
+            total += sum(b.values())
+        print("="*50)
+        print("Total: ",total)
+        print("-"*50)
+        print()
 
 if __name__ == "__main__":
     """

@@ -165,7 +165,8 @@ class response():
     ################################################################################################
     # METHODS
     ################################################################################################
-    def rpa(self, driver_time: drv_time = None):
+    def rpa(self, driver_time: drv_time = None, average: bool = False, quadratic: bool = False,
+            gauge: list = None, verbose_integrals: int = -1):
         """
         Calculate reponse at random phase approximation
 
@@ -188,6 +189,7 @@ class response():
             print_ljust(name = "Response Calculation Specification")
             print(f"     Response Type: {self.type_response[iresponse].title()}")
             # Properties pair
+
             operator_a: list = []
             operator_b: list = []
             operator_c: list = []
@@ -210,12 +212,13 @@ class response():
                         if index_a > index_b and name_a.split()[0] == name_b.split()[0]:
                             continue
                         print(f"     Lineal Response: <<{name_a.upper()};{name_b.upper()}>>")
-                #Response calculate
+                
+                #Lineal Response calculate
                 responses_values = calculate_lineal_reponse(
-                operator_a = operator_a, operator_b = operator_b,
-                n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
-                principal_propagator = self.principal_propagator[self.lineal_multiplicity_string[countl].lower()],
-                gpvs = self.gpvs, time_object = driver_time, verbose = self._verbose)
+                                                        operator_a = operator_a, operator_b = operator_b,
+                                                        n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
+                                                        principal_propagator = self.principal_propagator[self.lineal_multiplicity_string[countl].lower()],
+                                                        gpvs = self.gpvs, time_object = driver_time, verbose = self._verbose)
                 countl += 1
 
             elif self.type_response[iresponse] == "quadratic":
@@ -265,14 +268,14 @@ class response():
     #################################
     def drv_reponse_calculation(self, principal_propagator_approximation: str = "rpa", properties: list = None,
                                 property_multiplicity: list = None, pp_multiplicity: list = None,
-                                gaugeo: list = None,
+                                gauge: list = None,
                                 verbose: int = 0, verbose_integrals: int = -1):
         """
         Manage of response calculation
         Args:
             principal_propagator_approximation (str): Approximation to principal propagator: PZOA, RPA, HRPA
                                                     by default to do RPA calculation
-            gaugeo (list): Gauge coordinate
+            gauge  (list): Gauge coordinate
             verbise (int): Print level
             verbose_integrals (int): Print level to hermite module
         """
@@ -326,6 +329,7 @@ class response():
         else:
             average: bool = False
             quadratic: bool = False
+
         # Lineal principal propagator
         if ((not self.principal_propagator["triplet"].size and self.principal_propagator_triplet)
             or (not self.principal_propagator["singlet"].size and self.principal_propagator_singlet)
@@ -351,15 +355,16 @@ class response():
             self.principal_propagator.update(dict_principal_propagator)
 
         # Gradient Property Vector and Average Values
-        #self.avs, 
         self.mo_occupied, self.mo_virtuals, self.gpvs = drv_gradient_property_vector(wf = self._wf,
-                                            properties =self.properties,
-                                            gpv_in = self._gp, driver_time = driver_time, gaugeo = gaugeo,
-                                            average = average,
-                                            verbose = self._verbose, verbose_integrals = verbose_integrals)
+                                        properties =self.properties,
+                                        gpv_in = self._gp, driver_time = driver_time, gaugeo = gauge,
+                                        average = average,
+                                        verbose = self._verbose, verbose_integrals = verbose_integrals)
+
         # Run Response
         if principal_propagator_approximation.lower() == "rpa":
-            responses_values = self.rpa(driver_time = driver_time)
+            responses_values = self.rpa(driver_time = driver_time, average = average, quadratic = quadratic,
+                                        gauge = gauge, verbose_integrals=verbose_integrals)
 
         if self._verbose > 10:
             driver_time.add_name_delta_time(name = "Response Calculation", delta_time = (time() - start))
@@ -371,7 +376,7 @@ class response():
         return responses_values
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/LiH_pople.molden")
+    wfn = wave_function("../tests/molden_file/LiH.molden")
     r = response(wfn)
     # r.drv_reponse_calculation(principal_propagator_approximation="rpa",
     #         properties = [["angmom x","fc 1","spinorbit x"],["angmom x","sd 1 x","spinorbit x"],["angmom x","sd 1 z","spinorbit z"],["angmom y","sd 2 y","spinorbit y"]
@@ -379,10 +384,10 @@ if __name__ == "__main__":
     #                             pp_multiplicity=[[1,3,3],[1,3,3],[1,3,3],[1,3,3],[1,3,3],[1,1,1],[1,1,1]],gaugeo=[0.000,0.0000,0.0586476414],
     #                             verbose=11)
 
-    run = False
+    run = True
     if run:
         r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["fc 1","fc 2"],["kinetic", "fc 1","fc 2"]],
-                                #gaugeo=[0.0,0.0,1.4045523587],
+                                #gauge=[0.0,0.0,1.4045523587],
                                 verbose=11)
     else:
         a = 0
@@ -475,9 +480,7 @@ if __name__ == "__main__":
                                                                                     ["nstcgo " + str(2 + 3*a) + " y", "massvelo"],
                                                                                     ["nstcgo " + str(3 + 3*a) + " z", "massvelo"],
                                                                                     ],
-                                #gaugeo = [0,0,0.0586476414],
-                                gaugeo = [0.000, 0.0000, -0.545857052],
-                                #pp_multiplicity=[[1],[1],[1]],
+                                gauge = [0.000, 0.0000, -0.545857052],
                                 verbose=11)
 
 
