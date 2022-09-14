@@ -20,14 +20,14 @@ class average():
     ################################################################################################
     # METHODS
     ################################################################################################
-    def calculate_average(self, property: list = None, gaugeo: list = None, verbose: int = 0, verbose_integrals: int = -1):
+    def calculate_average(self, property: list = None, gauge: list = None, verbose: int = 0, verbose_integrals: int = -1):
         """
         Calculate reponse at random phase approximation
 
         Args:
         ----
         property (list): Properties name to calculate its average value
-        gaugeo (list): Gauge origen
+        gauge (list): Gauge origen
         verbose (int): Print level
         verbose_integrals (int): Print level for integrals calculation
         """
@@ -43,7 +43,7 @@ class average():
         # atomic integrals
         calculate_integral = eint(self._wf)
         integrals_1b, symmetries_1b = calculate_integral.integration_onebody(
-        integrals_names = property, gaugeo = gaugeo, verbose = verbose_integrals)
+        integrals_names = property, gauge = gauge, verbose = verbose_integrals)
 
         # molecular integrals
         n_mo_occ = self._wf.mo_occ
@@ -73,6 +73,6 @@ class average():
         return averages
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/HF_v2z.molden")
+    wfn = wave_function("../tests/molden_file/LiH.molden")
     av = average(wfn)
-    av.calculate_average(property = ["massvelo", "darwin"], verbose = 11)
+    av.calculate_average(property = ["fc", "massvelo", "darwin"], verbose = 11)

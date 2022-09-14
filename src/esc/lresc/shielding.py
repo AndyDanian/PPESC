@@ -219,7 +219,7 @@ def run_shielding_lresc(wf: wave_function = None, lresc_amounts: list = None,
     delta_average: float = 0.0
     delta_response: float = 0.0
     for a in atom:
-        gaugeo: list = wf.coordinates[a]
+        gauge: list = wf.coordinates[a]
 
         # Avarage calculation
         start_average: float = time()
@@ -245,7 +245,7 @@ def run_shielding_lresc(wf: wave_function = None, lresc_amounts: list = None,
                         temp_av_a: list = [(lresc_consts[name]*
                                         list(av.calculate_average(
                                         property = operators[component](a),
-                                        gaugeo = gaugeo,
+                                        gauge = gauge,
                                         verbose = verbose_average
                                         ).values())[0])
                                         for component in range(0,tensor_components,tensor_step)]
@@ -290,7 +290,7 @@ def run_shielding_lresc(wf: wave_function = None, lresc_amounts: list = None,
                             tensor_step: int = 1
                         temp_responses_a: list = [-lresc_consts[label]
                                     *list(lineal_response.drv_reponse_calculation(
-                                    gaugeo = gaugeo,
+                                    gauge = gauge,
                                     principal_propagator_approximation=principal_propagator_approximation,
                                     properties = [response_calculation[component](a)],
                                     verbose=verbose_response

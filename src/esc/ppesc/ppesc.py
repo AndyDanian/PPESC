@@ -95,6 +95,6 @@ class ppesc():
         print_title(name = f"END LRESC CALCULATION")
 
 if __name__ == "__main__":
-    wfn = wave_function("../../tests/molden_file/H2_STO2G.molden")
+    wfn = wave_function("../../tests/molden_file/LiH_pople.molden")
     lr = ppesc(wfn)
-    lr.drv_ppesc(verbose=11, scalar_correction=True, tensor=False)
+    lr.drv_ppesc(verbose=11, scalar_correction=False, tensor=False, verbose_response=11, verbose_average=11)

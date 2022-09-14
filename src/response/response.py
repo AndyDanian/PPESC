@@ -357,7 +357,7 @@ class response():
         # Gradient Property Vector and Average Values
         self.mo_occupied, self.mo_virtuals, self.gpvs = drv_gradient_property_vector(wf = self._wf,
                                         properties =self.properties,
-                                        gpv_in = self._gp, driver_time = driver_time, gaugeo = gauge,
+                                        gpv_in = self._gp, driver_time = driver_time, gauge = gauge,
                                         average = average,
                                         verbose = self._verbose, verbose_integrals = verbose_integrals)
 
@@ -376,17 +376,17 @@ class response():
         return responses_values
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/LiH.molden")
+    wfn = wave_function("../tests/molden_file/LiH_pople.molden")
     r = response(wfn)
     # r.drv_reponse_calculation(principal_propagator_approximation="rpa",
     #         properties = [["angmom x","fc 1","spinorbit x"],["angmom x","sd 1 x","spinorbit x"],["angmom x","sd 1 z","spinorbit z"],["angmom y","sd 2 y","spinorbit y"]
     #         ,["angmom z","sd 3 x","spinorbit x"],["angmom x", "pso 1", "massvelo"],["angmom x", "pso 1", "darwin"]],
-    #                             pp_multiplicity=[[1,3,3],[1,3,3],[1,3,3],[1,3,3],[1,3,3],[1,1,1],[1,1,1]],gaugeo=[0.000,0.0000,0.0586476414],
+    #                             pp_multiplicity=[[1,3,3],[1,3,3],[1,3,3],[1,3,3],[1,3,3],[1,1,1],[1,1,1]],gauge=[0.000,0.0000,0.0586476414],
     #                             verbose=11)
 
     run = True
     if run:
-        r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["fc 1","fc 2"],["kinetic", "fc 1","fc 2"]],
+        r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["fc 1","fc 2"],["kinetic","fc 1"],["laplacian","fc 1"],["kinetic", "fc 1","fc 2"]],
                                 #gauge=[0.0,0.0,1.4045523587],
                                 verbose=11)
     else:

@@ -44,7 +44,7 @@ def print_virtuals(name: str = None, virtuals: list = None, n_mo_v: int = None):
 
 def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
                                     time_object: drv_time = None,
-                                    average: bool = None, gaugeo: list = None,
+                                    average: bool = None, gauge: list = None,
                                     verbose: int = 0, verbose_int: int = 0):
     """
     Calculate of gradient property vectos in rpa approximation
@@ -53,14 +53,14 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
     ----
         wf (wave_function): Wave Function object
         property (str): Property label.
-        gaugeo (list): Gauge coordiante
+        gauge (list): Gauge coordiante
         verbose (int): Print level.
     """
     start = time()
     # atomic integrals
     calculate_integral = eint(wf)
     integrals_1b, symmetries_1b = calculate_integral.integration_onebody(
-    integrals_names = [property], verbose = verbose_int, gaugeo = gaugeo)
+    integrals_names = [property], verbose = verbose_int, gauge = gauge)
 
     # molecular integrals
     n_mo_occ = wf.mo_occ
@@ -125,7 +125,7 @@ def read_gradient_property_vector_rpa(gpvs: dict = None, property: str = None,
 #*******************************************
 def drv_gradient_property_vector(wf: wave_function = None, properties: list = None,
                                 gpv_in: dict = None, driver_time: drv_time = None,
-                                average: bool = False, gaugeo: list = None,
+                                average: bool = False, gauge: list = None,
                                 verbose: int = 0, verbose_integrals: int = -1):
     """
     Driver to build gradient property vector
@@ -138,7 +138,7 @@ def drv_gradient_property_vector(wf: wave_function = None, properties: list = No
     gpv_in (dict): Gradient properties vectors to read
     average: (bool): Activate the average value when is calculated quadratic
                     response
-    gaugeo (list): Gauge coordinate
+    gauge (list): Gauge coordinate
     verbose (int): Print level
     verbose_integrals (int): Print level for hermite module
     """
@@ -153,7 +153,7 @@ def drv_gradient_property_vector(wf: wave_function = None, properties: list = No
                                 gradient_property_vector_rpa(wf = wf,
                                 property = property, time_object = driver_time,
                                 verbose = verbose, verbose_int = verbose_integrals,
-                                average = average, gaugeo = gaugeo
+                                average = average, gauge = gauge
                                 )
             gpvs.update(temp_gpvs)
             mo_virtuals.update(temp_mo_virtuals)

@@ -1,7 +1,7 @@
 from libf import *
 
 def integral_1b_parameters(atoms_number: int = None, integral_name: str = None,
-                            gaugeo: list = None, dipole: list = None,
+                            gauge: list = None, dipole: list = None,
                             verbose: int = 0):
     """
     Build dictionary with information neccesary to calculate of the
@@ -15,7 +15,7 @@ def integral_1b_parameters(atoms_number: int = None, integral_name: str = None,
         verbose (int): Print level.
     """
     # Default values for integrals properties ######################################################
-    if gaugeo: r_gauge: list = gaugeo
+    if gauge: r_gauge: list = gauge
     else: r_gauge: list = [0.0,0.0,0.0]
     if dipole: r_dipole: list = dipole
     else: r_dipole: list = [0.0,0.0,0.0]

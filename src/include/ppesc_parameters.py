@@ -195,7 +195,7 @@ lambda a: ["nstcgo " + str(3 + 3*a) + " z"],
 diamagnetic_nr = {"dianr": dianr}
 ## - Averages
 # - FC
-fc = [lambda a: ["fc " + str(a)]]
+fc = [lambda a: ["fc " + str(1 + a)]]
 # - SD
 sd = [
 lambda a : ["sd " + str(1 + 3*a) + " x"],

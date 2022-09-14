@@ -41,7 +41,7 @@ class eint:
 
     def integration_onebody(
         self, integrals_names: list = None, integrals_properties: dict = None, verbose: int = 0,
-        gaugeo: list  = None, dipole: list = None, dalton_normalization: bool = False
+        gauge: list  = None, dipole: list = None, dalton_normalization: bool = False
     ):
 
         if verbose >= 0:
@@ -204,7 +204,7 @@ class eint:
             else:
                 r_gauge, r_dipole, magnetic_components, spatial_symmetries, atoms =\
                                 integral_1b_parameters(atoms_number = number_atoms, integral_name = int_name,
-                                                        gaugeo = gaugeo, dipole = dipole)
+                                                        gauge = gauge, dipole = dipole)
 
             if spatial_symmetry[integral_name.lower()] == 0 and magnetic[integral_name.lower()] == 0:
 
