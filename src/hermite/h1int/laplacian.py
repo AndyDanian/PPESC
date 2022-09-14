@@ -76,7 +76,7 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
             # (4b^2Sij+2^0 - 2b(2j + 1)Sij^0 + j(j-1)Sij-2^0)Skl^0Smn^0 =
             # (4b^2E0^ij+2 - 2b(2j + 1)E0^ij + j(j-1)E0^ij-2 )E0^klE0^mn
 
-            smn = E(
+            smn = hermite_coefficient(
                 mlc[i],
                 mlc[j],
                 0,
@@ -86,7 +86,7 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
             )
 
             if component >= 0 and component <= 2: #dx^2, dy^2, dz^2
-                skl = E(
+                skl = hermite_coefficient(
                     mlb[i],
                     mlb[j],
                     0,
@@ -99,7 +99,7 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
                     * exp[j]
                     * exp[j]
                     * (
-                        E(
+                        hermite_coefficient(
                             mla[i],
                             mla[j] + 2,
                             0,
@@ -109,7 +109,7 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
                         )
                     )
                     - 2.0 * exp[j] * (2.0 * mla[j] + 1.0) *
-                    E(
+                    hermite_coefficient(
                     mla[i],
                     mla[j],
                     0,
@@ -120,7 +120,7 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
                     + mla[j]
                     * (mla[j] - 1.0)
                     * (
-                        E(
+                        hermite_coefficient(
                             mla[i],
                             mla[j] - 2,
                             0,
@@ -142,7 +142,7 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
                 # (iE0^i-1j - 2aE0^i+1)(lE0^kl-1 - 2bE0^kl+1)E0^mn
                 sij = (
                     2.0 * exp[i] *
-                    E(
+                    hermite_coefficient(
                     mla[i] + 1,
                     mla[j],
                     0,
@@ -152,7 +152,7 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
                     )
                     - (mla[i]
                     * (
-                        E(
+                        hermite_coefficient(
                             mla[i] - 1,
                             mla[j],
                             0,
@@ -164,7 +164,7 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
                 )
                 skl = (
                     2.0 * exp[j] *
-                    E(
+                    hermite_coefficient(
                     mlb[i],
                     mlb[j] + 1,
                     0,
@@ -174,7 +174,7 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
                     ) -
                     (mlb[j]
                     * (
-                        E(
+                        hermite_coefficient(
                             mlb[i],
                             mlb[j] - 1,
                             0,

@@ -52,7 +52,7 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
 
         for j in range(i, total_nprim):
 
-            s_dipole = E(
+            s_dipole = hermite_coefficient(
                 l_diplen[i],
                 l_diplen[j],
                 0,
@@ -61,7 +61,7 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
                 exp[j],
             )
 
-            s_a = E(
+            s_a = hermite_coefficient(
                 l_a[i],
                 l_a[j],
                 0,
@@ -70,7 +70,7 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
                 exp[j],
             )
 
-            s_b = E(
+            s_b = hermite_coefficient(
                 l_b[i],
                 l_b[j],
                 0,
@@ -89,7 +89,7 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
             Pxyz = Pxyz / (exp[i] + exp[j])
             rpk = Pxyz - rdipole[magnetic_component] #0
 
-            xyzdipole = E(
+            xyzdipole = hermite_coefficient(
                 l_diplen[i],
                 l_diplen[j],
                 1,

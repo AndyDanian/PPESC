@@ -33,14 +33,10 @@ sys.path.append(
 
 import numpy as np
 
-# Normalization
-from normalization import *
-# Eij coefficients
-from eij import *
-# R1efg
-from nuclear_attraction import *
-# R2efg
-from electron_repulsion import *
+
+# Hermite folder
+from f90recursives import *
+
 #functions
 from string_informations import *
 from drv_time import *

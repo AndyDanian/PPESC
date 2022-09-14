@@ -1,5 +1,5 @@
 from lib2h import *
-import ee_fortran as i2ef90
+
 ############# Calculate the electron repulsion integrals ########################
 def null_integral(a,b,c,d,i,j,k,l,m,n,r,s,t,u,v,w,coord):
     """
@@ -163,8 +163,8 @@ def e2pot(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver_t
     #e2pot, count = get_values_e2pot(np.array(e2pot), n, np.array(coord), np.array(exp),
     #                            np.array(center), np.array(lx), np.array(ly), np.array(lz),
     #                            dalton_normalization)
-    e2pot, count = i2ef90.i2e(np.asfortranarray(coord), np.array(lx), np.array(ly), np.array(lz),
-                                np.array(center), np.array(exp), n)
+    e2pot, count = i2e(np.asfortranarray(coord), np.array(lx), np.array(ly), np.array(lz),
+                       np.array(center), np.array(exp), dalton_normalization, n)
     if output > 10:
         driver_time.add_name_delta_time(
             name = f"Electron Repulsion Atomic Integrals ({count})", delta_time = (time() - start)

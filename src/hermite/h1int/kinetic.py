@@ -36,7 +36,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
             # -0.5*(4b^2Sij+2^0 - 2b(2j + 1)Sij^0 + j(j-1)Sij-2^0)Skl^0Smn^0 =
             # -0.5*( 4b^2E0^ij+2 - 2b(2j + 1)E0^ij + j(j-1)E0^ij-2 )E0^klE0^mn
 
-            sij = E(
+            sij = hermite_coefficient(
                 lx[i],
                 lx[j],
                 0,
@@ -45,7 +45,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
                 exp[j],
             )
 
-            skl = E(
+            skl = hermite_coefficient(
                 ly[i],
                 ly[j],
                 0,
@@ -54,7 +54,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
                 exp[j],
             )
 
-            smn = E(
+            smn = hermite_coefficient(
                 lz[i],
                 lz[j],
                 0,
@@ -68,7 +68,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
                 * exp[j]
                 * exp[j]
                 * (
-                    E(
+                    hermite_coefficient(
                         lx[i],
                         lx[j] + 2,
                         0,
@@ -81,7 +81,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
                 + lx[j]
                 * (lx[j] - 1.0)
                 * (
-                    E(
+                    hermite_coefficient(
                         lx[i],
                         lx[j] - 2,
                         0,
@@ -97,7 +97,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
                 * exp[j]
                 * exp[j]
                 * (
-                    E(
+                    hermite_coefficient(
                         ly[i],
                         ly[j] + 2,
                         0,
@@ -110,7 +110,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
                 + ly[j]
                 * (ly[j] - 1.0)
                 * (
-                    E(
+                    hermite_coefficient(
                         ly[i],
                         ly[j] - 2,
                         0,
@@ -126,7 +126,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
                 * exp[j]
                 * exp[j]
                 * (
-                    E(
+                    hermite_coefficient(
                         lz[i],
                         lz[j] + 2,
                         0,
@@ -139,7 +139,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
                 + lz[j]
                 * (lz[j] - 1.0)
                 * (
-                    E(
+                    hermite_coefficient(
                         lz[i],
                         lz[j] - 2,
                         0,

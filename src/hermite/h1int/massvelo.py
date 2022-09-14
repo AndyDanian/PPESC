@@ -45,7 +45,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
             # - 8a^2b(2j+1)Si+2j^0 - 8b^2a(2i+1)Sij+2^0
             # - 2a(2i+1)j(j-1)Sij-2^0 - 2b(2j+1)i(i-1)Si-2j^0
 
-            sij = E(
+            sij = hermite_coefficient(
                 lx[i],
                 lx[j],
                 0,
@@ -54,7 +54,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 exp[j],
             )
 
-            skl = E(
+            skl = hermite_coefficient(
                 ly[i],
                 ly[j],
                 0,
@@ -63,7 +63,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 exp[j],
             )
 
-            smn = E(
+            smn = hermite_coefficient(
                 lz[i],
                 lz[j],
                 0,
@@ -80,7 +80,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[j]
                 * exp[j]
                 * (
-                    E(
+                    hermite_coefficient(
                         lx[i] + 2,
                         lx[j] + 2,
                         0,
@@ -100,7 +100,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * lx[j]
                 * (lx[j] - 1.0)
                 * (
-                    E(
+                    hermite_coefficient(
                         lx[i] - 2,
                         lx[j] - 2,
                         0,
@@ -114,7 +114,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[i]
                 * lx[j]
                 * (lx[j] - 1.0)
-                * E(
+                * hermite_coefficient(
                     lx[i] + 2,
                     lx[j] - 2,
                     0,
@@ -127,7 +127,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[j]
                 * lx[i]
                 * (lx[i] - 1.0)
-                * E(
+                * hermite_coefficient(
                     lx[i] - 2,
                     lx[j] + 2,
                     0,
@@ -140,7 +140,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[i]
                 * exp[j]
                 * (2.0 * lx[j] + 1.0)
-                * E(
+                * hermite_coefficient(
                     lx[i] + 2,
                     lx[j],
                     0,
@@ -153,7 +153,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[j]
                 * exp[i]
                 * (2.0 * lx[i] + 1.0)
-                * E(
+                * hermite_coefficient(
                     lx[i],
                     lx[j] + 2,
                     0,
@@ -166,7 +166,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * (2.0 * lx[i] + 1)
                 * lx[j]
                 * (lx[j] - 1)
-                * E(
+                * hermite_coefficient(
                     lx[i],
                     lx[j] - 2,
                     0,
@@ -179,7 +179,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * (2.0 * lx[j] + 1)
                 * lx[i]
                 * (lx[i] - 1)
-                * E(
+                * hermite_coefficient(
                     lx[i] - 2,
                     lx[j],
                     0,
@@ -197,7 +197,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[j]
                 * exp[j]
                 * (
-                    E(
+                    hermite_coefficient(
                         ly[i] + 2,
                         ly[j] + 2,
                         0,
@@ -217,7 +217,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * ly[j]
                 * (ly[j] - 1.0)
                 * (
-                    E(
+                    hermite_coefficient(
                         ly[i] - 2,
                         ly[j] - 2,
                         0,
@@ -231,7 +231,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[i]
                 * ly[j]
                 * (ly[j] - 1.0)
-                * E(
+                * hermite_coefficient(
                     ly[i] + 2,
                     ly[j] - 2,
                     0,
@@ -244,7 +244,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[j]
                 * ly[i]
                 * (ly[i] - 1.0)
-                * E(
+                * hermite_coefficient(
                     ly[i] - 2,
                     ly[j] + 2,
                     0,
@@ -257,7 +257,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[i]
                 * exp[j]
                 * (2.0 * ly[j] + 1.0)
-                * E(
+                * hermite_coefficient(
                     ly[i] + 2,
                     ly[j],
                     0,
@@ -270,7 +270,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[j]
                 * exp[i]
                 * (2.0 * ly[i] + 1.0)
-                * E(
+                * hermite_coefficient(
                     ly[i],
                     ly[j] + 2,
                     0,
@@ -283,7 +283,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * (2.0 * ly[i] + 1)
                 * ly[j]
                 * (ly[j] - 1)
-                * E(
+                * hermite_coefficient(
                     ly[i],
                     ly[j] - 2,
                     0,
@@ -296,7 +296,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * (2.0 * ly[j] + 1)
                 * ly[i]
                 * (ly[i] - 1)
-                * E(
+                * hermite_coefficient(
                     ly[i] - 2,
                     ly[j],
                     0,
@@ -314,7 +314,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[j]
                 * exp[j]
                 * (
-                    E(
+                    hermite_coefficient(
                         lz[i] + 2,
                         lz[j] + 2,
                         0,
@@ -334,7 +334,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * lz[j]
                 * (lz[j] - 1.0)
                 * (
-                    E(
+                    hermite_coefficient(
                         lz[i] - 2,
                         lz[j] - 2,
                         0,
@@ -348,7 +348,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[i]
                 * lz[j]
                 * (lz[j] - 1.0)
-                * E(
+                * hermite_coefficient(
                     lz[i] + 2,
                     lz[j] - 2,
                     0,
@@ -361,7 +361,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[j]
                 * lz[i]
                 * (lz[i] - 1.0)
-                * E(
+                * hermite_coefficient(
                     lz[i] - 2,
                     lz[j] + 2,
                     0,
@@ -374,7 +374,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[i]
                 * exp[j]
                 * (2.0 * lz[j] + 1.0)
-                * E(
+                * hermite_coefficient(
                     lz[i] + 2,
                     lz[j],
                     0,
@@ -387,7 +387,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * exp[j]
                 * exp[i]
                 * (2.0 * lz[i] + 1.0)
-                * E(
+                * hermite_coefficient(
                     lz[i],
                     lz[j] + 2,
                     0,
@@ -400,7 +400,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * (2.0 * lz[i] + 1)
                 * lz[j]
                 * (lz[j] - 1)
-                * E(
+                * hermite_coefficient(
                     lz[i],
                     lz[j] - 2,
                     0,
@@ -413,7 +413,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * (2.0 * lz[j] + 1)
                 * lz[i]
                 * (lz[i] - 1)
-                * E(
+                * hermite_coefficient(
                     lz[i] - 2,
                     lz[j],
                     0,

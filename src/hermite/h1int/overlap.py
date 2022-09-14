@@ -39,7 +39,7 @@ def overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
 
             # int -inf inf Hermite Gaussian dx = (pi/p)**1/2 delta_{t0}
 
-            sij = E(
+            sij = hermite_coefficient(
                 lx[i],
                 lx[j],
                 0,
@@ -48,7 +48,7 @@ def overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
                 exp[j],
             )
 
-            skl = E(
+            skl = hermite_coefficient(
                 ly[i],
                 ly[j],
                 0,
@@ -57,7 +57,7 @@ def overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
                 exp[j],
             )
 
-            smn = E(
+            smn = hermite_coefficient(
                 lz[i],
                 lz[j],
                 0,

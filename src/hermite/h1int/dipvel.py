@@ -51,7 +51,7 @@ def dipvel(coord, magnetic_component, exp, center, lx, ly, lz, output, dalton_no
 
         for j in range(i, total_nprim):
 
-            s_a = E(
+            s_a = hermite_coefficient(
                 l_a[i],
                 l_a[j],
                 0,
@@ -60,7 +60,7 @@ def dipvel(coord, magnetic_component, exp, center, lx, ly, lz, output, dalton_no
                 exp[j],
             )
 
-            s_b = E(
+            s_b = hermite_coefficient(
                 l_b[i],
                 l_b[j],
                 0,
@@ -71,14 +71,14 @@ def dipvel(coord, magnetic_component, exp, center, lx, ly, lz, output, dalton_no
 
             # Horizontal Reccurence
             # int phi d/dx phi dt = Dij^1Skl^0Smn^0 = (2*b*Sij+1^0 - j*Sij-1^0)Skl^0Smn^0
-            p_dipvel = 2.0 * exp[j] * E(
+            p_dipvel = 2.0 * exp[j] * hermite_coefficient(
                 l_dipvel[i],
                 l_dipvel[j] + 1,
                 0,
                 coord[center[i]][magnetic_component] - coord[center[j]][magnetic_component],
                 exp[i],
                 exp[j],
-            ) - l_dipvel[j] * E(
+            ) - l_dipvel[j] * hermite_coefficient(
                 l_dipvel[i],
                 l_dipvel[j] - 1,
                 0,

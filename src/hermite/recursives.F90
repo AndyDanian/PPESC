@@ -948,12 +948,12 @@ function electron_repulsion( &
 
     suma = 0.0
     pi = 3.141592653589793D0
-    do 1 t = 1, i + j + 1
-        do 1 mu = 1, k + l + 1
-            do 1 nu = 1, m + n + 1
-                do 1 phi = 1, u + x + 1
-                    do 1 tau = 1, v + y + 1
-                        do 1 theta = 1, w + z + 1
+    do 10 t = 1, i + j + 1
+        do 10 mu = 1, k + l + 1
+            do 10 nu = 1, m + n + 1
+                do 10 phi = 1, u + x + 1
+                    do 10 tau = 1, v + y + 1
+                        do 10 theta = 1, w + z + 1
                             suma = suma + (                                                 &
                                 hermite_coefficient(i, j, t-1, Ax - Bx, alpha, beta)        &
                                 * hermite_coefficient(k, l, mu-1, Ay - By, alpha, beta)     &
@@ -974,7 +974,7 @@ function electron_repulsion( &
                                     RPQ)                                                    &
                             )
 
-    1 continue
+    10 continue
     suma = suma * 2.0*pi**(2.5)/(p*q*dsqrt(p + q))
 end function electron_repulsion
 
@@ -1009,9 +1009,9 @@ function nuclear_attraction(                                                  &
     Rpk = dsqrt((Px - Kx)*(Px - Kx) + (Py - Ky)*(Py - Ky) + (Pz - Kz)*(Pz - Kz))
 
     suma = 0.0D0
-    do 1 t = 1, i + j + 1
-        do 1 mu = 1, k + l + 1
-            do 1 nu = 1, m + n + 1
+    do 10 t = 1, i + j + 1
+        do 10 mu = 1, k + l + 1
+            do 10 nu = 1, m + n + 1
                 suma = suma + (                                              &
                     hermite_coefficient(i, j, t-1, Ax - Bx, alpha, beta)     &
                     * hermite_coefficient(k, l, mu-1, Ay - By, alpha, beta)  &
@@ -1028,7 +1028,7 @@ function nuclear_attraction(                                                  &
                         Rpk                                                  &
                     )                                                        &
                 )
-    1 continue
+    10 continue
     suma = suma * (-1) ** (e + f + g)
 end function nuclear_attraction
 
@@ -1100,27 +1100,33 @@ recursive function factorial(n) result(value)
     endif
 end function factorial
 
-function normalization(i,j,k,alpha) result(norma)
+function normalization(i,j,k,alpha,dalton_norm_cart) result(norma)
     integer, intent(in) :: i,j,k
     double precision, intent(in) :: alpha
+    logical, intent(in) :: dalton_norm_cart
 
     integer :: factorial
     double precision :: norma, pi
     pi = 3.141592653589793D0
 
     norma = (2.0 * alpha / pi) ** (3.0 / 4.0)
-    norma = norma *&
+    if (dalton_norm_cart) then
+        norma = norma * dsqrt(( 4.0 * alpha ) ** (i + j + k))
+    else
+        norma = norma *&
         dsqrt((( 8.0 * alpha ) ** (i + j + k) * factorial(i) * factorial(j) * factorial(k)) &
         / (factorial(2*i) * factorial(2*j) * factorial(2*k)))
+    endif
 
 end function normalization
 
-!f2py3 -c -m ee_fortran ee.F90 --f90flags="-m64 -cpp -ffixed-line-length-none -ffree-line-length-none -finit-local-zero -Ofast -mtune=native -march=native -ffast-math -march=native -mfpmath=sse -msse2 -ffast-math -g -fPIC"
-subroutine i2e(ee, counter, coord, mlx, mly, mlz, center, expon, n)
+!f2py3 -c -m f90recursives recursives.F90 --f90flags="-m64 -cpp -ffixed-line-length-none -ffree-line-length-none -finit-local-zero -Ofast -mtune=native -march=native -ffast-math -mfpmath=sse -msse2 -ffast-math -g -fPIC"
+subroutine i2e(ee, counter, coord, mlx, mly, mlz, center, expon, dalton_norm_cart, n)
     integer, intent(in) :: n
     double precision, dimension(2,3), intent(in) :: coord
     integer, dimension(n), intent(in) :: mlx, mly, mlz, center
     double precision, dimension(n), intent(in) :: expon
+    logical, intent(in) :: dalton_norm_cart
 
     double precision, intent(out) :: ee(n,n,n,n)
     integer, intent(out) :: counter
@@ -1179,10 +1185,10 @@ subroutine i2e(ee, counter, coord, mlx, mly, mlz, center, expon, n)
                             coord(center(v)+1,1),&
                             coord(center(v)+1,2),&
                             coord(center(v)+1,3))&
-                            *normalization(mlx(p), mly(p), mlz(p), expon(p))&
-                            *normalization(mlx(q), mly(q), mlz(q), expon(q))&
-                            *normalization(mlx(u), mly(u), mlz(u), expon(u))&
-                            *normalization(mlx(v), mly(v), mlz(v), expon(v))
+                            *normalization(mlx(p), mly(p), mlz(p), expon(p), dalton_norm_cart)&
+                            *normalization(mlx(q), mly(q), mlz(q), expon(q), dalton_norm_cart)&
+                            *normalization(mlx(u), mly(u), mlz(u), expon(u), dalton_norm_cart)&
+                            *normalization(mlx(v), mly(v), mlz(v), expon(v), dalton_norm_cart)
                             !write(*,*)" (",p,q,"|",u,v,") : ",ee(p,q,u,v)
                             ee(p,q,v,u) = ee(p,q,u,v)
                             ee(q,p,u,v) = ee(p,q,u,v)
@@ -1207,13 +1213,13 @@ function gaussian_mult(i, k, m, j, l, n, Ax, Ay, Az, Bx, By, Bz, alpha, beta, Kx
     ! (xk-Ax)^i(yk-Ay)^k(zk-Az)^mexp(-alpha*(rk-A)^2) *
     ! (xk-Bx)^j(yk-By)^l(zk-Bz)^nexp(-alpha*(rk-B)^2)
     gij = dexp(-alpha * (Kx - Ax) ** 2) * dexp(-beta * (Kx - Bx) ** 2)
-    gij = power((Kx - Ax), i) * power((Kx - Bx), j) * gij
+    gij = ((Kx - Ax)**i) * ((Kx - Bx)**j) * gij
 
     gkl = dexp(-alpha * (Ky - Ay) ** 2) * dexp(-beta * (Ky - By) ** 2)
-    gkl = power((Ky - Ay), k) * power((Ky - By), l) * gkl
+    gkl = ((Ky - Ay)**k) * ((Ky - By)**l) * gkl
 
     gmn = dexp(-alpha * (Kz - Az) ** 2) * dexp(-beta * (Kz - Bz) ** 2)
-    gmn = power((Kz - Az), m) * power((Kz - Bz), n) * gmn
+    gmn = ((Kz - Az)**m) * ((Kz - Bz)**n) * gmn
 
     gg = gij * gkl * gmn
 end function gaussian_mult

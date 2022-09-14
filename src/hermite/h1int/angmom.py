@@ -78,7 +78,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
             left_rg: float = left_Pxyz - gauge[left_coord]
             right_rg: float = right_Pxyz - gauge[right_coord]
 
-            spatial_s: float = E(
+            spatial_s: float = hermite_coefficient(
                 spatial_l[i],
                 spatial_l[j],
                 0,
@@ -87,7 +87,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
                 exp[j],
             )
 
-            left_s: float = E(
+            left_s: float = hermite_coefficient(
                 left_l[i],
                 left_l[j],
                 0,
@@ -96,7 +96,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
                 exp[j],
             )
 
-            right_s: float = E( #z
+            right_s: float = hermite_coefficient( #z
                 right_l[i],
                 right_l[j],
                 0,
@@ -110,7 +110,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
             #  [Skl^1Dmn^1 - Smn^1Dkl^1]Sij^0 =
             #  [(E_1^kl + YpgE0^kl)(2bE_0^mn+1-l2bE0^mn-1) -
             #   (E_1^mn + ZpgE0^mn)(2bE_0^kl+1-l2bE0^kl-1)]Sij^0
-            left_r: float = E(
+            left_r: float = hermite_coefficient(
                 left_l[i],
                 left_l[j],
                 1,
@@ -119,7 +119,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
                 exp[j],
             )
 
-            right_r: float = E(
+            right_r: float = hermite_coefficient(
                 right_l[i],
                 right_l[j],
                 1,
@@ -128,14 +128,14 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
                 exp[j],
             )
 
-            right_p: float = 2.0 * exp[j] * E(
+            right_p: float = 2.0 * exp[j] * hermite_coefficient(
                 left_l[i],
                 left_l[j] + 1,
                 0,
                 coord[center[i]][left_coord] - coord[center[j]][left_coord],
                 exp[i],
                 exp[j],
-            ) - left_l[j] * E(
+            ) - left_l[j] * hermite_coefficient(
                 left_l[i],
                 left_l[j] - 1,
                 0,
@@ -144,14 +144,14 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
                 exp[j],
             )
 
-            left_p: float = 2.0 * exp[j] * E(
+            left_p: float = 2.0 * exp[j] * hermite_coefficient(
                 right_l[i],
                 right_l[j] + 1,
                 0,
                 coord[center[i]][right_coord] - coord[center[j]][right_coord],
                 exp[i],
                 exp[j],
-            ) - right_l[j] * E(
+            ) - right_l[j] * hermite_coefficient(
                 right_l[i],
                 right_l[j] - 1,
                 0,
