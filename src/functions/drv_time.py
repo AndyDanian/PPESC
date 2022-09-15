@@ -26,6 +26,10 @@ class drv_time():
     @property
     def print_information(self) -> str:
         return print([name + " time " + str(t) + " seconds " for name, t in zip(self._name, self._delta_time)])
+    @property
+    def reset(self):
+        self._name: list = []
+        self._delta_time: list = []
     ##################################################################
     # METHODS
     ##################################################################

@@ -31,14 +31,11 @@ class average():
         verbose (int): Print level
         verbose_integrals (int): Print level for integrals calculation
         """
-        if verbose > 10:
-            driver_time = drv_time()
-            start = time()
-        else:
-            driver_time = None
 
-        if verbose >= 0:
-            print_title("Average Value")
+        driver_time = self._wf._driver_time
+        start = time()
+
+        print_title("Average Value")
 
         # atomic integrals
         calculate_integral = eint(self._wf)
@@ -54,25 +51,21 @@ class average():
         for name, atomic_int in integrals_1b.items():
             mo_integral[name] = np.matmul(mo_coeff_T,np.matmul(np.array(atomic_int), mo_coeff_T.T))
             averages[name] = 2.0*sum([mo_integral[name][i][i] for i in range(n_mo_occ)])
-        # Print
-        if verbose > 10:
-            print_matriz_integrated(integrals = mo_integral, symmetries = symmetries_1b)
 
         if verbose >= 0:
             for name, average in averages.items():
                 print_result(name = f"Average {name.title()}",
                 value = f"{average:.8f}")
 
-        if verbose > 10:
-            driver_time.add_name_delta_time(name = f"Average Value", delta_time = (time() - start))
-            driver_time.printing()
+        driver_time.add_name_delta_time(name = f"Average Value", delta_time = (time() - start))
+        driver_time.printing()
+        driver_time.reset
 
-        if verbose >= 0:
-            print_title("End Average Value")
+        print_title("End Average Value")
 
         return averages
 
 if __name__ == "__main__":
     wfn = wave_function("../tests/molden_file/LiH.molden")
     av = average(wfn)
-    av.calculate_average(property = ["fc", "massvelo", "darwin"], verbose = 11)
+    av.calculate_average(property = ["fc", "massvelo", "darwin"], verbose = 11, verbose_integrals=21)

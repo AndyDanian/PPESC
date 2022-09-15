@@ -448,7 +448,8 @@ class eint:
 
         driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
         driver_time.printing()
-
+        driver_time.reset
+    
         print_title(name = f"END HERMITE: ONE BODY")
 
         return integrals_matrix, symmetries
