@@ -2,11 +2,12 @@ import os
 import sys
 from pathlib import Path
 from time import time
+from typing import List, Set, Dict, Tuple, Optional
 
 #Addres when execute from fock
-H1I_PATH = Path.cwd()
+FOCK_PATH = Path.cwd()
 
-PARENT_PATH = H1I_PATH.parent
+PARENT_PATH = FOCK_PATH.parent
 
 sys.path.append(
     os.fspath(PARENT_PATH)
@@ -40,3 +41,5 @@ from e_integral import *
 
 # functions
 from print_matrix import *
+from string_informations import *
+from drv_time import *

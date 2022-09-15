@@ -1,5 +1,7 @@
-from convert_array import *
 import numpy as np
+
+from convert_array import *
+from string_informations import *
 
 def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: str = None):
     """
@@ -10,11 +12,9 @@ def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: s
         name (str): name of the integral
         matriz_sym (str): Matriz symmetric of atomic integrals
     """
-    print("*" * 80)
-    print("*** ", name.upper().center(70), " ***")
-    print("*" * 80)
+    print_subtitle(name = name)
 
-    ZERO = 1.0E-7
+    ZERO = 1.0E-8
 
     size = len(integral[0][:])
     if size <= 5:
@@ -36,9 +36,9 @@ def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: s
         # Column index
         print(
             *[
-                "    " + str(i + 1).center(14)
+                "    " + str(i + 1).center(16)
                 if i == count * columns
-                else str(i + 1).center(14)
+                else str(i + 1).center(16)
                 for i in range(count * columns, n)
             ],
             end="",
@@ -53,20 +53,20 @@ def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: s
         for row in range(initial_value, size):
             # Row values and index
             if matriz_sym != "square":
-                values = [integral[column][row]
+                values = [integral[row][column]
                             for column in range(count * columns, n)
                             if row >= column
                             ]
             else:
-                values = [integral[column][row]
+                values = [integral[row][column]
                             for column in range(count * columns, n)
                             ]
             if np.linalg.norm(np.array(values)) > ZERO:
                 print(
                     *[str(row + 1).center(4)
-                    + str("{:.6f}".format(value)).center(14)
+                    + str("{:.8f}".format(value)).center(16)
                     if i == 0
-                    else str("{:.6f}".format(value)).center(14)
+                    else str("{:.8f}".format(value)).center(16)
                     for i, value in enumerate(values)],
                     end="",
                 )

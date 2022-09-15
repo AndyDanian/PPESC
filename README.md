@@ -3,7 +3,10 @@
 Program written in Python 3.9.10 to calculate response properties in different approximations of principal propagator in No--Relativistic level
 
 * RPA
-* HRPA
+
+Now, only static principal propagator and, lineal and quadratic responses
+
+LRESC and PPESC for shielding is implemented. LRESC have two version, one version is with some constants by scale factor, instead another version is without scale factor.
 
 # Installation
 
@@ -30,14 +33,21 @@ Integrals implemented using point nucleu, cartessian primitives and until i shel
     * Diamagnetic nuclear shielding tensor
     * Kinetic-energy correction to the diamagnetic contribution to nuclear shielding
     * Kinetic-energy correction to the paramagnetic spin-orbit
-    * Orbital-Zeeman correction to the paramagnetic spin-orbit 
+    * Orbital-zeeman correction to the paramagnetic spin-orbit 
     * Kinetic energy correction to the orbital zeeman
+    * Spin-orbit
+    * Laplacian: Dxx, Dyy, Dzz, Dxy, Dxz, and Dzz
+    * External magnetic-field dependence of the spin–orbit operator integrals
+    * PA²P
 
 * Two--body
     * Electron repulsion
 
+PPotential integrals use boys function.
+
 # Fock Matriz 
 
 * Fock--Matrix Implemented
-    * Hartree--Fock 
+    * Hartree--Fock
+    * Add Massvelocity and Darwin to Hartree--Fock energies 
   

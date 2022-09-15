@@ -1,7 +1,7 @@
 from lib1h import *
 
 ############# Calculate the potential one body integrals ########################
-def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization):
+def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """_summary_
 
     Potential integrals
@@ -15,6 +15,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization):
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
         dalton_normalization (bool): it is used the dalton normalization formule
+        drive_time (drv_object): Object to manage the time
 
     Return:
         kinetic (array): array 1d with atomic integrals
@@ -35,7 +36,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization):
             # -0.5*(4b^2Sij+2^0 - 2b(2j + 1)Sij^0 + j(j-1)Sij-2^0)Skl^0Smn^0 =
             # -0.5*( 4b^2E0^ij+2 - 2b(2j + 1)E0^ij + j(j-1)E0^ij-2 )E0^klE0^mn
 
-            sij = E(
+            sij = hermite_coefficient(
                 lx[i],
                 lx[j],
                 0,
@@ -44,7 +45,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization):
                 exp[j],
             )
 
-            skl = E(
+            skl = hermite_coefficient(
                 ly[i],
                 ly[j],
                 0,
@@ -53,7 +54,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization):
                 exp[j],
             )
 
-            smn = E(
+            smn = hermite_coefficient(
                 lz[i],
                 lz[j],
                 0,
@@ -67,7 +68,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization):
                 * exp[j]
                 * exp[j]
                 * (
-                    E(
+                    hermite_coefficient(
                         lx[i],
                         lx[j] + 2,
                         0,
@@ -80,7 +81,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization):
                 + lx[j]
                 * (lx[j] - 1.0)
                 * (
-                    E(
+                    hermite_coefficient(
                         lx[i],
                         lx[j] - 2,
                         0,
@@ -96,7 +97,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization):
                 * exp[j]
                 * exp[j]
                 * (
-                    E(
+                    hermite_coefficient(
                         ly[i],
                         ly[j] + 2,
                         0,
@@ -109,7 +110,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization):
                 + ly[j]
                 * (ly[j] - 1.0)
                 * (
-                    E(
+                    hermite_coefficient(
                         ly[i],
                         ly[j] - 2,
                         0,
@@ -125,7 +126,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization):
                 * exp[j]
                 * exp[j]
                 * (
-                    E(
+                    hermite_coefficient(
                         lz[i],
                         lz[j] + 2,
                         0,
@@ -138,7 +139,7 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization):
                 + lz[j]
                 * (lz[j] - 1.0)
                 * (
-                    E(
+                    hermite_coefficient(
                         lz[i],
                         lz[j] - 2,
                         0,
@@ -163,6 +164,6 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization):
             count += 1
 
     if output > 10:
-        print(f"\n *** Atomic kinetic integrals time [s]: {time() - start:.6f}")
+        driver_time.add_name_delta_time(name = f"Kinetic Atomic Integrals", delta_time = (time() - start))
 
     return kinetic

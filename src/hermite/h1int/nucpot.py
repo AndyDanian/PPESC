@@ -1,7 +1,7 @@
 from lib1h import *
 
 ############# Calculate the potential one body integrals ########################
-def nucpot(charge, atom, coord, exp, center, lx, ly, lz, output, dalton_normalization):
+def nucpot(charge, atom, coord, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """
     Potential integrals
 
@@ -16,6 +16,7 @@ def nucpot(charge, atom, coord, exp, center, lx, ly, lz, output, dalton_normaliz
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
         dalton_normalization (bool): it is used the dalton normalization formule
+        drive_time (drv_object): Object to manage the time
 
     Return:
         pot (array): array 1d with atomic integrals
@@ -66,9 +67,10 @@ def nucpot(charge, atom, coord, exp, center, lx, ly, lz, output, dalton_normaliz
             )
 
             count += 1
-    if output > 0:
-        print(
-            f"\n *** Potential nucleu atomic integrals for {atom + 1}-th atom, time [s]: {time() - start:.6f}"
-        )
+    if output > 10:
+        driver_time.add_name_delta_time(
+            name = f"Potential Nucleu Atomic Integrals for {atom + 1}-th Atom",
+            delta_time = (time() - start)
+                )
 
     return pot

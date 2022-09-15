@@ -14,6 +14,7 @@ def vector_to_matrix(n: int = None, vector: list = None, sym: str = None):
         matrix (list): array of 2D
     """
 
+
     if sym == "antisym":
         coef = -1.0
     else:
@@ -25,13 +26,13 @@ def vector_to_matrix(n: int = None, vector: list = None, sym: str = None):
     for x in vector:
         if sym == "square":
             matrix[row][col] = x
-            col += 1
-            if col == n:
-                col = 0
-                row += 1
+            row += 1
+            if row == n:
+                row = 0
+                col += 1
         else:
-            matrix[row][col + row] = x
-            matrix[col + row][row] = coef * x
+            matrix[col + row][row] = x
+            matrix[row][col + row] = coef * x
             col += 1
             if col == n - row:
                 col = 0

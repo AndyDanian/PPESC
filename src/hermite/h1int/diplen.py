@@ -1,6 +1,6 @@
 from lib1h import *
 
-def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, dalton_normalization):
+def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """
     Dipole lenght atomic integrals
 
@@ -15,6 +15,7 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
         dalton_normalization (bool): it is used the dalton normalization formule
+        drive_time (drv_object): Object to manage the time
 
     Return:
         diplen (array): array 1d with atomic integrals
@@ -32,26 +33,26 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
         l_diplen: list = lx
         l_a: list = ly
         l_b: list = lz
-        coord_a: int = 1 
-        coord_b: int = 2 
+        coord_a: int = 1
+        coord_b: int = 2
     elif magnetic_component == 1:
         l_diplen: list = ly
         l_a: list = lx
         l_b: list = lz
-        coord_a: int = 0 
-        coord_b: int = 2 
+        coord_a: int = 0
+        coord_b: int = 2
     elif magnetic_component == 2:
         l_diplen: list = lz
         l_a: list = ly
         l_b: list = lx
-        coord_a: int = 1 
-        coord_b: int = 0 
+        coord_a: int = 1
+        coord_b: int = 0
 
     for i in range(total_nprim):
 
         for j in range(i, total_nprim):
 
-            s_dipole = E(
+            s_dipole = hermite_coefficient(
                 l_diplen[i],
                 l_diplen[j],
                 0,
@@ -60,7 +61,7 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
                 exp[j],
             )
 
-            s_a = E(
+            s_a = hermite_coefficient(
                 l_a[i],
                 l_a[j],
                 0,
@@ -69,12 +70,12 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
                 exp[j],
             )
 
-            s_b = E(
+            s_b = hermite_coefficient(
                 l_b[i],
                 l_b[j],
                 0,
                 coord[center[i]][coord_b] - coord[center[j]][coord_b],
-                exp[i], 
+                exp[i],
                 exp[j],
             )
             # Eq 9.5.43 Helgaker
@@ -88,7 +89,7 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
             Pxyz = Pxyz / (exp[i] + exp[j])
             rpk = Pxyz - rdipole[magnetic_component] #0
 
-            xyzdipole = E(
+            xyzdipole = hermite_coefficient(
                 l_diplen[i],
                 l_diplen[j],
                 1,
@@ -106,9 +107,10 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)
             )
             count += 1
-    if output > 0:
-        print(
-            f"\n ***Dipole lenght atomic integrals for {magnetic_component}, time [s]: {time() - start:.6f}"
+    if output > 10:
+        driver_time.add_name_delta_time(
+            name = f"Dipole Lenght Atomic Integrals for {magnetic_component} Magnetic Component",
+            delta_time = (time() - start)
         )
 
     return diplen

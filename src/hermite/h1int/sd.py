@@ -1,6 +1,6 @@
 from lib1h import *
 
-def sd(coord, magnetic_component, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization):
+def sd(coord, magnetic_component, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """
     Spin dipolar atomic integrals, which is a tensor
 
@@ -16,6 +16,7 @@ def sd(coord, magnetic_component, spatial_sym, atom, exp, center, lx, ly, lz, ou
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
         dalton_normalization (bool): it is used the dalton normalization formule
+        drive_time (drv_object): Object to manage the time
 
     Return:
         angmom (array): array 2d with atomic integrals
@@ -155,9 +156,9 @@ def sd(coord, magnetic_component, spatial_sym, atom, exp, center, lx, ly, lz, ou
                 lx[j],
                 ly[j],
                 lz[j],
-                dx_y, 
-                dy_y, 
-                dz_y, 
+                dx_y,
+                dy_y,
+                dz_y,
                 exp[i],
                 exp[j],
                 coord[center[i]][0],
@@ -206,8 +207,7 @@ def sd(coord, magnetic_component, spatial_sym, atom, exp, center, lx, ly, lz, ou
             count += 1
 
     if output > 10:
-        print(f"\n *** Spin dipolar atomic integrals,\
-        spatial symmetry {spatial_sym} and magnetic component {magnetic_component}\
-        of atom {atom + 1}-th, time [s]: {time() - start:.6f}")
+        driver_time.add_name_delta_time(name = f"Spin-Dipolar Atomic Integrals, {spatial_sym} Spatial Symmetry and \
+        {magnetic_component} Magnetic Component of {atom + 1}-th Atom", delta_time = (time() - start))
 
     return sd

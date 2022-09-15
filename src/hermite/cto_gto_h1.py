@@ -1,24 +1,23 @@
+from libint import *
+from constants_cto_gto import *
 """
 Author: Mgs Andy Zapata
 """
 
-from libint import *
-
-def cto_gto_h1(Mxyz,TP_A):
+def cto_gto_h1(Mxyz: np.array = None, TP_A: np.array = None):
     """
     Convert cartesian to spherical integrals
 
     Arg:
-    Mxyz [array, float]: Cartesian integrals
-    TP_A [array, string]: Symbol associated with main quantum number
+        Mxyz [array, float]: Cartesian integrals
+        TP_A [array, string]: Symbol associated with main quantum number
 
     Return:
-    Mrtp [array, float]: Spherical integrals
+        Mrtp [array, float]: Spherical integrals
     """
 
     Nsph: int = 0 #number of spherical primitives
     Np: int = 0 #number of cartesian primitives
-    start: float = time()
 
     for a in TP_A:
         if a == 's':
@@ -43,7 +42,7 @@ def cto_gto_h1(Mxyz,TP_A):
             Nsph += 13
             Np += 28
 
-    Mtemp = np.zeros((Np,Nsph),dtype=float)
+    Mtemp = np.zeros((Np,Nsph))
     for irow in range(Np):
         icol = 0
         jcol = 0
@@ -169,7 +168,7 @@ def cto_gto_h1(Mxyz,TP_A):
                 icol += 13
                 jcol += 28
 
-    Mrtp = np.zeros((Nsph,Nsph),dtype=float)
+    Mrtp = np.zeros((Nsph,Nsph))
     irow = 0
     jrow = 0
     for ibra in TP_A:
@@ -298,5 +297,5 @@ def cto_gto_h1(Mxyz,TP_A):
                 Mrtp[irow+12,icol]+= I11_21*Mtemp[jrow+21,icol]
             icol += 13
             jcol += 28
-    print(f"\n***Time to transform one--body cto to gto {time() - start} s\n")
+
     return Mrtp

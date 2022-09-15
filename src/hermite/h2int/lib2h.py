@@ -3,25 +3,41 @@ import sys
 from pathlib import Path
 from time import time
 
-from typing import List, Set, Dict, Tuple, Optional
+#from typing import List, Set, Dict, Tuple, Optional
 
 #Addres when execute from hxint
-H1I_PATH = Path.cwd()
+H2I_PATH = Path.cwd()
 
-PARENT_PATH = H1I_PATH.parent
+HERMITE_PATH = H2I_PATH.parent
+PROJECT = HERMITE_PATH.parent
 
 sys.path.append(
-    os.fspath(PARENT_PATH)
+    os.fspath(HERMITE_PATH)
     )
 #
+sys.path.append(
+    os.fspath(PROJECT /("functions"))
+    )
+sys.path.append(
+    os.fspath(PROJECT /("io"))
+    )
+sys.path.append(
+    os.fspath(PROJECT /("include"))
+    )
+sys.path.append(
+    os.fspath(PROJECT /("fock"))
+    )
+sys.path.append(
+    os.fspath(HERMITE_PATH /("h1int"))
+    )
 
 import numpy as np
 
-# Normalization
-from normalization import *
-# Eij coefficients
-from eij import *
-# R1efg
-from nuclear_attraction import *
-# R2efg
-from electron_repulsion import *
+# Hermite folder
+from f90recursives import *
+
+#functions
+from string_informations import *
+from drv_time import *
+#functions
+from wave_function import *

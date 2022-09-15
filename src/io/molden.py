@@ -16,7 +16,10 @@ def convert_to_float(variable_name: None, value: None):
 
 def validate_file(file_molden):
     """
-    Validate the file.
+    File validation
+
+    Args:
+        file_molden (file): Molden's File
     """
     gto_section = mo_section = atoms_section = primitive_type = False
 
@@ -63,6 +66,10 @@ def read_molden(file_molden, verbose=21):
         Occ_MO   (array)        : Occupation of each of the OMs
         Coeff_MO (array)        : Molecular coefficcients by each MO
     """
+    label_title: str = "Reading Wave Function From MOLDEN File"
+    print(label_title.center(80))
+    print(("-"*len(label_title)).center(80))
+
     # Verification of the file
     validate_file(file_molden)
 
@@ -105,6 +112,10 @@ def read_molden(file_molden, verbose=21):
     end_mo = ["S", "[", "E"]
 
     for number_line, element in enumerate(datafile):
+        if "[TITLE]" in element:
+            print("Title into Molden: ")
+            print(datafile[number_line + 1])
+
         while "[Atoms]" in element and stop_atoms == False:
             # Read atomic type and coordinates
             #
@@ -421,6 +432,7 @@ def read_molden(file_molden, verbose=21):
     #           recalculated the molecular orbital energies, because
     #           if not there will be errors in the calculations where
     #           is neccesary
+
     if spatial_primitive == "spherical":
         return l_i_q_xyz, t_a_exp, mo, False
     else:

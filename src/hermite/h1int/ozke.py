@@ -1,12 +1,12 @@
 from lib1h import *
 
-def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalton_normalization):
+def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """
     Calculates the kinetic energy correction to the orbital Zeeman operator
 
     Args:
         coord (list): list 2d with coordinates of the atoms
-        gauge (list): list 1d with gauge coordinates 
+        gauge (list): list 1d with gauge coordinates
         magnetic_component (int): magnetic component
         exp (list): list 1d with the exponentials
         center (list): list 1d with the center of the gaussian
@@ -15,6 +15,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
         dalton_normalization (bool): it is used the dalton normalization formule
+        drive_time (drv_object): Object to manage the time
 
     Return:
         ozke (array): array 1d with atomic integrals
@@ -29,12 +30,12 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
     count: int = 0
 
     """
-    Component Selection L = p x r 
+    Component Selection L = p x r
                         = (zpy-ypz)x + (xpz-zpx)y + (ypx-xpy)z
     where r = r_e - r_gauge
     """
 
-    if magnetic_component == 0: 
+    if magnetic_component == 0:
         """X Component"""
         left_coord: int = 1
         right_coord: int = 2
@@ -78,7 +79,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
             right_rg: float = right_Pxyz - gauge[right_coord]
 
             # E_0^ij
-            e0ij = E(
+            e0ij = hermite_coefficient(
                 spatial_l[i],
                 spatial_l[j],
                 0,
@@ -88,7 +89,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
             )
 
             # E_0^kl
-            e0kl = E(
+            e0kl = hermite_coefficient(
                 left_l[i],
                 left_l[j],
                 0,
@@ -98,7 +99,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
             )
 
             # E_0^mn
-            e0mn = E(
+            e0mn = hermite_coefficient(
                 right_l[i],
                 right_l[j],
                 0,
@@ -108,7 +109,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
             )
 
             # E_1^kl
-            e1kl = E(
+            e1kl = hermite_coefficient(
                 left_l[i],
                 left_l[j],
                 1,
@@ -118,7 +119,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
             )
 
             # E_1^mn
-            e1mn = E(
+            e1mn = hermite_coefficient(
                 right_l[i],
                 right_l[j],
                 1,
@@ -128,14 +129,14 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
             )
 
             # ! derecha
-            py = 2.0 * exp[j] * E(
+            py = 2.0 * exp[j] * hermite_coefficient(
                 left_l[i],
                 left_l[j] + 1,
                 0,
                 coord[center[i]][left_coord] - coord[center[j]][left_coord],
                 exp[i],
                 exp[j],
-            ) - left_l[j] * E(
+            ) - left_l[j] * hermite_coefficient(
                 left_l[i],
                 left_l[j] - 1,
                 0,
@@ -146,14 +147,14 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
 
 
             # ! derecha
-            pz = 2.0 * exp[j] * E(
+            pz = 2.0 * exp[j] * hermite_coefficient(
                 right_l[i],
                 right_l[j] + 1,
                 0,
                 coord[center[i]][right_coord] - coord[center[j]][right_coord],
                 exp[i],
                 exp[j],
-            ) - right_l[j] * E(
+            ) - right_l[j] * hermite_coefficient(
                 right_l[i],
                 right_l[j] - 1,
                 0,
@@ -168,7 +169,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 * exp[i]
                 * exp[i]
                 * (
-                    E(
+                    hermite_coefficient(
                         spatial_l[i] + 2,
                         spatial_l[j],
                         0,
@@ -181,7 +182,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 + spatial_l[i]
                 * (spatial_l[i] - 1.0)
                 * (
-                    E(
+                    hermite_coefficient(
                         spatial_l[i] - 2,
                         spatial_l[j],
                         0,
@@ -203,7 +204,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 left_l[i]
                 * (left_l[i] - 1)
                 * (
-                    E(
+                    hermite_coefficient(
                         left_l[i] - 2,
                         left_l[j],
                         1,
@@ -212,7 +213,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                         exp[j],
                     )
                     + left_rg
-                    * E(
+                    * hermite_coefficient(
                         left_l[i] - 2,
                         left_l[j],
                         0,
@@ -228,7 +229,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 * exp[i]
                 * exp[i]
                 * (
-                    E(
+                    hermite_coefficient(
                         left_l[i] + 2,
                         left_l[j],
                         1,
@@ -237,7 +238,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                         exp[j],
                     )
                     + left_rg
-                    * E(
+                    * hermite_coefficient(
                         left_l[i] + 2,
                         left_l[j],
                         0,
@@ -256,7 +257,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 * (
                     2.0
                     * exp[j]
-                    * E(
+                    * hermite_coefficient(
                         left_l[i],
                         left_l[j] + 1,
                         0,
@@ -265,7 +266,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                         exp[j],
                     )
                     - left_l[j]
-                    * E(
+                    * hermite_coefficient(
                         left_l[i],
                         left_l[j] - 1,
                         0,
@@ -282,7 +283,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 * (
                     2.0
                     * exp[j]
-                    * E(
+                    * hermite_coefficient(
                         left_l[i] - 2,
                         left_l[j] + 1,
                         0,
@@ -291,7 +292,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                         exp[j],
                     )
                     - left_l[j]
-                    * E(
+                    * hermite_coefficient(
                         left_l[i] - 2,
                         left_l[j] - 1,
                         0,
@@ -309,7 +310,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 * (
                     2.0
                     * exp[j]
-                    * E(
+                    * hermite_coefficient(
                         left_l[i] + 2,
                         left_l[j] + 1,
                         0,
@@ -318,7 +319,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                         exp[j],
                     )
                     - left_l[j]
-                    * E(
+                    * hermite_coefficient(
                         left_l[i] + 2,
                         left_l[j] - 1,
                         0,
@@ -342,7 +343,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 right_l[i]
                 * (right_l[i] - 1)
                 * (
-                    E(
+                    hermite_coefficient(
                         right_l[i] - 2,
                         right_l[j],
                         1,
@@ -351,7 +352,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                         exp[j],
                     )
                     + right_rg
-                    * E(
+                    * hermite_coefficient(
                         right_l[i] - 2,
                         right_l[j],
                         0,
@@ -367,7 +368,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 * exp[i]
                 * exp[i]
                 * (
-                    E(
+                    hermite_coefficient(
                         right_l[i] + 2,
                         right_l[j],
                         1,
@@ -376,7 +377,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                         exp[j],
                     )
                     + right_rg
-                    * E(
+                    * hermite_coefficient(
                         right_l[i] + 2,
                         right_l[j],
                         0,
@@ -395,7 +396,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 * (
                     2.0
                     * exp[j]
-                    * E(
+                    * hermite_coefficient(
                         right_l[i],
                         right_l[j] + 1,
                         0,
@@ -404,7 +405,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                         exp[j],
                     )
                     - right_l[j]
-                    * E(
+                    * hermite_coefficient(
                         right_l[i],
                         right_l[j] - 1,
                         0,
@@ -421,7 +422,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 * (
                     2.0
                     * exp[j]
-                    * E(
+                    * hermite_coefficient(
                         right_l[i] - 2,
                         right_l[j] + 1,
                         0,
@@ -430,7 +431,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                         exp[j],
                     )
                     - right_l[j]
-                    * E(
+                    * hermite_coefficient(
                         right_l[i] - 2,
                         right_l[j] - 1,
                         0,
@@ -448,7 +449,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 * (
                     2.0
                     * exp[j]
-                    * E(
+                    * hermite_coefficient(
                         right_l[i] + 2,
                         right_l[j] + 1,
                         0,
@@ -457,7 +458,7 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                         exp[j],
                     )
                     - right_l[j]
-                    * E(
+                    * hermite_coefficient(
                         right_l[i] + 2,
                         right_l[j] - 1,
                         0,
@@ -481,11 +482,11 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 * (dxxlx + dyylx + dzzlx)
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)
             )
-            
+
             count += 1
 
     if output > 10:
-        print(f"\n ***Calculates the kinetic energy correction to the orbital Zeeman operator,\
-        component {magnetic_component}, time [s]: {time() - start:.6f}")
+        driver_time.add_name_delta_time("Calculates the Kinetic Energy Correction to the Orbital Zeeman Operator, \
+        {magnetic_component} Magnetic Component", delta_time = (time() - start))
 
     return ozke

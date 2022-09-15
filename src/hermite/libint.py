@@ -6,22 +6,19 @@ from time import time
 #Addres when execute from fock
 HERMITE_PATH = Path.cwd()
 
-PARENT_PATH = HERMITE_PATH.parent
+PROJECT = HERMITE_PATH.parent
 
 sys.path.append(
-    os.fspath(PARENT_PATH)
+    os.fspath(PROJECT)
     )
 sys.path.append(
-    os.fspath(PARENT_PATH / ("include")) #This is neccesary by e_integral
+    os.fspath(PROJECT / ("include")) #This is neccesary by e_integral
     )
 sys.path.append(
-    os.fspath(PARENT_PATH / ("io")) #This is neccesary by wave_function
+    os.fspath(PROJECT / ("io")) #This is neccesary by wave_function
     )
 sys.path.append(
-    os.fspath(PARENT_PATH / ("functions"))
-    )
-sys.path.append(
-    os.fspath(PARENT_PATH / ("include"))
+    os.fspath(PROJECT / ("functions"))
     )
 sys.path.append(
     os.fspath(HERMITE_PATH / ("h1int"))
@@ -34,15 +31,21 @@ import numpy as np
 
 from wave_function import *
 
+from f90recursives import *
+
 #functions
 from print_matrix import *
 
-#include
-from constants_cto_gto import *
-
 # functions
+from integral_parameters import *
 from convert_array import *
 from print_matrix import *
+from string_informations import *
+from drv_time import *
+
+#include
+from constants_cto_gto import *
+from integrals_parameters import *
 
 #io
 from molden import *
@@ -65,6 +68,10 @@ from dnske import *    # Kinetic-energy correction to the diamagnetic contributi
 from psoke import *    # Kinetic-energy correction to the paramagnetic spin-orbit to nuclear shielding
 from psooz import *    # Orbital-Zeeman correction to the paramagnetic spin-orbit to nuclear shielding
 from ozke import *     # Calculates the kinetic energy correction to the orbital Zeeman operator
+from laplacian import * # Calculate different double derivatives
+from spinorbit import * # Calculate SpinOrbit integrals
+from sofiel import *    # External magnetic-field dependence of the spin-orbit operator integrals
+from pnstcgop import *
 
 # h2int: Two--Body hermite integrals
 from e2pot import *

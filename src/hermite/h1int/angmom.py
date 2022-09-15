@@ -1,12 +1,12 @@
 from lib1h import *
 
-def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalton_normalization):
+def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """
     Angular moment integrals, which is a vector
 
     Args:
         coord (list): list 2d with coordinates of the atoms
-        gauge (list): list 1d with gauge coordinates 
+        gauge (list): list 1d with gauge coordinates
         magnetic_component (int): magnetic component
         exp (list): list 1d with the exponentials
         center (list): list 1d with the center of the gaussian
@@ -15,6 +15,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
         lz (list): list 1d with the z component of ml of the gaussian
         output (int): Output level for integral calculation
         dalton_normalization (bool): it is used the dalton normalization formule
+        drive_time (drv_object): Object to manage the time
 
     Return:
         angmom (array): array 1d with atomic integrals
@@ -29,12 +30,12 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
     count: int = 0
 
     """
-    Component Selection L = p x r 
+    Component Selection L = p x r
                             = (zpy-ypz)x + (xpz-zpx)y + (ypx-xpy)z
     where r = r_e - r_gauge
     """
 
-    if magnetic_component == 0: 
+    if magnetic_component == 0:
         """X Component"""
         left_coord: int = 1
         right_coord: int = 2
@@ -76,8 +77,8 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
 
             left_rg: float = left_Pxyz - gauge[left_coord]
             right_rg: float = right_Pxyz - gauge[right_coord]
-    
-            spatial_s: float = E(
+
+            spatial_s: float = hermite_coefficient(
                 spatial_l[i],
                 spatial_l[j],
                 0,
@@ -86,7 +87,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
                 exp[j],
             )
 
-            left_s: float = E(
+            left_s: float = hermite_coefficient(
                 left_l[i],
                 left_l[j],
                 0,
@@ -95,7 +96,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
                 exp[j],
             )
 
-            right_s: float = E( #z
+            right_s: float = hermite_coefficient( #z
                 right_l[i],
                 right_l[j],
                 0,
@@ -109,7 +110,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
             #  [Skl^1Dmn^1 - Smn^1Dkl^1]Sij^0 =
             #  [(E_1^kl + YpgE0^kl)(2bE_0^mn+1-l2bE0^mn-1) -
             #   (E_1^mn + ZpgE0^mn)(2bE_0^kl+1-l2bE0^kl-1)]Sij^0
-            left_r: float = E(
+            left_r: float = hermite_coefficient(
                 left_l[i],
                 left_l[j],
                 1,
@@ -118,7 +119,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
                 exp[j],
             )
 
-            right_r: float = E(
+            right_r: float = hermite_coefficient(
                 right_l[i],
                 right_l[j],
                 1,
@@ -127,14 +128,14 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
                 exp[j],
             )
 
-            right_p: float = 2.0 * exp[j] * E(
+            right_p: float = 2.0 * exp[j] * hermite_coefficient(
                 left_l[i],
                 left_l[j] + 1,
                 0,
                 coord[center[i]][left_coord] - coord[center[j]][left_coord],
                 exp[i],
                 exp[j],
-            ) - left_l[j] * E(
+            ) - left_l[j] * hermite_coefficient(
                 left_l[i],
                 left_l[j] - 1,
                 0,
@@ -143,14 +144,14 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
                 exp[j],
             )
 
-            left_p: float = 2.0 * exp[j] * E(
+            left_p: float = 2.0 * exp[j] * hermite_coefficient(
                 right_l[i],
                 right_l[j] + 1,
                 0,
                 coord[center[i]][right_coord] - coord[center[j]][right_coord],
                 exp[i],
                 exp[j],
-            ) - right_l[j] * E(
+            ) - right_l[j] * hermite_coefficient(
                 right_l[i],
                 right_l[j] - 1,
                 0,
@@ -158,7 +159,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
                 exp[i],
                 exp[j],
             )
-    
+
             angmom[count] = (
                 -normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
@@ -170,7 +171,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
             count += 1
 
     if output > 10:
-        print(f"\n *** Angular momentum atomic integrals,\
-        component {magnetic_component}, time [s]: {time() - start:.6f}")
+        driver_time.add_name_delta_time(name = f"Angular Momentum Atomic Integrals for {magnetic_component} Magnetic Component",
+        delta_time = (time() - start))
 
     return angmom
