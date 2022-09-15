@@ -45,6 +45,19 @@ class eint:
 
         print_title(name = "HERMITE: ONE BODY")
 
+        str_integrals: str = "Integrals: "
+        print(str_integrals)
+        for int_name in integrals_names:
+            print(" "*len(str_integrals), "*",large_name[int_name.split(" ")[0]])
+            if integrals_properties and "r_gauge" in integrals_properties[int_name.split(" ")[0]].keys():
+                print(" "*len(str_integrals), "   Gauge: ",*["{:.4f}".format(xyz) for xyz in r_gauge])
+        print()
+        if gauge is not None:
+            print("General Gauge: ",*["{:.4f}".format(xyz) for xyz in gauge])
+        else:
+            temp_gauge: list = [0.0, 0.0, 0.0]
+            print("General Gauge: ",*["{:.4f}".format(xyz) for xyz in temp_gauge])
+
         driver_time = self._wf._driver_time
         start = time()
 
@@ -177,10 +190,7 @@ class eint:
             else:
                 integrals_names = temp_names
 
-        str_integrals: str = "Integrals: "
-        print(str_integrals)
         for int_name in integrals_names:
-            print(" "*len(str_integrals), "*",large_name[int_name])
             if len(int_name.split(" ")) > 1:
                 integral_name = int_name.lower().split()[0]
             else:
@@ -203,7 +213,6 @@ class eint:
                 r_gauge, r_dipole, magnetic_components, spatial_symmetries, atoms =\
                                 integral_1b_parameters(atoms_number = number_atoms, integral_name = int_name,
                                                         gauge = gauge, dipole = dipole)
-            print(" "*len(str_integrals), "   Gauge: ",*["{:.4f}".format(xyz) for xyz in r_gauge])
 
             if spatial_symmetry[integral_name.lower()] == 0 and magnetic[integral_name.lower()] == 0:
 
@@ -466,14 +475,10 @@ class eint:
             repulsion integrals
         """
 
-        if verbose >= 0:
-            print_title(name = "HERMITE: TWO BODY")
+        print_title(name = "HERMITE: TWO BODY")
 
-        if verbose > 10:
-            driver_time = drv_time()
-            start = time()
-        else:
-            driver_time = None
+        driver_time = self._wf._driver_time
+        start = time()
 
 
         if integrals_names == None:
@@ -519,11 +524,10 @@ class eint:
 
         if verbose > 10:
             driver_time.add_name_delta_time(name = f"Two--Body CTOs--GTOs", delta_time = time_cto)
-            driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
-            driver_time.printing()
-
-        if verbose >= 0:
-            print_title(name = f"END HERMITE: TWO BODY")
+        driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
+        driver_time.printing()
+        driver_time.reset    
+        print_title(name = f"END HERMITE: TWO BODY")
 
         return integrals_two_body
 

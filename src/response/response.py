@@ -376,7 +376,7 @@ class response():
         return responses_values
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/LiH_pople.molden")
+    wfn = wave_function("../tests/molden_file/H2.molden")
     r = response(wfn)
     # r.drv_reponse_calculation(principal_propagator_approximation="rpa",
     #         properties = [["angmom x","fc 1","spinorbit x"],["angmom x","sd 1 x","spinorbit x"],["angmom x","sd 1 z","spinorbit z"],["angmom y","sd 2 y","spinorbit y"]

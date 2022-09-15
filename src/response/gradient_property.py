@@ -42,10 +42,10 @@ def print_virtuals(name: str = None, virtuals: list = None, n_mo_v: int = None):
             print(*[f"{values[j+i*n_mo_v]:.6f}" for j in range(n_mo_v)],end="\n")
         print()
 
-def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
-                                    time_object: drv_time = None,
-                                    average: bool = None, gauge: list = None,
-                                    verbose: int = 0, verbose_int: int = 0):
+def gradient_property_vector_rpa(wf: wave_function = None, properties: str = None,
+                                time_object: drv_time = None,
+                                average: bool = None, gauge: list = None,
+                                verbose: int = 0, verbose_int: int = 0):
     """
     Calculate of gradient property vectos in rpa approximation
 
@@ -60,7 +60,7 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
     # atomic integrals
     calculate_integral = eint(wf)
     integrals_1b, symmetries_1b = calculate_integral.integration_onebody(
-    integrals_names = [property], verbose = verbose_int, gauge = gauge)
+    integrals_names = properties, verbose = verbose_int, gauge = gauge)
 
     # molecular integrals
     n_mo_occ = wf.mo_occ
@@ -84,10 +84,10 @@ def gradient_property_vector_rpa(wf: wave_function = None, property: str = None,
         gpvs[name] = [2.0*mo_integral[a + n_mo_occ][i] for i in range(n_mo_occ) for a in range(n_mo_virt)]
         gpvs[name] += [-2.0*mo_integral[i][a + n_mo_occ]
                         for i in range(n_mo_occ) for a in range(n_mo_virt)]
+        if verbose > 10:
+            time_object.add_name_delta_time(name = f"Build GPV {name}", delta_time = (time() - start))
 
 
-    if verbose > 10:
-        time_object.add_name_delta_time(name = f"Build GPV {property}", delta_time = (time() - start))
 
     if verbose > 30:
         print_gradient_property_vector(gpvs = gpvs)
@@ -142,26 +142,25 @@ def drv_gradient_property_vector(wf: wave_function = None, properties: list = No
     verbose (int): Print level
     verbose_integrals (int): Print level for hermite module
     """
-    gpvs: dict = {}
     #avs: dict = {}
+    gpvs: dict = {}
     mo_occupied: dict = {}
     mo_virtuals: dict = {}
-    for property in properties:
-        if not gpv_in or property not in gpv_in.keys():
-            #temp_avs,
-            temp_mo_occupied, temp_mo_virtuals, temp_gpvs =\
-                                gradient_property_vector_rpa(wf = wf,
-                                property = property, time_object = driver_time,
-                                verbose = verbose, verbose_int = verbose_integrals,
-                                average = average, gauge = gauge
-                                )
-            gpvs.update(temp_gpvs)
-            mo_virtuals.update(temp_mo_virtuals)
-            mo_occupied.update(temp_mo_occupied)
-            #avs.update(temp_avs)
-        else:
-            gpvs = read_gradient_property_vector_rpa(wf = gpv_in, property = property,
-                                verbose = verbose,
-                                )
-            raise ValueError("Falta implementar leer los valores average y average virtuales")
+    if not gpv_in or property not in gpv_in.keys():
+        #temp_avs,
+        mo_occupied, mo_virtuals, gpvs =\
+                            gradient_property_vector_rpa(wf = wf,
+                            properties = properties, time_object = driver_time,
+                            verbose = verbose, verbose_int = verbose_integrals,
+                            average = average, gauge = gauge
+                            )
+        # gpvs.update(temp_gpvs)
+        # mo_virtuals.update(temp_mo_virtuals)
+        # mo_occupied.update(temp_mo_occupied)
+        #avs.update(temp_avs)
+    else:
+        gpvs = read_gradient_property_vector_rpa(wf = gpv_in, property = properties,
+                            verbose = verbose,
+                            )
+        raise ValueError("Falta implementar leer los valores average y average virtuales")
     return mo_occupied, mo_virtuals, gpvs
