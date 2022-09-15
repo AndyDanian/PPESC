@@ -327,6 +327,7 @@ class response():
             quadratic: bool = False
 
         # Lineal principal propagator
+        delta_time_c_x: float = 0.0
         if ((not self.principal_propagator["triplet"].size and self.principal_propagator_triplet)
             or (not self.principal_propagator["singlet"].size and self.principal_propagator_singlet)
             or (not self.q_principal_propagator["singlet"].size and quadratic)):
@@ -338,7 +339,6 @@ class response():
                                                 verbose = self._verbose,
                                                 verbose_int = verbose_integrals)
             
-
             dict_principal_propagator = drv_principal_propagator(driver_time = driver_time, moe = self._moe,
                                                         n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
                                                         coulomb = self._coulomb_integrals, exchange = self._exchange_integrals,
@@ -362,9 +362,11 @@ class response():
             responses_values = self.rpa(driver_time = driver_time, average = average, quadratic = quadratic,
                                         gauge = gauge, verbose_integrals=verbose_integrals)
 
-        driver_time.add_name_delta_time(name = f"Coulomb and Exchange", delta_time = delta_time_c_x)
+        if delta_time_c_x > 0.0:
+            driver_time.add_name_delta_time(name = f"Coulomb and Exchange", delta_time = delta_time_c_x)
         driver_time.add_name_delta_time(name = "Response Calculation", delta_time = (time() - start))
         driver_time.printing()
+        driver_time.reset
 
         print_title(name = f"END REPONSE CALCULATION")
 

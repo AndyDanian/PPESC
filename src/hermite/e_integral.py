@@ -437,7 +437,7 @@ class eint:
                                                 driver_time = driver_time, verbose = verbose)
             # Errase nstcgo
             temp_integrals_matrix = {name: value for name, value in integrals_matrix.items()
-                                    if name in old_integrals_names.lower().split()[0]}
+                                    if name in old_integrals_names}
             integrals_matrix = sf_integrals
             integrals_matrix.update(temp_integrals_matrix)
             symmetries.update(sf_symmetries)

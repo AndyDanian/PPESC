@@ -144,20 +144,17 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
                                             at2in = True,
                                             relativity_correction=True,
                                             verbose=verbose_fock)
+        if verbose_fock > 0: hidden_prints_other_object.__enter__()
 
-        if verbose_fock <= 0 and verbose_response > 0:
-            hidden_prints_other_object.__exit__(True,True,True)
-        else:
-            hidden_prints_other_object.__enter__()
-
+        if verbose_response > 0: hidden_prints_other_object.__exit__(True,True,True)
         lineal_response: response = response(wf = wf, moe = moe, at2in = at_2_in)
-        if verbose_response < 0: hidden_prints_other_object.__exit__(True,True,True)
+        if verbose_response > 0: hidden_prints_other_object.__enter__()
         driver_time.add_name_delta_time(name = "One-Body Mv and Dw Corrections to Energy", delta_time = (time() - start))
     else:
         moe: list = wf.mo_energies
         if verbose_response > 0: hidden_prints_other_object.__exit__(True,True,True)
         lineal_response: response = response(wf = wf, moe = moe)
-        if verbose_response < 0: hidden_prints_other_object.__exit__(True,True,True)
+        if verbose_response > 0: hidden_prints_other_object.__enter__()
 
     all_averages: dict = {}
     all_responses: dict = {}
@@ -170,10 +167,7 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
 
         # Avarage calculation
         start_average: float = time()
-        if verbose_response <= 0 and verbose_average > 0:
-            hidden_prints_other_object.__exit__(True,True,True)
-        else:
-            hidden_prints_other_object.__enter__()
+        if verbose_average > 0: hidden_prints_other_object.__exit__(True,True,True)
         atom_av: dict = {}
         for property, activate in averages.items():
             if activate:
@@ -205,16 +199,13 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
                                 temp_av_a = [temp, 0.0, 0.0, 0.0, temp, 0.0, 0.0, 0.0, temp]
                         atom_av[name] = temp_av_a
         all_averages[a] = atom_av
-        if verbose_average < 0: hidden_prints_other_object.__exit__(True,True,True)
+        if verbose_average > 0: hidden_prints_other_object.__enter__()
         delta_average += time() - start_average
         # End Average calculation
 
         # Response calculation
         start_response: float = time()
-        if verbose_average <= 0 and verbose_response > 0:
-            hidden_prints_other_object.__exit__(True,True,True)
-        else:
-            hidden_prints_other_object.__enter__()
+        if verbose_response > 0: hidden_prints_other_object.__exit__(True,True,True)
         atom_responses: dict = {}
         sdlap_components: list = ["sddxx", "sddxy", "sddxz", "sddyx", "sddyy", "sddyz", "sddzx", "sddzy", "sddzz"]
         for responses, activate in responses_amounts.items():
@@ -272,8 +263,10 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
                                 for name in name_order_responses
                             }
         delta_response += time() - start_response
-        if verbose_response < 0: hidden_prints_other_object.__exit__(True,True,True)
+        if verbose_response > 0: hidden_prints_other_object.__enter__()
         # End Response calculation
+
+    hidden_prints_other_object.__exit__(True,True,True)
 
     if verbose > 10:
         driver_time.add_name_delta_time(name = "Averages Amounts Calculations", delta_time = delta_average)

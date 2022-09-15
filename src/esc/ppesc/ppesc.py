@@ -35,7 +35,7 @@ class ppesc():
         print_title(name = "PPESC")
 
         start = time()
-        driver_time = drv_time()
+        driver_time = self._wf._driver_time
 
         if atoms is None:
             atoms = [*range(self._wf.atom_number)]
@@ -89,12 +89,12 @@ class ppesc():
                                 anisotropic_averages = anisotropic_averages,
                                 atom_label = self._wf.atomic_symbols)
 
-        if verbose > 0:
-            driver_time.add_name_delta_time(name = "PPESC", delta_time = (time() - start))
-            driver_time.printing()
+        driver_time.add_name_delta_time(name = "PPESC", delta_time = (time() - start))
+        driver_time.printing()
+        driver_time.reset
         print_title(name = f"END LRESC CALCULATION")
 
 if __name__ == "__main__":
-    wfn = wave_function("../../tests/molden_file/LiH_pople.molden")
+    wfn = wave_function("../../tests/molden_file/H2.molden")
     lr = ppesc(wfn)
-    lr.drv_ppesc(verbose=11, scalar_correction=False, tensor=False, verbose_response=11, verbose_average=11)
+    lr.drv_ppesc(verbose=1, scalar_correction=False, tensor=False, verbose_response=0, verbose_average=0)

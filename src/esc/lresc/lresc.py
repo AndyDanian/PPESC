@@ -38,7 +38,7 @@ class lresc():
         lresc_consts = lresc_constants[lresc_constant]
 
         start = time()
-        driver_time = drv_time()
+        driver_time = self._wf._driver_time
 
         if atoms is None:
             atoms = [*range(self._wf.atom_number)]
@@ -96,12 +96,12 @@ class lresc():
                                 anisotropic_averages = anisotropic_averages,
                                 atom_label = self._wf.atomic_symbols)
 
-        if verbose > 0:
-            driver_time.add_name_delta_time(name = "LRESC", delta_time = (time() - start))
-            driver_time.printing()
+        driver_time.add_name_delta_time(name = "LRESC", delta_time = (time() - start))
+        driver_time.printing()
+        driver_time.reset
         print_title(name = f"END LRESC CALCULATION")
 
 if __name__ == "__main__":
-    wfn = wave_function("../../tests/molden_file/LiH_pople.molden")
+    wfn = wave_function("../../tests/molden_file/H2.molden")
     lr = lresc(wfn)
-    lr.drv_lresc(verbose=11, lresc_constant = "lresc_scale", tensor=False) #, lresc_amounts = ["lpsomv", "lpsodw", "lfcso", "lsdsoxx"])
+    lr.drv_lresc(verbose=11, lresc_constant = "lresc_scale", tensor=False, verbose_average=1, verbose_response=11)
