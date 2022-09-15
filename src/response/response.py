@@ -165,7 +165,7 @@ class response():
     ################################################################################################
     # METHODS
     ################################################################################################
-    def rpa(self, driver_time: drv_time = None, average: bool = False, quadratic: bool = False,
+    def rpa(self, driver_time: drv_time = None, quadratic: bool = False,
             gauge: list = None, verbose_integrals: int = -1):
         """
         Calculate reponse at random phase approximation
@@ -320,10 +320,8 @@ class response():
                     The multiplicity {ms} is not implemented for principal propagator")
 
         if "quadratic" in self.type_response:
-            average: bool = True
             quadratic: bool = True
         else:
-            average: bool = False
             quadratic: bool = False
 
         # Lineal principal propagator
@@ -354,12 +352,12 @@ class response():
         self.mo_occupied, self.mo_virtuals, self.gpvs = drv_gradient_property_vector(wf = self._wf,
                                         properties =self.properties,
                                         gpv_in = self._gp, driver_time = driver_time, gauge = gauge,
-                                        average = average,
+                                        quadratic = quadratic,
                                         verbose = self._verbose, verbose_integrals = verbose_integrals)
 
         # Run Response
         if principal_propagator_approximation.lower() == "rpa":
-            responses_values = self.rpa(driver_time = driver_time, average = average, quadratic = quadratic,
+            responses_values = self.rpa(driver_time = driver_time, quadratic = quadratic,
                                         gauge = gauge, verbose_integrals=verbose_integrals)
 
         if delta_time_c_x > 0.0:

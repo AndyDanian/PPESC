@@ -28,7 +28,7 @@ def print_avs(avs: list = None):
     for name, value in avs.items():
         print_result(name = f" Average Value {name}", value = value)
 
-def print_virtuals(name: str = None, virtuals: list = None, n_mo_v: int = None):
+def print_ioj(name: str = None, virtuals: list = None, n_mo_v: int = None):
     """
     Print virtuales values in molecular orbital base
 
@@ -44,7 +44,7 @@ def print_virtuals(name: str = None, virtuals: list = None, n_mo_v: int = None):
 
 def gradient_property_vector_rpa(wf: wave_function = None, properties: str = None,
                                 time_object: drv_time = None,
-                                average: bool = None, gauge: list = None,
+                                quadratic: bool = None, gauge: list = None,
                                 verbose: int = 0, verbose_int: int = 0):
     """
     Calculate of gradient property vectos in rpa approximation
@@ -75,7 +75,7 @@ def gradient_property_vector_rpa(wf: wave_function = None, properties: str = Non
     #
     for name, atomic_int in integrals_1b.items():
         mo_integral = np.matmul(mo_coeff_T,np.matmul(np.array(atomic_int), mo_coeff_T.T))
-        if average:
+        if quadratic:
             #avs[name] = 2.0*sum([mo_integral[i][i] for i in range(n_mo_occ)])
             # <i|O|j>
             mo_occupied[name] = [mo_integral[a][b] for a in range(n_mo_occ) for b in range(n_mo_occ)]
@@ -95,10 +95,10 @@ def gradient_property_vector_rpa(wf: wave_function = None, properties: str = Non
 
     if verbose > 30:
         print_gradient_property_vector(gpvs = gpvs)
-        if average:
+        if quadratic:
             #print_avs(avs = avs)
-            print_virtuals(name = "Occupied", virtuals = mo_occupied, n_mo_v = n_mo_occ)
-            print_virtuals(name = "Virtual", virtuals = mo_virtuals, n_mo_v = n_mo_virt)
+            print_ioj(name = "Occupied", virtuals = mo_occupied, n_mo_v = n_mo_occ)
+            print_ioj(name = "Virtual", virtuals = mo_virtuals, n_mo_v = n_mo_virt)
 
     return mo_occupied, mo_virtuals, gpvs
 
@@ -129,7 +129,7 @@ def read_gradient_property_vector_rpa(gpvs: dict = None, property: str = None,
 #*******************************************
 def drv_gradient_property_vector(wf: wave_function = None, properties: list = None,
                                 gpv_in: dict = None, driver_time: drv_time = None,
-                                average: bool = False, gauge: list = None,
+                                quadratic: bool = False, gauge: list = None,
                                 verbose: int = 0, verbose_integrals: int = -1):
     """
     Driver to build gradient property vector
@@ -156,12 +156,8 @@ def drv_gradient_property_vector(wf: wave_function = None, properties: list = No
                             gradient_property_vector_rpa(wf = wf,
                             properties = properties, time_object = driver_time,
                             verbose = verbose, verbose_int = verbose_integrals,
-                            average = average, gauge = gauge
+                            quadratic = quadratic, gauge = gauge
                             )
-        # gpvs.update(temp_gpvs)
-        # mo_virtuals.update(temp_mo_virtuals)
-        # mo_occupied.update(temp_mo_occupied)
-        #avs.update(temp_avs)
     else:
         gpvs = read_gradient_property_vector_rpa(wf = gpv_in, property = properties,
                             verbose = verbose,
