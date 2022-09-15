@@ -42,3 +42,4 @@ from e_integral import *
 # functions
 from print_matrix import *
 from string_informations import *
+from drv_time import *

@@ -30,7 +30,7 @@ class fock():
     def run_hf_fock_calculate(self, intk: list = None, inten: dict = None, intee: list = None,
                             relativity_correction: bool = False, intdw: list = None, intmv: list = None,
                             mocoef: list = None, nprim: int = None, natoms: int = None, ne: int = None,
-                            charge: list = None, coord: list = None, verbose: int = 0):
+                            charge: list = None, coord: list = None, driver_time: object = None, verbose: int = 0):
         """
         Run calculation Hartree--Fock molecular orbital energies
 
@@ -251,12 +251,12 @@ class fock():
 
 
         if verbose > 10:
-            print_time(name = f"Density Matrix", delta_time = (time() - time_start_dm), tailer = False)
-            print_time(name = f"Core Hamiltonian", delta_time = (time() - time_start_ch), header = False, tailer = False)
-            print_time(name = f"G Matrix", delta_time = (time() - time_start_g), header = False, tailer = False)
-            print_time(name = f"Fock Matrix", delta_time = (time() - time_start_fock_ao), header = False, tailer = False)
-            print_time(name = f"Total Energy", delta_time = (time() - time_start_te), header = False, tailer = False)
-            print_time(name = f"Molecular Orbitals Energies", delta_time = (time()-time_start_eom), header = False)
+            driver_time.add_name_delta_time(name = f"Density Matrix", delta_time = (time() - time_start_dm))
+            driver_time.add_name_delta_time(name = f"Core Hamiltonian", delta_time = (time() - time_start_ch))
+            driver_time.add_name_delta_time(name = f"G Matrix", delta_time = (time() - time_start_g))
+            driver_time.add_name_delta_time(name = f"Fock Matrix", delta_time = (time() - time_start_fock_ao))
+            driver_time.add_name_delta_time(name = f"Total Energy", delta_time = (time() - time_start_te))
+            driver_time.add_name_delta_time(name = f"Molecular Orbitals Energies", delta_time = (time()-time_start_eom))
 
         print_title(name = "End Calculating: Fock matrix at Hartree--Fock level")
         return eom
@@ -297,6 +297,7 @@ class fock():
         """
 
         start = time()
+        driver_time = wf._driver_time
 
         if not wf and (not intk  or not inten or intee or not mocoef):
             raise ValueError("***Error\n\n\
@@ -364,10 +365,11 @@ class fock():
                                                 intdw = intdw, intmv = intmv,
                                                 mocoef = mocoef, nprim = nprim, natoms = natoms,
                                                 ne = ne, charge = charge, coord = coord,
-                                                verbose = verbose)
+                                                driver_time = driver_time, verbose = verbose)
 
-        if verbose > 10:
-            print_time(name = f"Hartree-Fock Energy", delta_time = (time() - start))
+        driver_time.add_name_delta_time(name = f"Hartree-Fock Energy", delta_time = (time() - start))
+        driver_time.printing()
+        driver_time.reset
 
         if at2in:
             return eom, intee
@@ -375,7 +377,7 @@ class fock():
             return eom
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/HF_v2z.molden")
+    wfn = wave_function("../tests/molden_file/H2.molden")
 
     print("\n Calculate MO energies used wave function \n")
     eom_values = fock()
