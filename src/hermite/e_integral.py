@@ -43,8 +43,7 @@ class eint:
         gauge: list  = None, dipole: list = None, dalton_normalization: bool = False
     ):
 
-        if verbose >= 0:
-            print_title(name = "HERMITE: ONE BODY")
+        print_title(name = "HERMITE: ONE BODY")
 
         driver_time = self._wf._driver_time
         start = time()
@@ -178,7 +177,10 @@ class eint:
             else:
                 integrals_names = temp_names
 
+        str_integrals: str = "Integrals: "
+        print(str_integrals)
         for int_name in integrals_names:
+            print(" "*len(str_integrals), "*",large_name[int_name])
             if len(int_name.split(" ")) > 1:
                 integral_name = int_name.lower().split()[0]
             else:
@@ -201,6 +203,7 @@ class eint:
                 r_gauge, r_dipole, magnetic_components, spatial_symmetries, atoms =\
                                 integral_1b_parameters(atoms_number = number_atoms, integral_name = int_name,
                                                         gauge = gauge, dipole = dipole)
+            print(" "*len(str_integrals), "   Gauge: ",*["{:.4f}".format(xyz) for xyz in r_gauge])
 
             if spatial_symmetry[integral_name.lower()] == 0 and magnetic[integral_name.lower()] == 0:
 
@@ -446,8 +449,7 @@ class eint:
         driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
         driver_time.printing()
 
-        if verbose >= 0:
-            print_title(name = f"END HERMITE: ONE BODY")
+        print_title(name = f"END HERMITE: ONE BODY")
 
         return integrals_matrix, symmetries
 

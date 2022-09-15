@@ -15,3 +15,27 @@ integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", 
 
 magnetic_axes: dict = {0:"x", 1:"y", 2:"z"}
 spatial_components: dict = {0:"xx", 1:"yy", 2:"zz", 3:"xy", 4:"xz", 5:"yz"}
+
+large_name = {
+    "overlap": "Overlap", 
+    "nucpot": "Nuclear Potential Energy", 
+    "kinetic": "Kinetic Energy",
+    "angmom": "Angular Momentum",
+    "sd": "Spin-Dipole",
+    "fc": "Fermi-Contact",
+    "darwin": "One-Electron Darwin",
+    "massvelo": "Mass--velocity", 
+    "nelfld": "Nuclear Electric Field",
+    "diplen": "Dipole Length",
+    "dipvel": "Dipole Velocity",
+    "pso": "Paramagnetic Spin-Orbit",
+    "nstcgo": "Diamagnetic Nuclear Shielding Tensor", 
+    "dnske": "Kinetic Energy Correction to Diamagnetic Nuclear Shielding Tensor", 
+    "psoke": "Kinetic Energy Correction to the Paramagnetic Spin-Orbit",
+    "psooz": "Orbital-Zeeman Correction to the Paramagnetic Spin-Orbit",
+    "ozke": "Kinetic Energy Correction to Orbital--Zeemna",
+    "spinorbit": "One-Elctron Spatial Spin-Orbit",
+    "laplacian": "Laplacian", 
+    "sofiel": "Extenal Magnetic-Field Dependence of the Spin-Orbit Operator", 
+    "pnstcgop": "nabla(Diamagnetic Nuclear Shielding Tensor)nabla"
+}
