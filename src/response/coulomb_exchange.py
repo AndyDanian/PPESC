@@ -31,74 +31,13 @@ def get_coulomb_exchange_integrals(wf: wave_function = None,
     mo_coeff = np.array(wf.mo_coefficients)
     n_mo_occ = wf.mo_occ
     n_mo_virt = wf.mo_virt
-    nprim = n_mo_occ + n_mo_virt
 
     coulomb = np.zeros((n_mo_virt,n_mo_virt,n_mo_occ,n_mo_occ),dtype=float)
     exchange = np.zeros((n_mo_virt,n_mo_occ,n_mo_virt,n_mo_occ),dtype=float)
 
-    for a in range(n_mo_virt):
-        s = a + n_mo_occ
-
-        #Transform first index
-        f = np.zeros((nprim,nprim,nprim),dtype=float)
-        for i in range(nprim):
-            for j in range(nprim):
-                for k in range(nprim):
-                    for l in range(nprim):
-                        f[i,j,k] += mo_coeff[s,l]*at2in[i,j,k,l]
-
-        #Coulomb
-        for b in range(a, n_mo_virt):
-            t = b + n_mo_occ
-
-            # Transform second index
-            g = np.zeros((nprim,nprim),dtype=float)
-            for i in range(nprim):
-                for l in range(nprim):
-                    for k in range(nprim):
-                        g[i,l] += mo_coeff[t,k]*f[i,l,k]
-
-            for j in range(n_mo_occ):
-
-                #Transform third index
-                h = np.zeros((nprim),dtype=float)
-                for i in range(nprim):
-                    for k in range(nprim):
-                            h[i] += mo_coeff[j,k]*g[k,i]
-
-                #Transform four-th index to get Coulomb integrals
-                for i in range(j, n_mo_occ):
-                    for k in range(nprim):
-                        coulomb[a,b,j,i] += mo_coeff[i,k]*h[k]
-                    if b >= a:
-                        coulomb[b,a,i,j] = coulomb[a,b,j,i]
-                        coulomb[a,b,i,j] = coulomb[a,b,j,i]
-                        coulomb[b,a,j,i] = coulomb[a,b,j,i]
-
-        #Exchange
-        for j in range(n_mo_occ):
-            # Transform second index
-            g = np.zeros((nprim,nprim),dtype=float)
-            for i in range(nprim):
-                for l in range(nprim):
-                    for k in range(nprim):
-                        g[i,l] += mo_coeff[j,k]*f[i,l,k]
-
-            for b in range(a, n_mo_virt):
-                t  = b + n_mo_occ
-                # Transform third index
-                h = np.zeros((nprim),dtype=float)
-                for i in range(nprim):
-                    for k in range(nprim):
-                        h[i] += mo_coeff[t,k]*g[k,i]
-
-                # Transform four-th index
-                for i in range(n_mo_occ):
-                    for k in range(nprim):
-                        exchange[a,j,b,i] += mo_coeff[i,k]*h[k]
-                    if b > a:
-                        exchange[b,i,a,j] = exchange[a,j,b,i]
-
+    coulomb, exchange = ao2mo(moco = np.asfortranarray(mo_coeff),
+                             a2i=np.asfortranarray(at2in),
+                             nocc=n_mo_occ, nvir=n_mo_virt)
     if verbose > 10:
         time_object.add_name_delta_time(name = f"Coulomb and Exchange", delta_time = (time() - start))
 

@@ -139,6 +139,12 @@ class wave_function():
         "Primitive number"
         return len([exp for mol in self._basis for at in mol for l, exps in at.items() for exp in exps for i in range(angular_number_sph[l])])
 
+
+    @property
+    def primitives_number_car(self) -> int:
+        "Primitive number"
+        return len([exp for mol in self._basis for at in mol for l, exps in at.items() for exp in exps for i in range(angular_number[l])])
+
     @property
     def mo_virt(self) -> int:
         "Molecular Orbital Occupied Number"

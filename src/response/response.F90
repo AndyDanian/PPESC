@@ -1,4 +1,96 @@
 !f2py3 -c -m f90response response.F90 --f90flags="-m64 -cpp -ffixed-line-length-none -ffree-line-length-none -finit-local-zero -Ofast -mtune=native -march=native -ffast-math -mfpmath=sse -msse2 -ffast-math -g -fPIC"
+subroutine ao2mo(coulomb, exchange,  &
+                moco,               &
+                a2i,                &
+                nocc, nvir)
+    integer, intent(in) :: nocc, nvir
+    double precision, dimension(nocc+nvir,nocc+nvir), intent(in) :: moco
+    double precision, dimension(nocc+nvir,nocc+nvir,nocc+nvir,nocc+nvir), intent(in) :: a2i
+
+    double precision, dimension(nvir,nvir,nocc,nocc), intent(out) :: coulomb
+    double precision, dimension(nvir,nocc,nvir,nocc), intent(out) :: exchange
+
+    double precision, dimension(nocc+nvir,nocc+nvir,nocc+nvir) :: f
+    double precision, dimension(nocc+nvir,nocc+nvir) :: g
+    double precision, dimension(nocc+nvir) :: h
+    integer :: i, j, k, l, a, s, nprim
+
+    nprim = nocc + nvir
+    do 1 a = 1, nvir
+        s = a + nocc
+
+        !Transform first index
+        f = 0.0D0
+        do 10 i = 1, nprim
+            do 10 j = 1, nprim
+                do 10 k = 1, nprim
+                    do 10 l = 1, nprim
+                        f(i,j,k) = f(i,j,k) + moco(s,l)*a2i(i,j,k,l)
+        10 continue                
+
+        !Coulomb
+        do 20 b = a, nvir
+            t = b + nocc
+
+            ! Transform second index
+            g = 0.0D0
+            do 30 i = 1, nprim
+                do 30 l = 1, nprim
+                    do 30 k = 1, nprim
+                        g(i,l) = g(i,l) + moco(t,k)*f(i,l,k)
+            30 continue
+
+            do 40 j = 1, nocc
+                !Transform third index
+                h = 0.0D0
+                do 50 i = 1, nprim
+                    do 50 k = 1, nprim
+                        h(i) = h(i) + moco(j,k)*g(k,i)
+                50 continue
+
+                !Transform four-th index to get Coulomb integrals
+                do 60 i = j, nocc
+                    do 60 k = 1, nprim
+                        coulomb(a,b,j,i) = coulomb(a,b,j,i) + moco(i,k)*h(k)
+                    if (b .ge. a) then
+                        coulomb(b,a,i,j) = coulomb(a,b,j,i)
+                        coulomb(a,b,i,j) = coulomb(a,b,j,i)
+                        coulomb(b,a,j,i) = coulomb(a,b,j,i)
+                    endif
+                60 continue
+            40 continue
+        20 continue
+        !Exchange
+        do 70 j = 1, nocc
+            ! Transform second index
+            g = 0.0D0
+            do 80 i = 1, nprim
+                do 80 l = 1, nprim
+                    do 80 k = 1, nprim
+                        g(i,l) = g(i,l) + moco(j,k)*f(i,l,k)
+            80 continue
+
+            do 90 b = a, nvir
+                t  = b + nocc
+                ! Transform third index
+                h = 0.0D0
+                do 100 i = 1, nprim
+                    do 100 k = 1, nprim
+                        h(i) = h(i) + moco(t,k)*g(k,i)
+                100 continue
+
+                ! Transform four-th index
+                do 110 i = 1, nocc
+                    do 120 k = 1, nprim
+                        exchange(a,j,b,i) = exchange(a,j,b,i) + moco(i,k)*h(k)
+                    120 continue
+                    if (b .gt. a) exchange(b,i,a,j) = exchange(a,j,b,i)
+                110 continue
+            90 continue
+        70 continue
+    1 continue
+end subroutine ao2mo
+
 subroutine lineal_sum(xppy,       &
                       gpva,gpvb, &
                       pp,  &

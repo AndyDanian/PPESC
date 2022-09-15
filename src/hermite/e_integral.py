@@ -2,7 +2,6 @@
 from h1i import *
 from h2i import *
 from cto_gto_h1 import *
-from cto_gto_h2 import *
 # Modules into sub-folder
 from libint import *
 
@@ -507,8 +506,11 @@ class eint:
         if not self._cartessian:
             start_cto: float = time()
             for label, integral in integrals_2_cart.items():
-                integrals_two_body[label] = cto_gto_h2(np.array(integral),
-                        np.array(self._angular_moments))
+                integrals_two_body[label] = cart2sph(intcart = np.asfortranarray(integral),
+                        angular = np.array(self._angular_moments), 
+                        nprim = len(self._angular_moments), 
+                        ncar = self._wf.primitives_number_car,
+                        nsph = self._wf.primitives_number_sph)
             time_cto = time() - start_cto
         if verbose > 100:
             print("="*80,"\nTwo--body integrals with gto--primitives\n","="*80)
@@ -526,9 +528,9 @@ class eint:
 
 
 if __name__ == "__main__":
-    wf = wave_function("../tests/molden_file/LiH.molden")
+    wf = wave_function("../tests/molden_file/LiH_pople.molden")
     s = eint(wf)
-    one = True
+    one = False
     if one:
         integrals, symmetries = s.integration_onebody(integrals_names = ["nucpot","darwin"],
                     # {
@@ -548,4 +550,4 @@ if __name__ == "__main__":
                     # },
                     verbose = 21, dalton_normalization=False)
     else:
-        integrals = s.integration_twobody(["e2pot"], verbose=10, dalton_normalization=False)
+        integrals = s.integration_twobody(["e2pot"], verbose=11, dalton_normalization=False)

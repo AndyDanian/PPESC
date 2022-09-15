@@ -388,7 +388,7 @@ if __name__ == "__main__":
     if run:
         r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["fc 1","fc 2"],["kinetic","fc 1"],["laplacian","fc 1"],["kinetic", "fc 1","fc 2"]],
                                 #gauge=[0.0,0.0,1.4045523587],
-                                verbose=11)
+                                verbose=20, verbose_integrals=11)
     else:
         a = 0
         r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [
