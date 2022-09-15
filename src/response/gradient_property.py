@@ -90,7 +90,7 @@ def gradient_property_vector_rpa(wf: wave_function = None, properties: str = Non
         # <b|O|j>
         gpvs[name] += [-2.0*mo_integral[i][a + n_mo_occ]
                         for i in range(n_mo_occ) for a in range(n_mo_virt)]
-        if verbose > 10:
+        if verbose > 20:
             time_object.add_name_delta_time(name = f"Build GPV {name}", delta_time = (time() - start))
 
     if verbose > 30:

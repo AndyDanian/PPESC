@@ -1,7 +1,6 @@
 from libr import *
 
 def get_coulomb_exchange_integrals(wf: wave_function = None,
-                                    time_object: drv_time = None,
                                     at2in: np.array = None,
                                     verbose: int = 0,
                                     verbose_int: int = 0):
@@ -38,8 +37,6 @@ def get_coulomb_exchange_integrals(wf: wave_function = None,
     coulomb, exchange = ao2mo(moco = np.asfortranarray(mo_coeff),
                              a2i=np.asfortranarray(at2in),
                              nocc=n_mo_occ, nvir=n_mo_virt)
-    if verbose > 10:
-        time_object.add_name_delta_time(name = f"Coulomb and Exchange", delta_time = (time() - start))
 
     if verbose > 50:
 
@@ -57,7 +54,7 @@ def get_coulomb_exchange_integrals(wf: wave_function = None,
                             f"{exchange[a,i,b,j]:.8f}".center(20)
                         )
 
-    return coulomb, exchange
+    return time() - start, coulomb, exchange
 
 
 def ao_2_mo(wf: wave_function = None, verbose: int = 0):

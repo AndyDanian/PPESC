@@ -304,14 +304,10 @@ class response():
 
         self._verbose = verbose
 
-        if verbose >= 0:
-            print_title(name = f"REPONSE CALCULATION")
+        print_title(name = f"REPONSE CALCULATION")
 
-        if self._verbose > 10:
-            driver_time = drv_time()
-            start = time()
-        else:
-            driver_time = None
+        driver_time = self._wf._driver_time
+        start = time()
 
         # - Molecular orbital energies
         if not self._moe:
@@ -337,11 +333,11 @@ class response():
 
             # - Two integrals
             if not self._coulomb_integrals.size or not self._exchange_integrals.size:
-                self._coulomb_integrals, self._exchange_integrals = get_coulomb_exchange_integrals(self._wf,
-                                                time_object = driver_time,
+                delta_time_c_x, self._coulomb_integrals, self._exchange_integrals = get_coulomb_exchange_integrals(self._wf,
                                                 at2in = self._at2in,
                                                 verbose = self._verbose,
                                                 verbose_int = verbose_integrals)
+            
 
             dict_principal_propagator = drv_principal_propagator(driver_time = driver_time, moe = self._moe,
                                                         n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
@@ -366,17 +362,16 @@ class response():
             responses_values = self.rpa(driver_time = driver_time, average = average, quadratic = quadratic,
                                         gauge = gauge, verbose_integrals=verbose_integrals)
 
-        if self._verbose > 10:
-            driver_time.add_name_delta_time(name = "Response Calculation", delta_time = (time() - start))
-            driver_time.printing()
+        driver_time.add_name_delta_time(name = f"Coulomb and Exchange", delta_time = delta_time_c_x)
+        driver_time.add_name_delta_time(name = "Response Calculation", delta_time = (time() - start))
+        driver_time.printing()
 
-        if verbose >= 0:
-            print_title(name = f"END REPONSE CALCULATION")
+        print_title(name = f"END REPONSE CALCULATION")
 
         return responses_values
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/H2_pople.molden")
+    wfn = wave_function("../tests/molden_file/H2.molden")
     r = response(wfn)
     # r.drv_reponse_calculation(principal_propagator_approximation="rpa",
     #         properties = [["angmom x","fc 1","spinorbit x"],["angmom x","sd 1 x","spinorbit x"],["angmom x","sd 1 z","spinorbit z"],["angmom y","sd 2 y","spinorbit y"]
@@ -391,7 +386,7 @@ if __name__ == "__main__":
                                                                                         ["angmom x","fc 1","spinorbit x"]],
                                 #gauge=[0.0,0.0,1.4045523587],
                                 #gauge = [0.000, 0.0000, -0.545857052], #Li pople
-                                verbose=20, verbose_integrals=11)
+                                verbose=1, verbose_integrals=1)
     else:
         a = 0
         r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [
