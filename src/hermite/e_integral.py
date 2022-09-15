@@ -401,7 +401,6 @@ class eint:
                             atom = atom,
                             r_gauge = r_gauge
                         )
-
         # Transform integrals from cto to sph
         integrals_matrix = {}
         if not self._cartessian:
@@ -423,7 +422,7 @@ class eint:
                                                     driver_time = driver_time, verbose = verbose)
             # Errase pso
             temp_integrals_matrix = {name: value for name, value in integrals_matrix.items()
-                                    if name.lower().split()[0] in old_integrals_names}
+                                    if name in old_integrals_names}
             integrals_matrix = so_integrals
             integrals_matrix.update(temp_integrals_matrix)
             symmetries.update(so_symmetries)
@@ -438,7 +437,7 @@ class eint:
                                                 driver_time = driver_time, verbose = verbose)
             # Errase nstcgo
             temp_integrals_matrix = {name: value for name, value in integrals_matrix.items()
-                                    if name.lower().split()[0] in old_integrals_names}
+                                    if name in old_integrals_names.lower().split()[0]}
             integrals_matrix = sf_integrals
             integrals_matrix.update(temp_integrals_matrix)
             symmetries.update(sf_symmetries)
@@ -537,7 +536,7 @@ if __name__ == "__main__":
     s = eint(wf)
     one = True
     if one:
-        integrals, symmetries = s.integration_onebody(integrals_names = ["nucpot","darwin"],
+        integrals, symmetries = s.integration_onebody(integrals_names = ["nucpot","darwin","fc 1","spin-orbit x"],
                     # {
                     # "nucpot":{"atoms":[0]},
                     # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},

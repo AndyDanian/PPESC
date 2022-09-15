@@ -376,7 +376,7 @@ class response():
         return responses_values
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/H2.molden")
+    wfn = wave_function("../tests/molden_file/H2_pople.molden")
     r = response(wfn)
     # r.drv_reponse_calculation(principal_propagator_approximation="rpa",
     #         properties = [["angmom x","fc 1","spinorbit x"],["angmom x","sd 1 x","spinorbit x"],["angmom x","sd 1 z","spinorbit z"],["angmom y","sd 2 y","spinorbit y"]
@@ -386,8 +386,11 @@ if __name__ == "__main__":
 
     run = True
     if run:
-        r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["fc 1","fc 2"],["kinetic","fc 1"],["laplacian","fc 1"],["kinetic", "fc 1","fc 2"]],
+        r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["fc 1","fc 2"],["kinetic","fc 1"],
+                                                                                        ["laplacian","fc 1"],["kinetic", "fc 1","fc 2"],
+                                                                                        ["angmom x","fc 1","spinorbit x"]],
                                 #gauge=[0.0,0.0,1.4045523587],
+                                #gauge = [0.000, 0.0000, -0.545857052], #Li pople
                                 verbose=20, verbose_integrals=11)
     else:
         a = 0

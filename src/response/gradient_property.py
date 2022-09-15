@@ -61,7 +61,7 @@ def gradient_property_vector_rpa(wf: wave_function = None, properties: str = Non
     calculate_integral = eint(wf)
     integrals_1b, symmetries_1b = calculate_integral.integration_onebody(
     integrals_names = properties, verbose = verbose_int, gauge = gauge)
-
+    
     # molecular integrals
     n_mo_occ = wf.mo_occ
     n_mo_virt = wf.mo_virt
@@ -77,17 +77,21 @@ def gradient_property_vector_rpa(wf: wave_function = None, properties: str = Non
         mo_integral = np.matmul(mo_coeff_T,np.matmul(np.array(atomic_int), mo_coeff_T.T))
         if average:
             #avs[name] = 2.0*sum([mo_integral[i][i] for i in range(n_mo_occ)])
-            #mo_occupied[name] = [avs[name] for a in range(n_mo_occ) for b in range(n_mo_occ)]
+            # <i|O|j>
             mo_occupied[name] = [mo_integral[a][b] for a in range(n_mo_occ) for b in range(n_mo_occ)]
-            mo_virtuals[name] = [mo_integral[a + n_mo_occ][b + n_mo_occ] for a in range(n_mo_virt) for b in range(n_mo_virt)]
+            # <a|O|b>
+            mo_virtuals[name] = [mo_integral[a + n_mo_occ][b + n_mo_occ]
+                                for a in range(n_mo_virt) for b in range(n_mo_virt)
+                                ]
         # gradient porperty vector
+        #! Python 
+        # <i|O|a>
         gpvs[name] = [2.0*mo_integral[a + n_mo_occ][i] for i in range(n_mo_occ) for a in range(n_mo_virt)]
+        # <b|O|j>
         gpvs[name] += [-2.0*mo_integral[i][a + n_mo_occ]
                         for i in range(n_mo_occ) for a in range(n_mo_virt)]
         if verbose > 10:
             time_object.add_name_delta_time(name = f"Build GPV {name}", delta_time = (time() - start))
-
-
 
     if verbose > 30:
         print_gradient_property_vector(gpvs = gpvs)
