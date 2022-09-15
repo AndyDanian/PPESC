@@ -46,11 +46,8 @@ class eint:
         if verbose >= 0:
             print_title(name = "HERMITE: ONE BODY")
 
-        if verbose > 10:
-            driver_time = drv_time()
-            start = time()
-        else:
-            driver_time = None
+        driver_time = self._wf._driver_time
+        start = time()
 
         if not integrals_names:
             raise ValueError("***Error \n\n what integral do you want?")
@@ -445,8 +442,9 @@ class eint:
         # Time
         if verbose > 10:
             driver_time.add_name_delta_time(name = f"One--Body CTOs--GTOs", delta_time = time_cto)
-            driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
-            driver_time.printing()
+
+        driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
+        driver_time.printing()
 
         if verbose >= 0:
             print_title(name = f"END HERMITE: ONE BODY")
@@ -528,9 +526,9 @@ class eint:
 
 
 if __name__ == "__main__":
-    wf = wave_function("../tests/molden_file/LiH_pople.molden")
+    wf = wave_function("../tests/molden_file/H2.molden")
     s = eint(wf)
-    one = False
+    one = True
     if one:
         integrals, symmetries = s.integration_onebody(integrals_names = ["nucpot","darwin"],
                     # {
@@ -548,6 +546,6 @@ if __name__ == "__main__":
                     # "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                     # "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                     # },
-                    verbose = 21, dalton_normalization=False)
+                    verbose = 0, dalton_normalization=False)
     else:
         integrals = s.integration_twobody(["e2pot"], verbose=11, dalton_normalization=False)

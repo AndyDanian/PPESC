@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+from time import time
 
 PROJECT_DIR = Path.cwd().parent
 
@@ -41,6 +42,7 @@ from molden import *
 # functions
 from convert_array import *
 from print_matrix import *
+from drv_time import *
 
 #fock
 from fock import *

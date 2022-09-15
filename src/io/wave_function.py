@@ -44,6 +44,9 @@ class wave_function():
         print("*"*80)
         print()
 
+        start = time()
+        self._driver_time: drv_time = drv_time()
+
         if not filename:
             if not coord or not basis or not mos or not cartessian_primitive:
                 raise ValueError(
@@ -71,6 +74,9 @@ class wave_function():
             self._cartessian_primitive = cartessian_primitive
 
         self.wave_function_information()
+        print_time(name = "Reading wave function", delta_time = time() - start, header = False, tailer =False)
+        print()
+
     ##################################################################
     # ATRIBUTES
     ##################################################################
@@ -258,7 +264,7 @@ if __name__ == "__main__":
     """
     Example to use wave function object
     """
-    wfn = wave_function("../tests/molden_file/LiH.molden")
+    wfn = wave_function("../tests/molden_file/H2.molden")
 
     print(" Molecule Number ",wfn.molecules_number)
     print(" Atom Number ",wfn.atom_number)

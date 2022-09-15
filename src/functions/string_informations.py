@@ -206,16 +206,16 @@ def print_time(name: str = None, delta_time: float = None,
         print()
         print("t"*20,"hours:minutes:seconds","t"*20)
     if delta_time <= 60:
-        print(f"{name} Time: 0:0:{delta_time:.3f}".ljust(62))
+        print(f"{name}, Time: 0:0:{delta_time:.3f}".ljust(62))
     elif delta_time > 60 and delta_time <= 3600:
         minutes = int(delta_time/60)
         seconds = delta_time%60
-        print(f"{name} Time: 0:{minutes}:{seconds:.3f}".ljust(62))
+        print(f"{name}, Time: 0:{minutes}:{seconds:.3f}".ljust(62))
     else:
         hours = int(delta_time/3600)
         minutes = int(delta_time%3600/60)
         seconds = delta_time%3600%60
-        print(f"{name} Time: {hours}:{minutes}:{seconds:.3f}".ljust(62))
+        print(f"{name}, Time: {hours}:{minutes}:{seconds:.3f}".ljust(62))
     if tailer:
         print("t"*63,"\n")
 
