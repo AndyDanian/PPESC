@@ -1,4 +1,5 @@
 # Current folder
+from lib2to3.pgen2 import driver
 from h1i import *
 from h2i import *
 from cto_gto_h1 import *
@@ -43,20 +44,28 @@ class eint:
         gauge: list  = None, dipole: list = None, dalton_normalization: bool = False
     ):
 
-        print_title(name = "HERMITE: ONE BODY")
+        # Manager to write in the sratch and output file
+        io = self._wf._driver_scratch
+        io.write_output(information = "HERMITE: ONE BODY", type = 1)
 
         str_integrals: str = "Integrals: "
-        print(str_integrals)
+        io.write_output(str_integrals)
         for int_name in integrals_names:
-            print(" "*len(str_integrals), "*",large_name[int_name.split(" ")[0]])
+            io.write_output(" "*len(str_integrals)+"*"+large_name[int_name.split(" ")[0]])
             if integrals_properties and "r_gauge" in integrals_properties[int_name.split(" ")[0]].keys():
-                print(" "*len(str_integrals), "   Gauge: ",*["{:.4f}".format(xyz) for xyz in r_gauge])
-        print()
+                io.write_output(" "*len(str_integrals)+"   Gauge: "+
+                            "{:.4f}".format(r_gauge[0])+
+                            "{:.4f}".format(r_gauge[1])+
+                            "{:.4f}".format(r_gauge[2]))
+        io.write_output("\n")
         if gauge is not None:
-            print("General Gauge: ",*["{:.4f}".format(xyz) for xyz in gauge])
+            io.write_output("General Gauge: " +
+                            "{:.4f}".format(gauge[0]) + 
+                            "{:.4f}".format(gauge[1]) + 
+                            "{:.4f}".format(gauge[2]))
         else:
-            temp_gauge: list = [0.0, 0.0, 0.0]
-            print("General Gauge: ",*["{:.4f}".format(xyz) for xyz in temp_gauge])
+            temp_gauge: str = "{:.4f}".format(0.0) + "{:.4f}".format(0.0) + "{:.4f}".format(0.0)
+            io.write_output("General Gauge: " + temp_gauge)
 
         driver_time = self._wf._driver_time
         start = time()
@@ -83,7 +92,7 @@ class eint:
 
         number_atoms: int =  self._wf.atom_number
         if number_atoms > 50:
-            print(f"*** WARNING\n\n\
+            io.write_output(f"*** WARNING\n\n\
             System has a lot atoms ({len(atoms)}), then calculate can take very much time")
 
         ## SpinOrbit is the sum of the PSO integrals
@@ -455,10 +464,25 @@ class eint:
             driver_time.add_name_delta_time(name = f"One--Body CTOs--GTOs", delta_time = time_cto)
 
         driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
-        driver_time.printing()
+
+        # Write time into output file
+        io.write_output("\n")
+        count = 0
+        for n, dt in zip(driver_time._name, driver_time._delta_time):
+            header = False
+            tailer = False
+            if count == 0:
+                header = True
+            if count == len(driver_time._name) - 1:
+                tailer = True            
+            io.write_output(information = n, type = 2, delta_time = dt, header = header, tailer = tailer)
+            count += 1
+    
+        if verbose > 40:
+            driver_time.printing()
         driver_time.reset
     
-        print_title(name = f"END HERMITE: ONE BODY")
+        io.write_output(information = "END HERMITE: ONE BODY", type = 1)
 
         return integrals_matrix, symmetries
 

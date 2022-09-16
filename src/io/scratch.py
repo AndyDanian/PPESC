@@ -19,7 +19,7 @@ class scratch():
         if scratch is None:
             if Path("/tmp").exists():
                 tmp_scratch: Path = Path("/tmp/scratch").parent.mkdir(parents=True, exist_ok=True)
-                self._scratch: Path = Path("tmp_scratch/"+(job_folder))
+                self._scratch: Path = Path("/tmp/scratch/"+(job_folder))
                 self._scratch.mkdir(parents=True, exist_ok=True)
             else:
                 raise FileNotFoundError("/tmp folder not exits.")
@@ -27,7 +27,7 @@ class scratch():
             if Path(scratch).exists():
                 self._scratch: Path = Path(scratch + "/" + job_folder)
                 if self._scratch.exists():
-                    print("***WARNING\n\n{self._scratch} already exit, then possiblely the file overwrite")
+                    print(f"***WARNING\n\n{self._scratch} already exist, then possiblely the files will be overwrite")
                 else:
                     self._scratch.mkdir(parents=True, exist_ok=True) 
             else:
@@ -70,6 +70,20 @@ class scratch():
             f.write("*"*80+"\n")
             f.write("\n")
 
+    def write_title(self, f: object = None, name: str = None):
+        """
+        Print titles
+
+        Args:
+            name (str): Title name
+        """
+        title: str = "*** " + name.upper().center(70) + " ***"
+        if len(name.upper()) > 70:
+            print("***WARNING\n\n Title more large, please until 70 strings")
+        f.write("*"*len(title)+"\n")
+        f.write(title+"\n")
+        f.write("*"*len(title)+"\n")
+
     def write_time(self, f: object = None, name: str = None, delta_time: float = None,
                 header: bool = True, tailer: bool = True):
         """"
@@ -94,20 +108,20 @@ class scratch():
             name = words
 
         if header:
-            f.write("t"*20+"hours:minutes:seconds"+"t"*20)
+            f.write("t"*20+"hours:minutes:seconds"+"t"*20+"\n")
         if delta_time <= 60:
-            f.write(f"{name}, Time: 0:0:{delta_time:.3f}".ljust(62))
+            f.write(f"{name}, Time: 0:0:{delta_time:.3f}".ljust(62)+"\n")
         elif delta_time > 60 and delta_time <= 3600:
             minutes = int(delta_time/60)
             seconds = delta_time%60
-            f.write(f"{name}, Time: 0:{minutes}:{seconds:.3f}".ljust(62))
+            f.write(f"{name}, Time: 0:{minutes}:{seconds:.3f}".ljust(62)+"\n")
         else:
             hours = int(delta_time/3600)
             minutes = int(delta_time%3600/60)
             seconds = delta_time%3600%60
-            f.write(f"{name}, Time: {hours}:{minutes}:{seconds:.3f}".ljust(62))
+            f.write(f"{name}, Time: {hours}:{minutes}:{seconds:.3f}".ljust(62)+"\n")
         if tailer:
-            f.write("t"*63)
+            f.write("t"*63+"\n")
 
     def write_output(self, information: str = None, type: int = 0, delta_time: float = None,
                      header: bool = False, tailer: bool = False) -> list:
@@ -119,7 +133,8 @@ class scratch():
             information (str): Information to write in the output
             type (int): Type of information
                         0: standar information
-                        1: time information
+                        1: Title
+                        2: time information
             delta_float (float): Delta of time for any process
             header (bool): Print header
             tailer (bool): Print tailer
@@ -131,6 +146,8 @@ class scratch():
                 if type == 0:
                     f.write(information+"\n")
                 elif type == 1:
+                    self.write_title(f, information)
+                elif type == 2:
                     self.write_time(f, information, delta_time, header, tailer)
 
     def remove_job_folder(self) -> None:

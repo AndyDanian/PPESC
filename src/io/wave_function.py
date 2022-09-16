@@ -74,10 +74,10 @@ class wave_function():
 
         self.wave_function_information()
         self._driver_scratch.write_output(information = "Reading wave function",
-                                          type = 1,
+                                          type = 2,
                                           delta_time = time() - start,
                                           header = False, tailer =False)
-        print()
+        self._driver_scratch.write_output("\n")
 
     ##################################################################
     # ATRIBUTES
