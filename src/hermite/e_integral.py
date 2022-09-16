@@ -532,11 +532,11 @@ class eint:
 
 
 if __name__ == "__main__":
-    wf = wave_function("../tests/molden_file/H2.molden")
+    wf = wave_function("../tests/molden_file/H2.molden", scratch_path = "/home1/scratch", job_folder = "160922134451")
     s = eint(wf)
     one = True
     if one:
-        integrals, symmetries = s.integration_onebody(integrals_names = ["nucpot","darwin","fc 1","spin-orbit x"],
+        integrals, symmetries = s.integration_onebody(integrals_names = ["nucpot","darwin","fc 1","spinorbit x"],
                     # {
                     # "nucpot":{"atoms":[0]},
                     # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},

@@ -37,7 +37,7 @@ def validate_file(file_molden):
                 primitive_type = True
 
             if gto_section and mo_section and atoms_section:
-                print("Molden's file is valid.")
+                return True
                 break
 
         if not gto_section:
@@ -68,11 +68,12 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
         Coeff_MO (array)        : Molecular coefficcients by each MO
     """
     label_title: str = "Reading Wave Function From MOLDEN File"
-    drv_scratch.write_output(label_title.center(80)+"\n")
-    drv_scratch.write_output(("-"*len(label_title)).center(80)+"\n")
+    drv_scratch.write_output(label_title.center(80))
+    drv_scratch.write_output(("-"*len(label_title)).center(80))
 
     # Verification of the file
-    validate_file(file_molden)
+    if validate_file(file_molden):
+        drv_scratch.write_output("Molden's file is valid")
 
     # Number of lines where are the information
     content = open(file_molden, "r")
@@ -114,8 +115,8 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
 
     for number_line, element in enumerate(datafile):
         if "[TITLE]" in element:
-            print("Title into Molden: ")
-            print(datafile[number_line + 1])
+            drv_scratch.write_output("Title into Molden: ")
+            drv_scratch.write_output(datafile[number_line + 1])
 
         while "[Atoms]" in element and stop_atoms == False:
             # Read atomic type and coordinates

@@ -9,6 +9,7 @@ class wave_function():
         mos: list = None,
         cartessian_primitive: bool = False,
         scratch_path: Path or str = None,
+        job_folder: str = None,
     ):
         """
         Wave function object need a filename with wave function
@@ -38,7 +39,7 @@ class wave_function():
 
         start = time()
         self._driver_time: drv_time = drv_time()
-        self._driver_scratch: scratch = scratch(scratch=scratch_path)
+        self._driver_scratch: scratch = scratch(scratch=scratch_path, job_folder = job_folder)
 
         if not filename:
             if not coord or not basis or not mos or not cartessian_primitive:
@@ -72,7 +73,10 @@ class wave_function():
             self._cartessian_primitive = cartessian_primitive
 
         self.wave_function_information()
-        print_time(name = "Reading wave function", delta_time = time() - start, header = False, tailer =False)
+        self._driver_scratch.write_output(information = "Reading wave function",
+                                          type = 1,
+                                          delta_time = time() - start,
+                                          header = False, tailer =False)
         print()
 
     ##################################################################
@@ -231,8 +235,8 @@ class wave_function():
         Print information about wave function and molecule
         """
 
-        self._driver_scratch.write_output("System \n")
-        self._driver_scratch.write_output("-"*50+"\n")
+        self._driver_scratch.write_output("System ")
+        self._driver_scratch.write_output("-"*50)
         if np.max(self.coordinates) > 9999: 
             form: str = "{:.4e}"
         else:
@@ -246,30 +250,30 @@ class wave_function():
             information: str = "        " + forms.format(s).center(5)
             for x in xyz:
                 information += str(form.format(x)).center(9)
-            self._driver_scratch.write_output(information+"\n")
-        self._driver_scratch.write_output("-"*50+"\n\n")
-
-        self._driver_scratch.write_output("Primitive Informaiton\n")
+            self._driver_scratch.write_output(information)
         self._driver_scratch.write_output("-"*50+"\n")
+
+        self._driver_scratch.write_output("Primitive Informaiton")
+        self._driver_scratch.write_output("-"*50)
         total = 0
         count = 0
         for s, b in zip(self.atomic_symbols, self.amount_angular_momentums_by_atom):
-            information: str = s.center(5) + str(self.charges[count]).center(5) + "  "
+            information: str = s.center(7) + str(self.charges[count]).center(5) + "  "
             count += 1
             for n, c in b.items():
                 information += str(c) + n
-            self._driver_scratch.write_output(information+"\n")
+            self._driver_scratch.write_output(information)
             total += sum(b.values())
-        self._driver_scratch.write_output("="*50+"\n")
-        self._driver_scratch.write_output("Total: " + str(total) + "\n\n")
+        self._driver_scratch.write_output("="*50)
+        self._driver_scratch.write_output("Total: " + str(sum(self.charges)).center(5) + "   " + str(total) + "\n")
         
         sample: str = "Cartessian Primitive: "
-        self._driver_scratch.write_output(sample + str(self.primitives_number_car) + "\n")
-        self._driver_scratch.write_output("Spherical Primitive: ".ljust(len(sample)) + str(self.primitives_number_sph) + "\n")
-        self._driver_scratch.write_output("Occupied Orbitals: ".ljust(len(sample)) + str(self.mo_occ) + "\n")
-        self._driver_scratch.write_output("Virtuals Orbitals: ".ljust(len(sample)) + str(self.mo_virt) + "\n")
-        self._driver_scratch.write_output("Ocuppied ⇌ Virtuals: ".ljust(len(sample)) + str(self.mo_occ*self.mo_virt) + "\n")
-        self._driver_scratch.write_output("-"*50+"\n\n")        
+        self._driver_scratch.write_output(sample + str(self.primitives_number_car))
+        self._driver_scratch.write_output("Spherical Primitive: ".ljust(len(sample)) + str(self.primitives_number_sph))
+        self._driver_scratch.write_output("Occupied Orbitals: ".ljust(len(sample)) + str(self.mo_occ))
+        self._driver_scratch.write_output("Virtuals Orbitals: ".ljust(len(sample)) + str(self.mo_virt))
+        self._driver_scratch.write_output("Ocuppied ⇌ Virtuals: ".ljust(len(sample)) + str(self.mo_occ*self.mo_virt))
+        self._driver_scratch.write_output("-"*50+"\n")        
 
 if __name__ == "__main__":
     """
