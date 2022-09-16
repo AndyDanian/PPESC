@@ -199,6 +199,7 @@ class eint:
             else:
                 integrals_names = temp_names
 
+        integrals_matrix = {}
         for int_name in integrals_names:
             if len(int_name.split(" ")) > 1:
                 integral_name = int_name.lower().split()[0]
@@ -227,8 +228,9 @@ class eint:
 
                 if integral_name.lower() in ["overlap", "darwin", "massvelo", "kinetic"]:
 
-                    symmetries[integral_name.lower()] = integral_symmetry[integral_name.lower()]
-                    integrals[integral_name.lower()] = h1i(
+                    integral_label: str = integral_name.lower()
+                    symmetries[integral_label] = integral_symmetry[integral_name.lower()]
+                    integrals[integral_label] = h1i(
                         #Default
                         charge = self._charge,
                         coord = self._coord,
@@ -245,12 +247,9 @@ class eint:
                 elif integral_name.lower() in ["nucpot", "fc"]:
 
                     for atom in atoms:
-                        symmetries[
-                            integral_name.lower() + " " + str(atom + 1)
-                            ] = integral_symmetry[integral_name.lower()]
-                        integrals[
-                            integral_name.lower() + " " + str(atom + 1)
-                            ] = h1i(
+                        integral_label: str = integral_name.lower() + " " + str(atom + 1)
+                        symmetries[integral_label] = integral_symmetry[integral_name.lower()]
+                        integrals[integral_label] = h1i(
                             # Default
                             charge = self._charge,
                             coord = self._coord,
@@ -410,18 +409,29 @@ class eint:
                             atom = atom,
                             r_gauge = r_gauge
                         )
-        # Transform integrals from cto to sph
-        integrals_matrix = {}
-        if not self._cartessian:
-            start_cto: float = time()
-            for label, integral in integrals.items():
-                integrals_matrix[label] = cto_gto_h1(np.array(vector_to_matrix(self._n, integral, symmetries[label])),
-                        np.array(self._angular_moments))
-            time_cto: float = time() - start_cto
-        else:
-            for label, integral in integrals.items():
-                integrals_matrix[label] = np.array(vector_to_matrix(self._n, integral, symmetries[label]))
-
+            # Transform integrals from cto to sph
+            if not self._cartessian:
+                start_cto: float = time()
+                #for label, integral in integrals.items():
+                integrals_matrix[integral_label] = cto_gto_h1(np.array(vector_to_matrix(self._n,
+                                                                integrals[integral_label],
+                                                                symmetries[integral_label])),
+                                                                np.array(self._angular_moments))
+                time_cto: float = time() - start_cto
+            else:
+                #for label, integral in integrals.items():
+                integrals_matrix[integral_label] = np.array(vector_to_matrix(self._n,
+                                                            integrals[integral_label],
+                                                            symmetries[integral_label]))
+            ## Write in finary file
+            io.hermite_h5py({integral_label: integrals[integral_label]})
+        
+        file_size: float = os.stat(io._hermite_binary).st_size / 1024
+        unit: str = "B"
+        if file_size > 1024 * 1024:
+            file_size = file_size/(1024 * 1024)
+            unit: str = "MB"
+        io.write_output(f"One--body integrals size: {file_size:.3f} {unit}")
         ### SpinOrbit Calculation
         if spinorbit_integrals:
             temp_integrals_matrix: dict = {}

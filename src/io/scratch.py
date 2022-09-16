@@ -2,8 +2,9 @@ from datetime import datetime
 from pathlib import Path
 import shutil
 
-from print_matrix import *
+import h5py
 
+from print_matrix import *
 class scratch():
     # Constructor
     def __init__(self, scratch: Path or str = None, job_folder: str = None) -> None:
@@ -36,7 +37,11 @@ class scratch():
             else:
                 raise FileNotFoundError(f"***Error \n\n{Path(scratch)} folder not exists, please create before calculation.")
         
+        #ouput files names
         self._output_name = None
+        if (self._scratch /("AOINT.H5")).exists():
+            (self._scratch /("AOINT.H5")).unlink()
+        self._hermite_binary = self._scratch /("AOINT.H5")
     ##################################################################
     # PROPERTIES
     ##################################################################
@@ -164,6 +169,14 @@ class scratch():
                 elif type == 9:
                     self.write_title(f, information, title_type = 1)
                     print_triangle_matrix(f=f,integral=integral,matriz_sym=symmetry)
+
+    def hermite_h5py(self, dictionary: dict = None):
+        """
+        Save hermite information in AOINT.H5 binary file
+        """
+        with h5py.File(self._hermite_binary, 'a') as f:
+            for name, value in dictionary.items():
+                f[name] = value
 
     def remove_job_folder(self) -> None:
         """
