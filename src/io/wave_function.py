@@ -8,6 +8,7 @@ class wave_function():
         basis: list = None,
         mos: list = None,
         cartessian_primitive: bool = False,
+        scratch_path: Path or str = None,
     ):
         """
         Wave function object need a filename with wave function
@@ -35,17 +36,9 @@ class wave_function():
             cartessian_primitive (bool): if True, the molecular orbitals are in cartessian
         """
 
-        print("*"*80)
-        print("PROGRAM NAME".center(80))
-        print("version 0.0".center(80))
-        print("2022".center(80))
-        print("Authors:".ljust(80))
-        print("         Andy Zapata".ljust(80))
-        print("*"*80)
-        print()
-
         start = time()
         self._driver_time: drv_time = drv_time()
+        self._driver_scratch: scratch = scratch(scratch=scratch_path)
 
         if not filename:
             if not coord or not basis or not mos or not cartessian_primitive:
@@ -58,6 +51,8 @@ class wave_function():
                 )
 
         if filename:
+            self._driver_scratch.output_name = Path(filename).stem.upper() + ".out"
+            self._driver_scratch.write_header_output()
             # get information from molden/wfnx file
             (
                 self._coord,
@@ -65,9 +60,12 @@ class wave_function():
                 self._mos,
                 self._cartessian_primitive,
             ) = read_molden(
-                filename,
+                file_molden = filename,
+                drv_scratch = self._driver_scratch
             )
         else:
+            self._driver_scratch._output_name = "OUTPUT.out"
+            self._driver_scratch.write_header_output()
             self._coord = coord
             self._basis = basis
             self._mos = mos
@@ -233,8 +231,8 @@ class wave_function():
         Print information about wave function and molecule
         """
 
-        print("System ")
-        print("-"*50)
+        self._driver_scratch.write_output("System \n")
+        self._driver_scratch.write_output("-"*50+"\n")
         if np.max(self.coordinates) > 9999: 
             form: str = "{:.4e}"
         else:
@@ -245,26 +243,39 @@ class wave_function():
         else:
             forms: str = "{:5s}"
         for s, xyz in zip(self.atomic_symbols, self.coordinates):
-            print(f"        ", forms.format(s).center(5), *[str(form.format(x)).center(9) for x in xyz])
-        print("-"*50)
-        print()
+            information: str = "        " + forms.format(s).center(5)
+            for x in xyz:
+                information += str(form.format(x)).center(9)
+            self._driver_scratch.write_output(information+"\n")
+        self._driver_scratch.write_output("-"*50+"\n\n")
 
-        print("Primitive Informaiton")
-        print("-"*50)
+        self._driver_scratch.write_output("Primitive Informaiton\n")
+        self._driver_scratch.write_output("-"*50+"\n")
         total = 0
+        count = 0
         for s, b in zip(self.atomic_symbols, self.amount_angular_momentums_by_atom):
-            print(forms.format(s).center(5), *[str(c) + n for n, c in b.items()])
+            information: str = s.center(5) + str(self.charges[count]).center(5) + "  "
+            count += 1
+            for n, c in b.items():
+                information += str(c) + n
+            self._driver_scratch.write_output(information+"\n")
             total += sum(b.values())
-        print("="*50)
-        print("Total: ",total)
-        print("-"*50)
-        print()
+        self._driver_scratch.write_output("="*50+"\n")
+        self._driver_scratch.write_output("Total: " + str(total) + "\n\n")
+        
+        sample: str = "Cartessian Primitive: "
+        self._driver_scratch.write_output(sample + str(self.primitives_number_car) + "\n")
+        self._driver_scratch.write_output("Spherical Primitive: ".ljust(len(sample)) + str(self.primitives_number_sph) + "\n")
+        self._driver_scratch.write_output("Occupied Orbitals: ".ljust(len(sample)) + str(self.mo_occ) + "\n")
+        self._driver_scratch.write_output("Virtuals Orbitals: ".ljust(len(sample)) + str(self.mo_virt) + "\n")
+        self._driver_scratch.write_output("Ocuppied ⇌ Virtuals: ".ljust(len(sample)) + str(self.mo_occ*self.mo_virt) + "\n")
+        self._driver_scratch.write_output("-"*50+"\n\n")        
 
 if __name__ == "__main__":
     """
     Example to use wave function object
     """
-    wfn = wave_function("../tests/molden_file/H2.molden")
+    wfn = wave_function("../tests/molden_file/H2.molden", scratch_path="/home1/scratch")
 
     print(" Molecule Number ",wfn.molecules_number)
     print(" Atom Number ",wfn.atom_number)
@@ -282,3 +293,5 @@ if __name__ == "__main__":
     print(" mlx ",wfn.mlx)
     print(" mly ",wfn.mly)
     print(" mlz ",wfn.mlz)
+
+    wfn._driver_scratch.remove_job_folder()

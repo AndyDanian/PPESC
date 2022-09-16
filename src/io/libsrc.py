@@ -30,6 +30,7 @@ sys.path.append(
 import numpy as np
 
 from atom import *
+from scratch import *
 
 #include
 from integrals_parameters import *
