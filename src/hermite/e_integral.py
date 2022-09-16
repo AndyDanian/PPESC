@@ -459,6 +459,16 @@ class eint:
             print_title(name = "One--body integrals with cto--primitives")
             print_matriz_integrated(integrals = integrals_matrix, symmetries = symmetries)
 
+        # Write integrals in the output file
+        if verbose > 0:
+            for integral_label, integral in integrals_matrix.items():
+                io.write_output(information = integral_label,
+                                type = 9,
+                                integral = integral,
+                                symmetry = symmetries[
+                                integral_label
+                                ]
+                                )
         # Time
         if verbose > 10:
             driver_time.add_name_delta_time(name = f"One--Body CTOs--GTOs", delta_time = time_cto)
@@ -576,6 +586,6 @@ if __name__ == "__main__":
                     # "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                     # "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                     # },
-                    verbose = 0, dalton_normalization=False)
+                    verbose = 11, dalton_normalization=False)
     else:
         integrals = s.integration_twobody(["e2pot"], verbose=11, dalton_normalization=False)

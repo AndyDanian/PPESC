@@ -1,6 +1,9 @@
 from datetime import datetime
 from pathlib import Path
 import shutil
+
+from print_matrix import *
+
 class scratch():
     # Constructor
     def __init__(self, scratch: Path or str = None, job_folder: str = None) -> None:
@@ -70,19 +73,24 @@ class scratch():
             f.write("*"*80+"\n")
             f.write("\n")
 
-    def write_title(self, f: object = None, name: str = None):
+    def write_title(self, f: object = None, name: str = None, title_type: int = 0):
         """
         Print titles
 
         Args:
             name (str): Title name
         """
-        title: str = "*** " + name.upper().center(70) + " ***"
-        if len(name.upper()) > 70:
-            print("***WARNING\n\n Title more large, please until 70 strings")
-        f.write("*"*len(title)+"\n")
-        f.write(title+"\n")
-        f.write("*"*len(title)+"\n")
+        if title_type == 0:
+            title: str = "*** " + name.upper().center(70) + " ***"
+            if len(name.upper()) > 70:
+                print("***WARNING\n\n Title more large, please until 70 strings")
+            f.write("*"*len(title)+"\n")
+            f.write(title+"\n")
+            f.write("*"*len(title)+"\n")
+        else:
+            f.write("\n")
+            f.write(name.center(70)+"\n")
+            f.write(("-" * 40).center(70)+"\n")
 
     def write_time(self, f: object = None, name: str = None, delta_time: float = None,
                 header: bool = True, tailer: bool = True):
@@ -123,8 +131,11 @@ class scratch():
         if tailer:
             f.write("t"*63+"\n")
 
-    def write_output(self, information: str = None, type: int = 0, delta_time: float = None,
-                     header: bool = False, tailer: bool = False) -> list:
+    def write_output(self, information: str = None, type: int = 0, 
+                    title_type: int = 0,
+                    delta_time: float = None, header: bool = False,
+                    tailer: bool = False,
+                    integral: dict = None, symmetry: dict = None) -> list:
         """
         Save information for output file
 
@@ -133,8 +144,9 @@ class scratch():
             information (str): Information to write in the output
             type (int): Type of information
                         0: standar information
-                        1: Title
+                        1: Titles
                         2: time information
+                        9: hermite matriz
             delta_float (float): Delta of time for any process
             header (bool): Print header
             tailer (bool): Print tailer
@@ -145,10 +157,13 @@ class scratch():
             with open(self._output_name, "a") as f:
                 if type == 0:
                     f.write(information+"\n")
-                elif type == 1:
-                    self.write_title(f, information)
+                elif type == 1 or title_type > 0:
+                    self.write_title(f, information, title_type)
                 elif type == 2:
                     self.write_time(f, information, delta_time, header, tailer)
+                elif type == 9:
+                    self.write_title(f, information, title_type = 1)
+                    print_triangle_matrix(f=f,integral=integral,matriz_sym=symmetry)
 
     def remove_job_folder(self) -> None:
         """
