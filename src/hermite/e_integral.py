@@ -425,13 +425,11 @@ class eint:
                                                             symmetries[integral_label]))
             ## Write in finary file
             io.hermite_h5py({integral_label: integrals[integral_label]})
-        
-        file_size: float = os.stat(io._hermite_binary).st_size / 1024
-        unit: str = "B"
-        if file_size > 1024 * 1024:
-            file_size = file_size/(1024 * 1024)
-            unit: str = "MB"
-        io.write_output(f"One--body integrals size: {file_size:.3f} {unit}")
+
+        ## Write in output size of AO1BINT.H5 in bytes
+        io.write_output(information = f"AO1BINT.H5",
+                        type = 3,
+                        size_file = io._hermite_binary.stat().st_size)
         ### SpinOrbit Calculation
         if spinorbit_integrals:
             temp_integrals_matrix: dict = {}

@@ -39,9 +39,9 @@ class scratch():
         
         #ouput files names
         self._output_name = None
-        if (self._scratch /("AOINT.H5")).exists():
-            (self._scratch /("AOINT.H5")).unlink()
-        self._hermite_binary = self._scratch /("AOINT.H5")
+        if (self._scratch /("AO1BINT.H5")).exists():
+            (self._scratch /("AO1BINT.H5")).unlink()
+        self._hermite_binary = self._scratch /("AO1BINT.H5")
     ##################################################################
     # PROPERTIES
     ##################################################################
@@ -136,10 +136,35 @@ class scratch():
         if tailer:
             f.write("t"*63+"\n")
 
+    def write_size_file(self, f: object = None,
+                        name_file: str = None,
+                        size_file: float = None):
+        """
+        Write size file into output
+
+        Args:
+        ----
+            f (object): Object of output file
+            size_file (float): Size of output file in bytes
+        """
+        unit: str = "KB"
+        if size_file > 1024 * 1024:
+            size_file = size_file/(1024 * 1024)
+            unit: str = "MB"
+        elif size_file > 1024 * 1024 * 1024:
+            size_file = size_file/(1024 * 1024 * 1024)
+            unit: str = "GB"
+
+        f.write(f"{name_file}, size: {size_file} {unit}")
     def write_output(self, information: str = None, type: int = 0, 
+                    # title information
                     title_type: int = 0,
+                    # time information
                     delta_time: float = None, header: bool = False,
                     tailer: bool = False,
+                    # Size file in bytes
+                    size_file: float = None,
+                    # Hermite matrix information
                     integral: dict = None, symmetry: dict = None) -> list:
         """
         Save information for output file
@@ -151,12 +176,12 @@ class scratch():
                         0: standar information
                         1: Titles
                         2: time information
+                        3: size file
                         9: hermite matriz
             delta_float (float): Delta of time for any process
             header (bool): Print header
             tailer (bool): Print tailer
         """
-
 
         if information is not None:      
             with open(self._output_name, "a") as f:
@@ -166,6 +191,8 @@ class scratch():
                     self.write_title(f, information, title_type)
                 elif type == 2:
                     self.write_time(f, information, delta_time, header, tailer)
+                elif type == 3:
+                    self.write_size_file(f, information, size_file)
                 elif type == 9:
                     self.write_title(f, information, title_type = 1)
                     print_triangle_matrix(f=f,integral=integral,matriz_sym=symmetry)
