@@ -48,6 +48,7 @@ class eint:
         io = self._wf._driver_scratch
         io.write_output(information = "HERMITE: ONE BODY", type = 1)
 
+        ## Write intgral information into output
         str_integrals: str = "Integrals: "
         io.write_output(str_integrals)
         for int_name in integrals_names:
@@ -66,10 +67,10 @@ class eint:
         else:
             temp_gauge: str = "{:.4f}".format(0.0) + "{:.4f}".format(0.0) + "{:.4f}".format(0.0)
             io.write_output("General Gauge: " + temp_gauge)
-
         driver_time = self._wf._driver_time
-        start = time()
+        # END write
 
+        start = time()
         if not integrals_names:
             raise ValueError("***Error \n\n what integral do you want?")
         else:
@@ -85,10 +86,6 @@ class eint:
                     Integral {integral_name} is not implement or the name is mistake\n\n\
                     Integrals implemented: \n\
                         {integral_symmetry.keys()}")
-
-        # verbose dictionaries
-        integrals: dict = {}
-        symmetries: dict = {}
 
         number_atoms: int =  self._wf.atom_number
         if number_atoms > 50:
@@ -199,8 +196,11 @@ class eint:
             else:
                 integrals_names = temp_names
 
-        integrals_matrix = {}
+        # verbose dictionaries
+        symmetries: dict = {}
         for int_name in integrals_names:
+            integrals: dict = {}
+
             if len(int_name.split(" ")) > 1:
                 integral_name = int_name.lower().split()[0]
             else:
@@ -410,75 +410,47 @@ class eint:
                             r_gauge = r_gauge
                         )
             # Transform integrals from cto to sph
+            integrals_matrix = {}
             if not self._cartessian:
                 start_cto: float = time()
-                #for label, integral in integrals.items():
-                integrals_matrix[integral_label] = cto_gto_h1(np.array(vector_to_matrix(self._n,
-                                                                integrals[integral_label],
-                                                                symmetries[integral_label])),
+                for label, integral in integrals.items():
+                    integrals_matrix[label] = cto_gto_h1(np.array(vector_to_matrix(self._n,
+                                                                integral,
+                                                                symmetries[label])),
                                                                 np.array(self._angular_moments))
                 time_cto: float = time() - start_cto
             else:
-                #for label, integral in integrals.items():
-                integrals_matrix[integral_label] = np.array(vector_to_matrix(self._n,
-                                                            integrals[integral_label],
-                                                            symmetries[integral_label]))
+                for label, integral in integrals.items():
+                    integrals_matrix[label] = np.array(vector_to_matrix(self._n,
+                                                            integral,
+                                                            symmetries[label]))
             ## Write in finary file
-            io.binary(file = io._hermite_1b_binary,
-                      dictionary = {integral_label: integrals_matrix[integral_label]},
+            for label, integral in integrals_matrix.items():
+                io.binary(file = io._hermite_1b_binary,
+                      dictionary = {label: integral},
                       io = "a")
 
         ## Write in output size of AO1BINT.H5 in bytes
         io.write_output(information = io._hermite_1b_binary.name,
                         type = 3,
                         size_file = io._hermite_1b_binary.stat().st_size)
-        ### SpinOrbit Calculation
+        ### SpinOrbit Calculation and Write integrals in AO1BINT
         if spinorbit_integrals:
-            temp_integrals_matrix: dict = {}
             so_integrals, so_symmetries = spin_orbit(integrals = io, number_atoms = number_atoms,
                                                     charge = self._charge, nprim = self._wf.primitives_number,
                                                     spino_x = spino_x, spino_y = spino_y, spino_z = spino_z,
                                                     driver_time = driver_time, verbose = verbose)
-            # Errase pso in RAM
-            temp_integrals_matrix = {name: value for name, value in integrals_matrix.items()
-                                    if name in old_integrals_names}
-            integrals_matrix = so_integrals
-            integrals_matrix.update(temp_integrals_matrix)
-            symmetries.update(so_symmetries)
-        ### SOFIEL Calculation
+        ### SOFIEL Calculation and Write integrals in AO1BINT
         if sofiel_integrals:
-            temp_integrals_matrix: dict = {}
             sf_integrals,  sf_symmetries = sofiel(integrals = io, number_atoms = number_atoms,
                                                 charge = self._charge, nprim = self._wf.primitives_number,
                                                 sofiel_xx = sofiel_xx, sofiel_yy = sofiel_yy, sofiel_zz = sofiel_zz,
                                                 sofiel_xy = sofiel_xy, sofiel_xz = sofiel_xz, sofiel_yz = sofiel_yz,
                                                 sofiel_yx = sofiel_yx, sofiel_zx = sofiel_zx, sofiel_zy = sofiel_zy,
                                                 driver_time = driver_time, verbose = verbose)
-            # Errase nstcgo in RAM
-            temp_integrals_matrix = {name: value for name, value in integrals_matrix.items()
-                                    if name in old_integrals_names}
-            integrals_matrix = sf_integrals
-            integrals_matrix.update(temp_integrals_matrix)
-            symmetries.update(sf_symmetries)
-
-        # Print Integrals
-        if not self._cartessian and verbose > 20:
-            print_title(name = "One--body integrals with gto--primitives")
-            print_matriz_integrated(integrals = integrals_matrix, symmetries = symmetries)
-        elif verbose > 20:
-            print_title(name = "One--body integrals with cto--primitives")
-            print_matriz_integrated(integrals = integrals_matrix, symmetries = symmetries)
-
         # Write integrals in the output file
         if verbose > 0:
-            for integral_label, integral in integrals_matrix.items():
-                io.write_output(information = integral_label,
-                                type = 9,
-                                integral = integral,
-                                symmetry = symmetries[
-                                integral_label
-                                ]
-                                )
+            io.write_output(type = 9)
         # Time
         if verbose > 10:
             driver_time.add_name_delta_time(name = f"One--Body CTOs--GTOs", delta_time = time_cto)
@@ -576,11 +548,11 @@ class eint:
 
 
 if __name__ == "__main__":
-    wf = wave_function("../tests/molden_file/H2.molden", scratch_path = "/home1/scratch", job_folder = "160922134451")
+    wf = wave_function("../tests/molden_file/LiH_pople.molden", scratch_path = "/home1/scratch", job_folder = "160922134451")
     s = eint(wf)
     one = True
     if one:
-        integrals, symmetries = s.integration_onebody(integrals_names = ["nucpot","darwin","fc 1","spinorbit x","sofiel xx","sofiel xy","sofiel yx","sofiel zz"],
+        integrals, symmetries = s.integration_onebody(integrals_names = ["nucpot","darwin","fc","spinorbit"],
                     # {
                     # "nucpot":{"atoms":[0]},
                     # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},

@@ -45,7 +45,7 @@ from drv_time import *
 
 #include
 from constants_cto_gto import *
-from integrals_parameters import *
+#from integrals_parameters import *
 
 #io
 from molden import *

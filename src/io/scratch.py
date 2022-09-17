@@ -1,4 +1,3 @@
-from asyncore import read
 from datetime import datetime
 from pathlib import Path
 import shutil
@@ -6,6 +5,12 @@ import shutil
 import h5py
 
 from print_matrix import *
+integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", "angmom": "antisym",
+"sd": "sym", "fc": "sym", "darwin": "sym", "massvelo": "sym", "nelfld": "sym", "diplen": "sym",
+"dipvel": "antisym", "pso": "antisym", "nstcgo": "sym", "dnske": "sym", "psoke": "square",
+"psooz": "square", "ozke": "antisym", "spinorbit": "antisym", "laplacian": "sym", "sofiel": "sym",
+"pnstcgop": "sym"}
+
 class scratch():
     # Constructor
     def __init__(self, scratch: Path or str = None, job_folder: str = None) -> None:
@@ -158,6 +163,21 @@ class scratch():
 
         f.write(f"{name_file}, size: {size_file} {unit}")
 
+    def write_ao1bin_hermite(self, f: object = None):
+        """
+        Print one body integrals into output
+
+        Args:
+        ----
+            f (object): Object of output file
+        """
+        with h5py.File(self._hermite_1b_binary, "r") as h:
+            for name in list(h.keys()):
+                self.write_title(f, name, 1)
+                print_triangle_matrix(f=f,
+                                      integral=h[name],
+                                      matriz_sym=integral_symmetry[name.split()[0]])
+
     def write_output(self, information: str = None, type: int = 0, 
                     # title information
                     title_type: int = 0,
@@ -166,8 +186,7 @@ class scratch():
                     tailer: bool = False,
                     # Size file in bytes
                     size_file: float = None,
-                    # Hermite matrix information
-                    integral: dict = None, symmetry: dict = None) -> list:
+                    ) -> None:
         """
         Save information for output file
 
@@ -185,19 +204,17 @@ class scratch():
             tailer (bool): Print tailer
         """
 
-        if information is not None:      
-            with open(self._output_name, "a") as f:
-                if type == 0:
-                    f.write(information+"\n")
-                elif type == 1 or title_type > 0:
-                    self.write_title(f, information, title_type)
-                elif type == 2:
-                    self.write_time(f, information, delta_time, header, tailer)
-                elif type == 3:
-                    self.write_size_file(f, information, size_file)
-                elif type == 9:
-                    self.write_title(f, information, title_type = 1)
-                    print_triangle_matrix(f=f,integral=integral,matriz_sym=symmetry)
+        with open(self._output_name, "a") as f:
+            if type == 0:
+                f.write(information+"\n")
+            elif type == 1 or title_type > 0:
+                self.write_title(f, information, title_type)
+            elif type == 2:
+                self.write_time(f, information, delta_time, header, tailer)
+            elif type == 3:
+                self.write_size_file(f, information, size_file)
+            elif type == 9:
+                self.write_ao1bin_hermite(f)
 
     def binary(self, file: Path = None, io: str = None,
                 # Write information
@@ -226,15 +243,14 @@ class scratch():
         else:
             wr = io.lower()
         
-        with h5py.File(file, wr.lower()) as f:
+        with h5py.File(file, wr.lower()) as h:
             if io.lower() == "a":
                 for name, value in dictionary.items():
-                    f[name] = value
+                    h[name] = value
             elif io.lower() == "r":
-                return f[label][:]
+                return h[label][:]
             else:
-                del f[label]
-
+                del h[label]
 
     def remove_job_folder(self) -> None:
         """
