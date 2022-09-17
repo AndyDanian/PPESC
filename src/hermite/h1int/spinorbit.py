@@ -32,6 +32,7 @@ def spin_orbit(integrals: dict = None, number_atoms: int = None, charge: list = 
         matrix = 0.0
         for a in range(number_atoms):
             matrix += SPINORBIT_CTE * charge[a] * integrals.binary(file=integrals._hermite_1b_binary,label=("pso " + str(1 + a*3)), io="r")
+        integrals.binary(file=integrals._hermite_1b_binary,dictionary={"spinorbit x": matrix},io="a")
         spinorbit_integrals["spinorbit x"] = matrix
         if verbose > 10:
             driver_time.add_name_delta_time(name = "Spin-Orbit X AO", delta_time = (time() - start))
@@ -40,7 +41,7 @@ def spin_orbit(integrals: dict = None, number_atoms: int = None, charge: list = 
         symmetries["spinorbit y"] = "antisym"
         matrix = 0.0
         for a in range(number_atoms):
-            matrix += SPINORBIT_CTE * charge[a] * integrals.binary(file=integrals._hermite_1b_binary,label=("pso " + str(2 + a*3)), io="r").values()
+            matrix += SPINORBIT_CTE * charge[a] * integrals.binary(file=integrals._hermite_1b_binary,label=("pso " + str(2 + a*3)), io="r")
         spinorbit_integrals["spinorbit y"] = matrix
         if verbose > 10:
             driver_time.add_name_delta_time(name = "Spin-Orbit Y AO", delta_time = (time() - start))
@@ -49,7 +50,7 @@ def spin_orbit(integrals: dict = None, number_atoms: int = None, charge: list = 
         symmetries["spinorbit z"] = "antisym"
         matrix = 0.0
         for a in range(number_atoms):
-            matrix += SPINORBIT_CTE * charge[a] * integrals.binary(file=integrals._hermite_1b_binary,label=("pso " + str(3 + a*3)), io="r").values()
+            matrix += SPINORBIT_CTE * charge[a] * integrals.binary(file=integrals._hermite_1b_binary,label=("pso " + str(3 + a*3)), io="r")
         spinorbit_integrals["spinorbit z"] = matrix
         if verbose > 10:
             driver_time.add_name_delta_time(name = "Spin-Orbit Z AO", delta_time = (time() - start))

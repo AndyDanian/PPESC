@@ -202,7 +202,7 @@ class scratch():
     def binary(self, file: Path = None, io: str = None,
                 # Write information
                 dictionary: dict = None,
-                # Read information
+                # Read or delete information
                 label: str = None):
         """
         Save hermite information in AOINT.H5 binary file
@@ -211,22 +211,29 @@ class scratch():
         ----
             file (Path): Path of binary file
             dictionary (dict): Information to write into binary file
-            io (str): Indicate read:r or write:a in binary file
+            io (str): Indicate read:r, write:a, or delete:d in binary file
         
         Return:
         ------
             np.ndarray
         """
-        if io is None or (io.lower() != "a" and io != "r"):
+        if io is None or (io.lower() != "a" and io.lower() != "r" and io.lower() != "d"):
             raise ValueError(f"***ERROR\n\n\
                             argument io due be a to write or r to read, io {io}")
 
-        with h5py.File(file, io) as f:
-            if io == "a":
+        if io.lower() == "d": 
+            wr = "a"
+        else:
+            wr = io.lower()
+        
+        with h5py.File(file, wr.lower()) as f:
+            if io.lower() == "a":
                 for name, value in dictionary.items():
                     f[name] = value
-            else:
+            elif io.lower() == "r":
                 return f[label][:]
+            else:
+                del f[label]
 
 
     def remove_job_folder(self) -> None:

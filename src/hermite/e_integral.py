@@ -435,12 +435,11 @@ class eint:
         ### SpinOrbit Calculation
         if spinorbit_integrals:
             temp_integrals_matrix: dict = {}
-            so_integrals, so_symmetries = spin_orbit(integrals = io, 
-                                                    number_atoms = number_atoms,
+            so_integrals, so_symmetries = spin_orbit(integrals = io, number_atoms = number_atoms,
                                                     charge = self._charge, nprim = self._wf.primitives_number,
                                                     spino_x = spino_x, spino_y = spino_y, spino_z = spino_z,
                                                     driver_time = driver_time, verbose = verbose)
-            # Errase pso
+            # Errase pso in RAM
             temp_integrals_matrix = {name: value for name, value in integrals_matrix.items()
                                     if name in old_integrals_names}
             integrals_matrix = so_integrals
@@ -449,13 +448,13 @@ class eint:
         ### SOFIEL Calculation
         if sofiel_integrals:
             temp_integrals_matrix: dict = {}
-            sf_integrals,  sf_symmetries = sofiel(integrals = integrals_matrix, number_atoms = number_atoms,
+            sf_integrals,  sf_symmetries = sofiel(integrals = io, number_atoms = number_atoms,
                                                 charge = self._charge, nprim = self._wf.primitives_number,
                                                 sofiel_xx = sofiel_xx, sofiel_yy = sofiel_yy, sofiel_zz = sofiel_zz,
                                                 sofiel_xy = sofiel_xy, sofiel_xz = sofiel_xz, sofiel_yz = sofiel_yz,
                                                 sofiel_yx = sofiel_yx, sofiel_zx = sofiel_zx, sofiel_zy = sofiel_zy,
                                                 driver_time = driver_time, verbose = verbose)
-            # Errase nstcgo
+            # Errase nstcgo in RAM
             temp_integrals_matrix = {name: value for name, value in integrals_matrix.items()
                                     if name in old_integrals_names}
             integrals_matrix = sf_integrals
@@ -581,7 +580,7 @@ if __name__ == "__main__":
     s = eint(wf)
     one = True
     if one:
-        integrals, symmetries = s.integration_onebody(integrals_names = ["nucpot","darwin","fc 1","spinorbit x"],
+        integrals, symmetries = s.integration_onebody(integrals_names = ["nucpot","darwin","fc 1","spinorbit x","sofiel xx","sofiel xy","sofiel yx","sofiel zz"],
                     # {
                     # "nucpot":{"atoms":[0]},
                     # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
