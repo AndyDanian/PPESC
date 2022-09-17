@@ -424,7 +424,9 @@ class eint:
                                                             integrals[integral_label],
                                                             symmetries[integral_label]))
             ## Write in finary file
-            io.hermite_h5py({integral_label: integrals[integral_label]})
+            io.write_binary(file = io._hermite_binary,
+                            dictionary = {integral_label: integrals[integral_label]},
+                            io = "a")
 
         ## Write in output size of AO1BINT.H5 in bytes
         io.write_output(information = f"AO1BINT.H5",

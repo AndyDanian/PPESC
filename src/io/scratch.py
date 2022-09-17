@@ -156,6 +156,7 @@ class scratch():
             unit: str = "GB"
 
         f.write(f"{name_file}, size: {size_file} {unit}")
+
     def write_output(self, information: str = None, type: int = 0, 
                     # title information
                     title_type: int = 0,
@@ -197,11 +198,21 @@ class scratch():
                     self.write_title(f, information, title_type = 1)
                     print_triangle_matrix(f=f,integral=integral,matriz_sym=symmetry)
 
-    def hermite_h5py(self, dictionary: dict = None):
+    def write_binary(self, file: Path = None, dictionary: dict = None, io: int = None):
         """
         Save hermite information in AOINT.H5 binary file
+
+        Args:
+        ----
+            file (Path): Path of binary file
+            dictionary (dict): Information to write into binary file
+            io (int): Indicate read:r or write:a in binary file
         """
-        with h5py.File(self._hermite_binary, 'a') as f:
+        if io is None:
+            raise ValueError(f"***ERROR\n\n\
+                            argument io due be a to write or r to read, io {io}")
+
+        with h5py.File(file, io) as f:
             for name, value in dictionary.items():
                 f[name] = value
 
