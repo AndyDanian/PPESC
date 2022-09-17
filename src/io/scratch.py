@@ -1,3 +1,4 @@
+from asyncore import read
 from datetime import datetime
 from pathlib import Path
 import shutil
@@ -41,7 +42,7 @@ class scratch():
         self._output_name = None
         if (self._scratch /("AO1BINT.H5")).exists():
             (self._scratch /("AO1BINT.H5")).unlink()
-        self._hermite_binary = self._scratch /("AO1BINT.H5")
+        self._hermite_1b_binary = self._scratch /("AO1BINT.H5")
     ##################################################################
     # PROPERTIES
     ##################################################################
@@ -198,7 +199,11 @@ class scratch():
                     self.write_title(f, information, title_type = 1)
                     print_triangle_matrix(f=f,integral=integral,matriz_sym=symmetry)
 
-    def write_binary(self, file: Path = None, dictionary: dict = None, io: int = None):
+    def binary(self, file: Path = None, io: str = None,
+                # Write information
+                dictionary: dict = None,
+                # Read information
+                label: str = None):
         """
         Save hermite information in AOINT.H5 binary file
 
@@ -206,15 +211,23 @@ class scratch():
         ----
             file (Path): Path of binary file
             dictionary (dict): Information to write into binary file
-            io (int): Indicate read:r or write:a in binary file
+            io (str): Indicate read:r or write:a in binary file
+        
+        Return:
+        ------
+            np.ndarray
         """
-        if io is None:
+        if io is None or (io.lower() != "a" and io != "r"):
             raise ValueError(f"***ERROR\n\n\
                             argument io due be a to write or r to read, io {io}")
 
         with h5py.File(file, io) as f:
-            for name, value in dictionary.items():
-                f[name] = value
+            if io == "a":
+                for name, value in dictionary.items():
+                    f[name] = value
+            else:
+                return f[label][:]
+
 
     def remove_job_folder(self) -> None:
         """

@@ -424,18 +424,19 @@ class eint:
                                                             integrals[integral_label],
                                                             symmetries[integral_label]))
             ## Write in finary file
-            io.write_binary(file = io._hermite_binary,
-                            dictionary = {integral_label: integrals[integral_label]},
-                            io = "a")
+            io.binary(file = io._hermite_1b_binary,
+                      dictionary = {integral_label: integrals_matrix[integral_label]},
+                      io = "a")
 
         ## Write in output size of AO1BINT.H5 in bytes
-        io.write_output(information = f"AO1BINT.H5",
+        io.write_output(information = io._hermite_1b_binary.name,
                         type = 3,
-                        size_file = io._hermite_binary.stat().st_size)
+                        size_file = io._hermite_1b_binary.stat().st_size)
         ### SpinOrbit Calculation
         if spinorbit_integrals:
             temp_integrals_matrix: dict = {}
-            so_integrals, so_symmetries = spin_orbit(integrals = integrals_matrix, number_atoms = number_atoms,
+            so_integrals, so_symmetries = spin_orbit(integrals = io, 
+                                                    number_atoms = number_atoms,
                                                     charge = self._charge, nprim = self._wf.primitives_number,
                                                     spino_x = spino_x, spino_y = spino_y, spino_z = spino_z,
                                                     driver_time = driver_time, verbose = verbose)
