@@ -73,10 +73,12 @@ class wave_function():
             self._cartessian_primitive = cartessian_primitive
 
         self.wave_function_information()
-        self._driver_scratch.write_output(information = "Reading wave function",
+        self._driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
+
+        self._driver_scratch.write_output(
                                           type = 2,
-                                          delta_time = time() - start,
-                                          header = False, tailer =False)
+                                          drv_time = self._driver_time
+                                          )
         self._driver_scratch.write_output("\n")
 
     ##################################################################

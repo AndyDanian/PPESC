@@ -1,3 +1,5 @@
+import sys
+import os
 from datetime import datetime
 from pathlib import Path
 import shutil
@@ -5,6 +7,13 @@ import shutil
 import h5py
 
 from print_matrix import *
+
+PROJECT_DIR = Path.cwd().parent
+sys.path.append(
+    os.fspath(PROJECT_DIR / "functions")
+    )
+from drv_time import *
+
 integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", "angmom": "antisym",
 "sd": "sym", "fc": "sym", "darwin": "sym", "massvelo": "sym", "nelfld": "sym", "diplen": "sym",
 "dipvel": "antisym", "pso": "antisym", "nstcgo": "sym", "dnske": "sym", "psoke": "square",
@@ -103,44 +112,52 @@ class scratch():
             f.write(name.center(70)+"\n")
             f.write(("-" * 40).center(70)+"\n")
 
-    def write_time(self, f: object = None, name: str = None, delta_time: float = None,
-                header: bool = True, tailer: bool = True):
+    def write_time(self, f: object = None, drv_time: drv_time = None):
         """"
         Print time neccesary for calculations
 
         Args:
-            name (str): Name of calculate
-            delta_time (float): time in seconds
+            drv_time (object:drv_time): Driver the time process
         """
-        if len(name) > 60:
-            count = 0
-            words = ''
-            for s in name.split():
-                if count > 0:
-                        count += 1
-                count += len(s)
-                if count <= 60:
-                        words += s + ' '
-                else:
-                        count = 0
-                        words += "\n" + s + ' '
-            name = words
 
-        if header:
-            f.write("t"*20+"hours:minutes:seconds"+"t"*20+"\n")
-        if delta_time <= 60:
-            f.write(f"{name}, Time: 0:0:{delta_time:.3f}".ljust(62)+"\n")
-        elif delta_time > 60 and delta_time <= 3600:
-            minutes = int(delta_time/60)
-            seconds = delta_time%60
-            f.write(f"{name}, Time: 0:{minutes}:{seconds:.3f}".ljust(62)+"\n")
-        else:
-            hours = int(delta_time/3600)
-            minutes = int(delta_time%3600/60)
-            seconds = delta_time%3600%60
-            f.write(f"{name}, Time: {hours}:{minutes}:{seconds:.3f}".ljust(62)+"\n")
-        if tailer:
-            f.write("t"*63+"\n")
+        count = 0
+        for name, delta_time in zip(drv_time._name, drv_time._delta_time):
+            header = False
+            tailer = False
+            if count == 0:
+                header = True
+            if count == len(drv_time._name) - 1:
+                tailer = True
+
+            if len(name) > 60:
+                count = 0
+                words = ''
+                for s in name.split():
+                    if count > 0:
+                            count += 1
+                    count += len(s)
+                    if count <= 60:
+                            words += s + ' '
+                    else:
+                            count = 0
+                            words += "\n" + s + ' '
+                name = words
+
+            if header:
+                f.write("t"*20+"hours:minutes:seconds"+"t"*20+"\n")
+            if delta_time <= 60:
+                f.write(f"{name}, Time: 0:0:{delta_time:.3f}".ljust(62)+"\n")
+            elif delta_time > 60 and delta_time <= 3600:
+                minutes = int(delta_time/60)
+                seconds = delta_time%60
+                f.write(f"{name}, Time: 0:{minutes}:{seconds:.3f}".ljust(62)+"\n")
+            else:
+                hours = int(delta_time/3600)
+                minutes = int(delta_time%3600/60)
+                seconds = delta_time%3600%60
+                f.write(f"{name}, Time: {hours}:{minutes}:{seconds:.3f}".ljust(62)+"\n")
+            if tailer:
+                f.write("t"*63+"\n")
 
     def write_size_file(self, f: object = None,
                         name_file: str = None,
@@ -182,8 +199,7 @@ class scratch():
                     # title information
                     title_type: int = 0,
                     # time information
-                    delta_time: float = None, header: bool = False,
-                    tailer: bool = False,
+                    drv_time: drv_time = None,
                     # Size file in bytes
                     size_file: float = None,
                     ) -> None:
@@ -199,9 +215,7 @@ class scratch():
                         2: time information
                         3: size file
                         9: hermite matriz
-            delta_float (float): Delta of time for any process
-            header (bool): Print header
-            tailer (bool): Print tailer
+            drv_time (object:drv_time): Driver of the time process
         """
 
         with open(self._output_name, "a") as f:
@@ -210,7 +224,7 @@ class scratch():
             elif type == 1 or title_type > 0:
                 self.write_title(f, information, title_type)
             elif type == 2:
-                self.write_time(f, information, delta_time, header, tailer)
+                self.write_time(f, drv_time)
             elif type == 3:
                 self.write_size_file(f, information, size_file)
             elif type == 9:

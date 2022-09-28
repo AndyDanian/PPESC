@@ -43,6 +43,16 @@ class eint:
         self, integrals_names: list = None, integrals_properties: dict = None, verbose: int = 0,
         gauge: list  = None, dipole: list = None, dalton_normalization: bool = False
     ):
+        """
+        Driver integral one--body calculations
+
+        Args:
+        ----
+            Verbose: Print lever
+                        0    : minimum
+                        > 10 : time details
+                        > 20 : atomic integrals
+        """
 
         # Manager to write in the sratch and output file
         io = self._wf._driver_scratch
@@ -449,7 +459,7 @@ class eint:
                                                 sofiel_yx = sofiel_yx, sofiel_zx = sofiel_zx, sofiel_zy = sofiel_zy,
                                                 driver_time = driver_time, verbose = verbose)
         # Write integrals in the output file
-        if verbose > 0:
+        if verbose > 20:
             io.write_output(type = 9)
         # Time
         if verbose > 10:
@@ -459,16 +469,7 @@ class eint:
 
         # Write time into output file
         io.write_output("\n")
-        count = 0
-        for n, dt in zip(driver_time._name, driver_time._delta_time):
-            header = False
-            tailer = False
-            if count == 0:
-                header = True
-            if count == len(driver_time._name) - 1:
-                tailer = True            
-            io.write_output(information = n, type = 2, delta_time = dt, header = header, tailer = tailer)
-            count += 1
+        io.write_output(type = 2, drv_time = driver_time)
     
         if verbose > 40:
             driver_time.printing()
