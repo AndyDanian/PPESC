@@ -54,5 +54,3 @@ def spin_orbit(integrals: dict = None, number_atoms: int = None, charge: list = 
         spinorbit_integrals["spinorbit z"] = matrix
         if verbose > 10:
             driver_time.add_name_delta_time(name = "Spin-Orbit Z AO", delta_time = (time() - start))
-
-    return spinorbit_integrals, symmetries

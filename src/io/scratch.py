@@ -54,9 +54,15 @@ class scratch():
         
         #ouput files names
         self._output_name = None
-        if (self._scratch /("AO1BINT.H5")).exists():
-            (self._scratch /("AO1BINT.H5")).unlink()
-        self._hermite_1b_binary = self._scratch /("AO1BINT.H5")
+        # H5 files
+        h5_files: list = ["AO1BINT.H5", "AO2BINT.H5"]
+        self._hermite_1b_binary = self._hermite_2b_binary = None
+        for i, name_file in enumerate(h5_files):
+            if (self._scratch /(name_file)).exists():
+                (self._scratch /(name_file)).unlink()
+        self._hermite_1b_binary: Path = self._scratch /("AO1BINT.H5")
+        self._hermite_2b_binary: Path = self._scratch /("AO2BINT.H5")
+
     ##################################################################
     # PROPERTIES
     ##################################################################
@@ -120,14 +126,15 @@ class scratch():
             drv_time (object:drv_time): Driver the time process
         """
 
-        count = 0
+        count0 = 0
         for name, delta_time in zip(drv_time._name, drv_time._delta_time):
             header = False
             tailer = False
-            if count == 0:
+            if count0 == 0:
                 header = True
-            if count == len(drv_time._name) - 1:
+            if count0 == len(drv_time._name) - 1:
                 tailer = True
+            count0 += 1
 
             if len(name) > 60:
                 count = 0
@@ -170,7 +177,10 @@ class scratch():
             f (object): Object of output file
             size_file (float): Size of output file in bytes
         """
-        unit: str = "KB"
+        unit: str = "Bytes"
+        if size_file > 1024:
+            size_file = size_file/(1024)
+            unit: str = "KB"
         if size_file > 1024 * 1024:
             size_file = size_file/(1024 * 1024)
             unit: str = "MB"
@@ -178,7 +188,7 @@ class scratch():
             size_file = size_file/(1024 * 1024 * 1024)
             unit: str = "GB"
 
-        f.write(f"{name_file}, size: {size_file} {unit}")
+        f.write(f"{name_file}, size: {size_file:.3f} {unit}")
 
     def write_ao1bin_hermite(self, f: object = None):
         """
@@ -194,6 +204,33 @@ class scratch():
                 print_triangle_matrix(f=f,
                                       integral=h[name],
                                       matriz_sym=integral_symmetry[name.split()[0]])
+
+
+    def write_ao2bin_hermite(self, f: object = None):
+        """
+        Print one body integrals into output
+
+        Args:
+        ----
+            f (object): Object of output file
+        """
+        f.write("***Warning print two--integrals take a lot time")
+        with h5py.File(self._hermite_2b_binary, "r") as h:
+            for name in list(h.keys()):
+                if name == "e2pot":
+                    self.write_title(f, "Two--Body Repulsion Integrals", 1)
+                else:
+                    self.write_title(f, name, 1)
+                for i in range(h[name].shape[0]):
+                    for j in range(i+1):
+                        for k in range(i+1):
+                            if k < i: m: int = k + 1
+                            else: m: int = j + 1
+                            for l in range(m):
+                                if h[name][i,j,k,l] < 999.0 and abs(h[name][i,j,k,l]) > 1.0E-6:
+                                    f.write(f"{i+1:4} {j+1:4} {k+1:4} {l+1:4}    " + str("{:6f}".format(h[name][i,j,k,l])).center(16) + "\n")
+                                elif abs(h[name][i,j,k,l]) > 1.0E-6:
+                                    f.write(f"{i+1:4} {j+1:4} {k+1:4} {l+1:4}    " + str("{:6e}".format(h[name][i,j,k,l])).center(16) + "\n")
 
     def write_output(self, information: str = None, type: int = 0, 
                     # title information
@@ -214,7 +251,8 @@ class scratch():
                         1: Titles
                         2: time information
                         3: size file
-                        9: hermite matriz
+                        9: hermite one body matriz
+                       10: hermite two body integrals
             drv_time (object:drv_time): Driver of the time process
         """
 
@@ -229,6 +267,9 @@ class scratch():
                 self.write_size_file(f, information, size_file)
             elif type == 9:
                 self.write_ao1bin_hermite(f)
+            elif type == 10:
+                self.write_ao2bin_hermite(f)
+
 
     def binary(self, file: Path = None, io: str = None,
                 # Write information

@@ -434,30 +434,30 @@ class eint:
                     integrals_matrix[label] = np.array(vector_to_matrix(self._n,
                                                             integral,
                                                             symmetries[label]))
-            ## Write in finary file
+            ## Write in binary file
             for label, integral in integrals_matrix.items():
                 io.binary(file = io._hermite_1b_binary,
                       dictionary = {label: integral},
                       io = "a")
 
-        ## Write in output size of AO1BINT.H5 in bytes
+        ## Write in output the size of AO1BINT.H5 in bytes
         io.write_output(information = io._hermite_1b_binary.name,
                         type = 3,
                         size_file = io._hermite_1b_binary.stat().st_size)
         ### SpinOrbit Calculation and Write integrals in AO1BINT
         if spinorbit_integrals:
-            so_integrals, so_symmetries = spin_orbit(integrals = io, number_atoms = number_atoms,
-                                                    charge = self._charge, nprim = self._wf.primitives_number,
-                                                    spino_x = spino_x, spino_y = spino_y, spino_z = spino_z,
-                                                    driver_time = driver_time, verbose = verbose)
+            spin_orbit(integrals = io, number_atoms = number_atoms,
+                        charge = self._charge, nprim = self._wf.primitives_number,
+                        spino_x = spino_x, spino_y = spino_y, spino_z = spino_z,
+                        driver_time = driver_time, verbose = verbose)
         ### SOFIEL Calculation and Write integrals in AO1BINT
         if sofiel_integrals:
-            sf_integrals,  sf_symmetries = sofiel(integrals = io, number_atoms = number_atoms,
-                                                charge = self._charge, nprim = self._wf.primitives_number,
-                                                sofiel_xx = sofiel_xx, sofiel_yy = sofiel_yy, sofiel_zz = sofiel_zz,
-                                                sofiel_xy = sofiel_xy, sofiel_xz = sofiel_xz, sofiel_yz = sofiel_yz,
-                                                sofiel_yx = sofiel_yx, sofiel_zx = sofiel_zx, sofiel_zy = sofiel_zy,
-                                                driver_time = driver_time, verbose = verbose)
+            sofiel(integrals = io, number_atoms = number_atoms,
+                    charge = self._charge, nprim = self._wf.primitives_number,
+                    sofiel_xx = sofiel_xx, sofiel_yy = sofiel_yy, sofiel_zz = sofiel_zz,
+                    sofiel_xy = sofiel_xy, sofiel_xz = sofiel_xz, sofiel_yz = sofiel_yz,
+                    sofiel_yx = sofiel_yx, sofiel_zx = sofiel_zx, sofiel_zy = sofiel_zy,
+                    driver_time = driver_time, verbose = verbose)
         # Write integrals in the output file
         if verbose > 20:
             io.write_output(type = 9)
@@ -470,9 +470,6 @@ class eint:
         # Write time into output file
         io.write_output("\n")
         io.write_output(type = 2, drv_time = driver_time)
-    
-        if verbose > 40:
-            driver_time.printing()
         driver_time.reset
     
         io.write_output(information = "END HERMITE: ONE BODY", type = 1)
@@ -490,8 +487,8 @@ class eint:
         Implemented:
             repulsion integrals
         """
-
-        print_title(name = "HERMITE: TWO BODY")
+        io = self._wf._driver_scratch
+        io.write_output(information = "HERMITE: TWO BODY", type = 1)
 
         driver_time = self._wf._driver_time
         start = time()
@@ -518,40 +515,58 @@ class eint:
         )
 
         integrals_two_body = {}
-        if verbose > 100 and self._cartessian:
-            for label, integral in integrals_2_cart.items():
-                integrals_two_body[label] = np.array(integral)
-            print("="*80,"\nTwo--body integrals with cto--primitives\n","="*80)
-            print(integrals_two_body["e2pot"])
-
         # Cartessian to Spherical
         if not self._cartessian:
             start_cto: float = time()
             for label, integral in integrals_2_cart.items():
-                integrals_two_body[label] = cart2sph(intcart = np.asfortranarray(integral),
-                        angular = np.array(self._angular_moments), 
-                        nprim = len(self._angular_moments), 
-                        ncar = self._wf.primitives_number_car,
-                        nsph = self._wf.primitives_number_sph)
-            time_cto = time() - start_cto
-        if verbose > 100:
-            print("="*80,"\nTwo--body integrals with gto--primitives\n","="*80)
-            print(integrals_two_body["e2pot"])
+                integrals_two_body[label] = cart2sph(
+                                            intcart = np.asfortranarray(integral),
+                                            angular = np.array(self._angular_moments), 
+                                            nprim = len(self._angular_moments), 
+                                            ncar = self._wf.primitives_number_car,
+                                            nsph = self._wf.primitives_number_sph
+                                            )
+            driver_time.add_name_delta_time(name = f"Two--Body CTOs--GTOs", delta_time = time() - start_cto)
+        else:
+            for label, integral in integrals_2_cart.items():
+                integrals_two_body[label] = np.array(integral)
 
-        if verbose > 10:
-            driver_time.add_name_delta_time(name = f"Two--Body CTOs--GTOs", delta_time = time_cto)
+        ## Write in binary file two body atomic integrals
+        io.binary(file = io._hermite_2b_binary,
+                  dictionary = integrals_two_body,
+                  io = "a")
+        ## Write in output the AO2BINT.H5 size in bytes
+        io.write_output(information = io._hermite_2b_binary.name,
+                        type = 3,
+                        size_file = io._hermite_2b_binary.stat().st_size)
+
+        if verbose > 100:
+            if not self._cartessian:
+                information: str = "Two--body integrals with gto--primitives"
+            else:
+                information: str = "Two--body integrals with cto--primitives"
+            io.write_output(information = information, type = 1, title_type = 1)
+            # Write integrals in the output file
+            start_print: float = time()
+            io.write_output(type = 10)
+            driver_time.add_name_delta_time(name = "Print two integrals", delta_time = time() - start_print)
+
         driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
-        driver_time.printing()
+
+        # Write time into output file
+        io.write_output("\n")
+        io.write_output(type = 2, drv_time = driver_time)
         driver_time.reset    
-        print_title(name = f"END HERMITE: TWO BODY")
+
+        io.write_output(information = "END HERMITE: TWO BODY", type = 1)
 
         return integrals_two_body
 
 
 if __name__ == "__main__":
-    wf = wave_function("../tests/molden_file/LiH_pople.molden", scratch_path = "/home1/scratch", job_folder = "160922134451")
+    wf = wave_function("../tests/molden_file/H2.molden", scratch_path = "/home1/scratch", job_folder = "160922134451")
     s = eint(wf)
-    one = True
+    one = False
     if one:
         integrals, symmetries = s.integration_onebody(integrals_names = ["nucpot","darwin","fc","spinorbit"],
                     # {

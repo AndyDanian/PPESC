@@ -120,6 +120,3 @@ def sofiel(integrals: dict = None, number_atoms: int = None, charge: list = None
         integrals.binary(file=integrals._hermite_1b_binary,dictionary={"sofiel zz": matrix},io="a")
         if verbose > 10:
             driver_time.add_name_delta_time(name = "SOFIEL ZZ AO", delta_time = (time() - start))
-
-
-    return spinorbit_integrals, symmetries
