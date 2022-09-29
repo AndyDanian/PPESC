@@ -34,11 +34,16 @@ class eint:
         self._lz     = wf.mlz
         self._angular_moments = wf.angular_momentums
         self._cartessian = wf.cto
+    ##################################################################
+    # Property
+    ##################################################################
+    @property
+    def list_1b_integrals(self) -> list:
+        return self._list_1b_integrals_calculated
 
     ##################################################################
     # METHODS
     ##################################################################
-
     def integration_onebody(
         self, integrals_names: list = None, integrals_properties: dict = None, verbose: int = 0,
         gauge: list  = None, dipole: list = None, dalton_normalization: bool = False
@@ -208,6 +213,7 @@ class eint:
 
         # verbose dictionaries
         symmetries: dict = {}
+        self._list_1b_integrals_calculated: list = []
         for int_name in integrals_names:
             integrals: dict = {}
 
@@ -436,14 +442,15 @@ class eint:
                                                             symmetries[label]))
             ## Write in binary file
             for label, integral in integrals_matrix.items():
-                io.binary(file = io._hermite_1b_binary,
+                io.binary(file = io._hermite_ao1b_binary,
                       dictionary = {label: integral},
                       io = "a")
+                self._list_1b_integrals_calculated.append(label)
 
         ## Write in output the size of AO1BINT.H5 in bytes
-        io.write_output(information = io._hermite_1b_binary.name,
+        io.write_output(information = io._hermite_ao1b_binary.name,
                         type = 3,
-                        size_file = io._hermite_1b_binary.stat().st_size)
+                        size_file = io._hermite_ao1b_binary.stat().st_size)
         ### SpinOrbit Calculation and Write integrals in AO1BINT
         if spinorbit_integrals:
             spin_orbit(integrals = io, number_atoms = number_atoms,
@@ -487,10 +494,14 @@ class eint:
         Implemented:
             repulsion integrals
         """
+
+        ## Instace external objects
+        # - Scratch
         io = self._wf._driver_scratch
         io.write_output(information = "HERMITE: TWO BODY", type = 1)
-
+        # - Diver Time
         driver_time = self._wf._driver_time
+        ## 
         start = time()
 
 
@@ -532,13 +543,13 @@ class eint:
                 integrals_two_body[label] = np.array(integral)
 
         ## Write in binary file two body atomic integrals
-        io.binary(file = io._hermite_2b_binary,
+        io.binary(file = io._hermite_ao2b_binary,
                   dictionary = integrals_two_body,
                   io = "a")
         ## Write in output the AO2BINT.H5 size in bytes
-        io.write_output(information = io._hermite_2b_binary.name,
+        io.write_output(information = io._hermite_ao2b_binary.name,
                         type = 3,
-                        size_file = io._hermite_2b_binary.stat().st_size)
+                        size_file = io._hermite_ao2b_binary.stat().st_size)
 
         if verbose > 100:
             if not self._cartessian:

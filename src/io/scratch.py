@@ -55,13 +55,15 @@ class scratch():
         #ouput files names
         self._output_name = None
         # H5 files
-        h5_files: list = ["AO1BINT.H5", "AO2BINT.H5"]
-        self._hermite_1b_binary = self._hermite_2b_binary = None
+        h5_files: list = ["AO1BINT.H5", "AO2BINT.H5", "MO1BINT.H5"]
+        self._hermite_ao1b_binary = self._hermite_ao2b_binary = \
+            self._hermite_mo1b_binary = None
         for i, name_file in enumerate(h5_files):
             if (self._scratch /(name_file)).exists():
                 (self._scratch /(name_file)).unlink()
-        self._hermite_1b_binary: Path = self._scratch /("AO1BINT.H5")
-        self._hermite_2b_binary: Path = self._scratch /("AO2BINT.H5")
+        self._hermite_ao1b_binary: Path = self._scratch /("AO1BINT.H5")
+        self._hermite_ao2b_binary: Path = self._scratch /("AO2BINT.H5")
+        self._hermite_mo1b_binary: Path = self._scratch /("MO1BINT.H5")
 
     ##################################################################
     # PROPERTIES
@@ -113,10 +115,14 @@ class scratch():
             f.write("*"*len(title)+"\n")
             f.write(title+"\n")
             f.write("*"*len(title)+"\n")
-        else:
+        elif title_type == 1:
             f.write("\n")
             f.write(name.center(70)+"\n")
             f.write(("-" * 40).center(70)+"\n")
+        else:
+            f.write(('='*40).center(80)+"\n")
+            f.write(f'{name}'.center(80)+"\n")
+            f.write(('='*40).center(80)+"\n")            
 
     def write_time(self, f: object = None, drv_time: drv_time = None):
         """"
@@ -190,7 +196,7 @@ class scratch():
 
         f.write(f"{name_file}, size: {size_file:.3f} {unit}")
 
-    def write_ao1bin_hermite(self, f: object = None):
+    def write_ao1bin_hermite(self, f: object = None, direct = False, array: np.array = None):
         """
         Print one body integrals into output
 
@@ -198,12 +204,19 @@ class scratch():
         ----
             f (object): Object of output file
         """
-        with h5py.File(self._hermite_1b_binary, "r") as h:
-            for name in list(h.keys()):
+        if not direct:
+            with h5py.File(self._hermite_ao1b_binary, "r") as h:
+                for name in list(h.keys()):
+                    self.write_title(f, name, 1)
+                    print_triangle_matrix(f=f,
+                                        integral=h[name],
+                                        matriz_sym=integral_symmetry[name.split()[0]])
+        else:
+            for name, values in array.items():
                 self.write_title(f, name, 1)
                 print_triangle_matrix(f=f,
-                                      integral=h[name],
-                                      matriz_sym=integral_symmetry[name.split()[0]])
+                                    integral=values,
+                                    matriz_sym=integral_symmetry[name.split()[0].lower()])
 
 
     def write_ao2bin_hermite(self, f: object = None):
@@ -215,7 +228,7 @@ class scratch():
             f (object): Object of output file
         """
         f.write("***Warning print two--integrals take a lot time")
-        with h5py.File(self._hermite_2b_binary, "r") as h:
+        with h5py.File(self._hermite_ao2b_binary, "r") as h:
             for name in list(h.keys()):
                 if name == "e2pot":
                     self.write_title(f, "Two--Body Repulsion Integrals", 1)
@@ -239,6 +252,8 @@ class scratch():
                     drv_time: drv_time = None,
                     # Size file in bytes
                     size_file: float = None,
+                    # Integral 1B
+                    direct = False, dictionary: dict = None
                     ) -> None:
         """
         Save information for output file
@@ -266,7 +281,7 @@ class scratch():
             elif type == 3:
                 self.write_size_file(f, information, size_file)
             elif type == 9:
-                self.write_ao1bin_hermite(f)
+                self.write_ao1bin_hermite(f, direct, dictionary)
             elif type == 10:
                 self.write_ao2bin_hermite(f)
 

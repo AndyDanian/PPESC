@@ -79,6 +79,7 @@ class wave_function():
                                           type = 2,
                                           drv_time = self._driver_time
                                           )
+        self._driver_time.reset
         self._driver_scratch.write_output("\n")
 
     ##################################################################
