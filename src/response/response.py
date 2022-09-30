@@ -10,11 +10,11 @@ from quadratic_response import *
 multiplicity_string = {1:"Singlet", 3:"Triplet"}
 
 class response():
-    def __init__(self, wf: wave_function = None, moe: list = None,
-                    at2in: list or np.array = None,
-                    gradient_properties: dict = None,
-                    coulomb_integrals: np.array = None,
-                    exchange_integrals: np.array = None):
+    def __init__(self, wf: wave_function = None,
+                  moe: list = None,
+                  at2in: list or np.array = None,
+                  coulomb_integrals: np.array = None,
+                  exchange_integrals: np.array = None):
         """
         Reponse object
 
@@ -31,16 +31,16 @@ class response():
             Orbital Energies, Gradient Properties and Two-Body
             Integrals
 
-        Args:
-        ----
-        wf (wave_function): Wave Function object
-        moe (list): Molecular Orbital Energies sort in a list
-        gradient_properties (dict(list)): Gradient Properties values in a list
+        Gradient Properties values is a dict(list)
             Example:
                 [
                     "Property 1": [a, b, c, ...], <-- Valors for property one
                     "Property 2": [d, e, f, ...]  <-- Valors for property two
                 ]
+        Args:
+        ----
+        wf (wave_function): Wave Function object
+        moe (list): Molecular Orbital Energies sort in a list
         two_integrals (list or array): Molecular orbitals two-body integrals
         level (str): Approximation level pzoa, rpa, hrpa, ...
         properties (list(list(str))): Name of the properties involved
@@ -66,7 +66,7 @@ class response():
 
         self._wf = wf
         self._moe = moe
-        self._gp = gradient_properties
+        self._at2in = at2in
 
         if not coulomb_integrals: self._coulomb_integrals = np.array([])
         else:   self._coulomb_integrals = coulomb_integrals
@@ -76,10 +76,6 @@ class response():
         self.principal_propagator = {"singlet": np.array([]), "triplet": np.array([])}
         self.q_principal_propagator = {"singlet": np.array([])}
 
-        self._at2in = np.array(at2in)
-
-        if not self._gp:
-            self._gp = {}
     ################################################################################################
     # ATTRIBUTES
     ################################################################################################
@@ -165,18 +161,17 @@ class response():
     ################################################################################################
     # METHODS
     ################################################################################################
-    def rpa(self, driver_time: drv_time = None, quadratic: bool = False,
-            gauge: list = None, verbose_integrals: int = -1):
+    def rpa(self, io: scratch = None, driver_time: drv_time = None):
         """
         Calculate reponse at random phase approximation
 
         Args:
         ----
-        verbose_integrals (int): Print level for integrals calculation
+            io (object:scratch): Driver to driver the output and binary files
+            time_object (drv_time): Manage time calculation
         """
 
-        if self._verbose >= 0:
-            print_subtitle(name = "RPA")
+        io.write_output(information = "RPA", type = 1, title_type = 1)
 
         if self._verbose > 10:
             start = time()
@@ -186,10 +181,9 @@ class response():
         for iresponse, property in enumerate(self._properties):
 
             # Type of response
-            print_ljust(name = "Response Calculation Specification")
-            print(f"     Response Type: {self.type_response[iresponse].title()}")
+            io.write_output("Response Calculation Specification")
+            io.write_output(f"     Response Type: {self.type_response[iresponse].title()}")
             # Properties pair
-
             operator_a: list = []
             operator_b: list = []
             operator_c: list = []
@@ -202,35 +196,52 @@ class response():
                     operator_c.append(name)
 
             if self.type_response[iresponse] == "lineal":
-                print(f"     Properties: {self.lineal_properties[countlp]}, {self.lineal_properties[countlp + 1]}")
-                print("     Property Multiplicity: ",self.lineal_property_multiplicity[countlp],", ",
-                                                    self.lineal_property_multiplicity[countlp + 1])
+                properties: str = (self.lineal_properties[countlp] + ", " + self.lineal_properties[countlp + 1])
+                io.write_output(f"     Properties: {properties}")
+                multiplicites: str = (
+                                        self.lineal_property_multiplicity[countlp] + ", " +
+                                        self.lineal_property_multiplicity[countlp + 1]
+                                     )
+                io.write_output(f"     Property Multiplicity: {multiplicites}")
                 countlp += 2
-                print(f"     Principal Propagator Multiplicity: {self.lineal_multiplicity_string[countl]}")
+                io.write_output(f"     Principal Propagator Multiplicity: {self.lineal_multiplicity_string[countl]}")
                 for index_a, name_a in enumerate(operator_a):
                     for index_b, name_b in enumerate(operator_b):
                         if index_a > index_b and name_a.split()[0] == name_b.split()[0]:
                             continue
-                        print(f"     Lineal Response: <<{name_a.upper()};{name_b.upper()}>>")
+                        io.write_output(f"     Lineal Response: <<{name_a.upper()};{name_b.upper()}>>")
                 
                 #Lineal Response calculate
                 responses_values = calculate_lineal_reponse(
-                                                        operator_a = operator_a, operator_b = operator_b,
+                                                        io = io,
+                                                        time_object = driver_time,
+                                                        operator_a = operator_a,
+                                                        operator_b = operator_b,
                                                         n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
-                                                        principal_propagator = self.principal_propagator[self.lineal_multiplicity_string[countl].lower()],
-                                                        gpvs = self.gpvs, time_object = driver_time, verbose = self._verbose)
+                                                        pp_multiplicity = self.lineal_multiplicity_string[countl].lower(),
+                                                        gpvs = self.gpvs,
+                                                        verbose = self._verbose)
                 countl += 1
 
             elif self.type_response[iresponse] == "quadratic":
             #
-                print(f"     Properties: {self.quadratic_properties[countqp]}, {self.quadratic_properties[countqp + 1]} , {self.quadratic_properties[countqp + 2]}")
-                print("     Property Multiplicity: ",self.quadratic_property_multiplicity[countqp],", ",
-                                                    self.quadratic_property_multiplicity[countqp + 1],", ",
-                                                    self.quadratic_property_multiplicity[countqp + 2])
+                properties: str = (
+                                    self.quadratic_properties[countqp] + ", " +
+                                    self.quadratic_properties[countqp + 1] + ", " +
+                                    self.quadratic_properties[countqp + 2]
+                                  )
+                io.write_output(f"     Properties: {properties}")
+                multiplicites: str = (self.quadratic_property_multiplicity[countqp] + ", " +
+                                      self.quadratic_property_multiplicity[countqp + 1] + ", " +
+                                      self.quadratic_property_multiplicity[countqp + 2]
+                                     )                
+                io.write_output(f"     Property Multiplicity: {multiplicites}")
                 countqp += 3
-                print("     Principal Propagator Multiplicity: ",self.quadratic_multiplicity_string[countq],", ",
-                                                                self.quadratic_multiplicity_string[countq + 1],", ",
-                                                                self.quadratic_multiplicity_string[countq + 2])
+                multiplicites: str = (self.quadratic_multiplicity_string[countq] + ", " +
+                                      self.quadratic_multiplicity_string[countq + 1] + ", " +
+                                      self.quadratic_multiplicity_string[countq + 2]
+                                     )
+                io.write_output(f"     Principal Propagator Multiplicity: {multiplicites}")
                 for index_a, name_a in enumerate(operator_a):
                     for index_b, name_b in enumerate(operator_b):
                         if index_a > index_b and name_a.split()[0] == name_b.split()[0]:
@@ -238,31 +249,25 @@ class response():
                         for index_c, name_c in enumerate(operator_c):
                             if index_b > index_c and name_b.split()[0] == name_b.split()[0]:
                                 continue
-                            print(f"     Quadratic Response: <<{name_a.upper()};{name_b.upper()},{name_c.upper()}>>")
+                            io.write_output(f"     Quadratic Response: <<{name_a.upper()};{name_b.upper()},{name_c.upper()}>> \n")
                 #
-                if self.quadratic_multiplicity_string[countq] == "Triplet": pp_a: np.array = self.principal_propagator["triplet"]
-                else: pp_a: np.array = self.q_principal_propagator["singlet"]
-
-                if self.quadratic_multiplicity_string[countq + 1] == "Triplet": pp_b: np.array = self.principal_propagator["triplet"]
-                else: pp_b: np.array = self.q_principal_propagator["singlet"]
-
-                if self.quadratic_multiplicity_string[countq + 2] == "Triplet": pp_c: np.array = self.principal_propagator["triplet"]
-                else: pp_c: np.array = self.q_principal_propagator["singlet"]
-
-                responses_values = calculate_quadratic_response(
-                operator_a = operator_a, operator_b = operator_b, operator_c = operator_c,
-                n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
-                principal_propagator_a = pp_a,
-                principal_propagator_b = pp_b,
-                principal_propagator_c = pp_c,
-                #avs = self.avs,
-                mo_occupied = self.mo_occupied, mo_virtuals = self.mo_virtuals, gpvs = self.gpvs,
-                time_object = driver_time, verbose = self._verbose)
+                responses_values = calculate_quadratic_response(io = io,
+                                                                time_object = driver_time,
+                                                                operator_a = operator_a,
+                                                                operator_b = operator_b,
+                                                                operator_c = operator_c,
+                                                                n_mo_occ = self._wf.mo_occ,
+                                                                n_mo_virt = self._wf.mo_virt,
+                                                                pp_multiplicity_a = self.quadratic_multiplicity_string[countq].lower(),
+                                                                pp_multiplicity_b = self.quadratic_multiplicity_string[countq + 1].lower(),
+                                                                pp_multiplicity_c = self.quadratic_multiplicity_string[countq + 2].lower(),
+                                                                mo_occupied = self.mo_occupied,
+                                                                mo_virtuals = self.mo_virtuals,
+                                                                gpvs = self.gpvs,
+                                                                verbose = self._verbose)
                 countq += 3
 
-        if self._verbose > 10:
-            driver_time.add_name_delta_time(name = "RPA", delta_time = (time() - start))
-
+        driver_time.add_name_delta_time(name = "RPA", delta_time = (time() - start))
         return responses_values
 
     #################################
@@ -277,8 +282,22 @@ class response():
                                                     by default to do RPA calculation
             gauge  (list): Gauge coordinate
             verbise (int): Print level
+                    < 10: minimun
+                    > 10: Time with more details
+                    > 30: Gradient Vector properties, ocuppied molecular integrals obirtals, virtuals molecular integrals orbitals
+                    > 50: Exchange and coulomb integrals, principal propagator and its inverse
             verbose_integrals (int): Print level to hermite module
         """
+
+        ## Instance external objects
+        # - Scratch
+        io = self._wf._driver_scratch
+        # - Driver Time
+        driver_time = self._wf._driver_time
+        ##
+        start = time()
+
+        io.write_output(information= f"REPONSE MODULE", type = 1)
 
         self._properties = properties
         self._p_multiplicity = property_multiplicity
@@ -304,25 +323,39 @@ class response():
 
         self._verbose = verbose
 
-        print_title(name = f"REPONSE CALCULATION")
-
-        driver_time = self._wf._driver_time
-        start = time()
-
-        # - Molecular orbital energies
+        # - Molecular Orbital Energies
         if not self._moe:
             self._moe = self._wf.mo_energies
+
+        # - Two--Body Atomic Orbitalas
+        if not self._at2in:
+            calculate_integral = eint(self._wf)
+            calculate_integral.integration_twobody(
+                                integrals_names = ["e2pot"],
+                                verbose = verbose_integrals,
+                                )
+
+        if "quadratic" in self.type_response:
+            quadratic: bool = True
+        else:
+            quadratic: bool = False
+
+        # Gradient Property Vector and Average Values
+        self.mo_occupied, self.mo_virtuals, self.gpvs = drv_gradient_property_vector(
+                                                                    io = io,
+                                                                    driver_time = driver_time,
+                                                                    wf = self._wf,
+                                                                    properties =self.properties,
+                                                                    gauge = gauge,
+                                                                    quadratic = quadratic,
+                                                                    verbose = self._verbose,
+                                                                    verbose_integrals = verbose_integrals)
 
         #Principal Propagator
         for ms in self.lineal_multiplicity_string:
             if not ms.lower() in [1,3,"singlet","triplet"]:
                 raise ValueError(f"***ERROR\n\n\
                     The multiplicity {ms} is not implemented for principal propagator")
-
-        if "quadratic" in self.type_response:
-            quadratic: bool = True
-        else:
-            quadratic: bool = False
 
         # Lineal principal propagator
         delta_time_c_x: float = 0.0
@@ -332,46 +365,44 @@ class response():
 
             # - Two integrals
             if not self._coulomb_integrals.size or not self._exchange_integrals.size:
-                delta_time_c_x, self._coulomb_integrals, self._exchange_integrals = get_coulomb_exchange_integrals(self._wf,
-                                                at2in = self._at2in,
+                get_coulomb_exchange_integrals(io = io,
+                                                driver_time = driver_time,
+                                                wf = self._wf,
                                                 verbose = self._verbose,
-                                                verbose_int = verbose_integrals)
+                                                )
             
-            dict_principal_propagator = drv_principal_propagator(driver_time = driver_time, moe = self._moe,
-                                                        n_mo_occ = self._wf.mo_occ, n_mo_virt = self._wf.mo_virt,
-                                                        coulomb = self._coulomb_integrals, exchange = self._exchange_integrals,
-                                                        multiplicity_pp = {"singlet": self.principal_propagator_singlet,
+            dict_principal_propagator = drv_principal_propagator(driver_time = driver_time,
+                                                                io = io,
+                                                                n_mo_occ = self._wf.mo_occ,
+                                                                n_mo_virt = self._wf.mo_virt,
+                                                                moe = self._moe,
+                                                                coulomb = self._coulomb_integrals,
+                                                                exchange = self._exchange_integrals,
+                                                                multiplicity_pp = {"singlet": self.principal_propagator_singlet,
                                                                             "triplet": self.principal_propagator_triplet},
-                                                        quadratic = quadratic,
-                                                        tp_inv = 0, verbose = self._verbose)
+                                                                quadratic = quadratic,
+                                                                tp_inv = 0, verbose = self._verbose)
             if quadratic and self.principal_propagator_singlet:
                 self.q_principal_propagator["singlet"] = dict_principal_propagator["singlet"]
             self.principal_propagator.update(dict_principal_propagator)
 
-        # Gradient Property Vector and Average Values
-        self.mo_occupied, self.mo_virtuals, self.gpvs = drv_gradient_property_vector(wf = self._wf,
-                                        properties =self.properties,
-                                        gpv_in = self._gp, driver_time = driver_time, gauge = gauge,
-                                        quadratic = quadratic,
-                                        verbose = self._verbose, verbose_integrals = verbose_integrals)
-
         # Run Response
         if principal_propagator_approximation.lower() == "rpa":
-            responses_values = self.rpa(driver_time = driver_time, quadratic = quadratic,
-                                        gauge = gauge, verbose_integrals=verbose_integrals)
+            responses_values = self.rpa(
+                                        io = io,
+                                        driver_time = driver_time,
+                                        )
 
-        if delta_time_c_x > 0.0:
-            driver_time.add_name_delta_time(name = f"Coulomb and Exchange", delta_time = delta_time_c_x)
         driver_time.add_name_delta_time(name = "Response Calculation", delta_time = (time() - start))
-        driver_time.printing()
+        io.write_output(type = 2, drv_time = driver_time)
         driver_time.reset
 
-        print_title(name = f"END REPONSE CALCULATION")
+        io.write_output(information = f"END REPONSE CALCULATION", type =1)
 
         return responses_values
 
 if __name__ == "__main__":
-    wfn = wave_function("../tests/molden_file/H2.molden")
+    wfn = wave_function("../tests/molden_file/H2.molden", scratch_path = "/home1/scratch", job_folder = "160922134451")
     r = response(wfn)
     # r.drv_reponse_calculation(principal_propagator_approximation="rpa",
     #         properties = [["angmom x","fc 1","spinorbit x"],["angmom x","sd 1 x","spinorbit x"],["angmom x","sd 1 z","spinorbit z"],["angmom y","sd 2 y","spinorbit y"]
@@ -381,12 +412,13 @@ if __name__ == "__main__":
 
     run = True
     if run:
-        r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["fc 1","fc 2"],["kinetic","fc 1"],
-                                                                                        ["laplacian","fc 1"],["kinetic", "fc 1","fc 2"],
-                                                                                        ["angmom x","fc 1","spinorbit x"]],
+        r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [["fc", "pso 1"],
+                                                                                          ["angmom x","fc 1","spinorbit x"],
+                                                                                          ["angmom x","fc 2","spinorbit x"],
+                                                                                          ["fc", "fc"],["pso", "pso"]],
                                 #gauge=[0.0,0.0,1.4045523587],
                                 #gauge = [0.000, 0.0000, -0.545857052], #Li pople
-                                verbose=1, verbose_integrals=1)
+                                verbose=11, verbose_integrals=1)
     else:
         a = 0
         r.drv_reponse_calculation(principal_propagator_approximation="rpa", properties = [

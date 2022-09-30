@@ -53,9 +53,9 @@ class scratch():
                 raise FileNotFoundError(f"***Error \n\n{Path(scratch)} folder not exists, please create before calculation.")
         
         #ouput files names
-        self._output_name = None
+        self._output_path = None
         # H5 files
-        h5_files: list = ["AO1BINT.H5", "AO2BINT.H5", "MO1BINT.H5"]
+        h5_files: list = ["AO1BINT.H5", "AO2BINT.H5", "MO1BINT.H5", "EXCHCOUL.H5", "PRINPROP.H5"]
         self._hermite_ao1b_binary = self._hermite_ao2b_binary = \
             self._hermite_mo1b_binary = None
         for i, name_file in enumerate(h5_files):
@@ -64,6 +64,8 @@ class scratch():
         self._hermite_ao1b_binary: Path = self._scratch /("AO1BINT.H5")
         self._hermite_ao2b_binary: Path = self._scratch /("AO2BINT.H5")
         self._hermite_mo1b_binary: Path = self._scratch /("MO1BINT.H5")
+        self._exchange_coulomb: Path = self._scratch /("EXCHCOUL.H5")
+        self._principal_propagator: Path = self._scratch /("PRINPROP.H5")
 
     ##################################################################
     # PROPERTIES
@@ -76,13 +78,13 @@ class scratch():
         return self._scratch
     
     @property
-    def output_name(self) -> str:
-        return self._output_name
-    @output_name.setter
-    def output_name(self, name: str = None):
+    def output_path(self) -> Path:
+        return self._output_path
+    @output_path.setter
+    def output_path(self, name: str = None) -> None:
         if (self._scratch / (name)).exists():
             (self._scratch / (name)).rename((self._scratch / (name + ".0")))
-        self._output_name = self._scratch / (name)
+        self._output_path = self._scratch / (name)
 
     ##################################################################
     # METHODS
@@ -91,7 +93,7 @@ class scratch():
         """
         Write the header information for output file
         """
-        with open(self._output_name, "a") as f:
+        with open(self._output_path, "a") as f:
             f.write(("*"*80)+"\n")
             f.write("PROGRAM NAME".center(80)+"\n")
             f.write("version 0.0".center(80)+"\n")
@@ -194,7 +196,7 @@ class scratch():
             size_file = size_file/(1024 * 1024 * 1024)
             unit: str = "GB"
 
-        f.write(f"{name_file}, size: {size_file:.3f} {unit}")
+        f.write(f"{name_file}, size: {size_file:.3f} {unit} \n")
 
     def write_ao1bin_hermite(self, f: object = None, direct = False, array: np.array = None):
         """
@@ -214,9 +216,13 @@ class scratch():
         else:
             for name, values in array.items():
                 self.write_title(f, name, 1)
+                if not name in integral_symmetry.keys():
+                    symmetry: str = "square"
+                else:
+                    symmetry: str = integral_symmetry[name.split()[0].lower()]
                 print_triangle_matrix(f=f,
                                     integral=values,
-                                    matriz_sym=integral_symmetry[name.split()[0].lower()])
+                                    matriz_sym=symmetry)
 
 
     def write_ao2bin_hermite(self, f: object = None):
@@ -240,11 +246,12 @@ class scratch():
                             if k < i: m: int = k + 1
                             else: m: int = j + 1
                             for l in range(m):
-                                if h[name][i,j,k,l] < 999.0 and abs(h[name][i,j,k,l]) > 1.0E-6:
-                                    f.write(f"{i+1:4} {j+1:4} {k+1:4} {l+1:4}    " + str("{:6f}".format(h[name][i,j,k,l])).center(16) + "\n")
-                                elif abs(h[name][i,j,k,l]) > 1.0E-6:
-                                    f.write(f"{i+1:4} {j+1:4} {k+1:4} {l+1:4}    " + str("{:6e}".format(h[name][i,j,k,l])).center(16) + "\n")
-
+                                if abs(h[name][i,j,k,l]) > 1.0E-6:
+                                    if abs(h[name][i,j,k,l]) > 999.0:
+                                        formate: str = "{:.6e}"
+                                    else:
+                                        formate: str = "{:.6f}"
+                                    f.write(f"{i+1:4} {j+1:4} {k+1:4} {l+1:4}    " + formate.format(h[name][i,j,k,l]).center(16) + "\n")
     def write_output(self, information: str = None, type: int = 0, 
                     # title information
                     title_type: int = 0,
@@ -271,7 +278,7 @@ class scratch():
             drv_time (object:drv_time): Driver of the time process
         """
 
-        with open(self._output_name, "a") as f:
+        with open(self._output_path, "a") as f:
             if type == 0:
                 f.write(information+"\n")
             elif type == 1 or title_type > 0:
@@ -299,17 +306,21 @@ class scratch():
             file (Path): Path of binary file
             dictionary (dict): Information to write into binary file
             io (str): Indicate read:r, write:a, or delete:d in binary file
-        
+                    a: write
+                    r: read
+                    f: search
         Return:
         ------
             np.ndarray
         """
-        if io is None or (io.lower() != "a" and io.lower() != "r" and io.lower() != "d"):
+        if io is None or io.lower() not in ["a", "r", "d", "f"]:
             raise ValueError(f"***ERROR\n\n\
                             argument io due be a to write or r to read, io {io}")
 
         if io.lower() == "d": 
             wr = "a"
+        elif io.lower() == "f":
+            wr = "r"
         else:
             wr = io.lower()
         
@@ -319,6 +330,8 @@ class scratch():
                     h[name] = value
             elif io.lower() == "r":
                 return h[label][:]
+            elif io.lower() == "f":
+                return label in h.keys()
             else:
                 del h[label]
 
@@ -326,9 +339,9 @@ class scratch():
         """
         Remove job folder into scratch path
         """
-        if Path(self._output_name).exists():
-            current_path: Path = Path().absolute() / (self._output_name.name)
-            current_path.write_text(self._output_name.read_text())
+        if Path(self._output_path).exists():
+            current_path: Path = Path().absolute() / (self._output_path.name)
+            current_path.write_text(self._output_path.read_text())
         if self._scratch.exists() and self._scratch.is_dir:
             shutil.rmtree(self._scratch)
         
@@ -336,6 +349,6 @@ if __name__ == "__main__":
     s = scratch("/home1/scratch")
     print(s.scratch)
     print(s.job_path)
-    s._output_name = "DATA.TXT"
-    print("output name: ",s.output_name)
+    s._output_path = "DATA.TXT"
+    print("output name: ",s.output_path)
     s.remove_job_folder()

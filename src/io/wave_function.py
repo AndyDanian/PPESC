@@ -52,7 +52,7 @@ class wave_function():
                 )
 
         if filename:
-            self._driver_scratch.output_name = Path(filename).stem.upper() + ".out"
+            self._driver_scratch.output_path = Path(filename).stem.upper() + ".out"
             self._driver_scratch.write_header_output()
             # get information from molden/wfnx file
             (
@@ -65,7 +65,7 @@ class wave_function():
                 drv_scratch = self._driver_scratch
             )
         else:
-            self._driver_scratch._output_name = "OUTPUT.out"
+            self._driver_scratch._output_path = Path("OUTPUT.out")
             self._driver_scratch.write_header_output()
             self._coord = coord
             self._basis = basis
