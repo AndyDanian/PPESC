@@ -619,8 +619,6 @@ class eint:
 
         io.write_output(information = "END HERMITE: TWO BODY", type = 1)
 
-        return integrals_two_body
-
 
 if __name__ == "__main__":
     wf = wave_function("../tests/molden_file/H2.molden", scratch_path = "/home1/scratch", job_folder = "160922134451")

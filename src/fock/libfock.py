@@ -35,11 +35,12 @@ import numpy as np
 
 # project PATH
 from wave_function import *
+#from scratch import *
+#from print_matrix import *
 
 # hermite
 from e_integral import *
 
 # functions
-from print_matrix import *
 from string_informations import *
 from drv_time import *
