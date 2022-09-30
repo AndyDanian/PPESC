@@ -67,6 +67,7 @@ class scratch():
         self._exchange_coulomb: Path = self._scratch /("EXCHCOUL.H5")
         self._principal_propagator: Path = self._scratch /("PRINPROP.H5")
 
+        self._activate_write_output: bool = True
     ##################################################################
     # PROPERTIES
     ##################################################################
@@ -86,6 +87,13 @@ class scratch():
             (self._scratch / (name)).rename((self._scratch / (name + ".0")))
         self._output_path = self._scratch / (name)
 
+    @property
+    def activate_write_output(self) -> bool:
+        return self._activate_write_output
+    @activate_write_output.setter
+    def activate_write_output(self, on_off: bool = True) -> None:
+        self._activate_write_output = on_off
+
     ##################################################################
     # METHODS
     ##################################################################
@@ -102,6 +110,148 @@ class scratch():
             f.write("         Andy Zapata".ljust(80)+"\n")
             f.write("*"*80+"\n")
             f.write("\n")
+
+    def write_box(self, f: object = None, 
+                names: list = None,
+                values: list = None):
+        """
+        Print a box with header and value
+
+        Args:
+            names (list): Names of the values to print
+            values (list): Values of the values to print
+        """
+
+        l: int = len(names)
+        lv: int = len(values)
+        n: int = 1
+        if l > 4:
+            n += int(l/4)
+
+        if l > lv:
+            raise ValueError("***ERROR\n\nThere are more header than values")
+        elif lv%l != 0:
+            raise ValueError("***ERROR\n\nValues size is not multiple of header size")
+
+        values_lines: int = int(lv/l)
+
+        split_up: str     = ("┌" + "─"*16 + "┐").center(18)
+        split: str        = ("├" + "─"*16 + "┤").center(18)
+        split_tailer: str = ("└" + "─"*16 + "┘").center(18)
+
+        for i in range(n):
+
+            if i < n-1:
+                m: int = 4
+            else:
+                m: int = l - (n-1)*4
+
+            header: str = ""
+            split_ups: str = ""
+            splits: str = ""
+            split_tailers: str = ""
+            for j in range(m):
+                split_ups += split_up + " "
+                splits += split + " "
+                split_tailers += split_tailer + " "
+                header += str("│" + "{}".format(names[j +i*4]).center(16) + "│ ")
+
+            f.write(split_ups.center(76) + "\n")
+            f.write(header.center(76) + "\n")
+            f.write(splits.center(76) + "\n")
+
+            for k in range(values_lines):
+                pvalues: str = ""
+                for j in range(m):
+                    if abs(values[j + i*4 + k*l]) > 1.0e-2 and abs(values[j + i*4 + k*l]) <= 9.9e6:
+                        pvalues += str("│" + "{:.3f}".format(values[j + i*4 + k*l]).center(16) + "│ ")
+                    else:
+                        pvalues += str("│" + "{:.5e}".format(values[j + i*4 + k*l]).center(16) + "│ ")
+                f.write(pvalues.center(76) + "\n")
+            f.write(split_tailers.center(76) + "\n")
+
+    def write_tensor(self, f: object = None, 
+                    names: list = None,
+                    values: list = None,
+                    isoani: bool = True,
+                    ani_axe: str or int = "z"):
+        """
+        Print a matrix of 3x3 with or without iso/anisotropic
+
+        Args:
+            names (list): Names of the values to print
+            values (list): Values of the values to print
+            ani_axes (str or int): Axes to calculate the anisotropic value
+            isoani (bool): Activate iso/anisotrpic print
+        """
+        sig_x: int = 1.0
+        sig_y: int = 1.0
+        sig_z: int = -1.0
+        if ani_axe == 1 or ani_axe == 0 or ani_axe == "x":
+            sig_x: int = -1.0
+            sig_y: int = 1.0
+            sig_z: int = 1.0
+        elif ani_axe == 2 or ani_axe == "y":
+            sig_x: int = 1.0
+            sig_y: int = -1.0
+            sig_z: int = 1.0
+
+        l: int = len(names)
+        lv: int = len(values)
+        n: int = 1
+
+        if l > lv:
+            raise ValueError("***ERROR\n\nThere are more header than values")
+
+        if l > 3:
+            n += int(l/3)
+
+        split_up: str     = ("┌" + "─"*31 + "┐").center(32)
+        split: str        = ("├" + "─"*31 + "┤").center(32)
+        split_tailer: str = ("└" + "─"*31 + "┘").center(32)
+
+        for i in range(n):
+
+            if i < n-1:
+                m: int = 3
+            else:
+                m: int = l - (n-1)*3
+
+            header: str = ""
+            split_ups: str = ""
+            splits: str = ""
+            split_tailers: str = ""
+
+            for j in range(m):
+                split_ups += split_up + " "
+                splits += split + " "
+                split_tailers += split_tailer + " "
+                header += str("│" + "{}".format(names[j +i*3]).center(31) + "│ ")
+            f.write(split_ups.center(101) + "\n")
+            f.write(header.center(101) + "\n")
+            f.write(splits.center(101) + "\n")
+
+            for k in range(3):
+                pvalues: str = ""
+                for j in range(m):
+                    pvalues += "│ "
+                    for p in range(3):
+                        pvalues += str("{:.2e}".format(values[j + i*3][k*3 + p]).center(10))
+                    pvalues += "│ "
+                f.write(pvalues.center(101) + "\n")
+            if isoani:
+                f.write(splits.center(101) + "\n")
+                iso_ani: str = ""
+                for j in range(m):
+                    iso_ani += str("│ISO: " +
+                            "{:.3e}".format((values[j + i*3][0]+values[j + i*3][4]+values[j + i*3][8])/3.0).center(10))
+                    iso_ani += str(" ANI: " +
+                            "{:.3e}".format((sig_x*values[j + i*3][0]+
+                                            sig_y*values[j + i*3][4]+
+                                            sig_z*values[j + i*3][8])/3.0).center(10)
+                            + "│ ")
+                f.write(iso_ani.center(101) + "\n")
+            f.write(split_tailers.center(101) + "\n")
 
     def write_title(self, f: object = None, name: str = None, title_type: int = 0):
         """
@@ -252,7 +402,8 @@ class scratch():
                                     else:
                                         formate: str = "{:.6f}"
                                     f.write(f"{i+1:4} {j+1:4} {k+1:4} {l+1:4}    " + formate.format(h[name][i,j,k,l]).center(16) + "\n")
-    def write_output(self, information: str = None, type: int = 0, 
+    def write_output(self, 
+                    information: str = None, type: int = 0, 
                     # title information
                     title_type: int = 0,
                     # time information
@@ -260,7 +411,9 @@ class scratch():
                     # Size file in bytes
                     size_file: float = None,
                     # Integral 1B
-                    direct = False, dictionary: dict = None
+                    direct = False, dictionary: dict = None,
+                    # Box
+                    box_type: int = 0, values: list = None,
                     ) -> None:
         """
         Save information for output file
@@ -271,27 +424,38 @@ class scratch():
             type (int): Type of information
                         0: standar information
                         1: Titles
+                            0: Main Title
+                            1: Subtitle
+                            2: Results
                         2: time information
                         3: size file
+                        4: results into box
+                            0: One box
+                            1: Tensor box
                         9: hermite one body matriz
                        10: hermite two body integrals
             drv_time (object:drv_time): Driver of the time process
         """
 
-        with open(self._output_path, "a") as f:
-            if type == 0:
-                f.write(information+"\n")
-            elif type == 1 or title_type > 0:
-                self.write_title(f, information, title_type)
-            elif type == 2:
-                self.write_time(f, drv_time)
-            elif type == 3:
-                self.write_size_file(f, information, size_file)
-            elif type == 9:
-                self.write_ao1bin_hermite(f, direct, dictionary)
-            elif type == 10:
-                self.write_ao2bin_hermite(f)
-
+        if self._activate_write_output:
+            with open(self._output_path, "a") as f:
+                if type == 0:
+                    f.write(information+"\n")
+                elif type == 1 or title_type > 0:
+                    self.write_title(f, information, title_type)
+                elif type == 2:
+                    self.write_time(f, drv_time)
+                elif type == 3:
+                    self.write_size_file(f, information, size_file)
+                elif type == 4:
+                    if box_type == 0:
+                        self.write_box(f, information, values)
+                    elif box_type == 1:
+                        self.write_tensor(f, information, values)
+                elif type == 9:
+                    self.write_ao1bin_hermite(f, direct, dictionary)
+                elif type == 10:
+                    self.write_ao2bin_hermite(f)
 
     def binary(self, file: Path = None, io: str = None,
                 # Write information

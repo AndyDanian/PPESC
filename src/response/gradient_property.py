@@ -72,11 +72,10 @@ def print_sot(output: object = None,
 def gradient_property_vector_rpa(io: scratch = None,
                                 time_object: drv_time = None,
                                 wf: wave_function = None, 
-                                properties: str = None,
+                                list_1b_integrals: list = None,
                                 quadratic: bool = None, 
-                                gauge: list = None,
                                 verbose: int = 0,
-                                verbose_int: int = 0):
+                                ):
     """
     Calculate of gradient property vectos in rpa approximation
 
@@ -85,18 +84,11 @@ def gradient_property_vector_rpa(io: scratch = None,
         io (object:scratch): Driver to driver the output and binary files
         time_object (drv_time): Object relationed with the manage of the time
         wf (wave_function): Wave Function object
-        property (str): Property label.
         gauge (list): Gauge coordiante
         verbose (int): Print level.
     """
     start = time()
-    # atomic integrals
-    calculate_integral = eint(wf)
-    calculate_integral.integration_onebody(
-                                            integrals_names = properties,
-                                            verbose = verbose_int,
-                                            gauge = gauge
-                                          )
+
     # molecular integrals
     n_mo_occ = wf.mo_occ
     n_mo_virt = wf.mo_virt
@@ -108,7 +100,7 @@ def gradient_property_vector_rpa(io: scratch = None,
     mo_occupied: dict = {}
     mo_virtuals: dict = {}
     #
-    for name in calculate_integral.list_1b_integrals:
+    for name in list_1b_integrals:
         mo_integral = np.matmul(mo_coeff_T,
                                 np.matmul(io.binary(file = io._hermite_ao1b_binary,
                                                     label = name,
@@ -170,11 +162,10 @@ def read_gradient_property_vector_rpa(gpvs: dict = None, property: str = None,
 def drv_gradient_property_vector(io: scratch = None,
                                 driver_time: drv_time = None,
                                 wf: wave_function = None,
-                                properties: list = None,
+                                list_1b_integrals: list = None,
                                 quadratic: bool = False,
-                                gauge: list = None,
-                                verbose: int = 0, 
-                                verbose_integrals: int = -1):
+                                verbose: int = 0
+                                ):
     """
     Driver to build gradient property vector
 
@@ -199,10 +190,8 @@ def drv_gradient_property_vector(io: scratch = None,
                             gradient_property_vector_rpa(io = io,
                                                         time_object = driver_time,
                                                         wf = wf,
-                                                        properties = properties, 
+                                                        list_1b_integrals= list_1b_integrals, 
                                                         quadratic = quadratic,
-                                                        gauge = gauge,
                                                         verbose = verbose, 
-                                                        verbose_int = verbose_integrals,
                                                         )
     return mo_occupied, mo_virtuals, gpvs

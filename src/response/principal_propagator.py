@@ -171,5 +171,3 @@ def drv_principal_propagator(io: scratch = None,
                     type = 3,
                     size_file = io._principal_propagator.stat().st_size
                     )
-
-    return principal_propagator

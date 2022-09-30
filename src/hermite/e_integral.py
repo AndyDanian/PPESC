@@ -259,8 +259,6 @@ class eint:
         for int_name in integrals_names:
             integrals: dict = {}
 
-
-
             if len(int_name.split(" ")) > 1:
                 integral_name = int_name.lower().split()[0]
             else:
@@ -289,6 +287,13 @@ class eint:
                 if integral_name.lower() in ["overlap", "darwin", "massvelo", "kinetic"]:
 
                     integral_label: str = integral_name.lower()
+                    self._list_1b_integrals_calculated.append(integral_label)
+                    if (io._hermite_ao1b_binary.exists() and
+                        io.binary(file = io._hermite_ao1b_binary, 
+                                    label = integral_label,
+                                    io = "f")):
+                        continue
+
                     symmetries[integral_label] = integral_symmetry[integral_name.lower()]
                     integrals[integral_label] = h1i(
                         #Default
@@ -308,6 +313,13 @@ class eint:
 
                     for atom in atoms:
                         integral_label: str = integral_name.lower() + " " + str(atom + 1)
+                        self._list_1b_integrals_calculated.append(integral_label)
+                        if (io._hermite_ao1b_binary.exists() and
+                            io.binary(file = io._hermite_ao1b_binary, 
+                                        label = integral_label,
+                                        io = "f")):
+                            continue
+
                         symmetries[integral_label] = integral_symmetry[integral_name.lower()]
                         integrals[integral_label] = h1i(
                             # Default
@@ -345,6 +357,13 @@ class eint:
                         else:
                             magnetic_xyz: int = (list(magnetic_axes.keys())
                                             [list(magnetic_axes.values()).index(b_i)])
+                    self._list_1b_integrals_calculated.append(integral_label)
+                    if (io._hermite_ao1b_binary.exists() and
+                        io.binary(file = io._hermite_ao1b_binary, 
+                                    label = integral_label,
+                                    io = "f")):
+                        continue
+
 
                     symmetries[integral_label] = integral_symmetry[integral_name.lower()]
 
@@ -391,6 +410,13 @@ class eint:
 
                     integral_label: str = str(
                         integral_name.lower() + " " + str(spatial_i + 1))
+                    self._list_1b_integrals_calculated.append(integral_label)
+                    if (io._hermite_ao1b_binary.exists() and
+                        io.binary(file = io._hermite_ao1b_binary, 
+                                    label = integral_label,
+                                    io = "f")):
+                        continue
+
 
                     symmetries[integral_label] = integral_symmetry[integral_name.lower()]
                     integrals[integral_label] = h1i(
@@ -447,9 +473,14 @@ class eint:
                             str(spatial_i + 1) + " "  + b_i)
                             magnetic_xyz: int = (list(magnetic_axes.keys())
                             [list(magnetic_axes.values()).index(b_i)])
+                        self._list_1b_integrals_calculated.append(integral_label)
+                        if (io._hermite_ao1b_binary.exists() and
+                            io.binary(file = io._hermite_ao1b_binary, 
+                                     label = integral_label,
+                                     io = "f")):
+                            continue
 
                         symmetries[integral_label] = integral_symmetry[integral_name.lower()]
-
                         integrals[integral_label] = h1i(
                             # Default
                             charge = self._charge,
@@ -489,8 +520,7 @@ class eint:
                 io.binary(file = io._hermite_ao1b_binary,
                           dictionary = {label: integral},
                           io = "a")
-                self._list_1b_integrals_calculated.append(label)
-
+                
         ## Write in output the size of AO1BINT.H5 in bytes
         io.write_output(information = io._hermite_ao1b_binary.name,
                         type = 3,

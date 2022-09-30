@@ -68,12 +68,16 @@ def correction_to_calculate(ppesc_amounts: list = None, tensor: bool = False):
         }, {"para_nr": para_nr, "triplet_lineal_amount": triplet_lineal_amount, "singlet_lineal_amount": singlet_lineal_amount,
         }, {"dia_nr": dia_nr, "dia_avs": diaavs}
 
-def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
-                    ppesc_consts: dict = None, atom: list = None,
+def run_shielding(  io: scratch = None,
+                    driver_time: drv_time = None,
+                    wf: wave_function = None,
+                    ppesc_amounts: list = None,
+                    ppesc_consts: dict = None,
+                    atom: list = None,
                     principal_propagator_approximation: str = None,
-                    driver_time: drv_time = None, verbose: int = 0,
                     tensor: bool = False,
                     scalar_correction: bool = None,
+                    verbose: int = 0,
                     verbose_response: int = -1,
                     verbose_average: int = -1,
                     verbose_fock: int = 1):
@@ -114,6 +118,7 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
     called correction
 
     Args:
+        io (object:scratch): Driver to driver the output and binary files
         wf (wave_function): Wave function object
         ppesc_amounts (list): Paramagnetic amount to calculate
         ppesc_consts (dict): Dictionary with constants for differente amounts
@@ -124,37 +129,36 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
         scalar_correction (bool): Activate Dw and Mv correction for energy
         verbose (int): Print level
         verbose_integrals (int): Print level for integral module
+        verbose_fock (int): Print information of fock module
     """
     start: float = time()
 
     corrections, responses_amounts, averages = correction_to_calculate(ppesc_amounts, tensor)
     ## The values of next dictionary are in include ppesc_parameters.py
     label_amounts: dict = {"para_nr": paramagnetic_nr,
-                    "triplet_lineal_amount": triplet_lineal_responses,
-                    "singlet_lineal_amount": singlet_lineal_responses,
-                    "dia_nr": diamagnetic_nr, "dia_avs": dia_averages}
-
-    #Hidden Print of other object
-    hidden_prints_other_object: object = HiddenPrints()
-    hidden_prints_other_object.__enter__()
+                          "triplet_lineal_amount": triplet_lineal_responses,
+                          "singlet_lineal_amount": singlet_lineal_responses,
+                          "dia_nr": diamagnetic_nr,
+                          "dia_avs": dia_averages}
     # parameters
     if scalar_correction:
-        if verbose_fock > 0: hidden_prints_other_object.__exit__(True,True,True)
-        moe, at_2_in = fock().calculate_hf_moe(wf,
-                                            at2in = True,
-                                            relativity_correction=True,
-                                            verbose=verbose_fock)
-        if verbose_fock > 0: hidden_prints_other_object.__enter__()
+        if verbose_fock < 10: io.activate_write_output = False
 
-        if verbose_response > 0: hidden_prints_other_object.__exit__(True,True,True)
-        lineal_response: response = response(wf = wf, moe = moe, at2in = at_2_in)
-        if verbose_response > 0: hidden_prints_other_object.__enter__()
+        fock_object: object = fock(wf = wf)
+        fock_object.calculate_hf_moe(
+                                      relativity_correction=True,
+                                      verbose=verbose_fock
+                                    )
+        if verbose_fock < 10: io.activate_write_output = True
+        if verbose_response < 10: io.activate_write_output = False
+        lineal_response: response = response(wf = wf, moe = fock_object.hf_moe)
+        if verbose_response < 10: io.activate_write_output = True
         driver_time.add_name_delta_time(name = "One-Body Mv and Dw Corrections to Energy", delta_time = (time() - start))
     else:
         moe: list = wf.mo_energies
-        if verbose_response > 0: hidden_prints_other_object.__exit__(True,True,True)
+        if verbose_response < 10: io.activate_write_output = False
         lineal_response: response = response(wf = wf, moe = moe)
-        if verbose_response > 0: hidden_prints_other_object.__enter__()
+        if verbose_response < 10: io.activate_write_output = True
 
     all_averages: dict = {}
     all_responses: dict = {}
@@ -167,7 +171,7 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
 
         # Avarage calculation
         start_average: float = time()
-        if verbose_average > 0: hidden_prints_other_object.__exit__(True,True,True)
+        if verbose_average < 10: io.activate_write_output = False
         atom_av: dict = {}
         for property, activate in averages.items():
             if activate:
@@ -184,12 +188,12 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
                         else:
                             tensor_step: int = 1
                         temp_av_a: list = [(ppesc_consts[name]*
-                                        list(av.calculate_average(
-                                        property = operators[component](a),
-                                        gauge = gauge,
-                                        verbose = verbose_average
-                                        ).values())[0])
-                                        for component in range(0,tensor_components,tensor_step)]
+                                                    list(av.calculate_average(
+                                                                        property = operators[component](a),
+                                                                        gauge = gauge,
+                                                                        verbose = verbose_average
+                                                                            ).values())[0])
+                                            for component in range(0,tensor_components,tensor_step)]
                         if name == "fc":
                             if not tensor:
                                 temp_av_a += 2*temp_av_a
@@ -199,13 +203,13 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
                                 temp_av_a = [temp, 0.0, 0.0, 0.0, temp, 0.0, 0.0, 0.0, temp]
                         atom_av[name] = temp_av_a
         all_averages[a] = atom_av
-        if verbose_average > 0: hidden_prints_other_object.__enter__()
+        if verbose_average < 10: io.activate_write_output = True
         delta_average += time() - start_average
         # End Average calculation
 
         # Response calculation
         start_response: float = time()
-        if verbose_response > 0: hidden_prints_other_object.__exit__(True,True,True)
+        if verbose_response < 10: io.activate_write_output = False
         atom_responses: dict = {}
         sdlap_components: list = ["sddxx", "sddxy", "sddxz", "sddyx", "sddyy", "sddyz", "sddzx", "sddzy", "sddzz"]
         for responses, activate in responses_amounts.items():
@@ -224,13 +228,13 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
                             tensor_components: int = 3
                             tensor_step: int = 1
                         temp_responses_a: list = [-ppesc_consts[label]
-                                    *list(lineal_response.drv_reponse_calculation(
-                                    gauge = gauge,
-                                    principal_propagator_approximation=principal_propagator_approximation,
-                                    properties = [response_calculation[component](a)],
-                                    verbose=verbose_response
-                                    ).values())[0]
-                                    for component in range(0,tensor_components,tensor_step)]
+                                                *list(lineal_response.drv_reponse_calculation(
+                                                                                                gauge = gauge,
+                                                                        principal_propagator_approximation=principal_propagator_approximation,
+                                                                                properties = [response_calculation[component](a)],
+                                                                                            verbose=verbose_response
+                                                                                            ).values())[0]
+                                                for component in range(0,tensor_components,tensor_step)]
                         atom_responses[label] = temp_responses_a
         if not tensor:
             if "sddxx" in atom_responses.keys() and "sddyy" in atom_responses.keys() and "sddzz" in atom_responses.keys():
@@ -263,10 +267,10 @@ def run_shielding(wf: wave_function = None, ppesc_amounts: list = None,
                                 for name in name_order_responses
                             }
         delta_response += time() - start_response
-        if verbose_response > 0: hidden_prints_other_object.__enter__()
+        if verbose_response < 10: io.activate_write_output = True
         # End Response calculation
 
-    hidden_prints_other_object.__exit__(True,True,True)
+    io.activate_write_output = True
 
     if verbose > 10:
         driver_time.add_name_delta_time(name = "Averages Amounts Calculations", delta_time = delta_average)
@@ -336,14 +340,18 @@ def get_shielding_iso_ani(all_responses: dict = None, all_averages: dict = None,
 
     return isotropic_responses, isotropic_averages, anisotropic_responses, anisotropic_averages
 
-def print_ppesc_brief(isotropic_responses: dict = None, isotropic_averages: dict = None,
-                    anisotropic_responses: dict = None, anisotropic_averages: dict = None
+def print_ppesc_brief(io: scratch = None,
+                      isotropic_responses: dict = None,
+                      isotropic_averages: dict = None,
+                      anisotropic_responses: dict = None,
+                      anisotropic_averages: dict = None
                     ):
     """
     Brief information about LRESC's results
 
     Args:
     ----
+        io (object:scratch): Driver to driver the output and binary files
         isotropic_responses (dict): Isotropic values of different ppesc's responses
         isotropic_averages (dict): Isotropic values of different ppesc's averages
         anisotropic_responses (dict): Anisotropic values of different ppesc's responses
@@ -377,37 +385,42 @@ def print_ppesc_brief(isotropic_responses: dict = None, isotropic_averages: dict
                         + sum([correction for label, correction in anisotropic_responses.items()
                     if label not in ["lpsokin", "lkinpso"]]))
 
-    print("    " + "NR".center(21) + "Corrections".center(21) + "Total".center(31))
-    print("    " + "Para".center(10) + " " + "Dia".center(10) + " "
+    io.write_output("    " + "NR".center(21) + "Corrections".center(21) + "Total".center(31))
+    io.write_output("    " + "Para".center(10) + " " + "Dia".center(10) + " "
             "Para".center(10) + " " + "Dia".center(10) + " "
             "NR".center(10) + " " + "Corrections".center(10) + " "
             "PPESC".center(10))
-    print("-"*80)
+    io.write_output("-"*80)
     # Iso
-    print("iso " + f"{paranr:.4f}".center(10) + " " + f"{dianr:.4f}".center(10) + " "
+    io.write_output("iso " + f"{paranr:.4f}".center(10) + " " + f"{dianr:.4f}".center(10) + " "
     f"{lresc_para:.4f}".center(10) + " " + f"{lresc_dia:.4f}".center(10) + " "
     f"{paranr+dianr:.4f}".center(10) + " " + f"{lresc_para + lresc_dia:.4f}".center(10)
     + " " + f"{paranr+dianr+lresc_para+lresc_dia:.4f}".center(10))
     # Ani
-    print("ani " + f"{ani_paranr:.4f}".center(10) + " " + f"{ani_dianr:.4f}".center(10) + " "
+    io.write_output("ani " + f"{ani_paranr:.4f}".center(10) + " " + f"{ani_dianr:.4f}".center(10) + " "
     f"{ani_lresc_para:.4f}".center(10) + " " + f"{ani_lresc_dia:.4f}".center(10) + " "
     f"{ani_paranr+ani_dianr:.4f}".center(10) + " " + f"{ani_lresc_para + ani_lresc_dia:.4f}".center(10)
     + " " + f"{ani_paranr+ani_dianr+ani_lresc_para+ani_lresc_dia:.4f}".center(10))
 
-    print(" "*25 + "-"*21)
-    print("    " + " "*21 + "Ligand".center(10) + " " + "Core".center(10))
-    print(" "*25 + "-"*21)
-    print("iso " + " "*21 + f"{ligand_correction:.4f}".center(10) + " " + f"{core_correction:.4f}".center(10))
-    print("ani " + " "*21 + f"{ani_ligand_correction:.4f}".center(10) + " " + f"{ani_core_correction:.4f}".center(10))
+    io.write_output(" "*25 + "-"*21)
+    io.write_output("    " + " "*21 + "Ligand".center(10) + " " + "Core".center(10))
+    io.write_output(" "*25 + "-"*21)
+    io.write_output("iso " + " "*21 + f"{ligand_correction:.4f}".center(10) + " " + f"{core_correction:.4f}".center(10))
+    io.write_output("ani " + " "*21 + f"{ani_ligand_correction:.4f}".center(10) + " " + f"{ani_core_correction:.4f}".center(10))
 
-def print_ppesc_values(isotropic_responses: dict = None, isotropic_averages: dict = None,
-                        anisotropic_responses: dict = None, anisotropic_averages: dict = None,
-                        atom_label: list = None, verbose: int = 0):
+def print_ppesc_values( io: scratch = None,
+                        isotropic_responses: dict = None,
+                        isotropic_averages: dict = None,
+                        anisotropic_responses: dict = None, 
+                        anisotropic_averages: dict = None,
+                        atom_label: list = None,
+                        verbose: int = 0):
     """
     Driver print isotropic and anisotropic results
 
     Args:
     ----
+        io (object:scratch): Driver to driver the output and binary files
         isotropic_responses (dict): Isotropic values of different ppesc's responses
                                     of all atoms
         isotropic_averages (dict): Isotropic values of different ppesc's averages
@@ -422,46 +435,49 @@ def print_ppesc_values(isotropic_responses: dict = None, isotropic_averages: dic
     for atom in isotropic_responses.keys():
 
         if atom > 0:
-            print("\n",":"*89)
-        print("\n\n",f"@@@@ Atom: {str(atom_label[atom]) + str(atom + 1):} @@@@".center(89),"\n\n")
+            io.write_output("\n" + ":"*89)
+        io.write_output(f"@@@@ Atom: {str(atom_label[atom]) + str(atom + 1):} @@@@".center(89), type = 1, title_type = 1)
 
         if verbose > 10:
 
             if "paranr" in isotropic_responses[atom].keys():
-                print("\n","---> Non-Relativistic Paramagnetic <---".center(76),"\n")
-                print_box(names=[ppesc_label["paranr"]],
-                        values=[isotropic_responses[atom]["paranr"],
-                        anisotropic_responses[atom]["paranr"]])
+                io.write_output("---> Non-Relativistic Paramagnetic <---".center(76))
+                io.write_output(information = [ppesc_label["paranr"]], type = 4,
+                                values=[isotropic_responses[atom]["paranr"],
+                                anisotropic_responses[atom]["paranr"]])
 
             # Paramagnetic corrections
             names: list = [ppesc_label[name] for name in isotropic_responses[atom].keys() if name != "paranr"]
             values_iso: list = [value for name, value in isotropic_responses[atom].items() if name != "paranr"]
             values_ani: list = [value for name, value in anisotropic_responses[atom].items() if name != "paranr"]
             if len(names) > 0:
-                print("\n","---> Paramagnetic Corrections <---".center(76),"\n")
-                print_box(names=names, values=values_iso + values_ani)
+                io.write_output("---> Paramagnetic Corrections <---".center(76))
+                io.write_output(information=names, type = 4, values=values_iso + values_ani)
 
             if "dianr" in isotropic_averages[atom].keys():
-                print("\n","---> Non-Relativistic Diamagnetic <---".center(76),"\n")
-                print_box(names=[ppesc_label["dianr"]],
-                        values=[isotropic_averages[atom]["dianr"],
-                        anisotropic_averages[atom]["dianr"]])
+                io.write_output("---> Non-Relativistic Diamagnetic <---".center(76))
+                io.write_output(information=[ppesc_label["dianr"]], type = 4,
+                                values=[isotropic_averages[atom]["dianr"],
+                                anisotropic_averages[atom]["dianr"]])
 
             # Diamagnetic corrections
             names: list = [ppesc_label[name] for name in isotropic_averages[atom].keys() if name != "dianr"]
             values_iso: list = [value for name, value in isotropic_averages[atom].items() if name != "dianr"]
             values_ani: list = [value for name, value in anisotropic_averages[atom].items() if name != "dianr"]
             if len(names) > 0:
-                print("\n","---> Diamagnetic Corrections <---".center(76),"\n")
-                print_box(names=names, values=values_iso + values_ani)
+                io.write_output("---> Diamagnetic Corrections <---".center(76))
+                io.write_output(information=names, type = 4, values=values_iso + values_ani)
 
-        print_ppesc_brief(isotropic_responses = isotropic_responses[atom],
+        print_ppesc_brief(
+                        io = io,
+                        isotropic_responses = isotropic_responses[atom],
                         isotropic_averages = isotropic_averages[atom],
                         anisotropic_responses = anisotropic_responses[atom],
                         anisotropic_averages = anisotropic_averages[atom]
                         )
 
-def print_ppesc_tensor(responses_tensor: dict = None, averages_tensor: list = None,
+def print_ppesc_tensor( io: scratch = None,
+                        responses_tensor: dict = None, averages_tensor: list = None,
                         isotropic_responses: dict = None, isotropic_averages: dict = None,
                         anisotropic_responses: dict = None, anisotropic_averages: dict = None,
                         atom_label: list = None):
@@ -470,6 +486,7 @@ def print_ppesc_tensor(responses_tensor: dict = None, averages_tensor: list = No
 
     Args:
     ----
+        io (object:scratch): Driver to driver the output and binary files
         responses_tensor (dict): Tensor of different ppesc's responses
         averages_tensor (list): Tensor of different ppesc's averages
         isotropic_responses (dict): Isotropic values of different ppesc's responses
@@ -485,34 +502,36 @@ def print_ppesc_tensor(responses_tensor: dict = None, averages_tensor: list = No
     for atom in responses_tensor.keys():
 
         if atom > 0:
-            print("\n",":"*89)
-        print("\n\n",f"@@@@ Atom: {str(atom_label[atom]) + str(atom + 1):} @@@@".center(101),"\n\n")
+            io.write_output(":"*89)
+        io.write_output(f"@@@@ Atom: {str(atom_label[atom]) + str(atom + 1):} @@@@".center(101))
 
         if "paranr" in responses_tensor[atom].keys():
-            print("\n","---> Non-Relativistic Paramagnetic <---".center(101),"\n")
-            print_tensor(names=[ppesc_label["paranr"]],
-                    values=[responses_tensor[atom]["paranr"]])
+            io.write_output("---> Non-Relativistic Paramagnetic <---".center(101))
+            io.write_output(information=[ppesc_label["paranr"]], type = 4, box_type = 1,
+                            values=[responses_tensor[atom]["paranr"]])
 
         # Paramagnetic corrections
         names: list = [ppesc_label[name] for name in responses_tensor[atom].keys() if name != "paranr"]
         values: list = [value for name, value in responses_tensor[atom].items() if name != "paranr"]
         if len(names) > 0:
-            print("\n","---> Paramagnetic Corrections <---".center(101),"\n")
-            print_tensor(names=names, values=values)
+            io.write_output("---> Paramagnetic Corrections <---".center(101))
+            io.write_output(information=names, values=values, type = 4, box_type = 1)
 
         if "dianr" in averages_tensor[atom].keys():
-            print("\n","---> Non-Relativistic Diamagnetic <---".center(101),"\n")
-            print_tensor(names=[ppesc_label["dianr"]],
-                    values=[averages_tensor[atom]["dianr"]])
+            io.write_output("---> Non-Relativistic Diamagnetic <---".center(101))
+            io.write_output(information=[ppesc_label["dianr"]], type = 4, box_type = 1,
+                            values=[averages_tensor[atom]["dianr"]])
 
         # Diamagnetic corrections
         names: list = [ppesc_label[name] for name in averages_tensor[atom].keys() if name != "dianr"]
         values: list = [value for name, value in averages_tensor[atom].items() if name != "dianr"]
         if len(names) > 0:
-            print("\n","---> Diamagnetic Corrections <---".center(101),"\n")
-            print_tensor(names=names, values=values)
+            io.write_output("---> Diamagnetic Corrections <---".center(101))
+            io.write_output(information=names, values=values, type = 4, box_type = 1)
 
-        print_ppesc_brief(isotropic_responses = isotropic_responses[atom],
+        print_ppesc_brief(
+                        io = io,
+                        isotropic_responses = isotropic_responses[atom],
                         isotropic_averages = isotropic_averages[atom],
                         anisotropic_responses = anisotropic_responses[atom],
                         anisotropic_averages = anisotropic_averages[atom]

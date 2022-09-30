@@ -172,9 +172,7 @@ class response():
         """
 
         io.write_output(information = "RPA", type = 1, title_type = 1)
-
-        if self._verbose > 10:
-            start = time()
+        start = time()
 
         countl = countlp = 0
         countq = countqp = 0
@@ -328,12 +326,19 @@ class response():
             self._moe = self._wf.mo_energies
 
         # - Two--Body Atomic Orbitalas
-        if not self._at2in:
-            calculate_integral = eint(self._wf)
+        calculate_integral = eint(self._wf)
+        if not self._at2in and not io._hermite_ao2b_binary.exists():
             calculate_integral.integration_twobody(
-                                integrals_names = ["e2pot"],
-                                verbose = verbose_integrals,
-                                )
+                                                    integrals_names = ["e2pot"],
+                                                    verbose = verbose_integrals,
+                                                  )
+        # atomic one-body integrals
+        calculate_integral.integration_onebody(
+                                                integrals_names = self.properties,
+                                                verbose = verbose_integrals,
+                                                gauge = gauge
+                                              )
+        
 
         if "quadratic" in self.type_response:
             quadratic: bool = True
@@ -341,15 +346,15 @@ class response():
             quadratic: bool = False
 
         # Gradient Property Vector and Average Values
+        list_1b_integrals: list = calculate_integral.list_1b_integrals
         self.mo_occupied, self.mo_virtuals, self.gpvs = drv_gradient_property_vector(
                                                                     io = io,
                                                                     driver_time = driver_time,
                                                                     wf = self._wf,
-                                                                    properties =self.properties,
-                                                                    gauge = gauge,
+                                                                    list_1b_integrals = list_1b_integrals,
                                                                     quadratic = quadratic,
                                                                     verbose = self._verbose,
-                                                                    verbose_integrals = verbose_integrals)
+                                                                    )
 
         #Principal Propagator
         for ms in self.lineal_multiplicity_string:
@@ -359,32 +364,49 @@ class response():
 
         # Lineal principal propagator
         delta_time_c_x: float = 0.0
-        if ((not self.principal_propagator["triplet"].size and self.principal_propagator_triplet)
-            or (not self.principal_propagator["singlet"].size and self.principal_propagator_singlet)
-            or (not self.q_principal_propagator["singlet"].size and quadratic)):
+        singlet_activate: bool = False
+        triplet_activate: bool = False
+        if not io._principal_propagator.exists():
+            for ms in self._pp_multiplicity:
+                if 1 in ms:
+                    singlet_activate = True
+                if 3 in ms:
+                   triplet_activate = True                   
+                if singlet_activate and triplet_activate:
+                    break
+        elif (not io.binary(file = io._principal_propagator, io = "f", label = "singlet") or
+            not io.binary(file = io._principal_propagator, io = "f", label = "triplet")):              
+            for ms in self._pp_multiplicity:
+                if (1 in ms and 
+                   not io.binary(file = io._principal_propagator, io = "f", label = "singlet")):
+                    singlet_activate = True
+                if (3 in ms and 
+                   not io.binary(file = io._principal_propagator, io = "f", label = "triplet")):
+                   triplet_activate = True                   
+                if singlet_activate and triplet_activate:
+                    break
 
-            # - Two integrals
-            if not self._coulomb_integrals.size or not self._exchange_integrals.size:
+        if singlet_activate or triplet_activate:
+            # - Coulomb and Echange
+            if not io._exchange_coulomb.exists():
                 get_coulomb_exchange_integrals(io = io,
                                                 driver_time = driver_time,
                                                 wf = self._wf,
                                                 verbose = self._verbose,
                                                 )
-            
-            dict_principal_propagator = drv_principal_propagator(driver_time = driver_time,
-                                                                io = io,
-                                                                n_mo_occ = self._wf.mo_occ,
-                                                                n_mo_virt = self._wf.mo_virt,
-                                                                moe = self._moe,
-                                                                coulomb = self._coulomb_integrals,
-                                                                exchange = self._exchange_integrals,
-                                                                multiplicity_pp = {"singlet": self.principal_propagator_singlet,
-                                                                            "triplet": self.principal_propagator_triplet},
-                                                                quadratic = quadratic,
-                                                                tp_inv = 0, verbose = self._verbose)
-            if quadratic and self.principal_propagator_singlet:
-                self.q_principal_propagator["singlet"] = dict_principal_propagator["singlet"]
-            self.principal_propagator.update(dict_principal_propagator)
+            drv_principal_propagator(
+                                    io = io,
+                                    driver_time = driver_time,
+                                    n_mo_occ = self._wf.mo_occ,
+                                    n_mo_virt = self._wf.mo_virt,
+                                    moe = self._moe,
+                                    coulomb = self._coulomb_integrals,
+                                    exchange = self._exchange_integrals,
+                                    multiplicity_pp = {"singlet": singlet_activate,
+                                                        "triplet": triplet_activate},
+                                    quadratic = quadratic,
+                                    tp_inv = 0, verbose = self._verbose
+                                    )
 
         # Run Response
         if principal_propagator_approximation.lower() == "rpa":

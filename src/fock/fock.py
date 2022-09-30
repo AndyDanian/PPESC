@@ -20,9 +20,15 @@ class fock():
                     * calculate_hf_moe: Use the wave funtion or kinetic, e->-<nucleu interactoin,\n\
                     and electron repulsion integrals")
 
-        self._eom = eom
+        self._eom: list = eom
         self._wf = wf
 
+    ################################################################################################
+    # Properties
+    ################################################################################################
+    @property
+    def hf_moe(self) -> list:
+        return self.hf_eom_calculated
     ################################################################################################
     # METHODS
     ################################################################################################
@@ -128,6 +134,7 @@ class fock():
         #AO TO MO
         fock_mo: np.array = np.matmul(np.array(mocoef).T,np.matmul(np.array(fock),np.array(mocoef)))
         eom: list = [fock_mo[i][i] for i in range(nprim)]
+        self.hf_eom_calculated: list = eom
         #Nuleu Repulsion
         time_start_te = time()
         vnn = 0.0
@@ -228,6 +235,7 @@ class fock():
 
             for i in range(nprim):
                 eom[i] += intmv_mo[i][i]+intdw_mo[i][i]
+            self.hf_eom_calculated = eom
             gap = eom[ne2] - eom[ne2-1]
             io.write_output(f"  E(LUMO): " + f"{eom[ne2]:4f}".center(24) + " au")
             io.write_output(f"- E(HOMO): " + f"{eom[ne2-1]:4f}".center(24) + " au")
@@ -283,7 +291,7 @@ class fock():
     def calculate_hf_moe(self, intk: list = None, inten: dict = None, intee: list = None,
                         mocoef: list = None, nprim: int = None, natoms: int = None, ne: int = None,
                         charge: list = None, coord: list = None, dalton_normalization: bool = False,
-                        relativity_correction: bool = False, at2in: bool = False,
+                        relativity_correction: bool = False,
                         verbose: int = 0, verbose_integrals: int = 0):
         """
         Driver to calculate Hartree--Fock molecular orbital energies
