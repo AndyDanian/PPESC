@@ -173,11 +173,6 @@ class fock():
                     formate: str = "{:.6f}"
                 row_strings += formate.format(eom[i]).center(14) + " "
             io.write_output(row_strings)  
-            # io.write_output(
-            #     *[str("{:.6f}".format(eom[i])).center(14)
-            #     for i in range(row*5, columns)],
-            #     #end="",
-            # )
 
         io.write_output("\n")
         gap = eom[ne2]-eom[ne2-1]
@@ -225,12 +220,7 @@ class fock():
                         formate: str = "{:.6f}({:.3f}%)"
                     row_strings += formate.format(energy_relativity, percent).center(28) + " "
                 io.write_output(row_strings)
-                # io.write_output(
-                #     *[str("{:.6f}({:.3f}%)".format(eom[i] + intmv_mo[i][i] + intdw_mo[i][i],
-                #         (intmv_mo[i][i] + intdw_mo[i][i])/abs(eom[i] + intmv_mo[i][i] + intdw_mo[i][i])*100)).center(28)
-                #         for i in range(row*3, columns)],
-                #     #end="",
-                # )
+
             io.write_output(" ")
             io.write_output("Note: Between parethesis is the relativity correction in porcentage\n\
                             (formule: relativity correction/ABS(Total)*100)")
