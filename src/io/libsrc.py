@@ -5,20 +5,17 @@ from time import time
 
 PROJECT_DIR = Path.cwd().parent
 
-sys.path.append(
-    os.fspath(PROJECT_DIR / "hermite")
-    )
-sys.path.append(
-    os.fspath(PROJECT_DIR / "hermite/h1int")
-    )
-sys.path.append(
-    os.fspath(PROJECT_DIR / "hermite/h2int")
-    )
+# sys.path.append(
+#     os.fspath(PROJECT_DIR / "hermite")
+#     )
+# sys.path.append(
+#     os.fspath(PROJECT_DIR / "hermite/h1int")
+#     )
+# sys.path.append(
+#     os.fspath(PROJECT_DIR / "hermite/h2int")
+#     )
 sys.path.append(
     os.fspath(PROJECT_DIR / "include")
-    )
-sys.path.append(
-    os.fspath(PROJECT_DIR / "io")
     )
 sys.path.append(
     os.fspath(PROJECT_DIR / "functions")
@@ -30,6 +27,8 @@ sys.path.append(
 import numpy as np
 
 from atom import *
+from scratch import *
+from print_matrix import *
 
 #include
 from integrals_parameters import *
@@ -41,8 +40,7 @@ from molden import *
 
 # functions
 from convert_array import *
-from print_matrix import *
 from drv_time import *
 
 #fock
-from fock import *
+#from fock import *

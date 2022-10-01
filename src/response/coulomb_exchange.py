@@ -1,17 +1,18 @@
 from libr import *
 
-def get_coulomb_exchange_integrals(wf: wave_function = None,
-                                    at2in: np.array = None,
-                                    verbose: int = 0,
-                                    verbose_int: int = 0):
+def get_coulomb_exchange_integrals(driver_time: drv_time = None,
+                                   io: scratch = None,
+                                   wf: wave_function = None,
+                                   verbose: int = 0):
     """
     Get exchange and coulomb integrals from atomic tow-body integrals
 
     Args:
     ----
+        drv_time(object:drv_time): Driver time process
+        io (object:scratch): Driver to driver the output and binary files
         wf (wave_function): Wave function object
         verbose (int): Print level for Coulomb and Exchange
-        verbose_int (int): Print level for atomic integrals
     Reference:
     ---------
     Program to transform ao to mo i2c
@@ -19,12 +20,6 @@ def get_coulomb_exchange_integrals(wf: wave_function = None,
     Theoret. Chim. Acta (Berl.). 1975, 39, 247--253
     """
     start = time()
-    # atomic integrals
-    if at2in.size == 1:
-        calculate_integral = eint(wf)
-        at2in: np.array = np.array(calculate_integral.integration_twobody(
-            integrals_names = ["e2pot"], verbose = verbose_int,
-        )["e2pot"])
 
     # Coulomb and Exchange
     mo_coeff = np.array(wf.mo_coefficients)
@@ -33,29 +28,44 @@ def get_coulomb_exchange_integrals(wf: wave_function = None,
 
     coulomb = np.zeros((n_mo_virt,n_mo_virt,n_mo_occ,n_mo_occ),dtype=float)
     exchange = np.zeros((n_mo_virt,n_mo_occ,n_mo_virt,n_mo_occ),dtype=float)
-
     coulomb, exchange = ao2mo(moco = np.asfortranarray(mo_coeff),
-                             a2i=np.asfortranarray(at2in),
+                             a2i=np.asfortranarray(
+                                io.binary(
+                                    file = io._hermite_ao2b_binary,
+                                    io = "r",
+                                    label = "e2pot"
+                                )
+                             ),
                              nocc=n_mo_occ, nvir=n_mo_virt)
+
+    ## Write in binary file Exchange and Coulomb integrals
+    io.binary(file = io._exchange_coulomb,
+              dictionary = {"exchange": exchange},
+              io = "a")
+    io.binary(file = io._exchange_coulomb,
+              dictionary = {"coulomb": coulomb},
+              io = "a")
+    ## Write in the ouput the EXCHCOUL.H5 file
+    io.write_output(information = f"Coulomb and Exchange ({io._exchange_coulomb.name})", 
+                    type = 3,
+                    size_file = io._exchange_coulomb.stat().st_size)
+
+    driver_time.add_name_delta_time(name = "Exchange and Coulomb", delta_time = (time() - start))
 
     if verbose > 50:
 
-        print("Coulomb and Exchange".center(70))
-        print(("-"*30).center(70))
-        print()
-        print("J".center(35),"K".center(35))
+        io.write_output(information = "Coulomb and Exchange", type = 1, title_type = 1)
+        io.write_output(information ="J".center(35) + "K".center(35))
         for a in range(n_mo_virt):
             for b in range(n_mo_virt):
                 for i in range(n_mo_occ):
                     for j in range(n_mo_occ):
-                        print(f"{a + n_mo_occ + 1,b + n_mo_occ + 1,i + 1,j + 1}".center(15),
-                            f"{coulomb[a,b,i,j]:.8f}".center(20),
-                            f"{a + n_mo_occ + 1,i + 1,b + n_mo_occ + 1,j + 1}".center(15),
-                            f"{exchange[a,i,b,j]:.8f}".center(20)
-                        )
-
-    return time() - start, coulomb, exchange
-
+                        io.write_output(
+                                    f"{a + n_mo_occ + 1,b + n_mo_occ + 1,i + 1,j + 1}".center(15) +
+                                    f"{coulomb[a,b,i,j]:.8f}".center(20) +
+                                    f"{a + n_mo_occ + 1,i + 1,b + n_mo_occ + 1,j + 1}".center(15) +
+                                    f"{exchange[a,i,b,j]:.8f}".center(20)
+                                    )
 
 def ao_2_mo(wf: wave_function = None, verbose: int = 0):
     """

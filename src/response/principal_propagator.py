@@ -1,10 +1,14 @@
 from coulomb_exchange import *
 from libr import *
 
-def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = None,
-                                        moe: np.array = None, coulomb: np.array = None,
-                                        exchange: np.array = None, multiplicity: str = None,
-                                        tp_inv: int = 0, time_object: drv_time = None,
+def get_principal_propagator_lineal_rpa(io: scratch = None,
+                                        driver_time: drv_time = None,
+                                        n_mo_occ: int = None, n_mo_virt: int = None,
+                                        moe: np.array = None,
+                                        coulomb: np.array = None,
+                                        exchange: np.array = None,
+                                        multiplicity: str = None,
+                                        tp_inv: int = 0,
                                         quadratic: bool = False,
                                         verbose: int = 0):
     """
@@ -12,6 +16,7 @@ def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = N
 
     Args:
     ----
+    io (object:scratch): Driver to driver the output and binary files
     n_mo_occ (int): Ocuppied molecular orbitals
     n_mo_virt (int): Virtual molecular orbitals
     moe (np.array, 1d): Molecular orbital energies
@@ -36,6 +41,17 @@ def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = N
     if tp_inv == 1:
         fock_inv: np.array = np.zeros((rotations,rotations),dtype=float)
     w: np.array = np.zeros((rotations,rotations),dtype=float)
+
+    if not coulomb.size:
+        coulomb = io.binary(file = io._exchange_coulomb, 
+                  io = "r",
+                  label = "coulomb"
+                )
+    if not exchange.size:
+        exchange = io.binary(file = io._exchange_coulomb, 
+                  io = "r",
+                  label = "exchange"
+                )
 
     start = time()
     for i in range(n_mo_occ):
@@ -87,21 +103,26 @@ def get_principal_propagator_lineal_rpa(n_mo_occ: int = None, n_mo_virt: int = N
             Inverse of a matrix only with numpy is implemeted")
     inverse_time = time() - start
 
-    if verbose > 10:
-        time_object.add_name_delta_time(name = f"Build Principal Propagator", delta_time = build_time)
-        time_object.add_name_delta_time(name = f"Inverse", delta_time = inverse_time)
+    driver_time.add_name_delta_time(name = f"Build Principal Propagator", delta_time = build_time)
+    driver_time.add_name_delta_time(name = f"Inverse", delta_time = inverse_time)
 
-    if verbose > 30:
-        print_triangle_matrix(integral = w, name = "Principal Propagator",  matriz_sym = "square")
+    if verbose > 50:
+        label: str = f"Principal Propagator (Multiplicity: {multiplicity})"
+        io.write_output(type = 9, direct = True, dictionary = {label: w})
         if tp_inv == 0:
-            name = "Principal Propagator Inverse (Numpy)."
-        print_triangle_matrix(integral = pp, name = name,  matriz_sym = "square")
+            label: str = f"Principal Propagator Inverse (Numpy, Multiplicity: {multiplicity})"
+        io.write_output(type = 9, direct = True, dictionary = {label: w})
     return pp
 
-def drv_principal_propagator(driver_time: drv_time = None, moe: list = None,
-                            n_mo_occ: int = None, n_mo_virt: int = None,
-                            coulomb: np.array = None, exchange: np.array = None,
-                            multiplicity_pp: dict = None, tp_inv: int  = None,
+def drv_principal_propagator(io: scratch = None,
+                            driver_time: drv_time = None,
+                            moe: list = None,
+                            n_mo_occ: int = None,
+                            n_mo_virt: int = None,
+                            coulomb: np.array = None,
+                            exchange: np.array = None,
+                            multiplicity_pp: dict = None,
+                            tp_inv: int  = None,
                             quadratic: bool = False,
                             verbose: int  = 0):
     """
@@ -109,6 +130,7 @@ def drv_principal_propagator(driver_time: drv_time = None, moe: list = None,
 
     Args:
     ----
+    io (object:scratch): Driver to driver the output and binary files
     driver_time (drv_time): Object relationed with the manage of the time
     n_mo_occ (int): Ocuppied molecular orbitals
     n_mo_virt (int): Virtual molecular orbitals
@@ -124,15 +146,28 @@ def drv_principal_propagator(driver_time: drv_time = None, moe: list = None,
     """
     # - Build PP
     principal_propagator = {}
+    symmetries: str = ""
     for name, ms in multiplicity_pp.items():
         if ms:
             principal_propagator[name] = get_principal_propagator_lineal_rpa(
-                                                        n_mo_occ = n_mo_occ, n_mo_virt = n_mo_virt,
-                                                        moe = np.array(moe), coulomb = coulomb,
-                                                        exchange = exchange,
-                                                        multiplicity = name, tp_inv = tp_inv,
-                                                        time_object = driver_time,
-                                                        quadratic = quadratic,
-                                                        verbose = verbose)
-
-    return principal_propagator
+                                                                             io = io,
+                                                                             driver_time = driver_time,
+                                                                             n_mo_occ = n_mo_occ, n_mo_virt = n_mo_virt,
+                                                                             moe = np.array(moe),
+                                                                             coulomb = coulomb,
+                                                                             exchange = exchange,
+                                                                             multiplicity = name,
+                                                                             tp_inv = tp_inv,
+                                                                             quadratic = quadratic,
+                                                                             verbose = verbose
+                                                                             )
+            # Write in binary file the principal propagator
+            io.binary(file = io._principal_propagator,
+                     dictionary = {f"{name}":  principal_propagator[name]},
+                     io = "a")
+            symmetries += " " + name
+    ## Write in the ouput the PRINPROP.H5 file
+    io.write_output(information = f"Principal Propagator (symmetry: {symmetries})", 
+                    type = 3,
+                    size_file = io._principal_propagator.stat().st_size
+                    )

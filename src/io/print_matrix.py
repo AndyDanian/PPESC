@@ -1,19 +1,13 @@
 import numpy as np
 
-from convert_array import *
-from string_informations import *
-
-def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: str = None):
+def print_triangle_matrix(f: object = None, integral: list = None, matriz_sym: str = None):
     """
     Print the triangule matrix
 
     Args:
         integral (array): array 2d with atomic integrals
-        name (str): name of the integral
         matriz_sym (str): Matriz symmetric of atomic integrals
     """
-    print_subtitle(name = name)
-
     ZERO = 1.0E-8
 
     size = len(integral[0][:])
@@ -34,16 +28,23 @@ def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: s
         else:
             n = size
         # Column index
-        print(
-            *[
-                "    " + str(i + 1).center(16)
-                if i == count * columns
-                else str(i + 1).center(16)
-                for i in range(count * columns, n)
-            ],
-            end="",
-        )
-        print()
+        line: str = "" 
+        for i in range(count * columns, n):
+            if i == count * columns:
+                line += "    " + str(i + 1).center(16)
+            else:
+                line += str(i + 1).center(16)
+        f.write(line+"\n\n")
+        # print(
+        #     *[
+        #         "    " + str(i + 1).center(16)
+        #         if i == count * columns
+        #         else str(i + 1).center(16)
+        #         for i in range(count * columns, n)
+        #     ],
+        #     end="",
+        # )
+        # print()
 
         if matriz_sym == "square":
             initial_value: int = 0
@@ -61,31 +62,25 @@ def print_triangle_matrix(integral: list = None, name: str = None, matriz_sym: s
                 values = [integral[row][column]
                             for column in range(count * columns, n)
                             ]
+            line: str = ""
             if np.linalg.norm(np.array(values)) > ZERO:
-                print(
-                    *[str(row + 1).center(4)
-                    + str("{:.8f}".format(value)).center(16)
-                    if i == 0
-                    else str("{:.8f}".format(value)).center(16)
-                    for i, value in enumerate(values)],
-                    end="",
-                )
-                print()
+                for i, value in enumerate(values):
+                    if i == 0:
+                        line += str(row + 1).center(4) + str("{:.8f}".format(value)).center(16)
+                    else:
+                        line += str("{:.8f}".format(value)).center(16)
+                f.write(line+"\n")
+                # print(
+                #     *[str(row + 1).center(4)
+                #     + str("{:.8f}".format(value)).center(16)
+                #     if i == 0
+                #     else str("{:.8f}".format(value)).center(16)
+                #     for i, value in enumerate(values)],
+                #     end="",
+                # )
+                # print()
 
         if size < 5:
             count += chunks
         else:
             count += 1
-
-def print_matriz_integrated(
-    integrals: dict = None, symmetries: dict = None
-):
-
-    for integral_label, integral in integrals.items():
-        print_triangle_matrix(
-                integral,
-                integral_label,
-                symmetries[
-                    integral_label
-                    ]
-        )

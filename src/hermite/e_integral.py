@@ -1,4 +1,5 @@
 # Current folder
+from lib2to3.pgen2 import driver
 from h1i import *
 from h2i import *
 from cto_gto_h1 import *
@@ -33,34 +34,58 @@ class eint:
         self._lz     = wf.mlz
         self._angular_moments = wf.angular_momentums
         self._cartessian = wf.cto
+    ##################################################################
+    # Property
+    ##################################################################
+    @property
+    def list_1b_integrals(self) -> list:
+        return self._list_1b_integrals_calculated
 
     ##################################################################
     # METHODS
     ##################################################################
-
     def integration_onebody(
         self, integrals_names: list = None, integrals_properties: dict = None, verbose: int = 0,
         gauge: list  = None, dipole: list = None, dalton_normalization: bool = False
     ):
+        """
+        Driver integral one--body calculations
 
-        print_title(name = "HERMITE: ONE BODY")
+        Args:
+        ----
+            Verbose: Print lever
+                        0    : minimum
+                        > 10 : time details
+                        > 20 : atomic integrals
+        """
 
-        str_integrals: str = "Integrals: "
-        print(str_integrals)
-        for int_name in integrals_names:
-            print(" "*len(str_integrals), "*",large_name[int_name.split(" ")[0]])
-            if integrals_properties and "r_gauge" in integrals_properties[int_name.split(" ")[0]].keys():
-                print(" "*len(str_integrals), "   Gauge: ",*["{:.4f}".format(xyz) for xyz in r_gauge])
-        print()
-        if gauge is not None:
-            print("General Gauge: ",*["{:.4f}".format(xyz) for xyz in gauge])
-        else:
-            temp_gauge: list = [0.0, 0.0, 0.0]
-            print("General Gauge: ",*["{:.4f}".format(xyz) for xyz in temp_gauge])
-
+        # Manager to write in the sratch and output file
+        io = self._wf._driver_scratch
+        io.write_output(information = "HERMITE: ONE BODY", type = 1)
         driver_time = self._wf._driver_time
-        start = time()
 
+        ## Write intgral information into output
+        str_integrals: str = "Integrals: "
+        io.write_output(str_integrals)
+        for int_name in integrals_names:
+            io.write_output(" "*len(str_integrals)+"*"+large_name[int_name.split(" ")[0]])
+            if integrals_properties and "r_gauge" in integrals_properties[int_name.split(" ")[0]].keys():
+                io.write_output(" "*len(str_integrals)+"   Gauge: "+
+                            "{:.4f}".format(r_gauge[0])+
+                            "{:.4f}".format(r_gauge[1])+
+                            "{:.4f}".format(r_gauge[2]))
+        io.write_output("\n")
+        if gauge is not None:
+            io.write_output("General Gauge: " +
+                            "{:.4f}".format(gauge[0]) + 
+                            "{:.4f}".format(gauge[1]) + 
+                            "{:.4f}".format(gauge[2]))
+        else:
+            temp_gauge: str = "{:.4f}".format(0.0) + "{:.4f}".format(0.0) + "{:.4f}".format(0.0)
+            io.write_output("General Gauge: " + temp_gauge)
+        # END write
+
+        start = time()
         if not integrals_names:
             raise ValueError("***Error \n\n what integral do you want?")
         else:
@@ -77,15 +102,12 @@ class eint:
                     Integrals implemented: \n\
                         {integral_symmetry.keys()}")
 
-        # verbose dictionaries
-        integrals: dict = {}
-        symmetries: dict = {}
-
         number_atoms: int =  self._wf.atom_number
         if number_atoms > 50:
-            print(f"*** WARNING\n\n\
+            io.write_output(f"*** WARNING\n\n\
             System has a lot atoms ({len(atoms)}), then calculate can take very much time")
-
+        # list with the name of the integrales calculated
+        self._list_1b_integrals_calculated: list = []
         ## SpinOrbit is the sum of the PSO integrals
         spinorbit_integrals: bool = False
         if "spinorbit" in [name for int_name in integrals_names for name in int_name.split()]:
@@ -98,30 +120,45 @@ class eint:
                 if "spinorbit" not in name:
                     temp_names.append(name)
                 else:
-                    if len(name.split(" ")) > 1 and "pso" not in [int_name for int_name in integrals_names]:
-                        if name.split()[1] == "1" or name.split()[1] == "x": spino_x: bool = True
-                        if name.split()[1] == "2" or name.split()[1] == "y": spino_y: bool = True
-                        if name.split()[1] == "3" or name.split()[1] == "z": spino_z: bool = True
+                    if len(name.split()) > 1:
+
+                        if name.split()[1] == "1" or name.split()[1] == "x": 
+                            spino_x: bool = True
+                            self._list_1b_integrals_calculated.append("spinorbit x")
+                        if name.split()[1] == "2" or name.split()[1] == "y":
+                            spino_y: bool = True
+                            self._list_1b_integrals_calculated.append("spinorbit y")
+                        if name.split()[1] == "3" or name.split()[1] == "z":
+                            spino_z: bool = True
+                            self._list_1b_integrals_calculated.append("spinorbit z")
 
                         if (name.split()[1]).isalpha():
                             spatial_axe: int = [i for i ,r in magnetic_axes.items() if r == name.split()[1]][0]
                         else:
                             spatial_axe: int = int(name.split()[1])
-                        temp_names += ["pso " + str(spatial_axe + 1 + i*3)
-                                        for i in range(number_atoms)
-                                        if "pso " + str(spatial_axe + 1 + i*3) not in integrals_names]
+
+                        if "pso" not in [int_name for int_name in integrals_names]:
+                            temp_names += ["pso " + str(spatial_axe + 1 + i*3)
+                                           for i in range(number_atoms)
+                                           if "pso " + str(spatial_axe + 1 + i*3) not in integrals_names]
+
                     elif "pso" not in [int_name for int_name in integrals_names]:
                         spino_x = spino_y = spino_z = True
+                        self._list_1b_integrals_calculated += ["spinorbit x",
+                                                               "spinorbit y",
+                                                               "spinorbit z"]
                         temp_names.append("pso")
                         activate_all_pso = True
                     elif "pso" in [int_name for int_name in integrals_names]:
                         spino_x = spino_y = spino_z = True
+                        self._list_1b_integrals_calculated += ["spinorbit x",
+                                                               "spinorbit y",
+                                                               "spinorbit z"]
                         activate_all_pso = True
             if activate_all_pso:
                 integrals_names = [name for name in temp_names if "pso " not in name]
             else:
                 integrals_names = temp_names
-
 
         ## SOFIEL is the sum of the NSTCGO integrals
         sofiel_integrals: bool = False
@@ -136,61 +173,92 @@ class eint:
                 if "sofiel" not in name:
                     temp_names.append(name)
                 else:
-                    if len(name.split(" ")) > 1 and "nstcgo" not in [int_name for int_name in integrals_names]:
+                    if len(name.split(" ")) > 1:
                         if name.split()[1] == "xx":
                             sofiel_xx: bool = True
+                            self._list_1b_integrals_calculated.append("sofiel xx")
                             sym_comp: int = 1
                             spatial: str = " x"
                         if name.split()[1] == "yy":
                             sofiel_yy: bool = True
+                            self._list_1b_integrals_calculated.append("sofiel yy")
                             sym_comp: int = 2
                             spatial: str = " y"
                         if name.split()[1] == "zz":
                             sofiel_zz: bool = True
+                            self._list_1b_integrals_calculated.append("sofiel zz")
                             sym_comp: int = 3
                             spatial: str = " z"
                         if name.split()[1] == "xy":
                             sofiel_xy: bool = True
+                            self._list_1b_integrals_calculated.append("sofiel xy")
                             sym_comp: int = 1
                             spatial: str = " y"
                         if name.split()[1] == "xz":
                             sofiel_xz: bool = True
+                            self._list_1b_integrals_calculated.append("sofiel xz")
                             sym_comp: int = 1
                             spatial: str = " z"
                         if name.split()[1] == "yz":
                             sofiel_yz: bool = True
+                            self._list_1b_integrals_calculated.append("sofiel yz")
                             sym_comp: int = 2
                             spatial: str = " z"
                         if name.split()[1] == "yx":
                             sofiel_yx: bool = True
+                            self._list_1b_integrals_calculated.append("sofiel yx")
                             sym_comp: int = 2
                             spatial: str = " x"
                         if name.split()[1] == "zx":
                             sofiel_zx: bool = True
+                            self._list_1b_integrals_calculated.append("sofiel zx")
                             sym_comp: int = 3
                             spatial: str = " x"
                         if name.split()[1] == "zy":
                             sofiel_zy: bool = True
+                            self._list_1b_integrals_calculated.append("sofiel zy")
                             sym_comp: int = 3
                             spatial: str = " y"
-                        temp_names += ["nstcgo " + str(sym_comp + i*3) + spatial
+
+                        if "nstcgo" not in [int_name for int_name in integrals_names]:
+                            temp_names += ["nstcgo " + str(sym_comp + i*3) + spatial
                                         for i in range(number_atoms)
                                         if "nstcgo " + str(sym_comp + i*3) + spatial not in integrals_names]
                     elif "nstcgo" not in [int_name for int_name in integrals_names]:
                         sofiel_xx = sofiel_yy = sofiel_zz = sofiel_xy = sofiel_xz = sofiel_yz =\
                             sofiel_yx = sofiel_zx = sofiel_zy = True
+                        self._list_1b_integrals_calculated += ["sofiel xx", "sofiel yy", "sofiel zz",
+                                                               "sofiel xy", "sofiel xz", "sofiel yz",
+                                                               "sofiel yx", "sofiel zx", "sofiel zy"]
                         temp_names.append("nstcgo")
                         activate_all_nstcgo = True
                     elif "nstcgo" in [int_name for int_name in integrals_names]:
                         sofiel_xx = sofiel_yy = sofiel_zz = sofiel_xy = sofiel_xz = sofiel_yz =\
-                            sofiel_yx = sofiel_zx = sofiel_zy = True
+                            sofiel_yx = sofiel_zx = sofiel_zy = True                        
+                        self._list_1b_integrals_calculated += ["sofiel xx", "sofiel yy", "sofiel zz",
+                                                               "sofiel xy", "sofiel xz", "sofiel yz",
+                                                               "sofiel yx", "sofiel zx", "sofiel zy"]
+                                                                                             
                         activate_all_nstcgo = True
             if activate_all_nstcgo:
                 integrals_names = [name for name in temp_names if "nstcgo " not in name]
             else:
                 integrals_names = temp_names
-
+        # Remove repet integrals
+        temp_integrals_names: list = []
+        for count, int_name in enumerate(integrals_names):
+            if int_name.split()[0] in integrals_names[count+1:]:
+                continue
+            if (count > 0  and 
+                int_name.split()[0] in temp_integrals_names):
+                continue
+            temp_integrals_names.append(int_name)
+        integrals_names: list = temp_integrals_names
+        # verbose dictionaries
+        symmetries: dict = {}
         for int_name in integrals_names:
+            integrals: dict = {}
+
             if len(int_name.split(" ")) > 1:
                 integral_name = int_name.lower().split()[0]
             else:
@@ -218,8 +286,16 @@ class eint:
 
                 if integral_name.lower() in ["overlap", "darwin", "massvelo", "kinetic"]:
 
-                    symmetries[integral_name.lower()] = integral_symmetry[integral_name.lower()]
-                    integrals[integral_name.lower()] = h1i(
+                    integral_label: str = integral_name.lower()
+                    self._list_1b_integrals_calculated.append(integral_label)
+                    if (io._hermite_ao1b_binary.exists() and
+                        io.binary(file = io._hermite_ao1b_binary, 
+                                    label = integral_label,
+                                    io = "f")):
+                        continue
+
+                    symmetries[integral_label] = integral_symmetry[integral_name.lower()]
+                    integrals[integral_label] = h1i(
                         #Default
                         charge = self._charge,
                         coord = self._coord,
@@ -236,12 +312,16 @@ class eint:
                 elif integral_name.lower() in ["nucpot", "fc"]:
 
                     for atom in atoms:
-                        symmetries[
-                            integral_name.lower() + " " + str(atom + 1)
-                            ] = integral_symmetry[integral_name.lower()]
-                        integrals[
-                            integral_name.lower() + " " + str(atom + 1)
-                            ] = h1i(
+                        integral_label: str = integral_name.lower() + " " + str(atom + 1)
+                        self._list_1b_integrals_calculated.append(integral_label)
+                        if (io._hermite_ao1b_binary.exists() and
+                            io.binary(file = io._hermite_ao1b_binary, 
+                                        label = integral_label,
+                                        io = "f")):
+                            continue
+
+                        symmetries[integral_label] = integral_symmetry[integral_name.lower()]
+                        integrals[integral_label] = h1i(
                             # Default
                             charge = self._charge,
                             coord = self._coord,
@@ -277,6 +357,13 @@ class eint:
                         else:
                             magnetic_xyz: int = (list(magnetic_axes.keys())
                                             [list(magnetic_axes.values()).index(b_i)])
+                    self._list_1b_integrals_calculated.append(integral_label)
+                    if (io._hermite_ao1b_binary.exists() and
+                        io.binary(file = io._hermite_ao1b_binary, 
+                                    label = integral_label,
+                                    io = "f")):
+                        continue
+
 
                     symmetries[integral_label] = integral_symmetry[integral_name.lower()]
 
@@ -323,6 +410,13 @@ class eint:
 
                     integral_label: str = str(
                         integral_name.lower() + " " + str(spatial_i + 1))
+                    self._list_1b_integrals_calculated.append(integral_label)
+                    if (io._hermite_ao1b_binary.exists() and
+                        io.binary(file = io._hermite_ao1b_binary, 
+                                    label = integral_label,
+                                    io = "f")):
+                        continue
+
 
                     symmetries[integral_label] = integral_symmetry[integral_name.lower()]
                     integrals[integral_label] = h1i(
@@ -379,9 +473,14 @@ class eint:
                             str(spatial_i + 1) + " "  + b_i)
                             magnetic_xyz: int = (list(magnetic_axes.keys())
                             [list(magnetic_axes.values()).index(b_i)])
+                        self._list_1b_integrals_calculated.append(integral_label)
+                        if (io._hermite_ao1b_binary.exists() and
+                            io.binary(file = io._hermite_ao1b_binary, 
+                                     label = integral_label,
+                                     io = "f")):
+                            continue
 
                         symmetries[integral_label] = integral_symmetry[integral_name.lower()]
-
                         integrals[integral_label] = h1i(
                             # Default
                             charge = self._charge,
@@ -401,66 +500,66 @@ class eint:
                             atom = atom,
                             r_gauge = r_gauge
                         )
-        # Transform integrals from cto to sph
-        integrals_matrix = {}
-        if not self._cartessian:
-            start_cto: float = time()
-            for label, integral in integrals.items():
-                integrals_matrix[label] = cto_gto_h1(np.array(vector_to_matrix(self._n, integral, symmetries[label])),
-                        np.array(self._angular_moments))
-            time_cto: float = time() - start_cto
-        else:
-            for label, integral in integrals.items():
-                integrals_matrix[label] = np.array(vector_to_matrix(self._n, integral, symmetries[label]))
-
-        ### SpinOrbit Calculation
+            # Transform integrals from cto to sph
+            integrals_matrix = {}
+            if not self._cartessian:
+                start_cto: float = time()
+                for label, integral in integrals.items():
+                    integrals_matrix[label] = cto_gto_h1(np.array(vector_to_matrix(self._n,
+                                                                integral,
+                                                                symmetries[label])),
+                                                                np.array(self._angular_moments))
+                time_cto: float = time() - start_cto
+            else:
+                for label, integral in integrals.items():
+                    integrals_matrix[label] = np.array(vector_to_matrix(self._n,
+                                                            integral,
+                                                            symmetries[label]))
+            ## Write in binary file
+            for label, integral in integrals_matrix.items():
+                io.binary(file = io._hermite_ao1b_binary,
+                          dictionary = {label: integral},
+                          io = "a")
+                
+        ### SpinOrbit Calculation and Write integrals in AO1BINT
         if spinorbit_integrals:
-            temp_integrals_matrix: dict = {}
-            so_integrals, so_symmetries = spin_orbit(integrals = integrals_matrix, number_atoms = number_atoms,
-                                                    charge = self._charge, nprim = self._wf.primitives_number,
-                                                    spino_x = spino_x, spino_y = spino_y, spino_z = spino_z,
-                                                    driver_time = driver_time, verbose = verbose)
-            # Errase pso
-            temp_integrals_matrix = {name: value for name, value in integrals_matrix.items()
-                                    if name in old_integrals_names}
-            integrals_matrix = so_integrals
-            integrals_matrix.update(temp_integrals_matrix)
-            symmetries.update(so_symmetries)
-        ### SOFIEL Calculation
+            spin_orbit(integrals = io, 
+                        driver_time = driver_time, 
+                        spino_x = spino_x, 
+                        spino_y = spino_y, 
+                        spino_z = spino_z,
+                        charge = self._charge, 
+                        number_atoms = number_atoms,
+                        nprim = self._wf.primitives_number,
+                        verbose = verbose)
+        ### SOFIEL Calculation and Write integrals in AO1BINT
         if sofiel_integrals:
-            temp_integrals_matrix: dict = {}
-            sf_integrals,  sf_symmetries = sofiel(integrals = integrals_matrix, number_atoms = number_atoms,
-                                                charge = self._charge, nprim = self._wf.primitives_number,
-                                                sofiel_xx = sofiel_xx, sofiel_yy = sofiel_yy, sofiel_zz = sofiel_zz,
-                                                sofiel_xy = sofiel_xy, sofiel_xz = sofiel_xz, sofiel_yz = sofiel_yz,
-                                                sofiel_yx = sofiel_yx, sofiel_zx = sofiel_zx, sofiel_zy = sofiel_zy,
-                                                driver_time = driver_time, verbose = verbose)
-            # Errase nstcgo
-            temp_integrals_matrix = {name: value for name, value in integrals_matrix.items()
-                                    if name in old_integrals_names}
-            integrals_matrix = sf_integrals
-            integrals_matrix.update(temp_integrals_matrix)
-            symmetries.update(sf_symmetries)
-
-        # Print Integrals
-        if not self._cartessian and verbose > 20:
-            print_title(name = "One--body integrals with gto--primitives")
-            print_matriz_integrated(integrals = integrals_matrix, symmetries = symmetries)
-        elif verbose > 20:
-            print_title(name = "One--body integrals with cto--primitives")
-            print_matriz_integrated(integrals = integrals_matrix, symmetries = symmetries)
-
+            sofiel(integrals = io, number_atoms = number_atoms,
+                    charge = self._charge, nprim = self._wf.primitives_number,
+                    sofiel_xx = sofiel_xx, sofiel_yy = sofiel_yy, sofiel_zz = sofiel_zz,
+                    sofiel_xy = sofiel_xy, sofiel_xz = sofiel_xz, sofiel_yz = sofiel_yz,
+                    sofiel_yx = sofiel_yx, sofiel_zx = sofiel_zx, sofiel_zy = sofiel_zy,
+                    driver_time = driver_time, verbose = verbose)
+        ## Write in output the size of AO1BINT.H5 in bytes
+        io.write_output(information = io._hermite_ao1b_binary.name,
+                        type = 3,
+                        size_file = io._hermite_ao1b_binary.stat().st_size)
+        # Write integrals in the output file
+        if verbose > 20:
+            io.write_output(type = 9)
         # Time
         if verbose > 10:
             driver_time.add_name_delta_time(name = f"One--Body CTOs--GTOs", delta_time = time_cto)
 
         driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
-        driver_time.printing()
+
+        # Write time into output file
+        io.write_output("\n")
+        io.write_output(type = 2, drv_time = driver_time)
         driver_time.reset
     
-        print_title(name = f"END HERMITE: ONE BODY")
+        io.write_output(information = "END HERMITE: ONE BODY", type = 1)
 
-        return integrals_matrix, symmetries
 
 
     def integration_twobody(
@@ -474,9 +573,13 @@ class eint:
             repulsion integrals
         """
 
-        print_title(name = "HERMITE: TWO BODY")
-
+        ## Instace external objects
+        # - Scratch
+        io = self._wf._driver_scratch
+        io.write_output(information = "HERMITE: TWO BODY", type = 1)
+        # - Diver Time
         driver_time = self._wf._driver_time
+        ## 
         start = time()
 
 
@@ -501,42 +604,58 @@ class eint:
         )
 
         integrals_two_body = {}
-        if verbose > 100 and self._cartessian:
-            for label, integral in integrals_2_cart.items():
-                integrals_two_body[label] = np.array(integral)
-            print("="*80,"\nTwo--body integrals with cto--primitives\n","="*80)
-            print(integrals_two_body["e2pot"])
-
         # Cartessian to Spherical
         if not self._cartessian:
             start_cto: float = time()
             for label, integral in integrals_2_cart.items():
-                integrals_two_body[label] = cart2sph(intcart = np.asfortranarray(integral),
-                        angular = np.array(self._angular_moments), 
-                        nprim = len(self._angular_moments), 
-                        ncar = self._wf.primitives_number_car,
-                        nsph = self._wf.primitives_number_sph)
-            time_cto = time() - start_cto
+                integrals_two_body[label] = cart2sph(
+                                            intcart = np.asfortranarray(integral),
+                                            angular = np.array(self._angular_moments), 
+                                            nprim = len(self._angular_moments), 
+                                            ncar = self._wf.primitives_number_car,
+                                            nsph = self._wf.primitives_number_sph
+                                            )
+            driver_time.add_name_delta_time(name = f"Two--Body CTOs--GTOs", delta_time = time() - start_cto)
+        else:
+            for label, integral in integrals_2_cart.items():
+                integrals_two_body[label] = np.array(integral)
+
+        ## Write in binary file two body atomic integrals
+        io.binary(file = io._hermite_ao2b_binary,
+                  dictionary = integrals_two_body,
+                  io = "a")
+        ## Write in output the AO2BINT.H5 size in bytes
+        io.write_output(information = io._hermite_ao2b_binary.name,
+                        type = 3,
+                        size_file = io._hermite_ao2b_binary.stat().st_size)
+
         if verbose > 100:
-            print("="*80,"\nTwo--body integrals with gto--primitives\n","="*80)
-            print(integrals_two_body["e2pot"])
+            if not self._cartessian:
+                information: str = "Two--body integrals with gto--primitives"
+            else:
+                information: str = "Two--body integrals with cto--primitives"
+            io.write_output(information = information, type = 1, title_type = 1)
+            # Write integrals in the output file
+            start_print: float = time()
+            io.write_output(type = 10)
+            driver_time.add_name_delta_time(name = "Print two integrals", delta_time = time() - start_print)
 
-        if verbose > 10:
-            driver_time.add_name_delta_time(name = f"Two--Body CTOs--GTOs", delta_time = time_cto)
         driver_time.add_name_delta_time(name = "Hermite Calculation", delta_time = (time() - start))
-        driver_time.printing()
-        driver_time.reset    
-        print_title(name = f"END HERMITE: TWO BODY")
 
-        return integrals_two_body
+        # Write time into output file
+        io.write_output("\n")
+        io.write_output(type = 2, drv_time = driver_time)
+        driver_time.reset    
+
+        io.write_output(information = "END HERMITE: TWO BODY", type = 1)
 
 
 if __name__ == "__main__":
-    wf = wave_function("../tests/molden_file/H2.molden")
+    wf = wave_function("../tests/molden_file/H2.molden", scratch_path = "/home1/scratch", job_folder = "160922134451")
     s = eint(wf)
-    one = True
+    one = False
     if one:
-        integrals, symmetries = s.integration_onebody(integrals_names = ["nucpot","darwin","fc 1","spin-orbit x"],
+        integrals, symmetries = s.integration_onebody(integrals_names = ["nucpot","darwin","fc","spinorbit"],
                     # {
                     # "nucpot":{"atoms":[0]},
                     # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},
@@ -552,6 +671,6 @@ if __name__ == "__main__":
                     # "psooz":{"spatial_symmetries":[0,1,2,3,4,5],"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                     # "ozke":{"magnetic_components":[0,1,2], "r_gauge":[0.0, 0.0, 1.404552358700]},
                     # },
-                    verbose = 0, dalton_normalization=False)
+                    verbose = 11, dalton_normalization=False)
     else:
         integrals = s.integration_twobody(["e2pot"], verbose=11, dalton_normalization=False)

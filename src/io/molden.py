@@ -1,4 +1,5 @@
 from os import read
+from libsrc import *
 import numpy as np
 
 def convert_to_float(variable_name: None, value: None):
@@ -36,7 +37,7 @@ def validate_file(file_molden):
                 primitive_type = True
 
             if gto_section and mo_section and atoms_section:
-                print("Molden's file is valid.")
+                return True
                 break
 
         if not gto_section:
@@ -53,7 +54,7 @@ def validate_file(file_molden):
             )
 
 
-def read_molden(file_molden, verbose=21):
+def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21):
     """[summary]
     Read .molden generate with DALTON the most general possible
     Args:
@@ -67,11 +68,12 @@ def read_molden(file_molden, verbose=21):
         Coeff_MO (array)        : Molecular coefficcients by each MO
     """
     label_title: str = "Reading Wave Function From MOLDEN File"
-    print(label_title.center(80))
-    print(("-"*len(label_title)).center(80))
+    drv_scratch.write_output(label_title.center(80))
+    drv_scratch.write_output(("-"*len(label_title)).center(80))
 
     # Verification of the file
-    validate_file(file_molden)
+    if validate_file(file_molden):
+        drv_scratch.write_output("Molden's file is valid")
 
     # Number of lines where are the information
     content = open(file_molden, "r")
@@ -113,8 +115,8 @@ def read_molden(file_molden, verbose=21):
 
     for number_line, element in enumerate(datafile):
         if "[TITLE]" in element:
-            print("Title into Molden: ")
-            print(datafile[number_line + 1])
+            drv_scratch.write_output("Title into Molden: ")
+            drv_scratch.write_output(datafile[number_line + 1])
 
         while "[Atoms]" in element and stop_atoms == False:
             # Read atomic type and coordinates
@@ -388,8 +390,8 @@ def read_molden(file_molden, verbose=21):
     #       because the coefficients aren't ordered by ml, when is used the DALTON
     angular_moments =[il for dicti in t_a_exp for il, values in dicti.items() for i in values for j in range(l[spatial_primitive][il])]
     if "d" in angular_moments and spatial_primitive == "spherical":
-        print("*** There are l higher p, then is neccesary re-organize mo coefficient ***")
-        print("*** when is used DALTON, which will done ***")
+        drv_scratch.write_output("*** There are l higher p, then is neccesary re-organize mo coefficient ***")
+        drv_scratch.write_output("*** when is used DALTON, which will done ***")
         new_mo = []
         for imo in mo:
             coefficients = [0.0 for i in range(total_primitives)]
@@ -409,8 +411,8 @@ def read_molden(file_molden, verbose=21):
             new_mo.append({"energy": imo["energy"], "spin": imo["spin"], "occupation": imo["occupation"], "coefficients": coefficients})
         mo = new_mo
     elif "d" in angular_moments and spatial_primitive != "spherical":
-        print("*** There are l higher p, then is neccesary re-organize mo coefficient ***")
-        print("when is used DALTON. Also, it is used cartessian primitive and in this case\
+        drv_scratch.write_output("*** There are l higher p, then is neccesary re-organize mo coefficient ***")
+        drv_scratch.write_output("when is used DALTON. Also, it is used cartessian primitive and in this case\
                 the primitives isn't reorganized")
 
     # Encapsule t_a_exp like l_i_q_xyz
