@@ -31,7 +31,10 @@ def sofiel(integrals: dict = None, number_atoms: int = None, charge: list = None
     spinorbit_integrals: dict = {}
     symmetries: dict = {}
     matrix = np.zeros((nprim,nprim),dtype=float)
-    if sofiel_xx:
+    if sofiel_xx and not (integrals._hermite_ao1b_binary.exists() and
+                          integrals.binary(file = integrals._hermite_ao1b_binary, 
+                                          label = "sofiel xx",
+                                          io = "f")):
         symmetries["sofiel xx"] = "antisym"
         matrix = 0.0
         for a in range(number_atoms):
@@ -41,7 +44,10 @@ def sofiel(integrals: dict = None, number_atoms: int = None, charge: list = None
         if verbose > 10:
             driver_time.add_name_delta_time(name = "SOFIEL XX AO", delta_time = (time() - start))
 
-    if sofiel_xy:
+    if sofiel_xy and not (integrals._hermite_ao1b_binary.exists() and
+                          integrals.binary(file = integrals._hermite_ao1b_binary, 
+                                          label = "sofiel xy",
+                                          io = "f")):
         symmetries["sofiel xy"] = "antisym"
         matrix = 0.0
         for a in range(number_atoms):
@@ -51,7 +57,10 @@ def sofiel(integrals: dict = None, number_atoms: int = None, charge: list = None
         if verbose > 10:
             driver_time.add_name_delta_time(name = "SOFIEL XY AO", delta_time = (time() - start))
 
-    if sofiel_xz:
+    if sofiel_xz and not (integrals._hermite_ao1b_binary.exists() and
+                          integrals.binary(file = integrals._hermite_ao1b_binary, 
+                                          label = "sofiel xz",
+                                          io = "f")):
         symmetries["sofiel xz"] = "antisym"
         matrix = 0.0
         for a in range(number_atoms):
@@ -61,7 +70,10 @@ def sofiel(integrals: dict = None, number_atoms: int = None, charge: list = None
         if verbose > 10:
             driver_time.add_name_delta_time(name = "SOFIEL XZ AO", delta_time = (time() - start))
 
-    if sofiel_yx:
+    if sofiel_yx and not (integrals._hermite_ao1b_binary.exists() and
+                          integrals.binary(file = integrals._hermite_ao1b_binary, 
+                                          label = "sofiel yx",
+                                          io = "f")):
         symmetries["sofiel yx"] = "antisym"
         matrix = 0.0
         for a in range(number_atoms):
@@ -71,7 +83,10 @@ def sofiel(integrals: dict = None, number_atoms: int = None, charge: list = None
         if verbose > 10:
             driver_time.add_name_delta_time(name = "SOFIEL YX AO", delta_time = (time() - start))
 
-    if sofiel_yy:
+    if sofiel_yy and not (integrals._hermite_ao1b_binary.exists() and
+                          integrals.binary(file = integrals._hermite_ao1b_binary, 
+                                          label = "sofiel yy",
+                                          io = "f")):
         symmetries["sofiel yy"] = "antisym"
         matrix = 0.0
         for a in range(number_atoms):
@@ -81,7 +96,10 @@ def sofiel(integrals: dict = None, number_atoms: int = None, charge: list = None
         if verbose > 10:
             driver_time.add_name_delta_time(name = "SOFIEL YY AO", delta_time = (time() - start))
 
-    if sofiel_yz:
+    if sofiel_yz and not (integrals._hermite_ao1b_binary.exists() and
+                          integrals.binary(file = integrals._hermite_ao1b_binary, 
+                                          label = "sofiel yz",
+                                          io = "f")):
         symmetries["sofiel yz"] = "antisym"
         matrix = 0.0
         for a in range(number_atoms):
@@ -91,7 +109,10 @@ def sofiel(integrals: dict = None, number_atoms: int = None, charge: list = None
         if verbose > 10:
             driver_time.add_name_delta_time(name = "SOFIEL YZ AO", delta_time = (time() - start))
 
-    if sofiel_zx:
+    if sofiel_zx and not (integrals._hermite_ao1b_binary.exists() and
+                          integrals.binary(file = integrals._hermite_ao1b_binary, 
+                                          label = "sofiel zx",
+                                          io = "f")):
         symmetries["sofiel zx"] = "antisym"
         matrix = 0.0
         for a in range(number_atoms):
@@ -101,7 +122,10 @@ def sofiel(integrals: dict = None, number_atoms: int = None, charge: list = None
         if verbose > 10:
             driver_time.add_name_delta_time(name = "SOFIEL ZX AO", delta_time = (time() - start))
 
-    if sofiel_zy:
+    if sofiel_zy and not (integrals._hermite_ao1b_binary.exists() and
+                          integrals.binary(file = integrals._hermite_ao1b_binary, 
+                                          label = "sofiel zy",
+                                          io = "f")):
         symmetries["sofiel zy"] = "antisym"
         matrix = 0.0
         for a in range(number_atoms):
@@ -111,7 +135,10 @@ def sofiel(integrals: dict = None, number_atoms: int = None, charge: list = None
         if verbose > 10:
             driver_time.add_name_delta_time(name = "SOFIEL ZY AO", delta_time = (time() - start))
 
-    if sofiel_zz:
+    if sofiel_zz and not (integrals._hermite_ao1b_binary.exists() and
+                          integrals.binary(file = integrals._hermite_ao1b_binary, 
+                                          label = "sofiel zz",
+                                          io = "f")):
         symmetries["sofiel zz"] = "antisym"
         matrix = 0.0
         for a in range(number_atoms):

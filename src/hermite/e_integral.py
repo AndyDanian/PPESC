@@ -521,10 +521,6 @@ class eint:
                           dictionary = {label: integral},
                           io = "a")
                 
-        ## Write in output the size of AO1BINT.H5 in bytes
-        io.write_output(information = io._hermite_ao1b_binary.name,
-                        type = 3,
-                        size_file = io._hermite_ao1b_binary.stat().st_size)
         ### SpinOrbit Calculation and Write integrals in AO1BINT
         if spinorbit_integrals:
             spin_orbit(integrals = io, 
@@ -544,6 +540,10 @@ class eint:
                     sofiel_xy = sofiel_xy, sofiel_xz = sofiel_xz, sofiel_yz = sofiel_yz,
                     sofiel_yx = sofiel_yx, sofiel_zx = sofiel_zx, sofiel_zy = sofiel_zy,
                     driver_time = driver_time, verbose = verbose)
+        ## Write in output the size of AO1BINT.H5 in bytes
+        io.write_output(information = io._hermite_ao1b_binary.name,
+                        type = 3,
+                        size_file = io._hermite_ao1b_binary.stat().st_size)
         # Write integrals in the output file
         if verbose > 20:
             io.write_output(type = 9)

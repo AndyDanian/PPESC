@@ -82,13 +82,12 @@ class ppesc():
         io.write_output(("-"*40).center(101))
         io.write_output(f"Anisotropic is with respect {ani_axe} axe.")
         io.write_output("Values were multiplied by respectively constants according PPESC theory.")
-        if tensor or len(atoms) < 3 or verbose > 10:
-            io.write_output("Paramagnetic corrections:")
-            io.write_output("     * Singlet: {}, {}".format(ppesc_label["lpsokin"], ppesc_label["lkinpso"]))
-            io.write_output("     * Triplet: {}, {}".format(ppesc_label["fclap"],ppesc_label["sdlap"]))
-            io.write_output("Diamagnetic corrections:")
-            io.write_output("      *Averages: {}, {}, {}, {}, {}".format(ppesc_label["fc"], ppesc_label["sd"],
-                            ppesc_label["psooz"], ppesc_label["dnske"], ppesc_label["pnstcgop"]))
+        io.write_output("Paramagnetic corrections:")
+        io.write_output("     * Singlet: {}, {}".format(ppesc_label["lpsokin"], ppesc_label["lkinpso"]))
+        io.write_output("     * Triplet: {}, {}".format(ppesc_label["fclap"],ppesc_label["sdlap"]))
+        io.write_output("Diamagnetic corrections:")
+        io.write_output("      *Averages: {}, {}, {}, {}, {}".format(ppesc_label["fc"], ppesc_label["sd"],
+                        ppesc_label["psooz"], ppesc_label["dnske"], ppesc_label["pnstcgop"]))
 
         if not tensor:
             # Print results
