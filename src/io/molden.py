@@ -2,7 +2,7 @@ from os import read
 from libsrc import *
 import numpy as np
 
-def convert_to_float(variable_name: None, value: None):
+def convert_to_float(variable_name, value):
     """
     Convert numeric string o int to float or return None
     when is a special character like ****
@@ -54,7 +54,7 @@ def validate_file(file_molden):
             )
 
 
-def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21):
+def read_molden(file_molden: str = "", drv_scratch: scratch = None, verbose: int = 1):
     """[summary]
     Read .molden generate with DALTON the most general possible
     Args:
@@ -78,40 +78,40 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
     # Number of lines where are the information
     content = open(file_molden, "r")
     datafile = content.readlines()
-    amount_strings = 0
+    amount_strings: int = 0
 
     # label, index, charge, and coordinates
-    numbers_atoms = 0
-    A_Bohr = 1.0
-    stop_atoms = False
-    molecule_index = 0
-    molecule_index_before = 0
-    molecule_information = []
-    l_i_q_xyz = []
+    numbers_atoms: int = 0
+    A_Bohr: float = 1.0
+    stop_atoms: bool = False
+    molecule_index: int = 0
+    molecule_index_before: int = 0
+    molecule_information: list = []
+    l_i_q_xyz: list = []
 
     # Primitive type and amount, and exponents
     # NOTE: Only bases set uncontracteds
-    stop_gto = False
-    t_a_exp = []
-    line_gto = 2
-    stop_verification_contraction = False
-    total_primitives = 0
+    stop_gto: bool = False
+    t_a_exp: list = []
+    line_gto: int = 2
+    stop_verification_contraction: bool = False
+    total_primitives: int = 0
     # -- Molden Format https://www3.cmbi.umcn.nl/molden/molden_format.html
-    l = {
+    l: dict = {
         "cartessian": {"s": 1, "p": 3, "d": 6, "f": 10, "g": 15, "h": 21, "i": 28},
         "spherical": {"s": 1, "p": 3, "d": 5, "f": 7, "g": 9, "h": 11, "i": 13},
     }
-    spatial_primitive = "cartessian"
+    spatial_primitive: str = "cartessian"
     #
-    spatial_primitive_find = False
-    count_spatial = 0
+    spatial_primitive_find: bool = False
+    count_spatial: int = 0
 
     # MO Coefficients
-    stop_mo = False
-    count_mo = 1
-    mo = []
-    num_mo = 1
-    end_mo = ["S", "[", "E"]
+    stop_mo: bool = False
+    count_mo: int = 1
+    mo: list = []
+    num_mo: int = 1
+    end_mo: list = ["S", "[", "E"]
 
     for number_line, element in enumerate(datafile):
         if "[TITLE]" in element:
@@ -416,7 +416,7 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
                 the primitives isn't reorganized")
 
     # Encapsule t_a_exp like l_i_q_xyz
-    t_a_exp_temp = t_a_exp
+    t_a_exp_temp: list = t_a_exp
     t_a_exp = []
     count = 0
     for mol in l_i_q_xyz:

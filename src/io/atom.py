@@ -148,7 +148,7 @@ class atom:
         "mlx":[], "mly":[], "mlz":[], "exp":[] }
         """
 
-        atom_array = {}
+        atom_array: dict = {}
         atom_array["element"] = self.atomic_symbol
 
         atom_array["charge"] = float(self.q)

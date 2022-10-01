@@ -1,6 +1,10 @@
+from io import TextIOWrapper
+
 import numpy as np
 
-def print_triangle_matrix(f: object = None, integral: list = None, matriz_sym: str = None):
+def print_triangle_matrix(f: TextIOWrapper = None,
+                         integral: list = None,
+                         matriz_sym: str = None) -> None:
     """
     Print the triangule matrix
 
@@ -8,19 +12,21 @@ def print_triangle_matrix(f: object = None, integral: list = None, matriz_sym: s
         integral (array): array 2d with atomic integrals
         matriz_sym (str): Matriz symmetric of atomic integrals
     """
-    ZERO = 1.0E-8
+    ZERO: float = 1.0E-8
 
-    size = len(integral[0][:])
+    print(type(f))
+
+    size: int = len(integral[0][:])
     if size <= 5:
-        chunks = size
+        chunks: int = size
         columns: int = chunks
     else:
-        columns: int = 5
+        columns = 5
         chunks = int(size / 5)
         if size % 5 != 0:
-            chunks += (size % 5) / (size % 5)
+            chunks += int((size % 5) / (size % 5))
 
-    count = 0
+    count: int = 0
     while count < chunks:
         # Column number
         if count < chunks - 1:
@@ -49,7 +55,7 @@ def print_triangle_matrix(f: object = None, integral: list = None, matriz_sym: s
         if matriz_sym == "square":
             initial_value: int = 0
         else:
-            initial_value: int = count * columns
+            initial_value = count * columns
 
         for row in range(initial_value, size):
             # Row values and index
@@ -62,7 +68,7 @@ def print_triangle_matrix(f: object = None, integral: list = None, matriz_sym: s
                 values = [integral[row][column]
                             for column in range(count * columns, n)
                             ]
-            line: str = ""
+            line = ""
             if np.linalg.norm(np.array(values)) > ZERO:
                 for i, value in enumerate(values):
                     if i == 0:
@@ -84,3 +90,7 @@ def print_triangle_matrix(f: object = None, integral: list = None, matriz_sym: s
             count += chunks
         else:
             count += 1
+
+if __name__ == "__main__":
+    with open ("a.dat", "a") as f:
+        print_triangle_matrix(f, [[1,2],[3,1]])

@@ -5,6 +5,7 @@ from pathlib import Path
 import shutil
 
 import h5py
+import numpy as np
 
 from print_matrix import *
 
@@ -22,7 +23,7 @@ integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", 
 
 class scratch():
     # Constructor
-    def __init__(self, scratch: Path or str = None, job_folder: str = None) -> None:
+    def __init__(self, scratch: Path = None, job_folder: str = None) -> None:
         """
         Constructor of scratch object
 
@@ -33,18 +34,21 @@ class scratch():
         if job_folder is None:
             now_date = datetime.now()
             str_date: str = now_date.strftime("%d%m%y%H%M%S")
-            job_folder: str = str_date
+            job_folder = str_date
 
         if scratch is None:
             if Path("/tmp").exists():
-                tmp_scratch: Path = Path("/tmp/scratch").parent.mkdir(parents=True, exist_ok=True)
-                self._scratch: Path = Path("/tmp/scratch/"+(job_folder))
+                Path("/tmp/scratch").parent.mkdir(parents=True, exist_ok=True)
+                job_folder = "/tmp/scratch/" + (job_folder)
+                self._scratch: Path = Path(job_folder)
                 self._scratch.mkdir(parents=True, exist_ok=True)
             else:
                 raise FileNotFoundError("/tmp folder not exits.")
         else:
             if Path(scratch).exists():
-                self._scratch: Path = Path(scratch + "/" + job_folder)
+                if isinstance(scratch, str):
+                    scratch = Path(scratch)
+                self._scratch = scratch / (job_folder)
                 if self._scratch.exists():
                     print(f"***WARNING\n\n{self._scratch} already exist, then possiblely the files will be overwrite")
                 else:
@@ -52,12 +56,8 @@ class scratch():
             else:
                 raise FileNotFoundError(f"***Error \n\n{Path(scratch)} folder not exists, please create before calculation.")
         
-        #ouput files names
-        self._output_path = None
         # H5 files
         h5_files: list = ["AO1BINT.H5", "AO2BINT.H5", "MO1BINT.H5", "EXCHCOUL.H5", "PRINPROP.H5"]
-        self._hermite_ao1b_binary = self._hermite_ao2b_binary = \
-            self._hermite_mo1b_binary = None
         for i, name_file in enumerate(h5_files):
             if (self._scratch /(name_file)).exists():
                 (self._scratch /(name_file)).unlink()
@@ -82,7 +82,7 @@ class scratch():
     def output_path(self) -> Path:
         return self._output_path
     @output_path.setter
-    def output_path(self, name: str = None) -> None:
+    def output_path(self, name: str = "") -> None:
         if (self._scratch / (name)).exists():
             (self._scratch / (name)).rename((self._scratch / (name + ".0")))
         self._output_path = self._scratch / (name)
@@ -112,8 +112,8 @@ class scratch():
             f.write("\n")
 
     def write_box(self, f: object = None, 
-                names: list = None,
-                values: list = None):
+                names: list = [],
+                values: list = []):
         """
         Print a box with header and value
 
@@ -144,7 +144,7 @@ class scratch():
             if i < n-1:
                 m: int = 4
             else:
-                m: int = l - (n-1)*4
+                m = l - (n-1)*4
 
             header: str = ""
             split_ups: str = ""
@@ -171,10 +171,10 @@ class scratch():
             f.write(split_tailers.center(76) + "\n")
 
     def write_tensor(self, f: object = None, 
-                    names: list = None,
-                    values: list = None,
+                    names: list = [],
+                    values: list = [],
                     isoani: bool = True,
-                    ani_axe: str or int = "z"):
+                    ani_axe: (str or int) = "z"):
         """
         Print a matrix of 3x3 with or without iso/anisotropic
 
@@ -184,17 +184,17 @@ class scratch():
             ani_axes (str or int): Axes to calculate the anisotropic value
             isoani (bool): Activate iso/anisotrpic print
         """
-        sig_x: int = 1.0
-        sig_y: int = 1.0
-        sig_z: int = -1.0
+        sig_x: float = 1.0
+        sig_y: float = 1.0
+        sig_z: float = -1.0
         if ani_axe == 1 or ani_axe == 0 or ani_axe == "x":
-            sig_x: int = -1.0
-            sig_y: int = 1.0
-            sig_z: int = 1.0
+            sig_x = -1.0
+            sig_y = 1.0
+            sig_z = 1.0
         elif ani_axe == 2 or ani_axe == "y":
-            sig_x: int = 1.0
-            sig_y: int = -1.0
-            sig_z: int = 1.0
+            sig_x = 1.0
+            sig_y = -1.0
+            sig_z = 1.0
 
         l: int = len(names)
         lv: int = len(values)
@@ -215,7 +215,7 @@ class scratch():
             if i < n-1:
                 m: int = 3
             else:
-                m: int = l - (n-1)*3
+                m = l - (n-1)*3
 
             header: str = ""
             split_ups: str = ""
@@ -253,7 +253,7 @@ class scratch():
                 f.write(iso_ani.center(101) + "\n")
             f.write(split_tailers.center(101) + "\n")
 
-    def write_title(self, f: object = None, name: str = None, title_type: int = 0):
+    def write_title(self, f: object = None, name: str = "", title_type: int = 0):
         """
         Print titles
 
@@ -325,8 +325,8 @@ class scratch():
                 f.write("t"*63+"\n")
 
     def write_size_file(self, f: object = None,
-                        name_file: str = None,
-                        size_file: float = None):
+                        name_file: str = "",
+                        size_file: float = 0.0):
         """
         Write size file into output
 
@@ -336,19 +336,22 @@ class scratch():
             size_file (float): Size of output file in bytes
         """
         unit: str = "Bytes"
-        if size_file > 1024:
-            size_file = size_file/(1024)
-            unit: str = "KB"
-        if size_file > 1024 * 1024:
-            size_file = size_file/(1024 * 1024)
-            unit: str = "MB"
-        elif size_file > 1024 * 1024 * 1024:
-            size_file = size_file/(1024 * 1024 * 1024)
-            unit: str = "GB"
+        if size_file > 1024.0:
+            size_file = size_file/(1024.0)
+            unit = "KB"
+        if size_file > 1024.0 * 1024.0:
+            size_file = size_file/(1024.0 * 1024.0)
+            unit = "MB"
+        elif size_file > 1024.0 * 1024.0 * 1024.0:
+            size_file = size_file/(1024.0 * 1024.0 * 1024.0)
+            unit = "GB"
 
         f.write(f"{name_file}, size: {size_file:.3f} {unit} \n")
 
-    def write_ao1bin_hermite(self, f: object = None, direct = False, array: np.array = None):
+    def write_ao1bin_hermite(self,
+                            f: object = None, 
+                            direct: bool = False, 
+                            array: np.array = None):
         """
         Print one body integrals into output
 
@@ -369,7 +372,7 @@ class scratch():
                 if not name in integral_symmetry.keys():
                     symmetry: str = "square"
                 else:
-                    symmetry: str = integral_symmetry[name.split()[0].lower()]
+                    symmetry = integral_symmetry[name.split()[0].lower()]
                 print_triangle_matrix(f=f,
                                     integral=values,
                                     matriz_sym=symmetry)
@@ -394,26 +397,26 @@ class scratch():
                     for j in range(i+1):
                         for k in range(i+1):
                             if k < i: m: int = k + 1
-                            else: m: int = j + 1
+                            else: m = j + 1
                             for l in range(m):
                                 if abs(h[name][i,j,k,l]) > 1.0E-6:
                                     if abs(h[name][i,j,k,l]) > 999.0:
                                         formate: str = "{:.6e}"
                                     else:
-                                        formate: str = "{:.6f}"
+                                        formate = "{:.6f}"
                                     f.write(f"{i+1:4} {j+1:4} {k+1:4} {l+1:4}    " + formate.format(h[name][i,j,k,l]).center(16) + "\n")
     def write_output(self, 
-                    information: str = None, type: int = 0, 
+                    information: str = "", type: int = 0, 
                     # title information
                     title_type: int = 0,
                     # time information
                     drv_time: drv_time = None,
                     # Size file in bytes
-                    size_file: float = None,
+                    size_file: float = 0.0,
                     # Integral 1B
-                    direct = False, dictionary: dict = None,
+                    direct = False, dictionary: dict = {},
                     # Box
-                    box_type: int = 0, values: list = None,
+                    box_type: int = 0, values: list = [],
                     ) -> None:
         """
         Save information for output file
@@ -449,19 +452,19 @@ class scratch():
                     self.write_size_file(f, information, size_file)
                 elif type == 4:
                     if box_type == 0:
-                        self.write_box(f, information, values)
-                    elif box_type == 1:
+                        self.write_box(f, information, values) #! change information by names type [str]
+                    elif box_type == 1:                         #!because this produce mypy error
                         self.write_tensor(f, information, values)
                 elif type == 9:
                     self.write_ao1bin_hermite(f, direct, dictionary)
                 elif type == 10:
                     self.write_ao2bin_hermite(f)
 
-    def binary(self, file: Path = None, io: str = None,
+    def binary(self, file: Path = Path(), io: str = "",
                 # Write information
-                dictionary: dict = None,
+                dictionary: dict = {},
                 # Read or delete information
-                label: str = None):
+                label: str = ""):
         """
         Save hermite information in AOINT.H5 binary file
 
@@ -482,7 +485,7 @@ class scratch():
                             argument io due be a to write or r to read, io {io}")
 
         if io.lower() == "d": 
-            wr = "a"
+            wr: str = "a"
         elif io.lower() == "f":
             wr = "r"
         else:
