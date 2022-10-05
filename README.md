@@ -63,3 +63,10 @@ Example:
 
 * black (https://github.com/psf/black)
   pip install black
+
+Vscode configuration:
+	File -> Preferences -> Settings
+Search "python formatting provider" and select "black". Then, search "format on save" and enable the "Editor: Format on Save"
+
+Example:
+  python -m black program.py

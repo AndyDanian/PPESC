@@ -2,7 +2,8 @@ from typing import Union
 
 from atom import *
 
-class molecule():
+
+class molecule:
     def __init__(
         self,
         coord: Union[str, list[str]],
@@ -41,6 +42,7 @@ class molecule():
 
         self._coord: Union[str, list[str]] = coord
         self._basis: list[dict[str, list[float]]] = basis
+
     ##################################################################
     # ATRIBUTES
     ##################################################################
@@ -52,7 +54,10 @@ class molecule():
     @property
     def molecule_xyz(self) -> list[list[float]]:
         "Molecule Coordinates"
-        return [atom(xyz, self._basis[index]).atom_xyz for index, xyz in enumerate(self._coord)]
+        return [
+            atom(xyz, self._basis[index]).atom_xyz
+            for index, xyz in enumerate(self._coord)
+        ]
 
     @property
     def atomic_symbols(self) -> list[str]:
@@ -71,31 +76,53 @@ class molecule():
 
     @property
     def charges(self) -> list[float]:
-        return [atom(coord, self._basis[index]).q for index, coord in enumerate(self._coord)]
+        return [
+            atom(coord, self._basis[index]).q for index, coord in enumerate(self._coord)
+        ]
 
     @property
     def primitives_number(self) -> int:
-        return sum([atom(coord, self._basis[index]).primitive_number for index, coord in enumerate(self._coord)])
+        return sum(
+            [
+                atom(coord, self._basis[index]).primitive_number
+                for index, coord in enumerate(self._coord)
+            ]
+        )
 
     @property
     def angular_momentums(self) -> list[list[str]]:
-        return [atom(coord, self._basis[index]).angular_momentum for index, coord in enumerate(self._coord)]
+        return [
+            atom(coord, self._basis[index]).angular_momentum
+            for index, coord in enumerate(self._coord)
+        ]
 
     @property
     def exponents(self) -> list[list[float]]:
-        return [atom(coord, self._basis[index]).exponents for index, coord in enumerate(self._coord)]
+        return [
+            atom(coord, self._basis[index]).exponents
+            for index, coord in enumerate(self._coord)
+        ]
 
     @property
     def mlx(self) -> list[list[int]]:
-        return [atom(coord, self._basis[index]).mlx for index, coord in enumerate(self._coord)]
+        return [
+            atom(coord, self._basis[index]).mlx
+            for index, coord in enumerate(self._coord)
+        ]
 
     @property
     def mly(self) -> list[list[int]]:
-        return [atom(coord, self._basis[index]).mly for index, coord in enumerate(self._coord)]
+        return [
+            atom(coord, self._basis[index]).mly
+            for index, coord in enumerate(self._coord)
+        ]
 
     @property
     def mlz(self) -> list[list[int]]:
-        return [atom(coord, self._basis[index]).mlz for index, coord in enumerate(self._coord)]
+        return [
+            atom(coord, self._basis[index]).mlz
+            for index, coord in enumerate(self._coord)
+        ]
 
     @property
     def amount_angular_momentums(self) -> list[dict[str, int]]:
@@ -111,7 +138,7 @@ class molecule():
     ##################################################################
     # METHODS
     ##################################################################
-    #def build_molecule_array(self, verbose: int = None):
+    # def build_molecule_array(self, verbose: int = None):
     def get_atoms(self, verbose: int = 0):
         """
         Build one list of dictionaries with the atomic information
@@ -130,7 +157,11 @@ class molecule():
 
         molecule_array: list = []
         for count, atomic_information in enumerate(self._coord):
-            molecule_array.append(atom(atomic_information, self._basis[count]).build_atom_array(verbose=verbose))
+            molecule_array.append(
+                atom(atomic_information, self._basis[count]).build_atom_array(
+                    verbose=verbose
+                )
+            )
 
         return molecule_array
 
@@ -140,20 +171,20 @@ if __name__ == "__main__":
     Example to use molecule object
     """
     h2 = molecule(
-        coord= ["He 1.0 0.0 0.0 0.0", "H 1.0 0.0 0.0 0.75"],
-        basis= [
+        coord=["He 1.0 0.0 0.0 0.0", "H 1.0 0.0 0.0 0.75"],
+        basis=[
             {"s": [3.0, 0.01], "p": [1.0, 0.5]},
             {"s": [3.0, 0.01], "p": [1.0, 0.5]},
         ],
     )
 
     h2.get_atoms(verbose=101)
-    print("\nmolecule ",h2.molecule_xyz)
-    print("atomic symbol ",h2.atomic_symbols)
-    print("atomic numbers ",h2.atomic_numbers)
-    print("charges ",h2.charges)
-    print("primitives number ",h2.primitives_number)
-    print("angular momentus ",h2.angular_momentums)
-    print("exponents ",h2.exponents)
-    print("mlx ",h2.mlx)
-    print("Amount of angular momentums ",h2.amount_angular_momentums)
+    print("\nmolecule ", h2.molecule_xyz)
+    print("atomic symbol ", h2.atomic_symbols)
+    print("atomic numbers ", h2.atomic_numbers)
+    print("charges ", h2.charges)
+    print("primitives number ", h2.primitives_number)
+    print("angular momentus ", h2.angular_momentums)
+    print("exponents ", h2.exponents)
+    print("mlx ", h2.mlx)
+    print("Amount of angular momentums ", h2.amount_angular_momentums)

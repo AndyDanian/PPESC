@@ -2,6 +2,7 @@ from typing import Union
 
 from libsrc import *
 
+
 class atom:
     def __init__(self, coord: Union[str, list[str]], basis: dict[str, list[float]]):
         """
@@ -32,13 +33,15 @@ class atom:
                 "
             )
 
-        if (isinstance(coord, str) and len(coord.split(" ")) != 5) or (isinstance(coord, list) and len(coord[0].split(" ")) != 5):
+        if (isinstance(coord, str) and len(coord.split(" ")) != 5) or (
+            isinstance(coord, list) and len(coord[0].split(" ")) != 5
+        ):
             raise ValueError(
-            "*** Error \n\n\
+                '*** Error \n\n\
             The coordinate vairable is conformed by 5 strings: label or atomic number,\n\
             atomic charge, and cartessain coordinates\n. \
-                \"H 1.0 0.00 0.00 0.00\"\n\
-            "
+                "H 1.0 0.00 0.00 0.00"\n\
+            '
             )
 
         self._coord: Union[str, list[str]] = coord
@@ -76,12 +79,20 @@ class atom:
         "Atomic Number"
         if isinstance(self._coord, list):
             if self._coord[0].split(" ")[0].isalpha():
-                return [Z for Z, symbol in atomic_symbol.items() if symbol == self._coord[0].split(" ")[0]][0]
+                return [
+                    Z
+                    for Z, symbol in atomic_symbol.items()
+                    if symbol == self._coord[0].split(" ")[0]
+                ][0]
             elif self._coord[0].split(" ")[0].isnumeric():
                 return int(self._coord[0].split(" ")[0])
         elif isinstance(self._coord, str):
             if self._coord.split(" ")[0].isalpha():
-                return [Z for Z, symbol in atomic_symbol.items() if symbol == self._coord.split(" ")[0]][0]
+                return [
+                    Z
+                    for Z, symbol in atomic_symbol.items()
+                    if symbol == self._coord.split(" ")[0]
+                ][0]
             elif self._coord.split(" ")[0].isnumeric():
                 return int(self._coord.split(" ")[0])
         return None
@@ -119,27 +130,44 @@ class atom:
     @property
     def primitive_number(self) -> int:
         "Primitive Number"
-        return sum([len(exp)*angular_number[l] for l, exp in self._basis.items()])
+        return sum([len(exp) * angular_number[l] for l, exp in self._basis.items()])
 
     @property
     def exponents(self) -> list[float]:
         "Exponents"
-        return [exp for l, exps in self._basis.items() for exp in exps for i in range(angular_number[l])]
+        return [
+            exp
+            for l, exps in self._basis.items()
+            for exp in exps
+            for i in range(angular_number[l])
+        ]
 
     @property
     def mlx(self) -> list[int]:
         "Exponent in the X direction"
-        return [mlx for l, exps in self._basis.items() for mlx in cartessian_mlx[l] * len(exps)]
+        return [
+            mlx
+            for l, exps in self._basis.items()
+            for mlx in cartessian_mlx[l] * len(exps)
+        ]
 
     @property
     def mly(self) -> list[int]:
         "Exponent in the X direction"
-        return [mly for l, exps in self._basis.items() for mly in cartessian_mly[l] * len(exps)]
+        return [
+            mly
+            for l, exps in self._basis.items()
+            for mly in cartessian_mly[l] * len(exps)
+        ]
 
     @property
     def mlz(self) -> list[int]:
         "Exponent in the X direction"
-        return [mlz for l, exps in self._basis.items() for mlz in cartessian_mlz[l] * len(exps)]
+        return [
+            mlz
+            for l, exps in self._basis.items()
+            for mlz in cartessian_mlz[l] * len(exps)
+        ]
 
     ##################################################################
     # METHODS
@@ -168,15 +196,15 @@ class atom:
         atom_array["exp"] = self.exponents
 
         if isinstance(verbose, int) and verbose >= 100:
-            print("\nAtomic Infomarion : ",atom_array["element"])
-            print("*) Atomic number ",self.Z)
-            print("*) Charge ",self.q)
-            print("*) Coordinate ",self.atom_xyz)
-            print("*) Angular Momentums ",self.amount_angular_momentum)
-            print("*) Exponents ",self.exponents)
-            print("*) mlx ",self.mlx)
-            print("*) mly ",self.mly)
-            print("*) mlz ",self.mlz)
+            print("\nAtomic Infomarion : ", atom_array["element"])
+            print("*) Atomic number ", self.Z)
+            print("*) Charge ", self.q)
+            print("*) Coordinate ", self.atom_xyz)
+            print("*) Angular Momentums ", self.amount_angular_momentum)
+            print("*) Exponents ", self.exponents)
+            print("*) mlx ", self.mlx)
+            print("*) mly ", self.mly)
+            print("*) mlz ", self.mlz)
 
         return atom_array
 
@@ -197,9 +225,9 @@ if __name__ == "__main__":
     hydrogen.build_atom_array(verbose=101)
 
     print()
-    print("Atomic coordinate ",hydrogen.atom_xyz)
-    print("Atomic Symbol ",hydrogen.atomic_symbol)
-    print("Angular momentum ",hydrogen.angular_momentum)
-    print("Amount angular momentum ",hydrogen.amount_angular_momentum)
-    print("Primitive number ",hydrogen.primitive_number)
-    print("Exponents ",hydrogen.exponents)
+    print("Atomic coordinate ", hydrogen.atom_xyz)
+    print("Atomic Symbol ", hydrogen.atomic_symbol)
+    print("Angular momentum ", hydrogen.angular_momentum)
+    print("Amount angular momentum ", hydrogen.amount_angular_momentum)
+    print("Primitive number ", hydrogen.primitive_number)
+    print("Exponents ", hydrogen.exponents)

@@ -1,8 +1,9 @@
 from typing import Union
 
-from libsrc import * # from io import molden as mn
+from libsrc import *  # from io import molden as mn
 
-class wave_function():
+
+class wave_function:
     def __init__(
         self,
         filename: str,
@@ -41,7 +42,9 @@ class wave_function():
 
         start = time()
         self._driver_time: drv_time = drv_time()
-        self._driver_scratch: scratch = scratch(scratch=scratch_path, job_folder = job_folder)
+        self._driver_scratch: scratch = scratch(
+            scratch=scratch_path, job_folder=job_folder
+        )
 
         if not filename:
             if not coord or not basis or not mos or not cartessian_primitive:
@@ -62,10 +65,7 @@ class wave_function():
                 self._basis,
                 self._mos,
                 self._cartessian_primitive,
-            ) = read_molden(
-                file_molden = filename,
-                drv_scratch = self._driver_scratch
-            )
+            ) = read_molden(file_molden=filename, drv_scratch=self._driver_scratch)
         else:
             self._driver_scratch._output_path = Path("OUTPUT.out")
             self._driver_scratch.write_header_output()
@@ -75,12 +75,11 @@ class wave_function():
             self._cartessian_primitive = cartessian_primitive
 
         self.wave_function_information()
-        self._driver_time.add_name_delta_time(name = "Reading wave function", delta_time = (time() - start))
+        self._driver_time.add_name_delta_time(
+            name="Reading wave function", delta_time=(time() - start)
+        )
 
-        self._driver_scratch.write_output(
-                                          type = 2,
-                                          drv_time = self._driver_time
-                                          )
+        self._driver_scratch.write_output(type=2, drv_time=self._driver_time)
         self._driver_time.reset
         self._driver_scratch.write_output("\n")
 
@@ -98,7 +97,11 @@ class wave_function():
     @property
     def coordinates(self) -> list:
         "Atoms coordinates"
-        return [[float(at.split()[2]), float(at.split()[3]), float(at.split()[4])] for mol in self._coord for at in mol]
+        return [
+            [float(at.split()[2]), float(at.split()[3]), float(at.split()[4])]
+            for mol in self._coord
+            for at in mol
+        ]
 
     @property
     def atom_number(self) -> int:
@@ -112,7 +115,13 @@ class wave_function():
         for mol in self._coord:
             for at in mol:
                 if at.split(" ")[0].isalpha():
-                    Z.append([int(iZ) for iZ, symbol in atomic_symbol.items() if symbol == at.split(" ")[0]][0])
+                    Z.append(
+                        [
+                            int(iZ)
+                            for iZ, symbol in atomic_symbol.items()
+                            if symbol == at.split(" ")[0]
+                        ][0]
+                    )
                 elif self._coord.split()[0].isnumeric():
                     return Z.append(int(self._coord.split()[0]))
         return Z
@@ -130,7 +139,13 @@ class wave_function():
     @property
     def atomic_symbols(self) -> list:
         "Atomic Symbols"
-        return [at.split()[0] if isinstance(at.split()[0], str) else atomic_symbol[int(at.split()[0])] for mol in self._coord for at in mol]
+        return [
+            at.split()[0]
+            if isinstance(at.split()[0], str)
+            else atomic_symbol[int(at.split()[0])]
+            for mol in self._coord
+            for at in mol
+        ]
 
     @property
     def cto(self) -> bool:
@@ -140,7 +155,14 @@ class wave_function():
     @property
     def exponents(self) -> list:
         "Exponents"
-        return [exp for mol in self._basis for at in mol for l, exps in at.items() for exp in exps for i in range(angular_number[l])]
+        return [
+            exp
+            for mol in self._basis
+            for at in mol
+            for l, exps in at.items()
+            for exp in exps
+            for i in range(angular_number[l])
+        ]
 
     @property
     def primitives_number(self) -> int:
@@ -150,13 +172,30 @@ class wave_function():
     @property
     def primitives_number_sph(self) -> int:
         "Primitive number"
-        return len([exp for mol in self._basis for at in mol for l, exps in at.items() for exp in exps for i in range(angular_number_sph[l])])
-
+        return len(
+            [
+                exp
+                for mol in self._basis
+                for at in mol
+                for l, exps in at.items()
+                for exp in exps
+                for i in range(angular_number_sph[l])
+            ]
+        )
 
     @property
     def primitives_number_car(self) -> int:
         "Primitive number"
-        return len([exp for mol in self._basis for at in mol for l, exps in at.items() for exp in exps for i in range(angular_number[l])])
+        return len(
+            [
+                exp
+                for mol in self._basis
+                for at in mol
+                for l, exps in at.items()
+                for exp in exps
+                for i in range(angular_number[l])
+            ]
+        )
 
     @property
     def mo_virt(self) -> int:
@@ -171,29 +210,53 @@ class wave_function():
         for mol in self._basis:
             for at in mol:
                 for l, exps in at.items():
-                    center += [count]*angular_number[l]*len(exps)
+                    center += [count] * angular_number[l] * len(exps)
             count += 1
         return center
 
     @property
     def mlx(self) -> list:
         "Exponent in the X direction"
-        return [mlx for mol in self._basis for at in mol for l, exps in at.items() for mlx in cartessian_mlx[l] * len(exps)]
+        return [
+            mlx
+            for mol in self._basis
+            for at in mol
+            for l, exps in at.items()
+            for mlx in cartessian_mlx[l] * len(exps)
+        ]
 
     @property
     def mly(self) -> list:
         "Exponent in the X direction"
-        return [mly for mol in self._basis for at in mol for l, exps in at.items() for mly in cartessian_mly[l] * len(exps)]
+        return [
+            mly
+            for mol in self._basis
+            for at in mol
+            for l, exps in at.items()
+            for mly in cartessian_mly[l] * len(exps)
+        ]
 
     @property
     def mlz(self) -> list:
         "Exponent in the X direction"
-        return [mlz for mol in self._basis for at in mol for l, exps in at.items() for mlz in cartessian_mlz[l] * len(exps)]
+        return [
+            mlz
+            for mol in self._basis
+            for at in mol
+            for l, exps in at.items()
+            for mlz in cartessian_mlz[l] * len(exps)
+        ]
 
     @property
     def angular_momentums(self) -> list:
         "Atomic Primitive Type"
-        return [l for mol in self._basis for at in mol for l, exps in at.items() for exp in exps]
+        return [
+            l
+            for mol in self._basis
+            for at in mol
+            for l, exps in at.items()
+            for exp in exps
+        ]
 
     @property
     def amount_angular_momentums(self) -> dict:
@@ -232,6 +295,7 @@ class wave_function():
     def mo_energies(self) -> list:
         "Molecular Orbitals Energies"
         return [mo["energy"] for mo in self._mos]
+
     ##################################################################
     # METHODS
     ##################################################################
@@ -241,11 +305,11 @@ class wave_function():
         """
 
         self._driver_scratch.write_output("System ")
-        self._driver_scratch.write_output("-"*50)
-        if np.max(self.coordinates) > 9999: 
+        self._driver_scratch.write_output("-" * 50)
+        if np.max(self.coordinates) > 9999:
             form: str = "{:.4e}"
         else:
-            form: str = "{:.4f}"        
+            form: str = "{:.4f}"
         len_s = [len(s) for s in self.atomic_symbols]
         if np.max(len_s) > 5:
             forms: str = "{:" + str(np.max(len_s)) + "s}"
@@ -256,10 +320,10 @@ class wave_function():
             for x in xyz:
                 information += str(form.format(x)).center(9)
             self._driver_scratch.write_output(information)
-        self._driver_scratch.write_output("-"*50+"\n")
+        self._driver_scratch.write_output("-" * 50 + "\n")
 
         self._driver_scratch.write_output("Primitive Informaiton")
-        self._driver_scratch.write_output("-"*50)
+        self._driver_scratch.write_output("-" * 50)
         total = 0
         count = 0
         for s, b in zip(self.atomic_symbols, self.amount_angular_momentums_by_atom):
@@ -269,16 +333,27 @@ class wave_function():
                 information += str(c) + n
             self._driver_scratch.write_output(information)
             total += sum(b.values())
-        self._driver_scratch.write_output("="*50)
-        self._driver_scratch.write_output("Total: " + str(sum(self.charges)).center(5) + "   " + str(total) + "\n")
-        
+        self._driver_scratch.write_output("=" * 50)
+        self._driver_scratch.write_output(
+            "Total: " + str(sum(self.charges)).center(5) + "   " + str(total) + "\n"
+        )
+
         sample: str = "Cartessian Primitive: "
         self._driver_scratch.write_output(sample + str(self.primitives_number_car))
-        self._driver_scratch.write_output("Spherical Primitive: ".ljust(len(sample)) + str(self.primitives_number_sph))
-        self._driver_scratch.write_output("Occupied Orbitals: ".ljust(len(sample)) + str(self.mo_occ))
-        self._driver_scratch.write_output("Virtuals Orbitals: ".ljust(len(sample)) + str(self.mo_virt))
-        self._driver_scratch.write_output("Ocuppied ⇌ Virtuals: ".ljust(len(sample)) + str(self.mo_occ*self.mo_virt))
-        self._driver_scratch.write_output("-"*50+"\n")        
+        self._driver_scratch.write_output(
+            "Spherical Primitive: ".ljust(len(sample)) + str(self.primitives_number_sph)
+        )
+        self._driver_scratch.write_output(
+            "Occupied Orbitals: ".ljust(len(sample)) + str(self.mo_occ)
+        )
+        self._driver_scratch.write_output(
+            "Virtuals Orbitals: ".ljust(len(sample)) + str(self.mo_virt)
+        )
+        self._driver_scratch.write_output(
+            "Ocuppied ⇌ Virtuals: ".ljust(len(sample)) + str(self.mo_occ * self.mo_virt)
+        )
+        self._driver_scratch.write_output("-" * 50 + "\n")
+
 
 if __name__ == "__main__":
     """
@@ -286,21 +361,21 @@ if __name__ == "__main__":
     """
     wfn = wave_function("../tests/molden_file/H2.molden", scratch_path="/home1/scratch")
 
-    print(" Molecule Number ",wfn.molecules_number)
-    print(" Atom Number ",wfn.atom_number)
-    print(" MO Occupied/Virtuals ",wfn.mo_occ,wfn.mo_virt)
-    print(" Atomic Symbols ",wfn.atomic_symbols)
-    print(" Coordinates ",wfn.coordinates)
-    print(" Z ",wfn.atomic_numbers)
-    print(" Charges ",wfn.charges)
-    print(" Cartessian Symmetry ",wfn.cto)
-    print(" Primitive Number ",wfn.primitives_number)
-    print(" Angular Momentums ",wfn.angular_momentums)
-    print(" Amount Angular Momentums ",wfn.amount_angular_momentums)
-    print(" Exponents ",wfn.exponents)
-    print(" Primitive Center ",wfn.primitives_centers)
-    print(" mlx ",wfn.mlx)
-    print(" mly ",wfn.mly)
-    print(" mlz ",wfn.mlz)
+    print(" Molecule Number ", wfn.molecules_number)
+    print(" Atom Number ", wfn.atom_number)
+    print(" MO Occupied/Virtuals ", wfn.mo_occ, wfn.mo_virt)
+    print(" Atomic Symbols ", wfn.atomic_symbols)
+    print(" Coordinates ", wfn.coordinates)
+    print(" Z ", wfn.atomic_numbers)
+    print(" Charges ", wfn.charges)
+    print(" Cartessian Symmetry ", wfn.cto)
+    print(" Primitive Number ", wfn.primitives_number)
+    print(" Angular Momentums ", wfn.angular_momentums)
+    print(" Amount Angular Momentums ", wfn.amount_angular_momentums)
+    print(" Exponents ", wfn.exponents)
+    print(" Primitive Center ", wfn.primitives_centers)
+    print(" mlx ", wfn.mlx)
+    print(" mly ", wfn.mly)
+    print(" mlz ", wfn.mlz)
 
     wfn._driver_scratch.remove_job_folder()

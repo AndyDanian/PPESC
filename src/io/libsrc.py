@@ -7,22 +7,15 @@ import numpy as np
 
 # Add folders to system path
 PROJECT_DIR = Path.cwd().parent
-sys.path.append(
-    os.fspath(PROJECT_DIR / "include")
-    )
-sys.path.append(
-    os.fspath(PROJECT_DIR / "functions")
-    )
-# sys.path.append(
-#     os.fspath(PROJECT_DIR / "fock")
-#     )
+sys.path.append(os.fspath(PROJECT_DIR / "include"))
+sys.path.append(os.fspath(PROJECT_DIR / "functions"))
 
 
 from atom import *
 from scratch import *
 from print_matrix import *
 
-#include
+# include
 from atomic_symbol import *
 from integrals_parameters import *
 from quantum_numbers import *
