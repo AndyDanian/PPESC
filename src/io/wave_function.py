@@ -1,15 +1,17 @@
+from typing import Union
+
 from libsrc import * # from io import molden as mn
 
 class wave_function():
     def __init__(
         self,
-        filename: str = None,
-        coord: list = None,
-        basis: list = None,
-        mos: list = None,
+        filename: str,
+        scratch_path: Union[Path, str],
+        job_folder: str,
+        coord: list[list[str]] = [],
+        basis: list[list[dict[str, list[float]]]] = None,
+        mos: list[dict] = [],
         cartessian_primitive: bool = False,
-        scratch_path: Path or str = None,
-        job_folder: str = None,
     ):
         """
         Wave function object need a filename with wave function
@@ -104,9 +106,9 @@ class wave_function():
         return len(self.coordinates)
 
     @property
-    def atomic_numbers(self) -> list:
+    def atomic_numbers(self) -> Union[None, list]:
         "Atomic Numbers"
-        Z = []
+        Z: list = []
         for mol in self._coord:
             for at in mol:
                 if at.split(" ")[0].isalpha():
@@ -128,7 +130,7 @@ class wave_function():
     @property
     def atomic_symbols(self) -> list:
         "Atomic Symbols"
-        return [at.split()[0] if isinstance(at.split()[0], str) else atomic_symbol(int(at.split()[0])) for mol in self._coord for at in mol]
+        return [at.split()[0] if isinstance(at.split()[0], str) else atomic_symbol[int(at.split()[0])] for mol in self._coord for at in mol]
 
     @property
     def cto(self) -> bool:
@@ -196,7 +198,7 @@ class wave_function():
     @property
     def amount_angular_momentums(self) -> dict:
         "Amount of each Angular Momentum"
-        angular_momentums = {}
+        angular_momentums: dict = {}
         for mol in self._basis:
             for at in mol:
                 for l, exp in at.items():
@@ -207,7 +209,7 @@ class wave_function():
         return angular_momentums
 
     @property
-    def amount_angular_momentums_by_atom(self) -> dict:
+    def amount_angular_momentums_by_atom(self) -> list:
         "Amount of each Angular Momentum"
         l_atom: list = []
         for mol in self._basis:

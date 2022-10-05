@@ -6,8 +6,8 @@ from molecule import *
 class cluster():
     def __init__(
         self,
-        coord: list = None,
-        basis: list = None,
+        coord: list[list[str]],
+        basis: list[list[dict[str, list[float]]]],
     ):
         """
         Cluster object
@@ -51,8 +51,8 @@ class cluster():
                 "
             )
 
-        self._coord = coord
-        self._basis = basis
+        self._coord: list[list[str]] = coord
+        self._basis: list[list[dict[str, list[float]]]] = basis
 
     ##################################################################
     # ATRIBUTES
@@ -127,7 +127,7 @@ class cluster():
     ##################################################################
     # METHODS
     ##################################################################
-    def get_atoms(self, verbose: int = None):
+    def get_atoms(self, verbose: int = 0):
         """
         Build one list of lists of dictionaries with the molecule information
 

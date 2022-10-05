@@ -1,6 +1,9 @@
 from os import read
-from libsrc import *
+from typing import NewType
+
 import numpy as np
+
+from scratch import scratch
 
 def convert_to_float(variable_name, value):
     """
@@ -54,7 +57,7 @@ def validate_file(file_molden):
             )
 
 
-def read_molden(file_molden: str = "", drv_scratch: scratch = None, verbose: int = 1):
+def read_molden(file_molden: str, drv_scratch: scratch, verbose: int = 1):
     """[summary]
     Read .molden generate with DALTON the most general possible
     Args:
@@ -445,7 +448,7 @@ if __name__ == "__main__":
     Read .molden file
     """
 
-    l_i_q_xyz, t_a_exp, mo, type_primitives = read_molden("LiH.molden")
+    #l_i_q_xyz, t_a_exp, mo, type_primitives = read_molden("LiH.molden")
 
     # print("\n primitive information \n",t_a_exp)
     # print("\n mo coefficientes \n",mo[0]['coefficients'])

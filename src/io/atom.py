@@ -1,17 +1,19 @@
+from typing import Union
+
 from libsrc import *
 
 class atom:
-    def __init__(self, coord: str or list = None, basis: dict = None):
+    def __init__(self, coord: Union[str, list[str]], basis: dict[str, list[float]]):
         """
         Atom object
 
         Args:
         ----
-            coord (string, list): atomic information
+            coord (str, list[str]): atomic information
                                     coord = 'H charge x y z'
-            basis (dict): keywords are the angular quantum number and values are
-                            atomic exponents basis set
-                            {'s':[exponents], 'p':[exponents], 'd':[exponents], ...}
+            basis (dict[str: list[float]]): keywords are the angular quantum number and values are
+                                            atomic exponents basis set
+                                            {'s':[exponents], 'p':[exponents], 'd':[exponents], ...}
         """
 
         if not coord or not basis:
@@ -39,14 +41,14 @@ class atom:
             "
             )
 
-        self._coord = coord
-        self._basis = basis
+        self._coord: Union[str, list[str]] = coord
+        self._basis: dict[str, list[float]] = basis
 
     ##################################################################
     # ATTRIBUTES
     ##################################################################
     @property
-    def atom_xyz(self) -> list:
+    def atom_xyz(self) -> list[float]:
         "Return Coordinates"
         if isinstance(self._coord, list):
             coordinates = self._coord[0].split(" ")
@@ -55,21 +57,22 @@ class atom:
         return [float(r) for i, r in enumerate(coordinates) if i > 1]
 
     @property
-    def atomic_symbol(self) -> str:
+    def atomic_symbol(self) -> Union[None, str]:
         "Atom Symbol"
         if isinstance(self._coord, list):
             if self._coord[0].split(" ")[0].isalpha():
                 return self._coord[0].split(" ")[0]
             elif self._coord[0].split(" ")[0].isnumeric():
-                return atomic_symbol[self._coord[0].split(" ")[0]]
+                return atomic_symbol[int(self._coord[0].split(" ")[0])]
         elif isinstance(self._coord, str):
             if self._coord.split(" ")[0].isalpha():
                 return self._coord.split(" ")[0]
             elif self._coord.split(" ")[0].isnumeric():
-                return atomic_symbol[self._coord[0].split(" ")[0]]
+                return atomic_symbol[int(self._coord[0].split(" ")[0])]
+        return None
 
     @property
-    def atomic_number(self) -> int:
+    def atomic_number(self) -> Union[None, int]:
         "Atomic Number"
         if isinstance(self._coord, list):
             if self._coord[0].split(" ")[0].isalpha():
@@ -78,12 +81,13 @@ class atom:
                 return int(self._coord[0].split(" ")[0])
         elif isinstance(self._coord, str):
             if self._coord.split(" ")[0].isalpha():
-                return [int(Z) for Z, symbol in atomic_symbol.items() if symbol == self._coord.split(" ")[0]][0]
+                return [Z for Z, symbol in atomic_symbol.items() if symbol == self._coord.split(" ")[0]][0]
             elif self._coord.split(" ")[0].isnumeric():
                 return int(self._coord.split(" ")[0])
+        return None
 
     @property
-    def Z(self) -> int:
+    def Z(self) -> Union[None, int]:
         return self.atomic_number
 
     @property
@@ -100,12 +104,12 @@ class atom:
         return self.charge
 
     @property
-    def angular_momentum(self) -> list:
+    def angular_momentum(self) -> list[str]:
         "Atomic Primitive Type"
         return [prim_type for prim_type in self._basis.keys()]
 
     @property
-    def amount_angular_momentum(self) -> dict:
+    def amount_angular_momentum(self) -> dict[str, int]:
         "Amount of each Angular Momentum"
         angular_momentums = {}
         for l, exp in self._basis.items():
@@ -118,29 +122,29 @@ class atom:
         return sum([len(exp)*angular_number[l] for l, exp in self._basis.items()])
 
     @property
-    def exponents(self) -> list:
+    def exponents(self) -> list[float]:
         "Exponents"
         return [exp for l, exps in self._basis.items() for exp in exps for i in range(angular_number[l])]
 
     @property
-    def mlx(self) -> list:
+    def mlx(self) -> list[int]:
         "Exponent in the X direction"
         return [mlx for l, exps in self._basis.items() for mlx in cartessian_mlx[l] * len(exps)]
 
     @property
-    def mly(self) -> list:
+    def mly(self) -> list[int]:
         "Exponent in the X direction"
         return [mly for l, exps in self._basis.items() for mly in cartessian_mly[l] * len(exps)]
 
     @property
-    def mlz(self) -> list:
+    def mlz(self) -> list[int]:
         "Exponent in the X direction"
         return [mlz for l, exps in self._basis.items() for mlz in cartessian_mlz[l] * len(exps)]
 
     ##################################################################
     # METHODS
     ##################################################################
-    def build_atom_array(self, verbose: int = None):
+    def build_atom_array(self, verbose: int = 0):
         """
         Build a dictionary for atom
 
@@ -187,7 +191,15 @@ if __name__ == "__main__":
     exp: Exponent value for gaussian
     """
     #               [ S  Z   X   Y   Z  ]    l    exp         l     exp
-    hydrogen = atom(["H 1.0 0.0 0.0 0.0"], {"s": [3.0, 0.01], "p": [1.0, 0.5, 2.0]})
     hydrogen = atom("1 1.0 0.0 0.0 0.0", {"s": [3.0, 0.01], "p": [1.0, 0.5, 2.0]})
+    hydrogen = atom(["H 1.0 0.0 0.0 0.0"], {"s": [3.0, 0.01], "p": [1.0, 0.5, 2.0]})
 
     hydrogen.build_atom_array(verbose=101)
+
+    print()
+    print("Atomic coordinate ",hydrogen.atom_xyz)
+    print("Atomic Symbol ",hydrogen.atomic_symbol)
+    print("Angular momentum ",hydrogen.angular_momentum)
+    print("Amount angular momentum ",hydrogen.amount_angular_momentum)
+    print("Primitive number ",hydrogen.primitive_number)
+    print("Exponents ",hydrogen.exponents)

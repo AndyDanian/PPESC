@@ -3,6 +3,8 @@ import os
 from datetime import datetime
 from pathlib import Path
 import shutil
+from typing import Union
+from io import TextIOWrapper
 
 import h5py
 import numpy as np
@@ -13,7 +15,7 @@ PROJECT_DIR = Path.cwd().parent
 sys.path.append(
     os.fspath(PROJECT_DIR / "functions")
     )
-from drv_time import *
+from drv_time import drv_time
 
 integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", "angmom": "antisym",
 "sd": "sym", "fc": "sym", "darwin": "sym", "massvelo": "sym", "nelfld": "sym", "diplen": "sym",
@@ -23,7 +25,7 @@ integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", 
 
 class scratch():
     # Constructor
-    def __init__(self, scratch: Path = None, job_folder: str = None) -> None:
+    def __init__(self, scratch: Union[Path, str], job_folder: str) -> None:
         """
         Constructor of scratch object
 
@@ -111,9 +113,9 @@ class scratch():
             f.write("*"*80+"\n")
             f.write("\n")
 
-    def write_box(self, f: object = None, 
-                names: list = [],
-                values: list = []):
+    def write_box(self, f: TextIOWrapper, 
+                  names: Union[str, list[str]],
+                  values: list):
         """
         Print a box with header and value
 
@@ -170,11 +172,11 @@ class scratch():
                 f.write(pvalues.center(76) + "\n")
             f.write(split_tailers.center(76) + "\n")
 
-    def write_tensor(self, f: object = None, 
-                    names: list = [],
-                    values: list = [],
+    def write_tensor(self, f: TextIOWrapper, 
+                    names: Union[str, list[str]],
+                    values: list,
                     isoani: bool = True,
-                    ani_axe: (str or int) = "z"):
+                    ani_axe: Union[str, int] = "z"):
         """
         Print a matrix of 3x3 with or without iso/anisotropic
 
@@ -253,7 +255,7 @@ class scratch():
                 f.write(iso_ani.center(101) + "\n")
             f.write(split_tailers.center(101) + "\n")
 
-    def write_title(self, f: object = None, name: str = "", title_type: int = 0):
+    def write_title(self, f: TextIOWrapper, name: str = "", title_type: int = 0):
         """
         Print titles
 
@@ -276,7 +278,7 @@ class scratch():
             f.write(f'{name}'.center(80)+"\n")
             f.write(('='*40).center(80)+"\n")            
 
-    def write_time(self, f: object = None, drv_time: drv_time = None):
+    def write_time(self, f: TextIOWrapper, drv_time: drv_time):
         """"
         Print time neccesary for calculations
 
@@ -324,7 +326,7 @@ class scratch():
             if tailer:
                 f.write("t"*63+"\n")
 
-    def write_size_file(self, f: object = None,
+    def write_size_file(self, f: TextIOWrapper,
                         name_file: str = "",
                         size_file: float = 0.0):
         """
@@ -349,9 +351,10 @@ class scratch():
         f.write(f"{name_file}, size: {size_file:.3f} {unit} \n")
 
     def write_ao1bin_hermite(self,
-                            f: object = None, 
+                            f: TextIOWrapper, 
+                            array: dict[str, np.ndarray],
                             direct: bool = False, 
-                            array: np.array = None):
+                            ):
         """
         Print one body integrals into output
 
@@ -377,8 +380,7 @@ class scratch():
                                     integral=values,
                                     matriz_sym=symmetry)
 
-
-    def write_ao2bin_hermite(self, f: object = None):
+    def write_ao2bin_hermite(self, f: TextIOWrapper):
         """
         Print one body integrals into output
 
@@ -405,6 +407,7 @@ class scratch():
                                     else:
                                         formate = "{:.6f}"
                                     f.write(f"{i+1:4} {j+1:4} {k+1:4} {l+1:4}    " + formate.format(h[name][i,j,k,l]).center(16) + "\n")
+
     def write_output(self, 
                     information: str = "", type: int = 0, 
                     # title information
@@ -414,7 +417,7 @@ class scratch():
                     # Size file in bytes
                     size_file: float = 0.0,
                     # Integral 1B
-                    direct = False, dictionary: dict = {},
+                    direct = False, dictionary: dict[str, np.ndarray] = {},
                     # Box
                     box_type: int = 0, values: list = [],
                     ) -> None:
@@ -456,7 +459,7 @@ class scratch():
                     elif box_type == 1:                         #!because this produce mypy error
                         self.write_tensor(f, information, values)
                 elif type == 9:
-                    self.write_ao1bin_hermite(f, direct, dictionary)
+                    self.write_ao1bin_hermite(f, dictionary, direct)
                 elif type == 10:
                     self.write_ao2bin_hermite(f)
 
@@ -513,9 +516,9 @@ class scratch():
             shutil.rmtree(self._scratch)
         
 if __name__ == "__main__":
-    s = scratch("/home1/scratch")
+    s = scratch("/home1/scratch", "")
     print(s.scratch)
     print(s.job_path)
-    s._output_path = "DATA.TXT"
+    s._output_path = Path("DATA.TXT")
     print("output name: ",s.output_path)
     s.remove_job_folder()
