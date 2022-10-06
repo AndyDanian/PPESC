@@ -1,24 +1,25 @@
 from libr import *
 
+
 def calculate_quadratic_response(
-                                io: scratch = None,
-                                time_object: drv_time = None,
-                                operator_a: list = None,
-                                operator_b: list = None,
-                                operator_c: list = None,
-                                pp_multiplicity_a: str = None,
-                                pp_multiplicity_b: str = None,
-                                pp_multiplicity_c: str = None,
-                                avs: dict = None,
-                                gpvs: dict = None,
-                                mo_occupied: dict = None,
-                                mo_virtuals: dict = None,
-                                #principal_propagator_a: np.array = None,
-                                #principal_propagator_b: np.array = None,
-                                #principal_propagator_c: np.array = None,
-                                n_mo_occ: int = None,
-                                n_mo_virt: int = None,
-                                verbose: int = 0):
+    io: scratch,
+    time_object: drv_time,
+    operator_a: list,
+    operator_b: list,
+    operator_c: list,
+    pp_multiplicity_a: str,
+    pp_multiplicity_b: str,
+    pp_multiplicity_c: str,
+    gpvs: dict,
+    mo_occupied: dict,
+    mo_virtuals: dict,
+    # principal_propagator_a: np.array = None,
+    # principal_propagator_b: np.array = None,
+    # principal_propagator_c: np.array = None,
+    n_mo_occ: int,
+    n_mo_virt: int,
+    verbose: int = 0,
+) -> dict[str, float]:
     """
     Calculate of the path and total value of stactic quadratic response
 
@@ -33,9 +34,9 @@ def calculate_quadratic_response(
     operator_a (list): Name of the first operator
     operator_b (list): Name of the second operator
     operator_c (list): Name of the third operator
-    principal_propagator_a (np.array): Inverse of the first principal propagator
-    principal_propagator_b (np.array): Inverse of the second principal propagator
-    principal_propagator_b (np.array): Inverse of the third principal propagator
+    principal_propagator_a (str): Inverse of the first principal propagator save in binary file
+    principal_propagator_b (str): Inverse of the second principal propagator save in binary file
+    principal_propagator_b (str): Inverse of the third principal propagator save in binary file
     avs (dict): dictionary with average value
     gpvs (dict): Gradient properties vectors
     mo_occupied (dict): Values in molecular orbitals of the occupied orbitals
@@ -55,44 +56,56 @@ def calculate_quadratic_response(
                 if index_b > index_c and op_b.split()[0] == op_c.split()[0]:
                     continue
 
-                vpathT = quadratic_sum(# A operator  
-                                        gpva=gpvs[op_a],
-                                        iaj=mo_occupied[op_a],
-                                        sat=mo_virtuals[op_a],
-                                        ppa = np.asfortranarray(
-                                                                io.binary(file = io._principal_propagator,
-                                                                          io = "r",
-                                                                          label = pp_multiplicity_a)
-                                                                ),
-                                       # B operator
-                                        gpvb=gpvs[op_b],
-                                        ibj=mo_occupied[op_b],
-                                        sbt=mo_virtuals[op_b],
-                                        ppb = np.asfortranarray(
-                                                                io.binary(file = io._principal_propagator,
-                                                                          io = "r",
-                                                                          label = pp_multiplicity_b)
-                                                                ),
-                                       # C operator
-                                        gpvc=gpvs[op_c],
-                                        icj=mo_occupied[op_c],
-                                        sct=mo_virtuals[op_c],
-                                        ppc = np.asfortranarray(
-                                                                io.binary(file = io._principal_propagator,
-                                                                          io = "r",
-                                                                          label = pp_multiplicity_c)
-                                                                ),
-                                       # Other
-                                        verbose=verbose,
-                                        nocc=n_mo_occ,nvir=n_mo_virt
-                                        )
+                vpathT = quadratic_sum(
+                    # A operator
+                    gpva=gpvs[op_a],
+                    iaj=mo_occupied[op_a],
+                    sat=mo_virtuals[op_a],
+                    ppa=np.asfortranarray(
+                        io.binary(
+                            file=io._principal_propagator,
+                            io="r",
+                            label=pp_multiplicity_a,
+                        )
+                    ),
+                    # B operator
+                    gpvb=gpvs[op_b],
+                    ibj=mo_occupied[op_b],
+                    sbt=mo_virtuals[op_b],
+                    ppb=np.asfortranarray(
+                        io.binary(
+                            file=io._principal_propagator,
+                            io="r",
+                            label=pp_multiplicity_b,
+                        )
+                    ),
+                    # C operator
+                    gpvc=gpvs[op_c],
+                    icj=mo_occupied[op_c],
+                    sct=mo_virtuals[op_c],
+                    ppc=np.asfortranarray(
+                        io.binary(
+                            file=io._principal_propagator,
+                            io="r",
+                            label=pp_multiplicity_c,
+                        )
+                    ),
+                    # Other
+                    verbose=verbose,
+                    nocc=n_mo_occ,
+                    nvir=n_mo_virt,
+                )
 
-                io.write_output(information = f'-<<{op_a};{op_b},{op_c}>> = {-vpathT:.6f}', type = 1, title_type = 2)
+                io.write_output(
+                    information=f"-<<{op_a};{op_b},{op_c}>> = {-vpathT:.6f}",
+                    type=1,
+                    title_type=2,
+                )
                 io.write_output("\n")
-                quadratic_responses[f'<<{op_a};{op_b},{op_c}>>'] = vpathT
+                quadratic_responses[f"<<{op_a};{op_b},{op_c}>>"] = vpathT
 
     if verbose > 10:
         name = f"Quadratic Response"
-        time_object.add_name_delta_time(name = name,  delta_time=(time() - start))
+        time_object.add_name_delta_time(name=name, delta_time=(time() - start))
 
     return quadratic_responses
