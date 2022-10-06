@@ -48,11 +48,11 @@ class eint:
     ##################################################################
     def integration_onebody(
         self,
-        integrals_names: list = None,
-        integrals_properties: dict = None,
+        integrals_names: list[str] = [],
+        integrals_properties: dict = {},
         verbose: int = 0,
-        gauge: list = None,
-        dipole: list = None,
+        gauge: list[float] = [],
+        dipole: list[float] = [],
         dalton_normalization: bool = False,
     ):
         """
@@ -90,7 +90,7 @@ class eint:
                     + "{:.4f}".format(r_gauge[2])
                 )
         io.write_output("\n")
-        if gauge is not None:
+        if len(gauge) == 3:
             io.write_output(
                 "General Gauge: "
                 + "{:.4f}".format(gauge[0])
