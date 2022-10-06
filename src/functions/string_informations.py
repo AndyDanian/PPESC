@@ -1,4 +1,7 @@
-def print_title(name: str = None):
+from typing import Union
+
+
+def print_title(name: str) -> None:
     """
     Print titles
 
@@ -10,7 +13,7 @@ def print_title(name: str = None):
     print("*" * 80)
 
 
-def print_subtitle(name: str = None):
+def print_subtitle(name: str) -> None:
     """
     Print subtitles format
 
@@ -22,7 +25,7 @@ def print_subtitle(name: str = None):
     print(("-" * 40).center(70))
 
 
-def print_ljust(name: str = None):
+def print_ljust(name: str) -> None:
     """
     Print left justyifique format
 
@@ -34,7 +37,7 @@ def print_ljust(name: str = None):
     print(("-" * 40).ljust(70))
 
 
-def print_result(name: str = None, value: float = None):
+def print_result(name: str, value: float) -> None:
     """
     Print titles
 
@@ -47,7 +50,7 @@ def print_result(name: str = None, value: float = None):
     print(("=" * 40).ljust(70))
 
 
-def print_box(names: list = None, values: list = None):
+def print_box(names: list, values: list) -> None:
     """
     Print a box with header and value
 
@@ -78,7 +81,7 @@ def print_box(names: list = None, values: list = None):
         if i < n - 1:
             m: int = 4
         else:
-            m: int = l - (n - 1) * 4
+            m = l - (n - 1) * 4
 
         header: str = ""
         split_ups: str = ""
@@ -117,10 +120,10 @@ def print_box(names: list = None, values: list = None):
 
 
 def print_tensor(
-    names: list = None,
-    values: list = None,
+    names: list,
+    values: list,
     isoani: bool = True,
-    ani_axe: str or int = "z",
+    ani_axe: Union[str, int] = "z",
 ):
     """
     Print a matrix of 3x3 with or without iso/anisotropic
@@ -131,17 +134,17 @@ def print_tensor(
         ani_axes (str or int): Axes to calculate the anisotropic value
         isoani (bool): Activate iso/anisotrpic print
     """
-    sig_x: int = 1.0
-    sig_y: int = 1.0
-    sig_z: int = -1.0
+    sig_x: float = 1.0
+    sig_y: float = 1.0
+    sig_z: float = -1.0
     if ani_axe == 1 or ani_axe == 0 or ani_axe == "x":
-        sig_x: int = -1.0
-        sig_y: int = 1.0
-        sig_z: int = 1.0
+        sig_x = -1.0
+        sig_y = 1.0
+        sig_z = 1.0
     elif ani_axe == 2 or ani_axe == "y":
-        sig_x: int = 1.0
-        sig_y: int = -1.0
-        sig_z: int = 1.0
+        sig_x = 1.0
+        sig_y = -1.0
+        sig_z = 1.0
 
     l: int = len(names)
     lv: int = len(values)
@@ -162,7 +165,7 @@ def print_tensor(
         if i < n - 1:
             m: int = 3
         else:
-            m: int = l - (n - 1) * 3
+            m = l - (n - 1) * 3
 
         header: str = ""
         split_ups: str = ""
@@ -219,9 +222,7 @@ def print_tensor(
         print(split_tailers.center(101))
 
 
-def print_time(
-    name: str = None, delta_time: float = None, header: bool = True, tailer: bool = True
-):
+def print_time(name: str, delta_time: float, header: bool = True, tailer: bool = True):
     """ "
     Print time neccesary for calculations
 
