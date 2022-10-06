@@ -1,6 +1,18 @@
 from lib1h import *
 
-def dipvel(coord, magnetic_component, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
+
+def dipvel(
+    coord,
+    magnetic_component,
+    exp,
+    center,
+    lx,
+    ly,
+    lz,
+    output,
+    dalton_normalization,
+    driver_time,
+):
     """
     Dipole velocity
 
@@ -75,14 +87,16 @@ def dipvel(coord, magnetic_component, exp, center, lx, ly, lz, output, dalton_no
                 l_dipvel[i],
                 l_dipvel[j] + 1,
                 0,
-                coord[center[i]][magnetic_component] - coord[center[j]][magnetic_component],
+                coord[center[i]][magnetic_component]
+                - coord[center[j]][magnetic_component],
                 exp[i],
                 exp[j],
             ) - l_dipvel[j] * hermite_coefficient(
                 l_dipvel[i],
                 l_dipvel[j] - 1,
                 0,
-                coord[center[i]][magnetic_component] - coord[center[j]][magnetic_component],
+                coord[center[i]][magnetic_component]
+                - coord[center[j]][magnetic_component],
                 exp[i],
                 exp[j],
             )
@@ -98,8 +112,8 @@ def dipvel(coord, magnetic_component, exp, center, lx, ly, lz, output, dalton_no
             count += 1
     if output > 10:
         driver_time.add_name_delta_time(
-            name = f"Dipole Velocity Atomic Integrals for {magnetic_component} Magnetic Component",
-            delta_time = (time() - start)
+            name=f"Dipole Velocity Atomic Integrals for {magnetic_component} Magnetic Component",
+            delta_time=(time() - start),
         )
 
     return dipvel

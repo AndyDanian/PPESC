@@ -97,7 +97,7 @@ def calculate_quadratic_response(
                 )
 
                 io.write_output(
-                    information=f"-<<{op_a};{op_b},{op_c}>> = {-vpathT:.6f}",
+                    information=f"-<<{op_a};{op_b},{op_c}>> = {-vpathT:.6e}",
                     type=1,
                     title_type=2,
                 )

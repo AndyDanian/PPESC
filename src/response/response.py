@@ -495,7 +495,7 @@ class response:
 
 if __name__ == "__main__":
     wfn = wave_function(
-        "../tests/molden_file/H2.molden",
+        "../tests/molden_file/LiH.molden",
         scratch_path="/home1/scratch",
         job_folder="160922134451",
     )
@@ -515,6 +515,8 @@ if __name__ == "__main__":
                 ["angmom x", "fc 1", "spinorbit x"],
                 ["angmom x", "fc 2", "spinorbit x"],
                 ["fc", "fc"],
+                ["spinorbit", "fc"],
+                ["spinorbit", "spinorbit"],
                 ["pso", "pso"],
             ],
             # gauge=[0.0,0.0,1.4045523587],

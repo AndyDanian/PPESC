@@ -51,7 +51,7 @@ def calculate_lineal_reponse(
                 nvir=n_mo_virt,
             )
             io.write_output(
-                information=f"-<<{op_a};{op_b}>> = {-vpathT:.6f}", type=1, title_type=2
+                information=f"-<<{op_a};{op_b}>> = {-vpathT:.6e}", type=1, title_type=2
             )
             io.write_output("\n")
 

@@ -1,6 +1,21 @@
 from lib1h import *
 
-def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
+
+def nstcgo(
+    coord,
+    gauge,
+    spatial_sym,
+    magnetic_component,
+    atom,
+    exp,
+    center,
+    lx,
+    ly,
+    lz,
+    output,
+    dalton_normalization,
+    driver_time,
+):
     """
     Diamagnetic nuclear shielding tensor atomic integrals
 
@@ -166,52 +181,48 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
                 )
             )
             if diagonal:
-                nefc = (
-                    nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j] + r_x_c,
-                        ly[j] + r_y_c,
-                        lz[j] + r_z_c,
-                        r_x_c,
-                        r_y_c,
-                        r_z_c,
-                        exp[i],
-                        exp[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[atom][0],
-                        coord[atom][1],
-                        coord[atom][2],
-                    )
-                    + (coord[center[j]][coord_c] - gauge[coord_c])
-                    * nuclear_attraction(
-                        lx[i],
-                        ly[i],
-                        lz[i],
-                        lx[j],
-                        ly[j],
-                        lz[j],
-                        r_x_c,
-                        r_y_c,
-                        r_z_c,
-                        exp[i],
-                        exp[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[atom][0],
-                        coord[atom][1],
-                        coord[atom][2],
-                    )
+                nefc = nuclear_attraction(
+                    lx[i],
+                    ly[i],
+                    lz[i],
+                    lx[j] + r_x_c,
+                    ly[j] + r_y_c,
+                    lz[j] + r_z_c,
+                    r_x_c,
+                    r_y_c,
+                    r_z_c,
+                    exp[i],
+                    exp[j],
+                    coord[center[i]][0],
+                    coord[center[i]][1],
+                    coord[center[i]][2],
+                    coord[center[j]][0],
+                    coord[center[j]][1],
+                    coord[center[j]][2],
+                    coord[atom][0],
+                    coord[atom][1],
+                    coord[atom][2],
+                ) + (coord[center[j]][coord_c] - gauge[coord_c]) * nuclear_attraction(
+                    lx[i],
+                    ly[i],
+                    lz[i],
+                    lx[j],
+                    ly[j],
+                    lz[j],
+                    r_x_c,
+                    r_y_c,
+                    r_z_c,
+                    exp[i],
+                    exp[j],
+                    coord[center[i]][0],
+                    coord[center[i]][1],
+                    coord[center[i]][2],
+                    coord[center[j]][0],
+                    coord[center[j]][1],
+                    coord[center[j]][2],
+                    coord[atom][0],
+                    coord[atom][1],
+                    coord[atom][2],
                 )
             nstcgo[count] = (
                 normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
@@ -226,9 +237,9 @@ def nstcgo(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx,
 
     if output > 10:
         driver_time.add_name_delta_time(
-            name = f"Diamagnetic Nuclear Shielding Tensor Atomic Integrals \
+            name=f"Diamagnetic Nuclear Shielding Tensor Atomic Integrals \
                 for {magnetic_component} Magnetic Component and {spatial_sym} Spatial Symmetry",
-                delta_time = (time() - start)
+            delta_time=(time() - start),
         )
 
     return nstcgo

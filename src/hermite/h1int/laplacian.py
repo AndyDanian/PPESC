@@ -1,7 +1,9 @@
 from lib1h import *
 
 ############# Calculate the potential one body integrals ########################
-def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
+def laplacian(
+    coord, component, exp, center, lx, ly, lz, output, dalton_normalization, driver_time
+):
     """_summary_
 
     Potential integrals
@@ -85,7 +87,7 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
                 exp[j],
             )
 
-            if component >= 0 and component <= 2: #dx^2, dy^2, dz^2
+            if component >= 0 and component <= 2:  # dx^2, dy^2, dz^2
                 skl = hermite_coefficient(
                     mlb[i],
                     mlb[j],
@@ -108,14 +110,16 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
                             exp[j],
                         )
                     )
-                    - 2.0 * exp[j] * (2.0 * mla[j] + 1.0) *
-                    hermite_coefficient(
-                    mla[i],
-                    mla[j],
-                    0,
-                    coord[center[i]][component] - coord[center[j]][component],
-                    exp[i],
-                    exp[j],
+                    - 2.0
+                    * exp[j]
+                    * (2.0 * mla[j] + 1.0)
+                    * hermite_coefficient(
+                        mla[i],
+                        mla[j],
+                        0,
+                        coord[center[i]][component] - coord[center[j]][component],
+                        exp[i],
+                        exp[j],
                     )
                     + mla[j]
                     * (mla[j] - 1.0)
@@ -130,7 +134,7 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
                         )
                     )
                 )
-            else: #dxy, dxz, dyz
+            else:  # dxy, dxz, dyz
                 # Horizontal Reccurence
                 # <phi|dxdy|phi> = (dxSij^0)(dySkl^0)Smn^0 =
                 # Dij^1Dkl^1Smn^0=
@@ -140,17 +144,15 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
                 # [(y-Ay)^ke^-a(y-Ay)^2][{l(y-By)^l-1 - 2b(y-By)^l+1}e^-b(y-By)^2]Smn^0 =
                 # (iSi-1j^0 - 2aSi+1j^0)(lSkl-1^0 - 2bSkl+1^0)Smn^0 =
                 # (iE0^i-1j - 2aE0^i+1)(lE0^kl-1 - 2bE0^kl+1)E0^mn
-                sij = (
-                    2.0 * exp[i] *
-                    hermite_coefficient(
+                sij = 2.0 * exp[i] * hermite_coefficient(
                     mla[i] + 1,
                     mla[j],
                     0,
                     coord[center[i]][a] - coord[center[j]][a],
                     exp[i],
                     exp[j],
-                    )
-                    - (mla[i]
+                ) - (
+                    mla[i]
                     * (
                         hermite_coefficient(
                             mla[i] - 1,
@@ -160,19 +162,17 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
                             exp[i],
                             exp[j],
                         )
-                    ))
+                    )
                 )
-                skl = (
-                    2.0 * exp[j] *
-                    hermite_coefficient(
+                skl = 2.0 * exp[j] * hermite_coefficient(
                     mlb[i],
                     mlb[j] + 1,
                     0,
                     coord[center[i]][b] - coord[center[j]][b],
                     exp[i],
                     exp[j],
-                    ) -
-                    (mlb[j]
+                ) - (
+                    mlb[j]
                     * (
                         hermite_coefficient(
                             mlb[i],
@@ -182,11 +182,12 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
                             exp[i],
                             exp[j],
                         )
-                    ))
+                    )
                 )
 
             ddi[count] = (
-                FSIGN * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                FSIGN
+                * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * (sij * skl * smn)
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)
@@ -194,6 +195,8 @@ def laplacian(coord, component, exp, center, lx, ly, lz, output, dalton_normaliz
             count += 1
 
     if output > 10:
-        driver_time.add_name_delta_time(name = f"Laplacian component {component}", delta_time = (time() - start))
+        driver_time.add_name_delta_time(
+            name=f"Laplacian component {component}", delta_time=(time() - start)
+        )
 
     return ddi

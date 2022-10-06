@@ -50,7 +50,7 @@ class scratch:
             scrath (Path): Scrath's Path
         """
 
-        if job_folder is None:
+        if not job_folder or job_folder == "":
             now_date = datetime.now()
             str_date: str = now_date.strftime("%d%m%y%H%M%S")
             job_folder = str_date
@@ -114,10 +114,10 @@ class scratch:
         return self._output_path
 
     @output_path.setter
-    def output_path(self, name: str = "") -> None:
-        if (self._scratch / (name)).exists():
-            (self._scratch / (name)).rename((self._scratch / (name + ".0")))
-        self._output_path = self._scratch / (name)
+    def output_path(self, path: Path) -> None:
+        if path.exists():
+            path.rename(path.parent / (path.name + ".0"))
+        self._output_path = path
 
     @property
     def activate_write_output(self) -> bool:

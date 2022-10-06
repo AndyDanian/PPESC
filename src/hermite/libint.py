@@ -3,11 +3,12 @@ import sys
 from pathlib import Path
 from time import time
 
+import numpy as np
+
 # Addres when execute from fock
 HERMITE_PATH = Path.cwd()
 
 PROJECT = HERMITE_PATH.parent
-
 sys.path.append(os.fspath(PROJECT))
 sys.path.append(os.fspath(PROJECT / ("include")))  # This is neccesary by e_integral
 sys.path.append(os.fspath(PROJECT / ("io")))  # This is neccesary by wave_function
@@ -15,26 +16,16 @@ sys.path.append(os.fspath(PROJECT / ("functions")))
 sys.path.append(os.fspath(HERMITE_PATH / ("h1int")))
 sys.path.append(os.fspath(HERMITE_PATH / ("h2int")))
 
-import numpy as np
 
 from wave_function import *
 
 from f90recursives import *
 
 # functions
-from print_matrix import *
-
-# functions
 from integral_1b_parameters import *
-from convert_array import *
-from print_matrix import *
-from string_informations import *
-from drv_time import *
 
 # include
 from constants_cto_gto import *
-
-# from integrals_parameters import *
 
 # io
 from molden import *

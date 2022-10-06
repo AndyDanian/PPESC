@@ -1,6 +1,19 @@
 from lib1h import *
 
-def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
+
+def diplen(
+    coord,
+    magnetic_component,
+    rdipole,
+    exp,
+    center,
+    lx,
+    ly,
+    lz,
+    output,
+    dalton_normalization,
+    driver_time,
+):
     """
     Dipole lenght atomic integrals
 
@@ -56,7 +69,8 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
                 l_diplen[i],
                 l_diplen[j],
                 0,
-                coord[center[i]][magnetic_component] - coord[center[j]][magnetic_component], #0
+                coord[center[i]][magnetic_component]
+                - coord[center[j]][magnetic_component],  # 0
                 exp[i],
                 exp[j],
             )
@@ -83,17 +97,18 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
             # Sij^1Skl^0Smn^0=(E1^ij + Xpc*E0^ij)E0^klE0^mn(pi/p)^1.5
 
             Pxyz = (
-                exp[i] * coord[center[i]][magnetic_component] #0
+                exp[i] * coord[center[i]][magnetic_component]  # 0
                 + exp[j] * coord[center[j]][magnetic_component]
             )
             Pxyz = Pxyz / (exp[i] + exp[j])
-            rpk = Pxyz - rdipole[magnetic_component] #0
+            rpk = Pxyz - rdipole[magnetic_component]  # 0
 
             xyzdipole = hermite_coefficient(
                 l_diplen[i],
                 l_diplen[j],
                 1,
-                coord[center[i]][magnetic_component] - coord[center[j]][magnetic_component], #0
+                coord[center[i]][magnetic_component]
+                - coord[center[j]][magnetic_component],  # 0
                 exp[i],
                 exp[j],
             )
@@ -109,8 +124,8 @@ def diplen(coord, magnetic_component, rdipole, exp, center, lx, ly, lz, output, 
             count += 1
     if output > 10:
         driver_time.add_name_delta_time(
-            name = f"Dipole Lenght Atomic Integrals for {magnetic_component} Magnetic Component",
-            delta_time = (time() - start)
+            name=f"Dipole Lenght Atomic Integrals for {magnetic_component} Magnetic Component",
+            delta_time=(time() - start),
         )
 
     return diplen

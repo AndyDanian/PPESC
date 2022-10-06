@@ -154,16 +154,14 @@ def kinetic(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
                 normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * -0.5
-                * (
-                    dxxsij * skl * smn
-                    + sij * dyyskl * smn
-                    + sij * skl * dzzsmn
-                )
+                * (dxxsij * skl * smn + sij * dyyskl * smn + sij * skl * dzzsmn)
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)
             )
             count += 1
 
     if output > 10:
-        driver_time.add_name_delta_time(name = f"Kinetic Atomic Integrals", delta_time = (time() - start))
+        driver_time.add_name_delta_time(
+            name=f"Kinetic Atomic Integrals", delta_time=(time() - start)
+        )
 
     return kinetic

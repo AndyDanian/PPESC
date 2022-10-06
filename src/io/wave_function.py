@@ -8,7 +8,7 @@ class wave_function:
         self,
         filename: str,
         scratch_path: Union[Path, str],
-        job_folder: str,
+        job_folder: str = "",
         coord: list[list[str]] = [],
         basis: list[list[dict[str, list[float]]]] = None,
         mos: list[dict] = [],
@@ -57,7 +57,13 @@ class wave_function:
                 )
 
         if filename:
-            self._driver_scratch.output_path = Path(filename).stem.upper() + ".out"
+            file_output: str = (
+                str(self._driver_scratch.job_path)
+                + "/"
+                + Path(filename).stem.upper()
+                + ".out"
+            )
+            self._driver_scratch.output_path = Path(file_output)
             self._driver_scratch.write_header_output()
             # get information from molden/wfnx file
             (
@@ -132,9 +138,9 @@ class wave_function:
         return len([mo["occupation"] for mo in self._mos if mo["occupation"] > 0])
 
     @property
-    def charges(self) -> list:
+    def charges(self) -> list[float]:
         "Atomic Charges"
-        return [int(at.split()[1]) for mol in self._coord for at in mol]
+        return [float(at.split()[1]) for mol in self._coord for at in mol]
 
     @property
     def atomic_symbols(self) -> list:

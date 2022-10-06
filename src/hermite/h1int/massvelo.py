@@ -1,5 +1,6 @@
 from lib1h import *
 
+
 def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """
     Spin dipolar atomic integrals, which is a tensor
@@ -438,7 +439,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
 
     if output > 10:
         driver_time.add_name_delta_time(
-            name = f"Massvelo Atomic Integrals", delta_time = (time() - start)
+            name=f"Massvelo Atomic Integrals", delta_time=(time() - start)
         )
 
     return massvelo

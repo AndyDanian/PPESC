@@ -1,6 +1,20 @@
 from lib1h import *
 
-def sd(coord, magnetic_component, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
+
+def sd(
+    coord,
+    magnetic_component,
+    spatial_sym,
+    atom,
+    exp,
+    center,
+    lx,
+    ly,
+    lz,
+    output,
+    dalton_normalization,
+    driver_time,
+):
     """
     Spin dipolar atomic integrals, which is a tensor
 
@@ -115,7 +129,6 @@ def sd(coord, magnetic_component, spatial_sym, atom, exp, center, lx, ly, lz, ou
             y_active = True
             z_active = True
 
-
     for i in range(total_nprim):
 
         for j in range(i, total_nprim):
@@ -127,73 +140,73 @@ def sd(coord, magnetic_component, spatial_sym, atom, exp, center, lx, ly, lz, ou
             xr = yr = zr = 0.0
             if x_active:
                 xr = nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j],
-                ly[j],
-                lz[j],
-                dx_x,
-                dy_x,
-                dz_x,
-                exp[i],
-                exp[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[atom][0],
-                coord[atom][1],
-                coord[atom][2],
-            )
+                    lx[i],
+                    ly[i],
+                    lz[i],
+                    lx[j],
+                    ly[j],
+                    lz[j],
+                    dx_x,
+                    dy_x,
+                    dz_x,
+                    exp[i],
+                    exp[j],
+                    coord[center[i]][0],
+                    coord[center[i]][1],
+                    coord[center[i]][2],
+                    coord[center[j]][0],
+                    coord[center[j]][1],
+                    coord[center[j]][2],
+                    coord[atom][0],
+                    coord[atom][1],
+                    coord[atom][2],
+                )
             if y_active:
                 yr = nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j],
-                ly[j],
-                lz[j],
-                dx_y,
-                dy_y,
-                dz_y,
-                exp[i],
-                exp[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[atom][0],
-                coord[atom][1],
-                coord[atom][2],
-            )
+                    lx[i],
+                    ly[i],
+                    lz[i],
+                    lx[j],
+                    ly[j],
+                    lz[j],
+                    dx_y,
+                    dy_y,
+                    dz_y,
+                    exp[i],
+                    exp[j],
+                    coord[center[i]][0],
+                    coord[center[i]][1],
+                    coord[center[i]][2],
+                    coord[center[j]][0],
+                    coord[center[j]][1],
+                    coord[center[j]][2],
+                    coord[atom][0],
+                    coord[atom][1],
+                    coord[atom][2],
+                )
             if z_active:
                 zr = nuclear_attraction(
-                lx[i],
-                ly[i],
-                lz[i],
-                lx[j],
-                ly[j],
-                lz[j],
-                dx_z,
-                dy_z,
-                dz_z,
-                exp[i],
-                exp[j],
-                coord[center[i]][0],
-                coord[center[i]][1],
-                coord[center[i]][2],
-                coord[center[j]][0],
-                coord[center[j]][1],
-                coord[center[j]][2],
-                coord[atom][0],
-                coord[atom][1],
-                coord[atom][2],
-            )
+                    lx[i],
+                    ly[i],
+                    lz[i],
+                    lx[j],
+                    ly[j],
+                    lz[j],
+                    dx_z,
+                    dy_z,
+                    dz_z,
+                    exp[i],
+                    exp[j],
+                    coord[center[i]][0],
+                    coord[center[i]][1],
+                    coord[center[i]][2],
+                    coord[center[j]][0],
+                    coord[center[j]][1],
+                    coord[center[j]][2],
+                    coord[atom][0],
+                    coord[atom][1],
+                    coord[atom][2],
+                )
 
             sd[count] = (
                 CONST_SD
@@ -207,7 +220,10 @@ def sd(coord, magnetic_component, spatial_sym, atom, exp, center, lx, ly, lz, ou
             count += 1
 
     if output > 10:
-        driver_time.add_name_delta_time(name = f"Spin-Dipolar Atomic Integrals, {spatial_sym} Spatial Symmetry and \
-        {magnetic_component} Magnetic Component of {atom + 1}-th Atom", delta_time = (time() - start))
+        driver_time.add_name_delta_time(
+            name=f"Spin-Dipolar Atomic Integrals, {spatial_sym} Spatial Symmetry and \
+        {magnetic_component} Magnetic Component of {atom + 1}-th Atom",
+            delta_time=(time() - start),
+        )
 
     return sd

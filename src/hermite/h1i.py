@@ -2,31 +2,39 @@ from libint import *
 
 
 def h1i(
-    charge: list = None,
-    coord: list = None,
-    exp: list = None,
-    center: list = None,
-    lx: list = None,
-    ly: list = None,
-    lz: list = None,
-    name: str = None,
+    name: str,
+    driver_time: drv_time,
+    charge: list[float] = [],
+    coord: list[list[float]] = [],
+    exp: list[float] = [],
+    center: list[int] = [],
+    lx: list[int] = [],
+    ly: list[int] = [],
+    lz: list[int] = [],
+    atom: list[int] = [],
+    magnetic_xyz: int = -1,
+    spatial_sym: int = -1,
+    r_gauge: list[float] = [],
+    r_dipole: list[float] = [],
+    dalton_normalization: bool = False,
     verbose: int = 0,
-    dalton_normalization: bool = None,
-    driver_time: drv_time = None,
-    atom: list = None,
-    magnetic_xyz: int = None,
-    spatial_sym: int = None,
-    r_gauge: list = None,
-    r_dipole: list = None,
 ):
     """
     Initialize the calculate of the integral choose
 
     Args:
-        integrla (str): Integral name to calculate
-        verbose (int): verbose level for integral calculation
+        name (str): Integral name to calculate
         drive_time (drv_object): Object to manage the time
-
+        charge (list): Atomic charge
+        coord (list): Atomic Coordinate
+        exp (list): Exponential of the primitives
+        center (list): Where is centering of primitives
+        lx, ly, lz (list): Component spatial of angular momentum component
+        magnetic_xyz (int): Component spatial of the magnetic field
+        spatial_sym (int): Spatial symmetry
+        r_gauge (list): Gauge origen
+        r_dipole (list): Dipole origen
+        verbose (int): verbose level for integral calculation
     """
 
     if name.lower() == "overlap":
@@ -48,7 +56,7 @@ def h1i(
         #         ne,
         #     )
     elif name.lower() == "nucpot":
-        integral: list = nucpot(
+        integral = nucpot(
             charge,
             atom,
             coord,
@@ -62,11 +70,11 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "kinetic":
-        integral: list = kinetic(
+        integral = kinetic(
             coord, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time
         )
     elif name.lower() == "angmom":
-        integral: list = angmom(
+        integral = angmom(
             coord,
             r_gauge,
             magnetic_xyz,
@@ -80,7 +88,7 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "sd":
-        integral: list = sd(
+        integral = sd(
             coord,
             magnetic_xyz,
             spatial_sym,
@@ -95,7 +103,7 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "fc":
-        integral: list = fc(
+        integral = fc(
             coord,
             atom,
             exp,
@@ -108,7 +116,7 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "darwin":
-        integral: list = darwin(
+        integral = darwin(
             charge,
             coord,
             exp,
@@ -121,11 +129,11 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "massvelo":
-        integral: list = massvelo(
+        integral = massvelo(
             coord, exp, center, lx, ly, lz, verbose, dalton_normalization, driver_time
         )
     elif name.lower() == "nelfld":
-        integral: list = nelfld(
+        integral = nelfld(
             coord,
             spatial_sym,
             atom,
@@ -139,7 +147,7 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "diplen":
-        integral: list = diplen(
+        integral = diplen(
             coord,
             magnetic_xyz,
             r_dipole,
@@ -153,7 +161,7 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "dipvel":
-        integral: list = dipvel(
+        integral = dipvel(
             coord,
             magnetic_xyz,
             exp,
@@ -166,7 +174,7 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "pso":
-        integral: list = pso(
+        integral = pso(
             coord,
             spatial_sym,
             atom,
@@ -180,7 +188,7 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "nstcgo":
-        integral: list = nstcgo(
+        integral = nstcgo(
             coord,
             r_gauge,
             spatial_sym,
@@ -196,7 +204,7 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "dnske":
-        integral: list = dnske(
+        integral = dnske(
             coord,
             r_gauge,
             spatial_sym,
@@ -212,7 +220,7 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "psoke":
-        integral: list = psoke(
+        integral = psoke(
             coord,
             spatial_sym,
             atom,
@@ -226,7 +234,7 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "psooz":
-        integral: list = psooz(
+        integral = psooz(
             coord,
             r_gauge,
             spatial_sym,
@@ -242,7 +250,7 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "ozke":
-        integral: list = ozke(
+        integral = ozke(
             coord,
             r_gauge,
             magnetic_xyz,
@@ -256,7 +264,7 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "laplacian":
-        integral: list = laplacian(
+        integral = laplacian(
             coord,
             magnetic_xyz,
             exp,
@@ -269,7 +277,7 @@ def h1i(
             driver_time,
         )
     elif name.lower() == "pnstcgop":
-        integral: list = pnstcgop(
+        integral = pnstcgop(
             coord,
             r_gauge,
             spatial_sym,

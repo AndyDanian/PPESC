@@ -1,6 +1,19 @@
 from lib1h import *
 
-def pso(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
+
+def pso(
+    coord,
+    spatial_sym,
+    atom,
+    exp,
+    center,
+    lx,
+    ly,
+    lz,
+    output,
+    dalton_normalization,
+    driver_time,
+):
     """
     Angular moment integrals, which is a vector
 
@@ -48,7 +61,6 @@ def pso(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normal
     r_x_right: int = 0
     r_y_right: int = 0
     r_z_right: int = 0
-
 
     if spatial_sym == 0:
         """X Component"""
@@ -183,7 +195,10 @@ def pso(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normal
             )
             count += 1
     if output > 10:
-        driver_time.add_name_delta_time(name = f"Paramagnetic Spin-Orbit Atomic Integrals, \
-        for {spatial_sym} Spatial Symmetry", delta_time  = (time() - start))
+        driver_time.add_name_delta_time(
+            name=f"Paramagnetic Spin-Orbit Atomic Integrals, \
+        for {spatial_sym} Spatial Symmetry",
+            delta_time=(time() - start),
+        )
 
     return pso

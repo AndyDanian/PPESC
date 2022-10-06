@@ -1,6 +1,21 @@
 from lib1h import *
 
-def psooz(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
+
+def psooz(
+    coord,
+    gauge,
+    spatial_sym,
+    magnetic_component,
+    atom,
+    exp,
+    center,
+    lx,
+    ly,
+    lz,
+    output,
+    dalton_normalization,
+    driver_time,
+):
     """
     Orbital-Zeeman correction to the paramagnetic spin-orbit atomic integrals
 
@@ -104,8 +119,16 @@ def psooz(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, 
             igdj_jgdi_idj_jdi: float = 0.0
             for k in range(8):
                 if k == 0:
-                    l_x_i_a, l_y_i_a, l_z_i_a = oz_r_x_b + oz_r_x_c, oz_r_y_b + oz_r_y_c, oz_r_z_b + oz_r_z_c
-                    l_x_i_b, l_y_i_b, l_z_i_b = oz_r_x_b - oz_r_x_c, oz_r_y_b - oz_r_y_c, oz_r_z_b - oz_r_z_c
+                    l_x_i_a, l_y_i_a, l_z_i_a = (
+                        oz_r_x_b + oz_r_x_c,
+                        oz_r_y_b + oz_r_y_c,
+                        oz_r_z_b + oz_r_z_c,
+                    )
+                    l_x_i_b, l_y_i_b, l_z_i_b = (
+                        oz_r_x_b - oz_r_x_c,
+                        oz_r_y_b - oz_r_y_c,
+                        oz_r_z_b - oz_r_z_c,
+                    )
                     l_x_j, l_y_j, l_z_j = pso_r_x_c, pso_r_y_c, pso_r_z_c
                     r_x, r_y, r_z = pso_r_x_b, pso_r_y_b, pso_r_z_b
                     coef: float = 1.0
@@ -120,8 +143,16 @@ def psooz(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, 
                     der_l_left: float = float(oz_der_l_c[i])
                     der_l_right: float = float(pso_der_l_c[j])
                 elif k == 2:
-                    l_x_i_a, l_y_i_a, l_z_i_a = oz_r_x_b + oz_r_x_c, oz_r_y_b + oz_r_y_c, oz_r_z_b + oz_r_z_c
-                    l_x_i_b, l_y_i_b, l_z_i_b = -oz_r_x_b + oz_r_x_c, -oz_r_y_b + oz_r_y_c, -oz_r_z_b + oz_r_z_c
+                    l_x_i_a, l_y_i_a, l_z_i_a = (
+                        oz_r_x_b + oz_r_x_c,
+                        oz_r_y_b + oz_r_y_c,
+                        oz_r_z_b + oz_r_z_c,
+                    )
+                    l_x_i_b, l_y_i_b, l_z_i_b = (
+                        -oz_r_x_b + oz_r_x_c,
+                        -oz_r_y_b + oz_r_y_c,
+                        -oz_r_z_b + oz_r_z_c,
+                    )
                     l_x_j, l_y_j, l_z_j = pso_r_x_c, pso_r_y_c, pso_r_z_c
                     r_x, r_y, r_z = pso_r_x_b, pso_r_y_b, pso_r_z_b
                     coef: float = -1.0
@@ -136,8 +167,16 @@ def psooz(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, 
                     der_l_left: float = float(oz_der_l_b[i])
                     der_l_right: float = float(pso_der_l_c[j])
                 elif k == 4:
-                    l_x_i_a, l_y_i_a, l_z_i_a = oz_r_x_b + oz_r_x_c, oz_r_y_b + oz_r_y_c, oz_r_z_b + oz_r_z_c
-                    l_x_i_b, l_y_i_b, l_z_i_b = oz_r_x_b - oz_r_x_c, oz_r_y_b - oz_r_y_c, oz_r_z_b - oz_r_z_c
+                    l_x_i_a, l_y_i_a, l_z_i_a = (
+                        oz_r_x_b + oz_r_x_c,
+                        oz_r_y_b + oz_r_y_c,
+                        oz_r_z_b + oz_r_z_c,
+                    )
+                    l_x_i_b, l_y_i_b, l_z_i_b = (
+                        oz_r_x_b - oz_r_x_c,
+                        oz_r_y_b - oz_r_y_c,
+                        oz_r_z_b - oz_r_z_c,
+                    )
                     l_x_j, l_y_j, l_z_j = pso_r_x_b, pso_r_y_b, pso_r_z_b
                     r_x, r_y, r_z = pso_r_x_c, pso_r_y_c, pso_r_z_c
                     coef: float = -1.0
@@ -152,8 +191,16 @@ def psooz(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, 
                     der_l_left: float = float(oz_der_l_c[i])
                     der_l_right: float = float(pso_der_l_b[j])
                 elif k == 6:
-                    l_x_i_a, l_y_i_a, l_z_i_a = oz_r_x_b + oz_r_x_c, oz_r_y_b + oz_r_y_c, oz_r_z_b + oz_r_z_c
-                    l_x_i_b, l_y_i_b, l_z_i_b = -oz_r_x_b + oz_r_x_c, -oz_r_y_b + oz_r_y_c, -oz_r_z_b + oz_r_z_c
+                    l_x_i_a, l_y_i_a, l_z_i_a = (
+                        oz_r_x_b + oz_r_x_c,
+                        oz_r_y_b + oz_r_y_c,
+                        oz_r_z_b + oz_r_z_c,
+                    )
+                    l_x_i_b, l_y_i_b, l_z_i_b = (
+                        -oz_r_x_b + oz_r_x_c,
+                        -oz_r_y_b + oz_r_y_c,
+                        -oz_r_z_b + oz_r_z_c,
+                    )
                     l_x_j, l_y_j, l_z_j = pso_r_x_b, pso_r_y_b, pso_r_z_b
                     r_x, r_y, r_z = pso_r_x_c, pso_r_y_c, pso_r_z_c
                     coef: float = 1.0
@@ -281,8 +328,10 @@ def psooz(coord, gauge, spatial_sym, magnetic_component, atom, exp, center, lx, 
             count += 1
 
     if output > 10:
-        driver_time.add_name_delta_time(name = f"Orbital-Zeeman Correction to the Paramagnetic Spin-Orbit Atomic Integrals, \
+        driver_time.add_name_delta_time(
+            name=f"Orbital-Zeeman Correction to the Paramagnetic Spin-Orbit Atomic Integrals, \
         for {magnetic_component} Magnetic Component, {spatial_sym} Spatial Symmetry, and {atom}-th Atom",
-        delta_time = (time() - start))
+            delta_time=(time() - start),
+        )
 
     return psooz

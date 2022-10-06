@@ -1,6 +1,9 @@
 from lib1h import *
 
-def darwin(charge, coord, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
+
+def darwin(
+    charge, coord, exp, center, lx, ly, lz, output, dalton_normalization, driver_time
+):
     """
     Darwin atomic integrals
 
@@ -26,7 +29,7 @@ def darwin(charge, coord, exp, center, lx, ly, lz, output, dalton_normalization,
     darwin: list = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
 
     SPEED_LIGHT: float = 137.0359998
-    CONST_ALPHA: float = 1.0 / (SPEED_LIGHT ** 2)
+    CONST_ALPHA: float = 1.0 / (SPEED_LIGHT**2)
     CONST_DARWIN: float = np.pi * CONST_ALPHA / 2.0
 
     for k in range(len(coord)):
@@ -66,7 +69,7 @@ def darwin(charge, coord, exp, center, lx, ly, lz, output, dalton_normalization,
                 count += 1
     if output > 10:
         driver_time.add_name_delta_time(
-            name = f"Darwin Atomic Integrals", delta_time = (time() - start)
+            name=f"Darwin Atomic Integrals", delta_time=(time() - start)
         )
 
     return darwin
