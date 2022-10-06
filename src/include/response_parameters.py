@@ -1,6 +1,6 @@
-response_type = {"2": "lineal", "3": "quadratic", "4": "cubic"}
+response_type: dict[str, str] = {"2": "lineal", "3": "quadratic", "4": "cubic"}
 
-property_multiplicities = {
+property_multiplicities: dict[str, int] = {
     "overlap": 1,
     "nucpot": 1,
     "kinetic": 1,
@@ -23,4 +23,3 @@ property_multiplicities = {
     "spinorbit": 3,
     "pnstcgop": 1,
 }
-# Verificar multiplicidad de nstcgo

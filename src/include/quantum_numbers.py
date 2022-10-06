@@ -1,9 +1,25 @@
 # (l + 1)(l + 2)/2
-angular_number = {"s": 1, "p": 3, "d": 6, "f": 10, "g": 15, "h": 21, "i": 28}
+angular_number: dict[str, int] = {
+    "s": 1,
+    "p": 3,
+    "d": 6,
+    "f": 10,
+    "g": 15,
+    "h": 21,
+    "i": 28,
+}
 # 2*l + 1
-angular_number_sph = {"s": 1, "p": 3, "d": 5, "f": 7, "g": 9, "h": 11, "i": 13}
+angular_number_sph: dict[str, int] = {
+    "s": 1,
+    "p": 3,
+    "d": 5,
+    "f": 7,
+    "g": 9,
+    "h": 11,
+    "i": 13,
+}
 
-cartessian_mlx = {
+cartessian_mlx: dict[str, list[int]] = {
     "s": [0],
     "p": [1, 0, 0],
     "d": [2, 1, 1, 0, 0, 0],
@@ -41,7 +57,7 @@ cartessian_mlx = {
         0,
     ],
 }
-cartessian_mly = {
+cartessian_mly: dict[str, list[int]] = {
     "s": [0],
     "p": [0, 1, 0],
     "d": [0, 1, 0, 2, 1, 0],
@@ -79,7 +95,7 @@ cartessian_mly = {
         0,
     ],
 }
-cartessian_mlz = {
+cartessian_mlz: dict[str, list[int]] = {
     "s": [0],
     "p": [0, 0, 1],
     "d": [0, 0, 1, 0, 1, 2],

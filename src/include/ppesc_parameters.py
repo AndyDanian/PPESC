@@ -4,7 +4,7 @@ C: float = 137.0359998
 ALPHA: float = 1.0 / C
 ALPHA2: float = ALPHA * ALPHA
 #
-ppesc_constants = {
+ppesc_constants: dict[str, float] = {
     # NR
     "paranr": M * ALPHA2 / 2.0,
     # paramagnetic
@@ -34,7 +34,7 @@ ppesc_constants = {
     # "a2dw": M*ALPHA2, "a2mv": M*ALPHA2
 }
 #
-name_order_responses = ["paranr", "fclap", "sdlap", "lpsokin", "lkinpso"]
+name_order_responses: list[str] = ["paranr", "fclap", "sdlap", "lpsokin", "lkinpso"]
 ###### Paramagnetic
 # - NR
 paranr = [

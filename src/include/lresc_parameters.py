@@ -4,7 +4,7 @@ C: float = 137.0359998
 ALPHA: float = 1.0 / C
 ALPHA2: float = ALPHA * ALPHA
 #
-lresc_scale = {
+lresc_scale: dict[str, float] = {
     # NR
     "paranr": M * ALPHA2 / 2.0,
     # paramagnetic
@@ -56,7 +56,7 @@ lresc_scale = {
     "a2mv": -M * ALPHA2,
 }
 #
-lresc = {
+lresc: dict[str, float] = {
     # NR
     "paranr": M * ALPHA2 / 2.0,
     # paramagnetic
@@ -104,7 +104,7 @@ lresc = {
     "a2mv": M * ALPHA2,
 }
 #
-name_order_responses = [
+name_order_responses: list[str] = [
     "paranr",
     "fclap",
     "sdlap",
@@ -120,7 +120,10 @@ name_order_responses = [
     "a2mv",
 ]
 #
-lresc_constants = {"lresc_scale": lresc_scale, "lresc": lresc}
+lresc_constants: dict[str, dict[str, float]] = {
+    "lresc_scale": lresc_scale,
+    "lresc": lresc,
+}
 ###### Paramagnetic
 # - NR
 paranr = [

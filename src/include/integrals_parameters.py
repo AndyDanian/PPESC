@@ -1,4 +1,4 @@
-spatial_symmetry: dict = {
+spatial_symmetry: dict[str, int] = {
     "overlap": 0,
     "nucpot": 0,
     "kinetic": 0,
@@ -21,7 +21,7 @@ spatial_symmetry: dict = {
     "sofiel": 1,
     "pnstcgop": 1,
 }
-magnetic: dict = {
+magnetic: dict[str, int] = {
     "overlap": 0,
     "nucpot": 0,
     "kinetic": 0,
@@ -44,7 +44,7 @@ magnetic: dict = {
     "sofield": 1,
     "pnstcgop": 1,
 }
-integral_symmetry: dict = {
+integral_symmetry: dict[str, str] = {
     "overlap": "sym",
     "nucpot": "sym",
     "kinetic": "sym",
@@ -71,10 +71,17 @@ integral_symmetry: dict = {
 # Separated magnetic axes of cartessian component (laplacian), i. e., to make a cartessian component by
 # separated in e_integral.py
 
-magnetic_axes: dict = {0: "x", 1: "y", 2: "z"}
-spatial_components: dict = {0: "xx", 1: "yy", 2: "zz", 3: "xy", 4: "xz", 5: "yz"}
+magnetic_axes: dict[int, str] = {0: "x", 1: "y", 2: "z"}
+spatial_components: dict[int, str] = {
+    0: "xx",
+    1: "yy",
+    2: "zz",
+    3: "xy",
+    4: "xz",
+    5: "yz",
+}
 
-large_name = {
+large_name: dict[str, str] = {
     "overlap": "Overlap",
     "nucpot": "Nuclear Potential Energy",
     "kinetic": "Kinetic Energy",
