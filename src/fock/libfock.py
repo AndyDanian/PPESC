@@ -10,7 +10,6 @@ FOCK_PATH = Path.cwd()
 PARENT_PATH = FOCK_PATH.parent
 
 sys.path.append(os.fspath(PARENT_PATH))
-# sys.path.append(os.fspath(PARENT_PATH / ("include")))  # This is neccesary by e_integral
 sys.path.append(os.fspath(PARENT_PATH / ("io")))  # This is neccesary by wave_function
 sys.path.append(os.fspath(PARENT_PATH / ("functions")))
 sys.path.append(os.fspath(PARENT_PATH / ("hermite")))
@@ -26,5 +25,4 @@ from wave_function import *
 from e_integral import *
 
 # functions
-# from string_informations import *
-from drv_time import *
+from drv_time import drv_time
