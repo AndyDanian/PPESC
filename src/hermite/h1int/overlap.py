@@ -66,7 +66,6 @@ def overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
                 exp[j],
             )
 
-
             overlap[count] = (
                 normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
@@ -78,39 +77,43 @@ def overlap(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver
             count += 1
 
     if output > 10:
-        driver_time.add_name_delta_time(name = f"Overlap Atomic Integrals", delta_time = (time() - start))
+        driver_time.add_name_delta_time(
+            name=f"Overlap Atomic Integrals", delta_time=(time() - start)
+        )
 
     return overlap
+
 
 if __name__ == "__main__":
     # 6-311++G**
     s = overlap(
-        coord = [[0.0, 0.0, 0.0586476414], [0.0, 0.0, 1.4045523587]],
-        exp = [
-        33.865,
-        5.09479,
-        1.15879,
-        0.32584,
-        0.102741,
-        0.036,
-        0.75,
-        0.75,
-        0.75,
-        33.865,
-        5.09479,
-        1.15879,
-        0.32584,
-        0.102741,
-        0.036,
-        0.75,
-        0.75,
-        0.75,
+        coord=[[0.0, 0.0, 0.0586476414], [0.0, 0.0, 1.4045523587]],
+        exp=[
+            33.865,
+            5.09479,
+            1.15879,
+            0.32584,
+            0.102741,
+            0.036,
+            0.75,
+            0.75,
+            0.75,
+            33.865,
+            5.09479,
+            1.15879,
+            0.32584,
+            0.102741,
+            0.036,
+            0.75,
+            0.75,
+            0.75,
         ],
-        center = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        lx = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-        ly = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-        lz = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        lx=[0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+        ly=[0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+        lz=[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         output=11,
-        dalton_normalization = False)
+        dalton_normalization=False,
+    )
 
-    print("Overlap : ",s)
+    print("Overlap : ", s)

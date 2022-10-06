@@ -1,8 +1,12 @@
 from os import read
-from libsrc import *
+from typing import NewType
+
 import numpy as np
 
-def convert_to_float(variable_name: None, value: None):
+from scratch import scratch
+
+
+def convert_to_float(variable_name, value):
     """
     Convert numeric string o int to float or return None
     when is a special character like ****
@@ -10,10 +14,13 @@ def convert_to_float(variable_name: None, value: None):
     try:
         return float(value)
     except:
-        print(f"**** Warning\n\n\
+        print(
+            f"**** Warning\n\n\
         Value {value} assigned to {variable_name} isn't a float.\n\
-        This can produce errors in the calcule when is neccesary {variable_name}.\n")
+        This can produce errors in the calcule when is neccesary {variable_name}.\n"
+        )
         return None
+
 
 def validate_file(file_molden):
     """
@@ -54,7 +61,7 @@ def validate_file(file_molden):
             )
 
 
-def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21):
+def read_molden(file_molden: str, drv_scratch: scratch, verbose: int = 1):
     """[summary]
     Read .molden generate with DALTON the most general possible
     Args:
@@ -69,7 +76,7 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
     """
     label_title: str = "Reading Wave Function From MOLDEN File"
     drv_scratch.write_output(label_title.center(80))
-    drv_scratch.write_output(("-"*len(label_title)).center(80))
+    drv_scratch.write_output(("-" * len(label_title)).center(80))
 
     # Verification of the file
     if validate_file(file_molden):
@@ -78,40 +85,40 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
     # Number of lines where are the information
     content = open(file_molden, "r")
     datafile = content.readlines()
-    amount_strings = 0
+    amount_strings: int = 0
 
     # label, index, charge, and coordinates
-    numbers_atoms = 0
-    A_Bohr = 1.0
-    stop_atoms = False
-    molecule_index = 0
-    molecule_index_before = 0
-    molecule_information = []
-    l_i_q_xyz = []
+    numbers_atoms: int = 0
+    A_Bohr: float = 1.0
+    stop_atoms: bool = False
+    molecule_index: int = 0
+    molecule_index_before: int = 0
+    molecule_information: list = []
+    l_i_q_xyz: list = []
 
     # Primitive type and amount, and exponents
     # NOTE: Only bases set uncontracteds
-    stop_gto = False
-    t_a_exp = []
-    line_gto = 2
-    stop_verification_contraction = False
-    total_primitives = 0
+    stop_gto: bool = False
+    t_a_exp: list = []
+    line_gto: int = 2
+    stop_verification_contraction: bool = False
+    total_primitives: int = 0
     # -- Molden Format https://www3.cmbi.umcn.nl/molden/molden_format.html
-    l = {
+    l: dict = {
         "cartessian": {"s": 1, "p": 3, "d": 6, "f": 10, "g": 15, "h": 21, "i": 28},
         "spherical": {"s": 1, "p": 3, "d": 5, "f": 7, "g": 9, "h": 11, "i": 13},
     }
-    spatial_primitive = "cartessian"
+    spatial_primitive: str = "cartessian"
     #
-    spatial_primitive_find = False
-    count_spatial = 0
+    spatial_primitive_find: bool = False
+    count_spatial: int = 0
 
     # MO Coefficients
-    stop_mo = False
-    count_mo = 1
-    mo = []
-    num_mo = 1
-    end_mo = ["S", "[", "E"]
+    stop_mo: bool = False
+    count_mo: int = 1
+    mo: list = []
+    num_mo: int = 1
+    end_mo: list = ["S", "[", "E"]
 
     for number_line, element in enumerate(datafile):
         if "[TITLE]" in element:
@@ -138,10 +145,13 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
 
             if (
                 # Amount the strings, molden format is 6 to geometry
-                (amount_strings != len(datafile[number_line + 1 + numbers_atoms].split())
-                or
-                # If the third string in the line is not float then stop
-                no_float)
+                (
+                    amount_strings
+                    != len(datafile[number_line + 1 + numbers_atoms].split())
+                    or
+                    # If the third string in the line is not float then stop
+                    no_float
+                )
                 and numbers_atoms > 0
             ):
                 stop_atoms = True
@@ -162,18 +172,16 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
                     + " "
                     + str(
                         convert_to_float(
-                            "x coordinate", datafile[number_line + 1 + numbers_atoms].split()[
-                                3
-                            ]
+                            "x coordinate",
+                            datafile[number_line + 1 + numbers_atoms].split()[3],
                         )
                         * A_Bohr
                     )
                     + " "
                     + str(
                         convert_to_float(
-                            "y coordinate", datafile[number_line + 1 + numbers_atoms].split()[
-                                4
-                            ]
+                            "y coordinate",
+                            datafile[number_line + 1 + numbers_atoms].split()[4],
                         )
                         * A_Bohr
                     )
@@ -181,9 +189,7 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
                     + str(
                         convert_to_float(
                             "z coordinate",
-                            datafile[number_line + 1 + numbers_atoms].split()[
-                                5
-                            ]
+                            datafile[number_line + 1 + numbers_atoms].split()[5],
                         )
                         * A_Bohr
                     )
@@ -192,26 +198,18 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
                 molecule_index = int(
                     datafile[number_line + 1 + numbers_atoms].split()[1]
                 )
-                if (
-                    numbers_atoms > 0
-                    and molecule_index != molecule_index_before
-                ):
+                if numbers_atoms > 0 and molecule_index != molecule_index_before:
                     l_i_q_xyz.append(molecule_information)
 
                 elif numbers_atoms == 0:
                     l_i_q_xyz.append(molecule_information)
 
-                elif (
-                    numbers_atoms > 0
-                    and molecule_index == molecule_index_before
-                ):
+                elif numbers_atoms > 0 and molecule_index == molecule_index_before:
                     l_i_q_xyz[numbers_atoms - 1] += molecule_information
 
                 molecule_index_before = molecule_index
 
-                amount_strings = len(
-                    datafile[number_line + 1 + numbers_atoms].split()
-                )
+                amount_strings = len(datafile[number_line + 1 + numbers_atoms].split())
                 numbers_atoms += 1
 
         # Cartessian or Spherical
@@ -248,9 +246,7 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
                 # Primitive type
                 primitive_type = datafile[number_line + line_gto].split()[0]
                 # Primitive amount
-                primitive_amount = int(
-                    datafile[number_line + line_gto].split()[1]
-                )
+                primitive_amount = int(datafile[number_line + line_gto].split()[1])
                 line_gto += 1
                 # Exponents
                 exponents = [
@@ -268,9 +264,7 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
                     for coefficient in contraction_coefficients:
                         if coefficient not in [0.0, 1.0]:
                             print("*** WARNING ***\n")
-                            print(
-                                "Program work with uncontractred bases set only."
-                            )
+                            print("Program work with uncontractred bases set only.")
                             stop_verification_contraction = True
 
                 line_gto += primitive_amount
@@ -285,8 +279,7 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
 
                 if (
                     primitive_amount > 1
-                    and datafile[number_line + line_gto].split()[0]
-                    == primitive_type
+                    and datafile[number_line + line_gto].split()[0] == primitive_type
                 ):
                     # Skip following lines until new primitive type
                     # primitive_amount - 1: Number of blocks to skip
@@ -298,16 +291,14 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
                         stop_read_exponents = True
                 elif (
                     primitive_amount == 1
-                    and datafile[number_line + line_gto].split()[0]
-                    == primitive_type
+                    and datafile[number_line + line_gto].split()[0] == primitive_type
                 ):
                     # TODO when the exponents for the same primitive type
                     # TODO are separated by a one line with same type and amount primitive
                     line_gto += 1
                 elif (
                     primitive_amount == 1
-                    and datafile[number_line + line_gto].split()[0]
-                    != primitive_type
+                    and datafile[number_line + line_gto].split()[0] != primitive_type
                 ):
                     pass
 
@@ -341,34 +332,29 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
             #
             sym = datafile[number_line + count_mo].split()[1]
             count_mo += 1
-            e = convert_to_float("energy",
-                                datafile[number_line + count_mo].split()[1])
+            e = convert_to_float("energy", datafile[number_line + count_mo].split()[1])
             count_mo += 1
             spin = datafile[number_line + count_mo].split()[1]
             count_mo += 1
-            occupation = convert_to_float("occupation",
-                                    datafile[number_line + count_mo].split()[1])
+            occupation = convert_to_float(
+                "occupation", datafile[number_line + count_mo].split()[1]
+            )
             count_mo += 1
 
             mo_coefficients = [0.0] * total_primitives
             count_different_0 = 0
             for i in range(total_primitives):
-                if (
-                    datafile[number_line + count_mo + i].split()[0][0]
-                    not in end_mo
-                ):
+                if datafile[number_line + count_mo + i].split()[0][0] not in end_mo:
                     mo_coefficients[
-                        int(datafile[number_line + count_mo + i].split()[0])
-                        - 1
-                    ] = convert_to_float("coefficient",
-                                        datafile[number_line + count_mo + i].split()[1])
+                        int(datafile[number_line + count_mo + i].split()[0]) - 1
+                    ] = convert_to_float(
+                        "coefficient", datafile[number_line + count_mo + i].split()[1]
+                    )
                     count_different_0 += 1
                 else:
                     break
 
-            count_mo += total_primitives - (
-                total_primitives - count_different_0
-            )
+            count_mo += total_primitives - (total_primitives - count_different_0)
 
             mo_information = {
                 "energy": e,
@@ -388,9 +374,17 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
 
     # NOTE: Re--organize of coefficient when there are angular moments higher than p
     #       because the coefficients aren't ordered by ml, when is used the DALTON
-    angular_moments =[il for dicti in t_a_exp for il, values in dicti.items() for i in values for j in range(l[spatial_primitive][il])]
+    angular_moments = [
+        il
+        for dicti in t_a_exp
+        for il, values in dicti.items()
+        for i in values
+        for j in range(l[spatial_primitive][il])
+    ]
     if "d" in angular_moments and spatial_primitive == "spherical":
-        drv_scratch.write_output("*** There are l higher p, then is neccesary re-organize mo coefficient ***")
+        drv_scratch.write_output(
+            "*** There are l higher p, then is neccesary re-organize mo coefficient ***"
+        )
         drv_scratch.write_output("*** when is used DALTON, which will done ***")
         new_mo = []
         for imo in mo:
@@ -400,23 +394,36 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
             for iterator, coeff in enumerate(imo["coefficients"]):
                 nml = l["spherical"][angular_moments[iterator]]
                 if nml > 3:
-                    coefficients[count + int(nml/2) + int((ml+1)/2)*np.power(-1,ml+1)] = coeff
+                    coefficients[
+                        count + int(nml / 2) + int((ml + 1) / 2) * np.power(-1, ml + 1)
+                    ] = coeff
                     ml += 1
                 else:
                     coefficients[count] = coeff
                     count += 1
-                if  ml == nml:
+                if ml == nml:
                     ml = 0
                     count += nml
-            new_mo.append({"energy": imo["energy"], "spin": imo["spin"], "occupation": imo["occupation"], "coefficients": coefficients})
+            new_mo.append(
+                {
+                    "energy": imo["energy"],
+                    "spin": imo["spin"],
+                    "occupation": imo["occupation"],
+                    "coefficients": coefficients,
+                }
+            )
         mo = new_mo
     elif "d" in angular_moments and spatial_primitive != "spherical":
-        drv_scratch.write_output("*** There are l higher p, then is neccesary re-organize mo coefficient ***")
-        drv_scratch.write_output("when is used DALTON. Also, it is used cartessian primitive and in this case\
-                the primitives isn't reorganized")
+        drv_scratch.write_output(
+            "*** There are l higher p, then is neccesary re-organize mo coefficient ***"
+        )
+        drv_scratch.write_output(
+            "when is used DALTON. Also, it is used cartessian primitive and in this case\
+                the primitives isn't reorganized"
+        )
 
     # Encapsule t_a_exp like l_i_q_xyz
-    t_a_exp_temp = t_a_exp
+    t_a_exp_temp: list = t_a_exp
     t_a_exp = []
     count = 0
     for mol in l_i_q_xyz:
@@ -440,13 +447,13 @@ def read_molden(file_molden: str = None, drv_scratch: scratch = None, verbose=21
     else:
         return l_i_q_xyz, t_a_exp, mo, True
 
+
 if __name__ == "__main__":
     """
     Read .molden file
     """
 
-    l_i_q_xyz, t_a_exp, mo, type_primitives = read_molden("LiH.molden")
+    # l_i_q_xyz, t_a_exp, mo, type_primitives = read_molden("LiH.molden")
 
     # print("\n primitive information \n",t_a_exp)
     # print("\n mo coefficientes \n",mo[0]['coefficients'])
-

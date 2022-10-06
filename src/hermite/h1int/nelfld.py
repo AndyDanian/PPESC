@@ -1,6 +1,19 @@
-from lib1h import * 
+from lib1h import *
 
-def nelfld(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
+
+def nelfld(
+    coord,
+    spatial_sym,
+    atom,
+    exp,
+    center,
+    lx,
+    ly,
+    lz,
+    output,
+    dalton_normalization,
+    driver_time,
+):
     """
     Spin dipolar atomic integrals, which is a tensor
 
@@ -82,8 +95,9 @@ def nelfld(coord, spatial_sym, atom, exp, center, lx, ly, lz, output, dalton_nor
 
     if output > 10:
         driver_time.add_name_delta_time(
-            name = f"Nuclear Electric Field Gradient Atomic Integrals,\
-                {spatial_sym} Spatial Symmetry", delta_time = (time() - start)
+            name=f"Nuclear Electric Field Gradient Atomic Integrals,\
+                {spatial_sym} Spatial Symmetry",
+            delta_time=(time() - start),
         )
 
     return nelfld

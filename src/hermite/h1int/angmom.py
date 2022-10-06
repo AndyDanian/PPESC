@@ -1,6 +1,19 @@
 from lib1h import *
 
-def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
+
+def angmom(
+    coord,
+    gauge,
+    magnetic_component,
+    exp,
+    center,
+    lx,
+    ly,
+    lz,
+    output,
+    dalton_normalization,
+    driver_time,
+):
     """
     Angular moment integrals, which is a vector
 
@@ -82,7 +95,8 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
                 spatial_l[i],
                 spatial_l[j],
                 0,
-                coord[center[i]][magnetic_component] - coord[center[j]][magnetic_component],
+                coord[center[i]][magnetic_component]
+                - coord[center[j]][magnetic_component],
                 exp[i],
                 exp[j],
             )
@@ -96,7 +110,7 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
                 exp[j],
             )
 
-            right_s: float = hermite_coefficient( #z
+            right_s: float = hermite_coefficient(  # z
                 right_l[i],
                 right_l[j],
                 0,
@@ -163,15 +177,19 @@ def angmom(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, da
             angmom[count] = (
                 -normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
-                * ((left_r + left_rg * left_s) * left_p -
-                   (right_r + right_rg * right_s) * right_p)
+                * (
+                    (left_r + left_rg * left_s) * left_p
+                    - (right_r + right_rg * right_s) * right_p
+                )
                 * spatial_s
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)
             )
             count += 1
 
     if output > 10:
-        driver_time.add_name_delta_time(name = f"Angular Momentum Atomic Integrals for {magnetic_component} Magnetic Component",
-        delta_time = (time() - start))
+        driver_time.add_name_delta_time(
+            name=f"Angular Momentum Atomic Integrals for {magnetic_component} Magnetic Component",
+            delta_time=(time() - start),
+        )
 
     return angmom

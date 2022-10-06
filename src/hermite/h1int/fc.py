@@ -1,5 +1,6 @@
 from lib1h import *
 
+
 def fc(coord, atom, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
     """
     Fermi--contact atomic integrals
@@ -63,8 +64,8 @@ def fc(coord, atom, exp, center, lx, ly, lz, output, dalton_normalization, drive
             count += 1
     if output > 10:
         driver_time.add_name_delta_time(
-            name = f"Fermi--contact Atomic Integrals for {atom + 1}-th Atom",
-            delta_time = (time() - start)
+            name=f"Fermi--contact Atomic Integrals for {atom + 1}-th Atom",
+            delta_time=(time() - start),
         )
 
     return fc

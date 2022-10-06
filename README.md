@@ -43,11 +43,30 @@ Integrals implemented using point nucleu, cartessian primitives and until i shel
 * Two--body
     * Electron repulsion
 
-PPotential integrals use boys function.
+Potential integrals use boys function.
 
 # Fock Matriz 
 
 * Fock--Matrix Implemented
     * Hartree--Fock
     * Add Massvelocity and Darwin to Hartree--Fock energies 
-  
+
+# Development packages
+
+Static typing
+
+* mypy (https://mypy.readthedocs.io/en/stable/getting_started.html#installing-and-running-mypy)
+  python3 -m pip install mypy
+
+Example:
+   mypy program.py
+
+* black (https://github.com/psf/black)
+  pip install black
+
+Vscode configuration:
+	File -> Preferences -> Settings
+Search "python formatting provider" and select "black". Then, search "format on save" and enable the "Editor: Format on Save"
+
+Example:
+  python -m black program.py

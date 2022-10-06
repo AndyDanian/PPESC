@@ -1,11 +1,15 @@
 from lib1h import *
 
-def sofiel(integrals: dict = None, number_atoms: int = None, charge: list = None,
-            nprim: int = None,
-            sofiel_xx: bool = False, sofiel_yy: bool = False, sofiel_zz: bool = False,
-            sofiel_xy: bool = False, sofiel_xz: bool = False, sofiel_yz: bool = False,
-            sofiel_yx: bool = False, sofiel_zx: bool = False, sofiel_zy: bool = False,
-            driver_time: object = None, verbose: int = 0):
+
+def sofiel(
+    integrals: scratch,
+    driver_time: drv_time,
+    number_atoms: int,
+    charge: list[float],
+    nprim: int,
+    list_sofiel: list[bool],
+    verbose: int = 0,
+):
     """
     Get spin orbit from PSO AO integrals
 
@@ -26,124 +30,54 @@ def sofiel(integrals: dict = None, number_atoms: int = None, charge: list = None
         sofiel_zx (bool): Activate the calculate of spin orbit zx-component
         sofiel_zy (bool): Activate the calculate of spin orbit zy-component
     """
-    start = time()
-
-    spinorbit_integrals: dict = {}
-    symmetries: dict = {}
-    matrix = np.zeros((nprim,nprim),dtype=float)
-    if sofiel_xx and not (integrals._hermite_ao1b_binary.exists() and
-                          integrals.binary(file = integrals._hermite_ao1b_binary, 
-                                          label = "sofiel xx",
-                                          io = "f")):
-        symmetries["sofiel xx"] = "antisym"
-        matrix = 0.0
-        for a in range(number_atoms):
-            matrix += charge[a] * integrals.binary(file=integrals._hermite_ao1b_binary,
-                                                label=("nstcgo " + str(1 + a*3) + " x"), io="r")
-        integrals.binary(file=integrals._hermite_ao1b_binary,dictionary={"sofiel xx": matrix},io="a")
-        if verbose > 10:
-            driver_time.add_name_delta_time(name = "SOFIEL XX AO", delta_time = (time() - start))
-
-    if sofiel_xy and not (integrals._hermite_ao1b_binary.exists() and
-                          integrals.binary(file = integrals._hermite_ao1b_binary, 
-                                          label = "sofiel xy",
-                                          io = "f")):
-        symmetries["sofiel xy"] = "antisym"
-        matrix = 0.0
-        for a in range(number_atoms):
-            matrix += charge[a] * integrals.binary(file=integrals._hermite_ao1b_binary,
-                                                label=("nstcgo " + str(1 + a*3) + " y"), io="r")
-        integrals.binary(file=integrals._hermite_ao1b_binary,dictionary={"sofiel xy": matrix},io="a")
-        if verbose > 10:
-            driver_time.add_name_delta_time(name = "SOFIEL XY AO", delta_time = (time() - start))
-
-    if sofiel_xz and not (integrals._hermite_ao1b_binary.exists() and
-                          integrals.binary(file = integrals._hermite_ao1b_binary, 
-                                          label = "sofiel xz",
-                                          io = "f")):
-        symmetries["sofiel xz"] = "antisym"
-        matrix = 0.0
-        for a in range(number_atoms):
-            matrix += charge[a] * integrals.binary(file=integrals._hermite_ao1b_binary,
-                                                label=("nstcgo " + str(1 + a*3) + " z"), io="r")
-        integrals.binary(file=integrals._hermite_ao1b_binary,dictionary={"sofiel xz": matrix},io="a")
-        if verbose > 10:
-            driver_time.add_name_delta_time(name = "SOFIEL XZ AO", delta_time = (time() - start))
-
-    if sofiel_yx and not (integrals._hermite_ao1b_binary.exists() and
-                          integrals.binary(file = integrals._hermite_ao1b_binary, 
-                                          label = "sofiel yx",
-                                          io = "f")):
-        symmetries["sofiel yx"] = "antisym"
-        matrix = 0.0
-        for a in range(number_atoms):
-            matrix += charge[a] * integrals.binary(file=integrals._hermite_ao1b_binary,
-                                                label=("nstcgo " + str(2 + a*3) + " x"), io="r")
-        integrals.binary(file=integrals._hermite_ao1b_binary,dictionary={"sofiel yx": matrix},io="a")
-        if verbose > 10:
-            driver_time.add_name_delta_time(name = "SOFIEL YX AO", delta_time = (time() - start))
-
-    if sofiel_yy and not (integrals._hermite_ao1b_binary.exists() and
-                          integrals.binary(file = integrals._hermite_ao1b_binary, 
-                                          label = "sofiel yy",
-                                          io = "f")):
-        symmetries["sofiel yy"] = "antisym"
-        matrix = 0.0
-        for a in range(number_atoms):
-            matrix += charge[a] * integrals.binary(file=integrals._hermite_ao1b_binary,
-                                                label=("nstcgo " + str(2 + a*3) + " y"), io="r")
-        integrals.binary(file=integrals._hermite_ao1b_binary,dictionary={"sofiel yy": matrix},io="a")
-        if verbose > 10:
-            driver_time.add_name_delta_time(name = "SOFIEL YY AO", delta_time = (time() - start))
-
-    if sofiel_yz and not (integrals._hermite_ao1b_binary.exists() and
-                          integrals.binary(file = integrals._hermite_ao1b_binary, 
-                                          label = "sofiel yz",
-                                          io = "f")):
-        symmetries["sofiel yz"] = "antisym"
-        matrix = 0.0
-        for a in range(number_atoms):
-            matrix += charge[a] * integrals.binary(file=integrals._hermite_ao1b_binary,
-                                                label=("nstcgo " + str(2 + a*3) + " z"), io="r")
-        integrals.binary(file=integrals._hermite_ao1b_binary,dictionary={"sofiel yz": matrix},io="a")
-        if verbose > 10:
-            driver_time.add_name_delta_time(name = "SOFIEL YZ AO", delta_time = (time() - start))
-
-    if sofiel_zx and not (integrals._hermite_ao1b_binary.exists() and
-                          integrals.binary(file = integrals._hermite_ao1b_binary, 
-                                          label = "sofiel zx",
-                                          io = "f")):
-        symmetries["sofiel zx"] = "antisym"
-        matrix = 0.0
-        for a in range(number_atoms):
-            matrix += charge[a] * integrals.binary(file=integrals._hermite_ao1b_binary,
-                                                label=("nstcgo " + str(3 + a*3) + " x"), io="r")
-        integrals.binary(file=integrals._hermite_ao1b_binary,dictionary={"sofiel zx": matrix},io="a")
-        if verbose > 10:
-            driver_time.add_name_delta_time(name = "SOFIEL ZX AO", delta_time = (time() - start))
-
-    if sofiel_zy and not (integrals._hermite_ao1b_binary.exists() and
-                          integrals.binary(file = integrals._hermite_ao1b_binary, 
-                                          label = "sofiel zy",
-                                          io = "f")):
-        symmetries["sofiel zy"] = "antisym"
-        matrix = 0.0
-        for a in range(number_atoms):
-            matrix += charge[a] * integrals.binary(file=integrals._hermite_ao1b_binary,
-                                                label=("nstcgo " + str(3 + a*3) + " y"), io="r")
-        integrals.binary(file=integrals._hermite_ao1b_binary,dictionary={"sofiel zy": matrix},io="a")
-        if verbose > 10:
-            driver_time.add_name_delta_time(name = "SOFIEL ZY AO", delta_time = (time() - start))
-
-    if sofiel_zz and not (integrals._hermite_ao1b_binary.exists() and
-                          integrals.binary(file = integrals._hermite_ao1b_binary, 
-                                          label = "sofiel zz",
-                                          io = "f")):
-        symmetries["sofiel zz"] = "antisym"
-        matrix = 0.0
-        for a in range(number_atoms):
-            matrix += charge[a] * integrals.binary(file=integrals._hermite_ao1b_binary,
-                                                    label=("nstcgo " + str(3 + a*3) + " z"), io="r")
-        integrals.binary(file=integrals._hermite_ao1b_binary,dictionary={"sofiel zz": matrix},io="a")
-        if verbose > 10:
-            driver_time.add_name_delta_time(name = "SOFIEL ZZ AO", delta_time = (time() - start))
+    start: float = time()
+    sofiel_name: list[str] = [
+        "sofiel xx",
+        "sofiel xy",
+        "sofiel xz",
+        "sofiel yx",
+        "sofiel yy",
+        "sofiel yz",
+        "sofiel zx",
+        "sofiel zy",
+        "sofiel zz",
+    ]
+    nstcgo_component = [
+        lambda a: str(1 + a * 3) + " x",
+        lambda a: str(1 + a * 3) + " y",
+        lambda a: str(1 + a * 3) + " z",
+        lambda a: str(2 + a * 3) + " x",
+        lambda a: str(2 + a * 3) + " y",
+        lambda a: str(2 + a * 3) + " z",
+        lambda a: str(3 + a * 3) + " x",
+        lambda a: str(3 + a * 3) + " y",
+        lambda a: str(3 + a * 3) + " z",
+    ]
+    # * Calculation SOFIEL Integrals ****************************************
+    for count, sofiel in enumerate(list_sofiel):
+        if sofiel and not (
+            integrals._hermite_ao1b_binary.exists()
+            and integrals.binary(
+                file=integrals._hermite_ao1b_binary, label=sofiel_name[count], io="f"
+            )
+        ):
+            matrix: np.ndarray = np.zeros((nprim, nprim), dtype=float)
+            for a in range(number_atoms):
+                matrix += charge[a] * integrals.binary(
+                    file=integrals._hermite_ao1b_binary,
+                    label=("nstcgo " + nstcgo_component[count](a)),
+                    io="r",
+                )
+            # Write: SOFIEL integrals in AO1BINT #################################
+            integrals.binary(
+                file=integrals._hermite_ao1b_binary,
+                dictionary={sofiel_name[count]: matrix},
+                io="a",
+            )
+            # END SOFIEL Integrals ################################################
+            if verbose > 10:
+                driver_time.add_name_delta_time(
+                    name="SOFIEL " + nstcgo_component[count](a).upper() + " AO",
+                    delta_time=(time() - start),
+                )
+    # * END Calculation of SOFIEL ******************************************************

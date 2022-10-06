@@ -3,26 +3,46 @@ import os
 from datetime import datetime
 from pathlib import Path
 import shutil
+from typing import Union
+from io import TextIOWrapper
 
 import h5py
+import numpy as np
 
 from print_matrix import *
 
 PROJECT_DIR = Path.cwd().parent
-sys.path.append(
-    os.fspath(PROJECT_DIR / "functions")
-    )
-from drv_time import *
+sys.path.append(os.fspath(PROJECT_DIR / "functions"))
+from drv_time import drv_time
 
-integral_symmetry: dict = {"overlap": "sym", "nucpot": "sym", "kinetic": "sym", "angmom": "antisym",
-"sd": "sym", "fc": "sym", "darwin": "sym", "massvelo": "sym", "nelfld": "sym", "diplen": "sym",
-"dipvel": "antisym", "pso": "antisym", "nstcgo": "sym", "dnske": "sym", "psoke": "square",
-"psooz": "square", "ozke": "antisym", "spinorbit": "antisym", "laplacian": "sym", "sofiel": "sym",
-"pnstcgop": "sym"}
+integral_symmetry: dict = {
+    "overlap": "sym",
+    "nucpot": "sym",
+    "kinetic": "sym",
+    "angmom": "antisym",
+    "sd": "sym",
+    "fc": "sym",
+    "darwin": "sym",
+    "massvelo": "sym",
+    "nelfld": "sym",
+    "diplen": "sym",
+    "dipvel": "antisym",
+    "pso": "antisym",
+    "nstcgo": "sym",
+    "dnske": "sym",
+    "psoke": "square",
+    "psooz": "square",
+    "ozke": "antisym",
+    "spinorbit": "antisym",
+    "laplacian": "sym",
+    "sofiel": "sym",
+    "pnstcgop": "sym",
+}
 
-class scratch():
+
+class scratch:
     # Constructor
-    def __init__(self, scratch: Path or str = None, job_folder: str = None) -> None:
+    def __init__(self, scratch: Union[Path, str], job_folder: str) -> None:
         """
         Constructor of scratch object
 
@@ -30,66 +50,79 @@ class scratch():
             scrath (Path): Scrath's Path
         """
 
-        if job_folder is None:
+        if not job_folder or job_folder == "":
             now_date = datetime.now()
             str_date: str = now_date.strftime("%d%m%y%H%M%S")
-            job_folder: str = str_date
+            job_folder = str_date
 
         if scratch is None:
             if Path("/tmp").exists():
-                tmp_scratch: Path = Path("/tmp/scratch").parent.mkdir(parents=True, exist_ok=True)
-                self._scratch: Path = Path("/tmp/scratch/"+(job_folder))
+                Path("/tmp/scratch").parent.mkdir(parents=True, exist_ok=True)
+                job_folder = "/tmp/scratch/" + (job_folder)
+                self._scratch: Path = Path(job_folder)
                 self._scratch.mkdir(parents=True, exist_ok=True)
             else:
                 raise FileNotFoundError("/tmp folder not exits.")
         else:
             if Path(scratch).exists():
-                self._scratch: Path = Path(scratch + "/" + job_folder)
+                if isinstance(scratch, str):
+                    scratch = Path(scratch)
+                self._scratch = scratch / (job_folder)
                 if self._scratch.exists():
-                    print(f"***WARNING\n\n{self._scratch} already exist, then possiblely the files will be overwrite")
+                    print(
+                        f"***WARNING\n\n{self._scratch} already exist, then possiblely the files will be overwrite"
+                    )
                 else:
-                    self._scratch.mkdir(parents=True, exist_ok=True) 
+                    self._scratch.mkdir(parents=True, exist_ok=True)
             else:
-                raise FileNotFoundError(f"***Error \n\n{Path(scratch)} folder not exists, please create before calculation.")
-        
-        #ouput files names
-        self._output_path = None
+                raise FileNotFoundError(
+                    f"***Error \n\n{Path(scratch)} folder not exists, please create before calculation."
+                )
+
         # H5 files
-        h5_files: list = ["AO1BINT.H5", "AO2BINT.H5", "MO1BINT.H5", "EXCHCOUL.H5", "PRINPROP.H5"]
-        self._hermite_ao1b_binary = self._hermite_ao2b_binary = \
-            self._hermite_mo1b_binary = None
+        h5_files: list = [
+            "AO1BINT.H5",
+            "AO2BINT.H5",
+            "MO1BINT.H5",
+            "EXCHCOUL.H5",
+            "PRINPROP.H5",
+        ]
         for i, name_file in enumerate(h5_files):
-            if (self._scratch /(name_file)).exists():
-                (self._scratch /(name_file)).unlink()
-        self._hermite_ao1b_binary: Path = self._scratch /("AO1BINT.H5")
-        self._hermite_ao2b_binary: Path = self._scratch /("AO2BINT.H5")
-        self._hermite_mo1b_binary: Path = self._scratch /("MO1BINT.H5")
-        self._exchange_coulomb: Path = self._scratch /("EXCHCOUL.H5")
-        self._principal_propagator: Path = self._scratch /("PRINPROP.H5")
+            if (self._scratch / (name_file)).exists():
+                (self._scratch / (name_file)).unlink()
+        self._hermite_ao1b_binary: Path = self._scratch / ("AO1BINT.H5")
+        self._hermite_ao2b_binary: Path = self._scratch / ("AO2BINT.H5")
+        self._hermite_mo1b_binary: Path = self._scratch / ("MO1BINT.H5")
+        self._exchange_coulomb: Path = self._scratch / ("EXCHCOUL.H5")
+        self._principal_propagator: Path = self._scratch / ("PRINPROP.H5")
 
         self._activate_write_output: bool = True
+
     ##################################################################
     # PROPERTIES
     ##################################################################
     @property
     def scratch(self) -> Path:
         return self._scratch.parent
+
     @property
     def job_path(self) -> Path:
         return self._scratch
-    
+
     @property
     def output_path(self) -> Path:
         return self._output_path
+
     @output_path.setter
-    def output_path(self, name: str = None) -> None:
-        if (self._scratch / (name)).exists():
-            (self._scratch / (name)).rename((self._scratch / (name + ".0")))
-        self._output_path = self._scratch / (name)
+    def output_path(self, path: Path) -> None:
+        if path.exists():
+            path.rename(path.parent / (path.name + ".0"))
+        self._output_path = path
 
     @property
     def activate_write_output(self) -> bool:
         return self._activate_write_output
+
     @activate_write_output.setter
     def activate_write_output(self, on_off: bool = True) -> None:
         self._activate_write_output = on_off
@@ -102,18 +135,16 @@ class scratch():
         Write the header information for output file
         """
         with open(self._output_path, "a") as f:
-            f.write(("*"*80)+"\n")
-            f.write("PROGRAM NAME".center(80)+"\n")
-            f.write("version 0.0".center(80)+"\n")
-            f.write("2022".center(80)+"\n")
-            f.write("Authors:".ljust(80)+"\n")
-            f.write("         Andy Zapata".ljust(80)+"\n")
-            f.write("*"*80+"\n")
+            f.write(("*" * 80) + "\n")
+            f.write("PROGRAM NAME".center(80) + "\n")
+            f.write("version 0.0".center(80) + "\n")
+            f.write("2022".center(80) + "\n")
+            f.write("Authors:".ljust(80) + "\n")
+            f.write("         Andy Zapata".ljust(80) + "\n")
+            f.write("*" * 80 + "\n")
             f.write("\n")
 
-    def write_box(self, f: object = None, 
-                names: list = None,
-                values: list = None):
+    def write_box(self, f: TextIOWrapper, names: Union[str, list[str]], values: list):
         """
         Print a box with header and value
 
@@ -126,25 +157,25 @@ class scratch():
         lv: int = len(values)
         n: int = 1
         if l > 4:
-            n += int(l/4)
+            n += int(l / 4)
 
         if l > lv:
             raise ValueError("***ERROR\n\nThere are more header than values")
-        elif lv%l != 0:
+        elif lv % l != 0:
             raise ValueError("***ERROR\n\nValues size is not multiple of header size")
 
-        values_lines: int = int(lv/l)
+        values_lines: int = int(lv / l)
 
-        split_up: str     = ("┌" + "─"*16 + "┐").center(18)
-        split: str        = ("├" + "─"*16 + "┤").center(18)
-        split_tailer: str = ("└" + "─"*16 + "┘").center(18)
+        split_up: str = ("┌" + "─" * 16 + "┐").center(18)
+        split: str = ("├" + "─" * 16 + "┤").center(18)
+        split_tailer: str = ("└" + "─" * 16 + "┘").center(18)
 
         for i in range(n):
 
-            if i < n-1:
+            if i < n - 1:
                 m: int = 4
             else:
-                m: int = l - (n-1)*4
+                m = l - (n - 1) * 4
 
             header: str = ""
             split_ups: str = ""
@@ -154,7 +185,7 @@ class scratch():
                 split_ups += split_up + " "
                 splits += split + " "
                 split_tailers += split_tailer + " "
-                header += str("│" + "{}".format(names[j +i*4]).center(16) + "│ ")
+                header += str("│" + "{}".format(names[j + i * 4]).center(16) + "│ ")
 
             f.write(split_ups.center(76) + "\n")
             f.write(header.center(76) + "\n")
@@ -163,18 +194,32 @@ class scratch():
             for k in range(values_lines):
                 pvalues: str = ""
                 for j in range(m):
-                    if abs(values[j + i*4 + k*l]) > 1.0e-2 and abs(values[j + i*4 + k*l]) <= 9.9e6:
-                        pvalues += str("│" + "{:.3f}".format(values[j + i*4 + k*l]).center(16) + "│ ")
+                    if (
+                        abs(values[j + i * 4 + k * l]) > 1.0e-2
+                        and abs(values[j + i * 4 + k * l]) <= 9.9e6
+                    ):
+                        pvalues += str(
+                            "│"
+                            + "{:.3f}".format(values[j + i * 4 + k * l]).center(16)
+                            + "│ "
+                        )
                     else:
-                        pvalues += str("│" + "{:.5e}".format(values[j + i*4 + k*l]).center(16) + "│ ")
+                        pvalues += str(
+                            "│"
+                            + "{:.5e}".format(values[j + i * 4 + k * l]).center(16)
+                            + "│ "
+                        )
                 f.write(pvalues.center(76) + "\n")
             f.write(split_tailers.center(76) + "\n")
 
-    def write_tensor(self, f: object = None, 
-                    names: list = None,
-                    values: list = None,
-                    isoani: bool = True,
-                    ani_axe: str or int = "z"):
+    def write_tensor(
+        self,
+        f: TextIOWrapper,
+        names: Union[str, list[str]],
+        values: list,
+        isoani: bool = True,
+        ani_axe: Union[str, int] = "z",
+    ):
         """
         Print a matrix of 3x3 with or without iso/anisotropic
 
@@ -184,17 +229,17 @@ class scratch():
             ani_axes (str or int): Axes to calculate the anisotropic value
             isoani (bool): Activate iso/anisotrpic print
         """
-        sig_x: int = 1.0
-        sig_y: int = 1.0
-        sig_z: int = -1.0
+        sig_x: float = 1.0
+        sig_y: float = 1.0
+        sig_z: float = -1.0
         if ani_axe == 1 or ani_axe == 0 or ani_axe == "x":
-            sig_x: int = -1.0
-            sig_y: int = 1.0
-            sig_z: int = 1.0
+            sig_x = -1.0
+            sig_y = 1.0
+            sig_z = 1.0
         elif ani_axe == 2 or ani_axe == "y":
-            sig_x: int = 1.0
-            sig_y: int = -1.0
-            sig_z: int = 1.0
+            sig_x = 1.0
+            sig_y = -1.0
+            sig_z = 1.0
 
         l: int = len(names)
         lv: int = len(values)
@@ -204,18 +249,18 @@ class scratch():
             raise ValueError("***ERROR\n\nThere are more header than values")
 
         if l > 3:
-            n += int(l/3)
+            n += int(l / 3)
 
-        split_up: str     = ("┌" + "─"*31 + "┐").center(32)
-        split: str        = ("├" + "─"*31 + "┤").center(32)
-        split_tailer: str = ("└" + "─"*31 + "┘").center(32)
+        split_up: str = ("┌" + "─" * 31 + "┐").center(32)
+        split: str = ("├" + "─" * 31 + "┤").center(32)
+        split_tailer: str = ("└" + "─" * 31 + "┘").center(32)
 
         for i in range(n):
 
-            if i < n-1:
+            if i < n - 1:
                 m: int = 3
             else:
-                m: int = l - (n-1)*3
+                m = l - (n - 1) * 3
 
             header: str = ""
             split_ups: str = ""
@@ -226,7 +271,7 @@ class scratch():
                 split_ups += split_up + " "
                 splits += split + " "
                 split_tailers += split_tailer + " "
-                header += str("│" + "{}".format(names[j +i*3]).center(31) + "│ ")
+                header += str("│" + "{}".format(names[j + i * 3]).center(31) + "│ ")
             f.write(split_ups.center(101) + "\n")
             f.write(header.center(101) + "\n")
             f.write(splits.center(101) + "\n")
@@ -236,24 +281,42 @@ class scratch():
                 for j in range(m):
                     pvalues += "│ "
                     for p in range(3):
-                        pvalues += str("{:.2e}".format(values[j + i*3][k*3 + p]).center(10))
+                        pvalues += str(
+                            "{:.2e}".format(values[j + i * 3][k * 3 + p]).center(10)
+                        )
                     pvalues += "│ "
                 f.write(pvalues.center(101) + "\n")
             if isoani:
                 f.write(splits.center(101) + "\n")
                 iso_ani: str = ""
                 for j in range(m):
-                    iso_ani += str("│ISO: " +
-                            "{:.3e}".format((values[j + i*3][0]+values[j + i*3][4]+values[j + i*3][8])/3.0).center(10))
-                    iso_ani += str(" ANI: " +
-                            "{:.3e}".format((sig_x*values[j + i*3][0]+
-                                            sig_y*values[j + i*3][4]+
-                                            sig_z*values[j + i*3][8])/3.0).center(10)
-                            + "│ ")
+                    iso_ani += str(
+                        "│ISO: "
+                        + "{:.3e}".format(
+                            (
+                                values[j + i * 3][0]
+                                + values[j + i * 3][4]
+                                + values[j + i * 3][8]
+                            )
+                            / 3.0
+                        ).center(10)
+                    )
+                    iso_ani += str(
+                        " ANI: "
+                        + "{:.3e}".format(
+                            (
+                                sig_x * values[j + i * 3][0]
+                                + sig_y * values[j + i * 3][4]
+                                + sig_z * values[j + i * 3][8]
+                            )
+                            / 3.0
+                        ).center(10)
+                        + "│ "
+                    )
                 f.write(iso_ani.center(101) + "\n")
             f.write(split_tailers.center(101) + "\n")
 
-    def write_title(self, f: object = None, name: str = None, title_type: int = 0):
+    def write_title(self, f: TextIOWrapper, name: str = "", title_type: int = 0):
         """
         Print titles
 
@@ -264,20 +327,20 @@ class scratch():
             title: str = "*** " + name.upper().center(70) + " ***"
             if len(name.upper()) > 70:
                 print("***WARNING\n\n Title more large, please until 70 strings")
-            f.write("*"*len(title)+"\n")
-            f.write(title+"\n")
-            f.write("*"*len(title)+"\n")
+            f.write("*" * len(title) + "\n")
+            f.write(title + "\n")
+            f.write("*" * len(title) + "\n")
         elif title_type == 1:
             f.write("\n")
-            f.write(name.center(70)+"\n")
-            f.write(("-" * 40).center(70)+"\n")
+            f.write(name.center(70) + "\n")
+            f.write(("-" * 40).center(70) + "\n")
         else:
-            f.write(('='*40).center(80)+"\n")
-            f.write(f'{name}'.center(80)+"\n")
-            f.write(('='*40).center(80)+"\n")            
+            f.write(("=" * 40).center(80) + "\n")
+            f.write(f"{name}".center(80) + "\n")
+            f.write(("=" * 40).center(80) + "\n")
 
-    def write_time(self, f: object = None, drv_time: drv_time = None):
-        """"
+    def write_time(self, f: TextIOWrapper, drv_time: drv_time):
+        """ "
         Print time neccesary for calculations
 
         Args:
@@ -296,37 +359,39 @@ class scratch():
 
             if len(name) > 60:
                 count = 0
-                words = ''
+                words = ""
                 for s in name.split():
                     if count > 0:
-                            count += 1
+                        count += 1
                     count += len(s)
                     if count <= 60:
-                            words += s + ' '
+                        words += s + " "
                     else:
-                            count = 0
-                            words += "\n" + s + ' '
+                        count = 0
+                        words += "\n" + s + " "
                 name = words
 
             if header:
-                f.write("t"*20+"hours:minutes:seconds"+"t"*20+"\n")
+                f.write("t" * 20 + "hours:minutes:seconds" + "t" * 20 + "\n")
             if delta_time <= 60:
-                f.write(f"{name}, Time: 0:0:{delta_time:.3f}".ljust(62)+"\n")
+                f.write(f"{name}, Time: 0:0:{delta_time:.3f}".ljust(62) + "\n")
             elif delta_time > 60 and delta_time <= 3600:
-                minutes = int(delta_time/60)
-                seconds = delta_time%60
-                f.write(f"{name}, Time: 0:{minutes}:{seconds:.3f}".ljust(62)+"\n")
+                minutes = int(delta_time / 60)
+                seconds = delta_time % 60
+                f.write(f"{name}, Time: 0:{minutes}:{seconds:.3f}".ljust(62) + "\n")
             else:
-                hours = int(delta_time/3600)
-                minutes = int(delta_time%3600/60)
-                seconds = delta_time%3600%60
-                f.write(f"{name}, Time: {hours}:{minutes}:{seconds:.3f}".ljust(62)+"\n")
+                hours = int(delta_time / 3600)
+                minutes = int(delta_time % 3600 / 60)
+                seconds = delta_time % 3600 % 60
+                f.write(
+                    f"{name}, Time: {hours}:{minutes}:{seconds:.3f}".ljust(62) + "\n"
+                )
             if tailer:
-                f.write("t"*63+"\n")
+                f.write("t" * 63 + "\n")
 
-    def write_size_file(self, f: object = None,
-                        name_file: str = None,
-                        size_file: float = None):
+    def write_size_file(
+        self, f: TextIOWrapper, name_file: str = "", size_file: float = 0.0
+    ):
         """
         Write size file into output
 
@@ -336,19 +401,24 @@ class scratch():
             size_file (float): Size of output file in bytes
         """
         unit: str = "Bytes"
-        if size_file > 1024:
-            size_file = size_file/(1024)
-            unit: str = "KB"
-        if size_file > 1024 * 1024:
-            size_file = size_file/(1024 * 1024)
-            unit: str = "MB"
-        elif size_file > 1024 * 1024 * 1024:
-            size_file = size_file/(1024 * 1024 * 1024)
-            unit: str = "GB"
+        if size_file > 1024.0:
+            size_file = size_file / (1024.0)
+            unit = "KB"
+        if size_file > 1024.0 * 1024.0:
+            size_file = size_file / (1024.0 * 1024.0)
+            unit = "MB"
+        elif size_file > 1024.0 * 1024.0 * 1024.0:
+            size_file = size_file / (1024.0 * 1024.0 * 1024.0)
+            unit = "GB"
 
         f.write(f"{name_file}, size: {size_file:.3f} {unit} \n")
 
-    def write_ao1bin_hermite(self, f: object = None, direct = False, array: np.array = None):
+    def write_ao1bin_hermite(
+        self,
+        f: TextIOWrapper,
+        array: dict[str, np.ndarray],
+        direct: bool = False,
+    ):
         """
         Print one body integrals into output
 
@@ -360,22 +430,21 @@ class scratch():
             with h5py.File(self._hermite_ao1b_binary, "r") as h:
                 for name in list(h.keys()):
                     self.write_title(f, name, 1)
-                    print_triangle_matrix(f=f,
-                                        integral=h[name],
-                                        matriz_sym=integral_symmetry[name.split()[0]])
+                    print_triangle_matrix(
+                        f=f,
+                        integral=h[name],
+                        matriz_sym=integral_symmetry[name.split()[0]],
+                    )
         else:
             for name, values in array.items():
                 self.write_title(f, name, 1)
                 if not name in integral_symmetry.keys():
                     symmetry: str = "square"
                 else:
-                    symmetry: str = integral_symmetry[name.split()[0].lower()]
-                print_triangle_matrix(f=f,
-                                    integral=values,
-                                    matriz_sym=symmetry)
+                    symmetry = integral_symmetry[name.split()[0].lower()]
+                print_triangle_matrix(f=f, integral=values, matriz_sym=symmetry)
 
-
-    def write_ao2bin_hermite(self, f: object = None):
+    def write_ao2bin_hermite(self, f: TextIOWrapper):
         """
         Print one body integrals into output
 
@@ -391,30 +460,41 @@ class scratch():
                 else:
                     self.write_title(f, name, 1)
                 for i in range(h[name].shape[0]):
-                    for j in range(i+1):
-                        for k in range(i+1):
-                            if k < i: m: int = k + 1
-                            else: m: int = j + 1
+                    for j in range(i + 1):
+                        for k in range(i + 1):
+                            if k < i:
+                                m: int = k + 1
+                            else:
+                                m = j + 1
                             for l in range(m):
-                                if abs(h[name][i,j,k,l]) > 1.0E-6:
-                                    if abs(h[name][i,j,k,l]) > 999.0:
+                                if abs(h[name][i, j, k, l]) > 1.0e-6:
+                                    if abs(h[name][i, j, k, l]) > 999.0:
                                         formate: str = "{:.6e}"
                                     else:
-                                        formate: str = "{:.6f}"
-                                    f.write(f"{i+1:4} {j+1:4} {k+1:4} {l+1:4}    " + formate.format(h[name][i,j,k,l]).center(16) + "\n")
-    def write_output(self, 
-                    information: str = None, type: int = 0, 
-                    # title information
-                    title_type: int = 0,
-                    # time information
-                    drv_time: drv_time = None,
-                    # Size file in bytes
-                    size_file: float = None,
-                    # Integral 1B
-                    direct = False, dictionary: dict = None,
-                    # Box
-                    box_type: int = 0, values: list = None,
-                    ) -> None:
+                                        formate = "{:.6f}"
+                                    f.write(
+                                        f"{i+1:4} {j+1:4} {k+1:4} {l+1:4}    "
+                                        + formate.format(h[name][i, j, k, l]).center(16)
+                                        + "\n"
+                                    )
+
+    def write_output(
+        self,
+        information: str = "",
+        type: int = 0,
+        # title information
+        title_type: int = 0,
+        # time information
+        drv_time: drv_time = None,
+        # Size file in bytes
+        size_file: float = 0.0,
+        # Integral 1B
+        direct=False,
+        dictionary: dict[str, np.ndarray] = {},
+        # Box
+        box_type: int = 0,
+        values: list = [],
+    ) -> None:
         """
         Save information for output file
 
@@ -440,7 +520,7 @@ class scratch():
         if self._activate_write_output:
             with open(self._output_path, "a") as f:
                 if type == 0:
-                    f.write(information+"\n")
+                    f.write(information + "\n")
                 elif type == 1 or title_type > 0:
                     self.write_title(f, information, title_type)
                 elif type == 2:
@@ -449,19 +529,25 @@ class scratch():
                     self.write_size_file(f, information, size_file)
                 elif type == 4:
                     if box_type == 0:
-                        self.write_box(f, information, values)
-                    elif box_type == 1:
+                        self.write_box(
+                            f, information, values
+                        )  #! change information by names type [str]
+                    elif box_type == 1:  #!because this produce mypy error
                         self.write_tensor(f, information, values)
                 elif type == 9:
-                    self.write_ao1bin_hermite(f, direct, dictionary)
+                    self.write_ao1bin_hermite(f, dictionary, direct)
                 elif type == 10:
                     self.write_ao2bin_hermite(f)
 
-    def binary(self, file: Path = None, io: str = None,
-                # Write information
-                dictionary: dict = None,
-                # Read or delete information
-                label: str = None):
+    def binary(
+        self,
+        file: Path = Path(),
+        io: str = "",
+        # Write information
+        dictionary: dict = {},
+        # Read or delete information
+        label: str = "",
+    ):
         """
         Save hermite information in AOINT.H5 binary file
 
@@ -478,16 +564,18 @@ class scratch():
             np.ndarray
         """
         if io is None or io.lower() not in ["a", "r", "d", "f"]:
-            raise ValueError(f"***ERROR\n\n\
-                            argument io due be a to write or r to read, io {io}")
+            raise ValueError(
+                f"***ERROR\n\n\
+                            argument io due be a to write or r to read, io {io}"
+            )
 
-        if io.lower() == "d": 
-            wr = "a"
+        if io.lower() == "d":
+            wr: str = "a"
         elif io.lower() == "f":
             wr = "r"
         else:
             wr = io.lower()
-        
+
         with h5py.File(file, wr.lower()) as h:
             if io.lower() == "a":
                 for name, value in dictionary.items():
@@ -508,11 +596,12 @@ class scratch():
             current_path.write_text(self._output_path.read_text())
         if self._scratch.exists() and self._scratch.is_dir:
             shutil.rmtree(self._scratch)
-        
+
+
 if __name__ == "__main__":
-    s = scratch("/home1/scratch")
+    s = scratch("/home1/scratch", "")
     print(s.scratch)
     print(s.job_path)
-    s._output_path = "DATA.TXT"
-    print("output name: ",s.output_path)
+    s._output_path = Path("DATA.TXT")
+    print("output name: ", s.output_path)
     s.remove_job_folder()

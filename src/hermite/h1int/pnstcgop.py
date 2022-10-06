@@ -1,7 +1,21 @@
 from lib1h import *
 
-def pnstcgop(coord, gauge, spatial_sym, magnetic_component, atom,
-            exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
+
+def pnstcgop(
+    coord,
+    gauge,
+    spatial_sym,
+    magnetic_component,
+    atom,
+    exp,
+    center,
+    lx,
+    ly,
+    lz,
+    output,
+    dalton_normalization,
+    driver_time,
+):
     """
     Gradient of diamagnetic nuclear shielding tensor atomic integrals
 
@@ -160,207 +174,20 @@ def pnstcgop(coord, gauge, spatial_sym, magnetic_component, atom,
 
             # (di psi) A²_ij (dj psi)
             nefab = sign * (
-                4.0*exp[i]*exp[j]*
-                (nuclear_attraction(
-                    lx[i] + ml_i_a,
-                    ly[i] + ml_k_a,
-                    lz[i] + ml_m_a,
-                    lx[j] + r_x_a + ml_i_b,
-                    ly[j] + r_y_a + ml_k_b,
-                    lz[j] + r_z_a + ml_m_b,
-                    r_x_b,
-                    r_y_b,
-                    r_z_b,
-                    exp[i],
-                    exp[j],
-                    coord[center[i]][0],
-                    coord[center[i]][1],
-                    coord[center[i]][2],
-                    coord[center[j]][0],
-                    coord[center[j]][1],
-                    coord[center[j]][2],
-                    coord[atom][0],
-                    coord[atom][1],
-                    coord[atom][2],
-                )
-                + (coord[center[j]][coord_ab] - gauge[coord_ab])
-                * nuclear_attraction(
-                    lx[i] + ml_i_a,
-                    ly[i] + ml_k_a,
-                    lz[i] + ml_m_a,
-                    lx[j] + ml_i_b,
-                    ly[j] + ml_k_b,
-                    lz[j] + ml_m_b,
-                    r_x_b,
-                    r_y_b,
-                    r_z_b,
-                    exp[i],
-                    exp[j],
-                    coord[center[i]][0],
-                    coord[center[i]][1],
-                    coord[center[i]][2],
-                    coord[center[j]][0],
-                    coord[center[j]][1],
-                    coord[center[j]][2],
-                    coord[atom][0],
-                    coord[atom][1],
-                    coord[atom][2],
-                )
-                )
-                - 2.0*exp[i]*ml_b[j]*(
+                4.0
+                * exp[i]
+                * exp[j]
+                * (
                     nuclear_attraction(
-                    lx[i] + ml_i_a,
-                    ly[i] + ml_k_a,
-                    lz[i] + ml_m_a,
-                    lx[j] + r_x_a - ml_i_b,
-                    ly[j] + r_y_a - ml_k_b,
-                    lz[j] + r_z_a - ml_m_b,
-                    r_x_b,
-                    r_y_b,
-                    r_z_b,
-                    exp[i],
-                    exp[j],
-                    coord[center[i]][0],
-                    coord[center[i]][1],
-                    coord[center[i]][2],
-                    coord[center[j]][0],
-                    coord[center[j]][1],
-                    coord[center[j]][2],
-                    coord[atom][0],
-                    coord[atom][1],
-                    coord[atom][2],
-                )
-                + (coord[center[j]][coord_ab] - gauge[coord_ab])
-                * nuclear_attraction(
-                    lx[i] + ml_i_a,
-                    ly[i] + ml_k_a,
-                    lz[i] + ml_m_a,
-                    lx[j] - ml_i_b,
-                    ly[j] - ml_k_b,
-                    lz[j] - ml_m_b,
-                    r_x_b,
-                    r_y_b,
-                    r_z_b,
-                    exp[i],
-                    exp[j],
-                    coord[center[i]][0],
-                    coord[center[i]][1],
-                    coord[center[i]][2],
-                    coord[center[j]][0],
-                    coord[center[j]][1],
-                    coord[center[j]][2],
-                    coord[atom][0],
-                    coord[atom][1],
-                    coord[atom][2],
-                )
-                )
-                - 2.0*exp[j]*ml_a[i]*(
-                    nuclear_attraction(
-                    lx[i] - ml_i_a,
-                    ly[i] - ml_k_a,
-                    lz[i] - ml_m_a,
-                    lx[j] + r_x_a + ml_i_b,
-                    ly[j] + r_y_a + ml_k_b,
-                    lz[j] + r_z_a + ml_m_b,
-                    r_x_b,
-                    r_y_b,
-                    r_z_b,
-                    exp[i],
-                    exp[j],
-                    coord[center[i]][0],
-                    coord[center[i]][1],
-                    coord[center[i]][2],
-                    coord[center[j]][0],
-                    coord[center[j]][1],
-                    coord[center[j]][2],
-                    coord[atom][0],
-                    coord[atom][1],
-                    coord[atom][2],
-                )
-                + (coord[center[j]][coord_ab] - gauge[coord_ab])
-                * nuclear_attraction(
-                    lx[i] - ml_i_a,
-                    ly[i] - ml_k_a,
-                    lz[i] - ml_m_a,
-                    lx[j] + ml_i_b,
-                    ly[j] + ml_k_b,
-                    lz[j] + ml_m_b,
-                    r_x_b,
-                    r_y_b,
-                    r_z_b,
-                    exp[i],
-                    exp[j],
-                    coord[center[i]][0],
-                    coord[center[i]][1],
-                    coord[center[i]][2],
-                    coord[center[j]][0],
-                    coord[center[j]][1],
-                    coord[center[j]][2],
-                    coord[atom][0],
-                    coord[atom][1],
-                    coord[atom][2],
-                )
-                )
-                + ml_a[i]*ml_b[j]*(
-                    nuclear_attraction(
-                    lx[i] - ml_i_a,
-                    ly[i] - ml_k_a,
-                    lz[i] - ml_m_a,
-                    lx[j] + r_x_a - ml_i_b,
-                    ly[j] + r_y_a - ml_k_b,
-                    lz[j] + r_z_a - ml_m_b,
-                    r_x_b,
-                    r_y_b,
-                    r_z_b,
-                    exp[i],
-                    exp[j],
-                    coord[center[i]][0],
-                    coord[center[i]][1],
-                    coord[center[i]][2],
-                    coord[center[j]][0],
-                    coord[center[j]][1],
-                    coord[center[j]][2],
-                    coord[atom][0],
-                    coord[atom][1],
-                    coord[atom][2],
-                )
-                + (coord[center[j]][coord_ab] - gauge[coord_ab])
-                * nuclear_attraction(
-                    lx[i] - ml_i_a,
-                    ly[i] - ml_k_a,
-                    lz[i] - ml_m_a,
-                    lx[j] - ml_i_b,
-                    ly[j] - ml_k_b,
-                    lz[j] - ml_m_b,
-                    r_x_b,
-                    r_y_b,
-                    r_z_b,
-                    exp[i],
-                    exp[j],
-                    coord[center[i]][0],
-                    coord[center[i]][1],
-                    coord[center[i]][2],
-                    coord[center[j]][0],
-                    coord[center[j]][1],
-                    coord[center[j]][2],
-                    coord[atom][0],
-                    coord[atom][1],
-                    coord[atom][2],
-                )
-                )
-            )
-            if diagonal:
-                nefc = (
-                    4.0*exp[i]*exp[j]*(nuclear_attraction(
                         lx[i] + ml_i_a,
                         ly[i] + ml_k_a,
                         lz[i] + ml_m_a,
-                        lx[j] + r_x_c + ml_i_b,
-                        ly[j] + r_y_c + ml_k_b,
-                        lz[j] + r_z_c + ml_m_b,
-                        r_x_c,
-                        r_y_c,
-                        r_z_c,
+                        lx[j] + r_x_a + ml_i_b,
+                        ly[j] + r_y_a + ml_k_b,
+                        lz[j] + r_z_a + ml_m_b,
+                        r_x_b,
+                        r_y_b,
+                        r_z_b,
                         exp[i],
                         exp[j],
                         coord[center[i]][0],
@@ -373,7 +200,7 @@ def pnstcgop(coord, gauge, spatial_sym, magnetic_component, atom,
                         coord[atom][1],
                         coord[atom][2],
                     )
-                    + (coord[center[j]][coord_c] - gauge[coord_c])
+                    + (coord[center[j]][coord_ab] - gauge[coord_ab])
                     * nuclear_attraction(
                         lx[i] + ml_i_a,
                         ly[i] + ml_k_a,
@@ -381,9 +208,9 @@ def pnstcgop(coord, gauge, spatial_sym, magnetic_component, atom,
                         lx[j] + ml_i_b,
                         ly[j] + ml_k_b,
                         lz[j] + ml_m_b,
-                        r_x_c,
-                        r_y_c,
-                        r_z_c,
+                        r_x_b,
+                        r_y_b,
+                        r_z_b,
                         exp[i],
                         exp[j],
                         coord[center[i]][0],
@@ -395,9 +222,215 @@ def pnstcgop(coord, gauge, spatial_sym, magnetic_component, atom,
                         coord[atom][0],
                         coord[atom][1],
                         coord[atom][2],
-                    ))
-                        - 2.0*exp[i]*ml_b[j]*(
-                            nuclear_attraction(
+                    )
+                )
+                - 2.0
+                * exp[i]
+                * ml_b[j]
+                * (
+                    nuclear_attraction(
+                        lx[i] + ml_i_a,
+                        ly[i] + ml_k_a,
+                        lz[i] + ml_m_a,
+                        lx[j] + r_x_a - ml_i_b,
+                        ly[j] + r_y_a - ml_k_b,
+                        lz[j] + r_z_a - ml_m_b,
+                        r_x_b,
+                        r_y_b,
+                        r_z_b,
+                        exp[i],
+                        exp[j],
+                        coord[center[i]][0],
+                        coord[center[i]][1],
+                        coord[center[i]][2],
+                        coord[center[j]][0],
+                        coord[center[j]][1],
+                        coord[center[j]][2],
+                        coord[atom][0],
+                        coord[atom][1],
+                        coord[atom][2],
+                    )
+                    + (coord[center[j]][coord_ab] - gauge[coord_ab])
+                    * nuclear_attraction(
+                        lx[i] + ml_i_a,
+                        ly[i] + ml_k_a,
+                        lz[i] + ml_m_a,
+                        lx[j] - ml_i_b,
+                        ly[j] - ml_k_b,
+                        lz[j] - ml_m_b,
+                        r_x_b,
+                        r_y_b,
+                        r_z_b,
+                        exp[i],
+                        exp[j],
+                        coord[center[i]][0],
+                        coord[center[i]][1],
+                        coord[center[i]][2],
+                        coord[center[j]][0],
+                        coord[center[j]][1],
+                        coord[center[j]][2],
+                        coord[atom][0],
+                        coord[atom][1],
+                        coord[atom][2],
+                    )
+                )
+                - 2.0
+                * exp[j]
+                * ml_a[i]
+                * (
+                    nuclear_attraction(
+                        lx[i] - ml_i_a,
+                        ly[i] - ml_k_a,
+                        lz[i] - ml_m_a,
+                        lx[j] + r_x_a + ml_i_b,
+                        ly[j] + r_y_a + ml_k_b,
+                        lz[j] + r_z_a + ml_m_b,
+                        r_x_b,
+                        r_y_b,
+                        r_z_b,
+                        exp[i],
+                        exp[j],
+                        coord[center[i]][0],
+                        coord[center[i]][1],
+                        coord[center[i]][2],
+                        coord[center[j]][0],
+                        coord[center[j]][1],
+                        coord[center[j]][2],
+                        coord[atom][0],
+                        coord[atom][1],
+                        coord[atom][2],
+                    )
+                    + (coord[center[j]][coord_ab] - gauge[coord_ab])
+                    * nuclear_attraction(
+                        lx[i] - ml_i_a,
+                        ly[i] - ml_k_a,
+                        lz[i] - ml_m_a,
+                        lx[j] + ml_i_b,
+                        ly[j] + ml_k_b,
+                        lz[j] + ml_m_b,
+                        r_x_b,
+                        r_y_b,
+                        r_z_b,
+                        exp[i],
+                        exp[j],
+                        coord[center[i]][0],
+                        coord[center[i]][1],
+                        coord[center[i]][2],
+                        coord[center[j]][0],
+                        coord[center[j]][1],
+                        coord[center[j]][2],
+                        coord[atom][0],
+                        coord[atom][1],
+                        coord[atom][2],
+                    )
+                )
+                + ml_a[i]
+                * ml_b[j]
+                * (
+                    nuclear_attraction(
+                        lx[i] - ml_i_a,
+                        ly[i] - ml_k_a,
+                        lz[i] - ml_m_a,
+                        lx[j] + r_x_a - ml_i_b,
+                        ly[j] + r_y_a - ml_k_b,
+                        lz[j] + r_z_a - ml_m_b,
+                        r_x_b,
+                        r_y_b,
+                        r_z_b,
+                        exp[i],
+                        exp[j],
+                        coord[center[i]][0],
+                        coord[center[i]][1],
+                        coord[center[i]][2],
+                        coord[center[j]][0],
+                        coord[center[j]][1],
+                        coord[center[j]][2],
+                        coord[atom][0],
+                        coord[atom][1],
+                        coord[atom][2],
+                    )
+                    + (coord[center[j]][coord_ab] - gauge[coord_ab])
+                    * nuclear_attraction(
+                        lx[i] - ml_i_a,
+                        ly[i] - ml_k_a,
+                        lz[i] - ml_m_a,
+                        lx[j] - ml_i_b,
+                        ly[j] - ml_k_b,
+                        lz[j] - ml_m_b,
+                        r_x_b,
+                        r_y_b,
+                        r_z_b,
+                        exp[i],
+                        exp[j],
+                        coord[center[i]][0],
+                        coord[center[i]][1],
+                        coord[center[i]][2],
+                        coord[center[j]][0],
+                        coord[center[j]][1],
+                        coord[center[j]][2],
+                        coord[atom][0],
+                        coord[atom][1],
+                        coord[atom][2],
+                    )
+                )
+            )
+            if diagonal:
+                nefc = (
+                    4.0
+                    * exp[i]
+                    * exp[j]
+                    * (
+                        nuclear_attraction(
+                            lx[i] + ml_i_a,
+                            ly[i] + ml_k_a,
+                            lz[i] + ml_m_a,
+                            lx[j] + r_x_c + ml_i_b,
+                            ly[j] + r_y_c + ml_k_b,
+                            lz[j] + r_z_c + ml_m_b,
+                            r_x_c,
+                            r_y_c,
+                            r_z_c,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        )
+                        + (coord[center[j]][coord_c] - gauge[coord_c])
+                        * nuclear_attraction(
+                            lx[i] + ml_i_a,
+                            ly[i] + ml_k_a,
+                            lz[i] + ml_m_a,
+                            lx[j] + ml_i_b,
+                            ly[j] + ml_k_b,
+                            lz[j] + ml_m_b,
+                            r_x_c,
+                            r_y_c,
+                            r_z_c,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        )
+                    )
+                    - 2.0
+                    * exp[i]
+                    * ml_b[j]
+                    * (
+                        nuclear_attraction(
                             lx[i] + ml_i_a,
                             ly[i] + ml_k_a,
                             lz[i] + ml_m_a,
@@ -442,9 +475,12 @@ def pnstcgop(coord, gauge, spatial_sym, magnetic_component, atom,
                             coord[atom][1],
                             coord[atom][2],
                         )
-                        )
-                        - 2.0*exp[j]*ml_a[i]*(
-                            nuclear_attraction(
+                    )
+                    - 2.0
+                    * exp[j]
+                    * ml_a[i]
+                    * (
+                        nuclear_attraction(
                             lx[i] - ml_i_a,
                             ly[i] - ml_k_a,
                             lz[i] - ml_m_a,
@@ -489,9 +525,11 @@ def pnstcgop(coord, gauge, spatial_sym, magnetic_component, atom,
                             coord[atom][1],
                             coord[atom][2],
                         )
-                        )
-                        + ml_a[i]*ml_b[j]*(
-                            nuclear_attraction(
+                    )
+                    + ml_a[i]
+                    * ml_b[j]
+                    * (
+                        nuclear_attraction(
                             lx[i] - ml_i_a,
                             ly[i] - ml_k_a,
                             lz[i] - ml_m_a,
@@ -536,11 +574,11 @@ def pnstcgop(coord, gauge, spatial_sym, magnetic_component, atom,
                             coord[atom][1],
                             coord[atom][2],
                         )
-                        )
+                    )
                 )
 
             pnstcgop[count] = (
-                -1.0 # p * A^2 * p = i*nabla*phi A^2 *i*nabla*phi => (i*i = -1)
+                -1.0  # p * A^2 * p = i*nabla*phi A^2 *i*nabla*phi => (i*i = -1)
                 * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * 2.0
@@ -553,47 +591,49 @@ def pnstcgop(coord, gauge, spatial_sym, magnetic_component, atom,
 
     if output > 10:
         driver_time.add_name_delta_time(
-            name = f"Gradient od diamagnetic Nuclear Shielding Tensor Atomic Integrals \
+            name=f"Gradient od diamagnetic Nuclear Shielding Tensor Atomic Integrals \
                 for {magnetic_component} Magnetic Component and {spatial_sym} Spatial Symmetry",
-                delta_time = (time() - start)
+            delta_time=(time() - start),
         )
 
     return pnstcgop
 
+
 if __name__ == "__main__":
     # 6-311++G**
     pa2p = pnstcgop(
-        coord = [[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]],
-        gauge = [0.0, 0.0, 0.0],
+        coord=[[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]],
+        gauge=[0.0, 0.0, 0.0],
         spatial_sym=0,
         magnetic_component=0,
         atom=0,
-        exp = [
-        33.865,
-        5.09479,
-        1.15879,
-        0.32584,
-        0.102741,
-        0.036,
-        0.75,
-        0.75,
-        0.75,
-        33.865,
-        5.09479,
-        1.15879,
-        0.32584,
-        0.102741,
-        0.036,
-        0.75,
-        0.75,
-        0.75,
+        exp=[
+            33.865,
+            5.09479,
+            1.15879,
+            0.32584,
+            0.102741,
+            0.036,
+            0.75,
+            0.75,
+            0.75,
+            33.865,
+            5.09479,
+            1.15879,
+            0.32584,
+            0.102741,
+            0.036,
+            0.75,
+            0.75,
+            0.75,
         ],
-        center = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        lx = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-        ly = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-        lz = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        lx=[0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+        ly=[0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+        lz=[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         output=1,
-        dalton_normalization = False,
-        driver_time = None)
+        dalton_normalization=False,
+        driver_time=None,
+    )
 
-    print("P NSTGO P : ",pa2p)
+    print("P NSTGO P : ", pa2p)

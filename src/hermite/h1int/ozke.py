@@ -1,6 +1,19 @@
 from lib1h import *
 
-def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalton_normalization, driver_time):
+
+def ozke(
+    coord,
+    gauge,
+    magnetic_component,
+    exp,
+    center,
+    lx,
+    ly,
+    lz,
+    output,
+    dalton_normalization,
+    driver_time,
+):
     """
     Calculates the kinetic energy correction to the orbital Zeeman operator
 
@@ -83,7 +96,8 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 spatial_l[i],
                 spatial_l[j],
                 0,
-                coord[center[i]][magnetic_component] - coord[center[j]][magnetic_component],
+                coord[center[i]][magnetic_component]
+                - coord[center[j]][magnetic_component],
                 exp[i],
                 exp[j],
             )
@@ -145,7 +159,6 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                 exp[j],
             )
 
-
             # ! derecha
             pz = 2.0 * exp[j] * hermite_coefficient(
                 right_l[i],
@@ -173,7 +186,8 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                         spatial_l[i] + 2,
                         spatial_l[j],
                         0,
-                        coord[center[i]][magnetic_component] - coord[center[j]][magnetic_component],
+                        coord[center[i]][magnetic_component]
+                        - coord[center[j]][magnetic_component],
                         exp[i],
                         exp[j],
                     )
@@ -186,7 +200,8 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
                         spatial_l[i] - 2,
                         spatial_l[j],
                         0,
-                        coord[center[i]][magnetic_component] - coord[center[j]][magnetic_component],
+                        coord[center[i]][magnetic_component]
+                        - coord[center[j]][magnetic_component],
                         exp[i],
                         exp[j],
                     )
@@ -486,7 +501,10 @@ def ozke(coord, gauge, magnetic_component, exp, center, lx, ly, lz, output, dalt
             count += 1
 
     if output > 10:
-        driver_time.add_name_delta_time("Calculates the Kinetic Energy Correction to the Orbital Zeeman Operator, \
-        {magnetic_component} Magnetic Component", delta_time = (time() - start))
+        driver_time.add_name_delta_time(
+            "Calculates the Kinetic Energy Correction to the Orbital Zeeman Operator, \
+        {magnetic_component} Magnetic Component",
+            delta_time=(time() - start),
+        )
 
     return ozke

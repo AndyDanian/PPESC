@@ -3,11 +3,11 @@ import numpy as np
 from molecule import *
 
 
-class cluster():
+class cluster:
     def __init__(
         self,
-        coord: list = None,
-        basis: list = None,
+        coord: list[list[str]],
+        basis: list[list[dict[str, list[float]]]],
     ):
         """
         Cluster object
@@ -51,8 +51,8 @@ class cluster():
                 "
             )
 
-        self._coord = coord
-        self._basis = basis
+        self._coord: list[list[str]] = coord
+        self._basis: list[list[dict[str, list[float]]]] = basis
 
     ##################################################################
     # ATRIBUTES
@@ -67,48 +67,84 @@ class cluster():
 
     @property
     def atoms_number(self) -> list:
-        return [molecule(mol, self._basis[index]).atoms_number for index, mol in enumerate(self._coord)]
+        return [
+            molecule(mol, self._basis[index]).atoms_number
+            for index, mol in enumerate(self._coord)
+        ]
 
     @property
     def molecules_xyz(self) -> list:
         "Molecule Coordinates"
-        return [molecule(coord, self._basis[index]).molecule_xyz for index, coord in enumerate(self._coord)]
+        return [
+            molecule(coord, self._basis[index]).molecule_xyz
+            for index, coord in enumerate(self._coord)
+        ]
 
     @property
     def atomic_symbols(self) -> list:
         "Atomic Symbols"
-        return [molecule(coord, self._basis[index]).atomic_symbols for index, coord in enumerate(self._coord)]
+        return [
+            molecule(coord, self._basis[index]).atomic_symbols
+            for index, coord in enumerate(self._coord)
+        ]
 
     @property
     def atomic_numbers(self) -> list:
-        return [molecule(coord, self._basis[index]).atomic_numbers for index, coord in enumerate(self._coord)]
+        return [
+            molecule(coord, self._basis[index]).atomic_numbers
+            for index, coord in enumerate(self._coord)
+        ]
 
     @property
     def charges(self) -> list:
-        return [molecule(coord, self._basis[index]).charges for index, coord in enumerate(self._coord)]
+        return [
+            molecule(coord, self._basis[index]).charges
+            for index, coord in enumerate(self._coord)
+        ]
+
     @property
     def primitives_number(self) -> int:
-        return sum([molecule(coord, self._basis[index]).primitives_number for index, coord in enumerate(self._coord)])
+        return sum(
+            [
+                molecule(coord, self._basis[index]).primitives_number
+                for index, coord in enumerate(self._coord)
+            ]
+        )
 
     @property
     def angular_momentums(self) -> list:
-        return [molecule(coord, self._basis[index]).angular_momentums for index, coord in enumerate(self._coord)]
+        return [
+            molecule(coord, self._basis[index]).angular_momentums
+            for index, coord in enumerate(self._coord)
+        ]
 
     @property
     def exponents(self) -> list:
-        return [molecule(coord, self._basis[index]).exponents for index, coord in enumerate(self._coord)]
+        return [
+            molecule(coord, self._basis[index]).exponents
+            for index, coord in enumerate(self._coord)
+        ]
 
     @property
     def mlx(self) -> list:
-        return [molecule(coord, self._basis[index]).mlx for index, coord in enumerate(self._coord)]
+        return [
+            molecule(coord, self._basis[index]).mlx
+            for index, coord in enumerate(self._coord)
+        ]
 
     @property
     def mly(self) -> list:
-        return [molecule(coord, self._basis[index]).mly for index, coord in enumerate(self._coord)]
+        return [
+            molecule(coord, self._basis[index]).mly
+            for index, coord in enumerate(self._coord)
+        ]
 
     @property
     def mlz(self) -> list:
-        return [molecule(coord, self._basis[index]).mlz for index, coord in enumerate(self._coord)]
+        return [
+            molecule(coord, self._basis[index]).mlz
+            for index, coord in enumerate(self._coord)
+        ]
 
     @property
     def amount_angular_momentums(self) -> list:
@@ -127,7 +163,7 @@ class cluster():
     ##################################################################
     # METHODS
     ##################################################################
-    def get_atoms(self, verbose: int = None):
+    def get_atoms(self, verbose: int = 0):
         """
         Build one list of lists of dictionaries with the molecule information
 
@@ -146,7 +182,7 @@ class cluster():
         cluster_array = []
         for index, mol in enumerate(self._coord):
             cluster_array.append(
-                molecule(mol, self._basis[index]).get_atoms(verbose = verbose)
+                molecule(mol, self._basis[index]).get_atoms(verbose=verbose)
             )
 
         return cluster_array
@@ -162,15 +198,12 @@ if __name__ == "__main__":
             ["H 1.0 1.0 0.0 0.0", "H 1.0 1.0 0.0 0.75"],
         ],
         [
-        [
-            {"s": [3.0, 0.01], "p": [1.0, 0.5]},
-            {"s": [3.0, 0.01], "p": [1.0, 0.5]}
+            [{"s": [3.0, 0.01], "p": [1.0, 0.5]}, {"s": [3.0, 0.01], "p": [1.0, 0.5]}],
+            [
+                {"s": [3.0, 0.01], "p": [1.0, 0.5]},
+                {"s": [3.0, 0.01], "p": [1.0, 0.5]},
+            ],
         ],
-        [
-            {"s": [3.0, 0.01], "p": [1.0, 0.5]},
-            {"s": [3.0, 0.01], "p": [1.0, 0.5]},
-        ]
-        ]
     )
 
     print("\n # mol ", two_h2.molecules_number)
@@ -186,4 +219,4 @@ if __name__ == "__main__":
     print("\ncluster   ", two_h2.mly)
     print("\ncluster   ", two_h2.mlz)
     print("\ncluster   ", two_h2.amount_angular_momentums)
-    print("\ncluster   ", two_h2.get_atoms(verbose = 101))
+    print("\ncluster   ", two_h2.get_atoms(verbose=101))
