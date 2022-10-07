@@ -42,7 +42,7 @@ integral_symmetry: dict = {
 
 class scratch:
     # Constructor
-    def __init__(self, scratch: Union[Path, str], job_folder: str) -> None:
+    def __init__(self, scratch: Union[Path, str] = "", job_folder: str = "") -> None:
         """
         Constructor of scratch object
 
@@ -55,7 +55,7 @@ class scratch:
             str_date: str = now_date.strftime("%d%m%y%H%M%S")
             job_folder = str_date
 
-        if scratch is None:
+        if not isinstance(scratch, Path):
             if Path("/tmp").exists():
                 Path("/tmp/scratch").parent.mkdir(parents=True, exist_ok=True)
                 job_folder = "/tmp/scratch/" + (job_folder)
@@ -64,10 +64,9 @@ class scratch:
             else:
                 raise FileNotFoundError("/tmp folder not exits.")
         else:
-            if Path(scratch).exists():
-                if isinstance(scratch, str):
-                    scratch = Path(scratch)
-                self._scratch = scratch / (job_folder)
+            if isinstance(scratch, str) or Path(scratch).exists():
+                self._scratch = Path(scratch) / (job_folder)
+
                 if self._scratch.exists():
                     print(
                         f"***WARNING\n\n{self._scratch} already exist, then possiblely the files will be overwrite"
