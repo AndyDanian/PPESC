@@ -64,7 +64,7 @@ class scratch:
             else:
                 raise FileNotFoundError("/tmp folder not exits.")
         else:
-            if isinstance(scratch, str) or Path(scratch).exists():
+            if Path(scratch).exists():
                 self._scratch = Path(scratch) / (job_folder)
 
                 if self._scratch.exists():
