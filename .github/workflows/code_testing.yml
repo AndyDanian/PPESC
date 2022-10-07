@@ -36,7 +36,8 @@ jobs:
           f2py3 -c -m f90response response.F90 --f90flags="-m64 -cpp -ffixed-line-length-none -ffree-line-length-none -finit-local-zero -Ofast -mtune=native -march=native -ffast-math -mfpmath=sse -msse2 -ffast-math -g -fPIC"
       - name: Build coverage file
         run: |
-          pytest --cache-clear --cov=app test/ > pytest-coverage.txt
+          cd src/tests
+          pytest --cache-clear --cov=app * > pytest-coverage.txt
       - name: Pytest Coverage Commentator (More Expressive with 'with:')
         uses: coroo/pytest-coverage-commentator@v1.0.2
         with:
