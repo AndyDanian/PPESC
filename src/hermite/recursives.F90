@@ -1,3 +1,4 @@
+!f2py3 -c -m f90recursives recursives.F90 --f90flags="-m64 -cpp -ffixed-line-length-none -ffree-line-length-none -finit-local-zero -Ofast -mtune=native -march=native -ffast-math -mfpmath=sse -msse2 -ffast-math -g -fPIC"
 !
 ! libboys - a FORTRAN library to numerically calculate the Boys function
 ! Copyright (C) 2014-2016 Michael Böhme <boehme.mic@gmail.com>

@@ -2,10 +2,9 @@
 __pycache__/
 *.pyc
 *$py.class
+*.so
 
 #output and inputs 
-src/CALH2
+*.molden
 
 #Intentos de programas
-src/tryp
-src/shield_dia
