@@ -1,5 +1,6 @@
 # ref: https://github.com/marketplace/actions/pytest-coverage-commentator
-# Script to do code testing
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 name: Code Testing and Coverage
 
 on: 
@@ -16,9 +17,9 @@ jobs:
         uses: actions/checkout@v2 # checkout the repository content to github runner
       # Install python
       - name: Setup Python 3.10
-        uses: actions/setup-python@v4
+          uses: actions/setup-python@v3
           with:
-            python-version: '3.10'
+            python-version: "3.10"
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
