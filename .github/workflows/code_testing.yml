@@ -22,9 +22,10 @@ jobs:
           python-version: "3.10"
       - name: Install Dependencies
         run: |
+          pwd
           python -m pip install --upgrade pip
           pip install flake8 pytest pytest-cov
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -r requirements.txt
           cd src/hermite
           f2py3 -c -m f90recursives recursives.F90 --f90flags="-m64 -cpp -ffixed-line-length-none -ffree-line-length-none -finit-local-zero -Ofast -mtune=native -march=native -ffast-math -mfpmath=sse -msse2 -ffast-math -g -fPIC"
           cd ../response
