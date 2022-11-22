@@ -82,6 +82,7 @@ class average:
             io.write_output(
                 information=f"<{name.title()}>: {average:.8f}", type=1, title_type=2
             )
+            print(f"<{name.title()}>: {average:.8f}")
 
         driver_time.add_name_delta_time(
             name=f"Average Value", delta_time=(time() - start)
@@ -101,4 +102,4 @@ if __name__ == "__main__":
         job_folder="160922134451",
     )
     av = average(wfn)
-    av.calculate_average(property=["fc", "massvelo", "darwin"], verbose=11)
+    av.calculate_average(property=["fc", "kinetic", "darwin"], verbose=11)

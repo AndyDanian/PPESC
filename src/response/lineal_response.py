@@ -56,6 +56,7 @@ def calculate_lineal_reponse(
             io.write_output("\n")
 
             lineal_responses[f"<<{op_a};{op_b}>>"] = vpathT
+            print(f"-<<{op_a};{op_b}>> = {-vpathT:.6e}")
 
     if verbose > 10:
         name = f"Lineal Response"

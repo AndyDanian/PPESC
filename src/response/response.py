@@ -497,7 +497,7 @@ if __name__ == "__main__":
     wfn = wave_function(
         "../tests/molden_file/LiH.molden",
         scratch_path="/home1/scratch",
-        job_folder="160922134451",
+        #job_folder="160922134451",
     )
     r = response(wfn)
     # r.drv_reponse_calculation(principal_propagator_approximation="rpa",
@@ -511,7 +511,10 @@ if __name__ == "__main__":
         r.drv_reponse_calculation(
             principal_propagator_approximation="rpa",
             properties=[
-                ["fc", "pso 1"],
+                ["fc", "kinetic"],
+                ["fc 1", "laplacian xx"],
+                ["fc 1", "laplacian yy"],
+                ["fc 1", "laplacian zz"],
                 ["angmom x", "fc 1", "spinorbit x"],
                 ["angmom x", "fc 2", "spinorbit x"],
                 ["fc", "fc"],

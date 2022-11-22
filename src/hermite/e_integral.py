@@ -893,6 +893,7 @@ class eint:
 
 
 if __name__ == "__main__":
+    print("Start Integral Calculation")
     wf = wave_function(
         "../tests/molden_file/LiH.molden",
         scratch_path="/home1/scratch",
@@ -901,6 +902,7 @@ if __name__ == "__main__":
     s = eint(wf)
     one = True
     if one:
+        print("Calculando nucpot ... ")
         s.integration_onebody(
             integrals_names=["nucpot", "darwin", "fc", "spinorbit", "sofiel"],
             # {
@@ -921,6 +923,7 @@ if __name__ == "__main__":
             verbose=31,
             dalton_normalization=False,
         )
+        print("end integral calculation")
     else:
         integrals = s.integration_twobody(
             ["e2pot"], verbose=11, dalton_normalization=False
