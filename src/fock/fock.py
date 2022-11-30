@@ -443,7 +443,7 @@ class fock:
         for a in range(self._wf.atom_number):
             name = f"pot {a + 1}"
             inten[name] = io.binary(
-                file=io._hermite_ao1b_binary, io="r", label="kinetic"
+                file=io._hermite_ao1b_binary, io="r", label=f"nucpot {a+1}"
             )
 
 
