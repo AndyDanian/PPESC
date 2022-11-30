@@ -155,7 +155,7 @@ if __name__ == "__main__":
         verbose=11,
         scalar_correction=True,
         tensor=True,
-        verbose_response=11,
+        verbose_response=0,
         verbose_average=0,
         verbose_fock=11
     )
