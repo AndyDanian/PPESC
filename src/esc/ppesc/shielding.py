@@ -197,14 +197,19 @@ def run_shielding(
             io.activate_write_output = False
 
         fock_object: fock = fock(wf=wf)
-        fock_object.calculate_hf_moe(relativity_correction=True, verbose=verbose_fock)
+        wf.mo_energies = fock_object.calculate_hf_moe(relativity_correction=True, verbose=verbose_fock)
+        wf.mo_energies
+
+
         if verbose_fock < 10:
             io.activate_write_output = True
+
         if verbose_response < 10:
             io.activate_write_output = False
-        lineal_response: response = response(wf=wf, moe=fock_object.hf_moe)
+        lineal_response: response = response(wf=wf)
         if verbose_response < 10:
             io.activate_write_output = True
+
         driver_time.add_name_delta_time(
             name="One-Body Mv and Dw Corrections to Energy", delta_time=(time() - start)
         )
@@ -212,7 +217,7 @@ def run_shielding(
         moe: list = wf.mo_energies
         if verbose_response < 10:
             io.activate_write_output = False
-        lineal_response: response = response(wf=wf, moe=moe)
+        lineal_response: response = response(wf=wf)
         if verbose_response < 10:
             io.activate_write_output = True
 

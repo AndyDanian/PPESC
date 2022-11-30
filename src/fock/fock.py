@@ -34,8 +34,6 @@ class fock:
         intk: np.ndarray,
         inten: dict[str, np.ndarray],
         intee: np.ndarray,
-        intdw: np.ndarray,
-        intmv: np.ndarray,
         mocoef: list,
         charge: list,
         coord: list,
@@ -55,9 +53,7 @@ class fock:
         intk (np.ndarray): 2d array with atomic kinetic integrals
         inten (dict[str, np.ndarray]): dictionary of 2d arrays with atomic electron--nucleus interactions integrals
         intk (np.ndarray): 2d array with atomic electron repulsion integrals
-        intdw (np.ndarray): 2d array with atomic Darwin integrals
-        intmv (np.ndarray): 2d array with atomic Massvelo integrals
-        mocoef (list): 2d array with molecular obital coefficients
+        mocoef (np.ndarray): 2d array with molecular obital coefficients
         nprim (int): primitive number
         natoms (int): atoms number
         ne (int): electrons number
@@ -95,7 +91,7 @@ class fock:
         for i in range(nprim):
             for j in range(nprim):
                 for k in range(ne2):
-                    density_matrix[i, j] += 2.0 * mocoef[i][k] * mocoef[j][k]
+                    density_matrix[i, j] += 2.0 * mocoef[i, k] * mocoef[j, k]
         if verbose > 30:
             io.write_output(
                 type=9, direct=True, dictionary={"Density Matrix": density_matrix}
@@ -141,7 +137,7 @@ class fock:
         # FOCK
         # AO TO MO
         fock_mo: np.ndarray = np.matmul(
-            np.array(mocoef).T, np.matmul(np.array(fock), np.array(mocoef))
+            mocoef.T, np.matmul(np.array(fock), mocoef)
         )
         eom: list = [fock_mo[i][i] for i in range(nprim)]
         self.hf_eom_calculated: list = eom
@@ -215,11 +211,18 @@ class fock:
         # Relativity correction for the energy
         if relativity_correction:
 
+            intdw: np.ndarray = io.binary(
+                file=io._hermite_ao1b_binary, io="r", label="darwin"
+            )
+            intmv: np.ndarray = io.binary(
+                file=io._hermite_ao1b_binary, io="r", label="massvelo"
+            )
+
             intmv_mo: np.ndarray = np.matmul(
-                np.array(mocoef).T, np.matmul(np.array(intmv), np.array(mocoef))
+                mocoef.T, np.matmul(np.array(intmv), mocoef)
             )
             intdw_mo: np.ndarray = np.matmul(
-                np.array(mocoef).T, np.matmul(np.array(intdw), np.array(mocoef))
+                mocoef.T, np.matmul(np.array(intdw), mocoef)
             )
             if verbose <= 10 or not verbose:
                 io.write_output(
@@ -271,10 +274,14 @@ class fock:
             )
             io.write_output(" ")
 
+            # Recalculated EOM
             for i in range(nprim):
                 eom[i] += intmv_mo[i][i] + intdw_mo[i][i]
+            # END Recalculated EOM
+            # Save 
             self.hf_eom_calculated = eom
 
+            # Brief about energies
             gap = eom[ne2] - eom[ne2 - 1]
             io.write_output(f"  E(LUMO): " + f"{eom[ne2]:4f}".center(24) + " au")
             io.write_output(f"- E(HOMO): " + f"{eom[ne2-1]:4f}".center(24) + " au")
@@ -422,7 +429,7 @@ class fock:
             file=io._hermite_ao2b_binary, io="r", label="e2pot"
         )
         # Coefficient from fock are in vector form
-        mocoef = [list(value) for value in zip(*self._wf.mo_coefficients)]
+        mocoef = np.array([list(value) for value in zip(*self._wf.mo_coefficients)])
 
         if self._wf._cartessian_primitive:
             nprim: int = self._wf.primitives_number
@@ -439,13 +446,6 @@ class fock:
                 file=io._hermite_ao1b_binary, io="r", label="kinetic"
             )
 
-        if relativity_correction:
-            intdw: np.ndarray = io.binary(
-                file=io._hermite_ao1b_binary, io="r", label="darwin"
-            )
-            intmv: np.ndarray = io.binary(
-                file=io._hermite_ao1b_binary, io="r", label="massvelo"
-            )
 
         # Atomic charge
         charge: list = self._wf.atomic_numbers
@@ -470,8 +470,6 @@ class fock:
             inten=inten,
             intee=intee,
             relativity_correction=relativity_correction,
-            intdw=intdw,
-            intmv=intmv,
             mocoef=mocoef,
             nprim=nprim,
             charge=charge,
@@ -492,7 +490,7 @@ class fock:
 
 if __name__ == "__main__":
     wfn = wave_function(
-        "../tests/molden_file/H2.molden",
+        "../tests/molden_file/H2_STO2G.molden",
         scratch_path="/home1/scratch",
         job_folder="160922134451",
     )
@@ -500,7 +498,7 @@ if __name__ == "__main__":
     print("\n Calculate MO energies used wave function \n")
     eom_values = fock(wfn)
     eom_values.calculate_hf_moe(
-        verbose=11, verbose_integrals=1, relativity_correction=True
+        verbose=31, verbose_integrals=1, relativity_correction=False
     )
 
 # H2 STO-1G

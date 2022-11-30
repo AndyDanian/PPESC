@@ -495,9 +495,9 @@ class response:
 
 if __name__ == "__main__":
     wfn = wave_function(
-        "../tests/molden_file/LiH.molden",
+        "../tests/molden_file/HF_v2z.molden",
         scratch_path="/home1/scratch",
-        job_folder="160922134451",
+        job_folder="HFSRv2z",
     )
     r = response(wfn)
     # r.drv_reponse_calculation(principal_propagator_approximation="rpa",
@@ -511,14 +511,10 @@ if __name__ == "__main__":
         r.drv_reponse_calculation(
             principal_propagator_approximation="rpa",
             properties=[
-                ["fc", "pso 1"],
-                ["angmom x", "fc 1", "spinorbit x"],
-                ["angmom x", "fc 2", "spinorbit x"],
-                ["fc", "fc"],
-                ["spinorbit", "fc"],
-                ["spinorbit", "spinorbit"],
-                ["pso", "pso"],
+                ["fc 1", "fc 2"],
             ],
+            pp_multiplicity=[[1]],
+            property_multiplicity=[[1,1]],
             # gauge=[0.0,0.0,1.4045523587],
             # gauge = [0.000, 0.0000, -0.545857052], #Li pople
             verbose=11,

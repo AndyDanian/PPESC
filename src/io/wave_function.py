@@ -302,6 +302,16 @@ class wave_function:
         "Molecular Orbitals Energies"
         return [mo["energy"] for mo in self._mos]
 
+    @mo_energies.setter
+    def mo_energies(self, moe: list) -> list:
+        "Molecular Orbitals Energies"
+        self._mos = [{name: (moe[count]
+                      if name == "energy"
+                      else value)
+                      for name, value in mo.items()
+                      }
+                      for count, mo in enumerate(self._mos)
+                    ]
     ##################################################################
     # METHODS
     ##################################################################
@@ -383,5 +393,7 @@ if __name__ == "__main__":
     print(" mlx ", wfn.mlx)
     print(" mly ", wfn.mly)
     print(" mlz ", wfn.mlz)
+
+    print("mos ",[{name: (value if name != 'energy' else 9999999.0) for name, value in mo.items()} for mo in wfn._mos])
 
     wfn._driver_scratch.remove_job_folder()

@@ -146,15 +146,16 @@ class ppesc:
 
 if __name__ == "__main__":
     wfn = wave_function(
-        "../../tests/molden_file/H2_STO2G.molden",
+        "../../tests/molden_file/HF_v2z.molden",
         scratch_path="/home1/scratch",
-        job_folder="160922134451",
+        job_folder="HFSRv2z",
     )
     lr = ppesc(wfn)
     lr.drv_ppesc(
         verbose=11,
         scalar_correction=True,
-        tensor=False,
-        verbose_response=0,
+        tensor=True,
+        verbose_response=11,
         verbose_average=0,
+        verbose_fock=11
     )
