@@ -292,4 +292,19 @@ def h1i(
             dalton_normalization,
             driver_time,
         )
+    elif name.lower() == "pangmomp":
+        integral = pangmomp(
+            coord,
+            r_gauge,
+            magnetic_xyz,
+            exp,
+            center,
+            lx,
+            ly,
+            lz,
+            verbose,
+            dalton_normalization,
+            driver_time,
+        )
+
     return integral

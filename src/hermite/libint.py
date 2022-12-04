@@ -52,6 +52,7 @@ from laplacian import *  # Calculate different double derivatives
 from spinorbit import *  # Calculate SpinOrbit integrals
 from sofiel import *  # External magnetic-field dependence of the spin-orbit operator integrals
 from pnstcgop import *
+from pangmomp import *
 
 # h2int: Two--Body hermite integrals
 from e2pot import *

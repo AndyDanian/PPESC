@@ -12,7 +12,7 @@ def pangmomp(
     lz,
     output,
     dalton_normalization,
-    # driver_time,
+    driver_time,
 ):
     """
     Angular momentum between the gradient of the gaussuan functions

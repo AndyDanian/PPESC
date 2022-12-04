@@ -419,6 +419,7 @@ class eint:
                 and magnetic[integral_name.lower()] == 0
             ):
 
+                # **** Molecular Scalars Integrals  *** #
                 if integral_name.lower() in [
                     "overlap",
                     "darwin",
@@ -456,6 +457,8 @@ class eint:
                         dalton_normalization=dalton_normalization,
                         driver_time=driver_time,
                     )
+
+                # **** Atomic Scalars Integrals  *** #
                 elif integral_name.lower() in ["nucpot", "fc"]:
 
                     for atom in atoms:
@@ -492,6 +495,7 @@ class eint:
                             atom=atom,
                         )
 
+            # **** Molecular Vectorials Integrals  *** #
             elif (
                 spatial_symmetry[integral_name.lower()] == 0
                 and magnetic[integral_name.lower()] == 1
@@ -554,6 +558,7 @@ class eint:
                         r_dipole=r_dipole,
                     )
 
+            # **** Atomic Vectorial Integrals  *** #
             elif (
                 spatial_symmetry[integral_name.lower()] == 1
                 and magnetic[integral_name.lower()] == 0
@@ -620,6 +625,7 @@ class eint:
                         atom=atom_index,
                     )
 
+            # **** Atomic and Molecular Vectorial Integrals  *** #
             elif (
                 spatial_symmetry[integral_name.lower()] == 1
                 and magnetic[integral_name.lower()] == 1
@@ -899,8 +905,8 @@ if __name__ == "__main__":
         job_folder="160922134451",
     )
     s = eint(wf)
-    #s.integration_twobody(integrals_names=["e2pot"],verbose=101)
-    s.integration_onebody(integrals_names=["psoke"],verbose=31)
+    # s.integration_twobody(integrals_names=["e2pot"],verbose=101)
+    s.integration_onebody(integrals_names=["pangmomp"], verbose=31)
     exit()
     one = True
     if one:

@@ -37,6 +37,7 @@ integral_symmetry: dict = {
     "laplacian": "sym",
     "sofiel": "sym",
     "pnstcgop": "sym",
+    "pangmomp": "antisym",
 }
 
 

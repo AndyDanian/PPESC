@@ -20,6 +20,7 @@ spatial_symmetry: dict[str, int] = {
     "laplacian": 0,
     "sofiel": 1,
     "pnstcgop": 1,
+    "pangmomp": 0,
 }
 magnetic: dict[str, int] = {
     "overlap": 0,
@@ -43,6 +44,7 @@ magnetic: dict[str, int] = {
     "laplacian": 1,
     "sofield": 1,
     "pnstcgop": 1,
+    "pangmomp": 1,
 }
 integral_symmetry: dict[str, str] = {
     "overlap": "sym",
@@ -66,6 +68,7 @@ integral_symmetry: dict[str, str] = {
     "laplacian": "sym",
     "sofiel": "sym",
     "pnstcgop": "sym",
+    "pangmomp": "antisym",
 }
 
 # Separated magnetic axes of cartessian component (laplacian), i. e., to make a cartessian component by
@@ -103,4 +106,5 @@ large_name: dict[str, str] = {
     "laplacian": "Laplacian",
     "sofiel": "Extenal Magnetic-Field Dependence of the Spin-Orbit Operator",
     "pnstcgop": "nabla(Diamagnetic Nuclear Shielding Tensor)nabla",
+    "pangmomp": "nabla (Angulat Mometum)_gauge nabla",
 }
