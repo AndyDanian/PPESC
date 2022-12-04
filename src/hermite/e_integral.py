@@ -894,11 +894,14 @@ class eint:
 
 if __name__ == "__main__":
     wf = wave_function(
-        "../tests/molden_file/LiH.molden",
+        "../tests/molden_file/LiH_ccpvtz.molden",
         scratch_path="/home1/scratch",
         job_folder="160922134451",
     )
     s = eint(wf)
+    #s.integration_twobody(integrals_names=["e2pot"],verbose=101)
+    s.integration_onebody(integrals_names=["psoke"],verbose=31)
+    exit()
     one = True
     if one:
         s.integration_onebody(

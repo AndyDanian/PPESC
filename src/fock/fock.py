@@ -34,7 +34,7 @@ class fock:
         intk: np.ndarray,
         inten: dict[str, np.ndarray],
         intee: np.ndarray,
-        mocoef: list,
+        mocoef: np.ndarray,
         charge: list,
         coord: list,
         nprim: int,
@@ -136,10 +136,8 @@ class fock:
 
         # FOCK
         # AO TO MO
-        fock_mo: np.ndarray = np.matmul(
-            mocoef.T, np.matmul(np.array(fock), mocoef)
-        )
-        eom: list = [fock_mo[i][i] for i in range(nprim)]
+        fock_mo: np.ndarray = np.matmul(mocoef.T, np.matmul(fock, mocoef))
+        eom: list = [fock_mo[i, i] for i in range(nprim)]
         self.hf_eom_calculated: list = eom
 
         # Nuleu Repulsion
@@ -278,7 +276,7 @@ class fock:
             for i in range(nprim):
                 eom[i] += intmv_mo[i][i] + intdw_mo[i][i]
             # END Recalculated EOM
-            # Save 
+            # Save
             self.hf_eom_calculated = eom
 
             # Brief about energies
@@ -446,7 +444,6 @@ class fock:
                 file=io._hermite_ao1b_binary, io="r", label=f"nucpot {a+1}"
             )
 
-
         # Atomic charge
         charge: list = self._wf.atomic_numbers
         # Electrons number
@@ -490,7 +487,7 @@ class fock:
 
 if __name__ == "__main__":
     wfn = wave_function(
-        "../tests/molden_file/H2_STO2G.molden",
+        "../tests/molden_file/LiH_sd.molden",
         scratch_path="/home1/scratch",
         job_folder="160922134451",
     )
@@ -498,7 +495,7 @@ if __name__ == "__main__":
     print("\n Calculate MO energies used wave function \n")
     eom_values = fock(wfn)
     eom_values.calculate_hf_moe(
-        verbose=31, verbose_integrals=1, relativity_correction=False
+        verbose=11, verbose_integrals=1, relativity_correction=False
     )
 
 # H2 STO-1G

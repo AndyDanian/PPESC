@@ -26,6 +26,7 @@ def e2pot(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver_t
 
     n: int = total_nprim
 
+    #! Error with coord when only is one atom
     e2pot, count = i2e(
         np.asfortranarray(coord),
         np.array(lx),
@@ -47,7 +48,7 @@ def e2pot(coord, exp, center, lx, ly, lz, output, dalton_normalization, driver_t
 
 if __name__ == "__main__":
     wf = wave_function(
-        "../../tests/molden_file/H2_STO2G.molden",
+        "../../tests/molden_file/LiH_sd.molden",
         scratch_path="/home1/scratch",
         job_folder="160922134451",
     )

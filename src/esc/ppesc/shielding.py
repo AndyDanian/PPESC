@@ -57,7 +57,7 @@ def correction_to_calculate(
                 "sd": True,
                 "psooz": True,
                 "dnske": True,
-                "pnstcgop": True,
+                "pnstcgop": False,  # True,
             },
             {
                 "para_nr": True,
@@ -197,9 +197,10 @@ def run_shielding(
             io.activate_write_output = False
 
         fock_object: fock = fock(wf=wf)
-        wf.mo_energies = fock_object.calculate_hf_moe(relativity_correction=True, verbose=verbose_fock)
+        wf.mo_energies = fock_object.calculate_hf_moe(
+            relativity_correction=True, verbose=verbose_fock
+        )
         wf.mo_energies
-
 
         if verbose_fock < 10:
             io.activate_write_output = True

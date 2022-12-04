@@ -29,7 +29,7 @@ ppesc_constants: dict[str, float] = {
     "fc": -M * ALPHA2 * ALPHA2 * 0.25,
     "psooz": -M * ALPHA2 * ALPHA2 * 0.25,
     "sd": -M * ALPHA2 * ALPHA2 * 0.25,
-    "dnske": M * ALPHA2 * ALPHA2 / 12.0,
+    "dnske": M * ALPHA2 * ALPHA2 / 8.0,  # 12.0,
     "pnstcgop": -M * ALPHA2 * ALPHA2 * 0.25,
     # "a2dw": M*ALPHA2, "a2mv": M*ALPHA2
 }

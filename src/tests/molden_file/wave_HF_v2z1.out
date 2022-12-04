@@ -1,0 +1,2504 @@
+
+
+     ************************************************************************
+     *************** Dalton - An Electronic Structure Program ***************
+     ************************************************************************
+
+    This is output from DALTON release Dalton2020.1 (2022)
+         ( Web site: http://daltonprogram.org )
+
+   ----------------------------------------------------------------------------
+
+    NOTE:
+     
+    Dalton is an experimental code for the evaluation of molecular
+    properties using (MC)SCF, DFT, CI, and CC wave functions.
+    The authors accept no responsibility for the performance of
+    the code or for the correctness of the results.
+     
+    The code (in whole or part) is provided under a licence and
+    is not to be reproduced for further distribution without
+    the written permission of the authors or their representatives.
+     
+    See the home page "http://daltonprogram.org" for further information.
+     
+    If results obtained with this code are published,
+    the appropriate citations would be both of:
+     
+       K. Aidas, C. Angeli, K. L. Bak, V. Bakken, R. Bast,
+       L. Boman, O. Christiansen, R. Cimiraglia, S. Coriani,
+       P. Dahle, E. K. Dalskov, U. Ekstroem,
+       T. Enevoldsen, J. J. Eriksen, P. Ettenhuber, B. Fernandez,
+       L. Ferrighi, H. Fliegl, L. Frediani, K. Hald, A. Halkier,
+       C. Haettig, H. Heiberg, T. Helgaker, A. C. Hennum,
+       H. Hettema, E. Hjertenaes, S. Hoest, I.-M. Hoeyvik,
+       M. F. Iozzi, B. Jansik, H. J. Aa. Jensen, D. Jonsson,
+       P. Joergensen, J. Kauczor, S. Kirpekar,
+       T. Kjaergaard, W. Klopper, S. Knecht, R. Kobayashi, H. Koch,
+       J. Kongsted, A. Krapp, K. Kristensen, A. Ligabue,
+       O. B. Lutnaes, J. I. Melo, K. V. Mikkelsen, R. H. Myhre,
+       C. Neiss, C. B. Nielsen, P. Norman, J. Olsen,
+       J. M. H. Olsen, A. Osted, M. J. Packer, F. Pawlowski,
+       T. B. Pedersen, P. F. Provasi, S. Reine, Z. Rinkevicius,
+       T. A. Ruden, K. Ruud, V. Rybkin, P. Salek, C. C. M. Samson,
+       A. Sanchez de Meras, T. Saue, S. P. A. Sauer,
+       B. Schimmelpfennig, K. Sneskov, A. H. Steindal,
+       K. O. Sylvester-Hvid, P. R. Taylor, A. M. Teale,
+       E. I. Tellgren, D. P. Tew, A. J. Thorvaldsen, L. Thoegersen,
+       O. Vahtras, M. A. Watson, D. J. D. Wilson, M. Ziolkowski
+       and H. Agren,
+       "The Dalton quantum chemistry program system",
+       WIREs Comput. Mol. Sci. 2014, 4:269–284 (doi: 10.1002/wcms.1172)
+     
+    and
+     
+       Dalton, a molecular electronic structure program,
+       Release Dalton2020.1 (2022), see http://daltonprogram.org
+   ----------------------------------------------------------------------------
+
+    Authors in alphabetical order (Major contribution(s) in parenthesis):
+
+  Kestutis Aidas,           Vilnius University,           Lithuania   (QM/MM)
+  Celestino Angeli,         University of Ferrara,        Italy       (NEVPT2)
+  Keld L. Bak,              UNI-C,                        Denmark     (AOSOPPA, non-adiabatic coupling, magnetic properties)
+  Vebjoern Bakken,          University of Oslo,           Norway      (DALTON; geometry optimizer, symmetry detection)
+  Radovan Bast,             UiT The Arctic U. of Norway,  Norway      (DALTON installation and execution frameworks)
+  Pablo Baudin,             University of Valencia,       Spain       (Cholesky excitation energies)
+  Linus Boman,              NTNU,                         Norway      (Cholesky decomposition and subsystems)
+  Bruno N. Cabral Tenorio,  Technical Univ. of Denmark,   Denmark     (Lanczos-based CC methods)
+  Ove Christiansen,         Aarhus University,            Denmark     (CC module)
+  Renzo Cimiraglia,         University of Ferrara,        Italy       (NEVPT2)
+  Sonia Coriani,            Technical Univ. of Denmark,   Denmark     (CC and RESPONS modules)
+  Janusz Cukras,            University of Warsaw,         Poland      (MChD in RESPONS)
+  Paal Dahle,               University of Oslo,           Norway      (Parallelization)
+  Erik K. Dalskov,          UNI-C,                        Denmark     (SOPPA)
+  Thomas Enevoldsen,        Univ. of Southern Denmark,    Denmark     (SOPPA)
+  Janus J. Eriksen,         Aarhus University,            Denmark     (Polarizable embedding, TDA)
+  Rasmus Faber,             Technical Univ. of Denmark,   Denmark     (Vib.avg. NMR w. SOPPA, parallel AO-SOPPA, CVS-CC and EOMCC)
+  Tobias Fahleson,          KTH Stockholm,                Sweden      (Damped cubic response)
+  Berta Fernandez,          U. of Santiago de Compostela, Spain       (Doublet spin, ESR in RESPONS)
+  Lara Ferrighi,            Aarhus University,            Denmark     (PCM Cubic response)
+  Heike Fliegl,             University of Oslo,           Norway      (CCSD(R12))
+  Luca Frediani,            UiT The Arctic U. of Norway,  Norway      (PCM)
+  Emmanuel Fromager,        Univ. Strasbourg,             France      (MC-srDFT)
+  Bin Gao,                  UiT The Arctic U. of Norway,  Norway      (Gen1Int library)
+  Andre S. P. Gomes,        CNRS/Universite de Lille,     France      (Frozen density embedding)
+  Christof Haettig,         Ruhr-University Bochum,       Germany     (CC module)
+  Kasper Hald,              Aarhus University,            Denmark     (CC module)
+  Asger Halkier,            Aarhus University,            Denmark     (CC module)
+  Frederik Beyer Hansen,    University of Copenhagen,     Denmark     (Parallel AO-SOPPA)
+  Erik D. Hedegaard,        Univ. of Southern Denmark,    Denmark     (Polarizable embedding, QM/MM, and MC-srDFT)
+  Hanne Heiberg,            University of Oslo,           Norway      (Geometry analysis, selected one-electron integrals)
+  Trygve Helgaker,          University of Oslo,           Norway      (DALTON; ABACUS, ERI, DFT modules, London, and much more)
+  Alf Christian Hennum,     University of Oslo,           Norway      (Parity violation)
+  Hinne Hettema,            University of Auckland,       New Zealand (Quadratic response in RESPONS; SIRIUS supersymmetry)
+  Eirik Hjertenaes,         NTNU,                         Norway      (Cholesky decomposition)
+  Pi A. B. Haase,           University of Copenhagen,     Denmark     (Triplet AO-SOPPA)
+  Maria Francesca Iozzi,    University of Oslo,           Norway      (RPA)
+  Christoph Jacob           TU Braunschweig               Germany     (Frozen density embedding)
+  Brano Jansik              Technical Univ. of Ostrava    Czech Rep.  (DFT cubic response)
+  Hans Joergen Aa. Jensen,  Univ. of Southern Denmark,    Denmark     (DALTON; SIRIUS, RESPONS, ABACUS, MC-srDFT, and much more)
+  Dan Jonsson,              UiT The Arctic U. of Norway,  Norway      (Cubic response in RESPONS module)
+  Poul Joergensen,          Aarhus University,            Denmark     (RESPONS, ABACUS, and CC modules)
+  Maciej Kaminski,          University of Warsaw,         Poland      (CPPh in RESPONS)
+  Joanna Kauczor,           Linkoeping University,        Sweden      (Complex polarization propagator (CPP) module)
+  Sheela Kirpekar,          Univ. of Southern Denmark,    Denmark     (Mass-velocity & Darwin integrals)
+  Erik Kjellgren,           Univ. of Southern Denmark,    Denmark     (MC-srDFT)
+  Wim Klopper,              KIT Karlsruhe,                Germany     (R12 code in CC, SIRIUS, and ABACUS modules)
+  Stefan Knecht,            ETH Zurich,                   Switzerland (Parallel CI and MCSCF, MC-srDFT)
+  Rika Kobayashi,           Australian National Univ.,    Australia   (DIIS in CC, London in MCSCF)
+  Henrik Koch,              NTNU,                         Norway      (CC module, Cholesky decomposition)
+  Jacob Kongsted,           Univ. of Southern Denmark,    Denmark     (Polarizable embedding, polarizable density embedding, QM/MM)
+  Andrea Ligabue,           University of Modena,         Italy       (CTOCD, AOSOPPA)
+  Nanna H. List             Univ. of Southern Denmark,    Denmark     (Polarizable embedding)
+  Ola B. Lutnaes,           University of Oslo,           Norway      (DFT Hessian)
+  Juan I. Melo,             University of Buenos Aires,   Argentina   (LRESC, Relativistic Effects on NMR Shieldings)
+  Kurt V. Mikkelsen,        University of Copenhagen,     Denmark     (MC-SCRF and QM/MM)
+  Rolf H. Myhre,            NTNU,                         Norway      (Subsystems and CC3)
+  Christian Neiss,          Univ. Erlangen-Nuernberg,     Germany     (CCSD(R12))
+  Christian B. Nielsen,     University of Copenhagen,     Denmark     (QM/MM)
+  Patrick Norman,           KTH Stockholm,                Sweden      (Cubic response and complex frequency response in RESPONS)
+  Jeppe Olsen,              Aarhus University,            Denmark     (SIRIUS CI/density modules)
+  Jogvan Magnus H. Olsen,   Aarhus University,            Denmark     (Polarizable embedding and polarizable density embedding)
+  Anders Osted,             Copenhagen University,        Denmark     (QM/MM)
+  Martin J. Packer,         University of Sheffield,      UK          (SOPPA)
+  Filip Pawlowski,          Kazimierz Wielki University,  Poland      (CC3)
+  Morten N. Pedersen,       Univ. of Southern Denmark,    Denmark     (Polarizable embedding)
+  Thomas B. Pedersen,       University of Oslo,           Norway      (Cholesky decomposition)
+  Patricio F. Provasi,      University of Northeastern,   Argentina   (Analysis of coupling constants in localized orbitals)
+  Peter Reinholdt,          Univ. of Southern Denmark,    Denmark     (Polarizable embedding and polarizable density embedding)
+  Zilvinas Rinkevicius,     KTH Stockholm,                Sweden      (open-shell DFT, ESR)
+  Elias Rudberg,            KTH Stockholm,                Sweden      (DFT grid and basis info)
+  Torgeir A. Ruden,         University of Oslo,           Norway      (Numerical derivatives in ABACUS)
+  Kenneth Ruud,             UiT The Arctic U. of Norway,  Norway      (DALTON; ABACUS magnetic properties and much more)
+  Pawel Salek,              KTH Stockholm,                Sweden      (DALTON; DFT code)
+  Claire C. M. Samson       University of Karlsruhe       Germany     (Boys localization, r12 integrals in ERI)
+  Alfredo Sanchez de Meras, University of Valencia,       Spain       (CC module, Cholesky decomposition)
+  Trond Saue,               Paul Sabatier University,     France      (direct Fock matrix construction)
+  Stephan P. A. Sauer,      University of Copenhagen,     Denmark     (SOPPA(CCSD), SOPPA prop., AOSOPPA, vibrational g-factors)
+  Bernd Schimmelpfennig,    Forschungszentrum Karlsruhe,  Germany     (AMFI module)
+  Anna K. Schnack-Petersen, University of Copenhagen,     Denmark     (RPA(D) and HRPA(D) properties in AOSOPPA)
+  Kristian Sneskov,         Aarhus University,            Denmark     (Polarizable embedding, QM/MM)
+  Arnfinn H. Steindal,      UiT The Arctic U. of Norway,  Norway      (parallel QM/MM, polarizable embedding)
+  Casper Steinmann,         Aalborg University,           Denmark     (QFIT, polarizable embedding)
+  K. O. Sylvester-Hvid,     University of Copenhagen,     Denmark     (MC-SCRF)
+  Peter R. Taylor,          VLSCI/Univ. of Melbourne,     Australia   (Symmetry handling ABACUS, integral transformation)
+  Andrew M. Teale,          University of Nottingham,     England     (DFT-AC, DFT-D)
+  David P. Tew,             University of Bristol,        England     (CCSD(R12))
+  Julien Toulouse,          Sorbonne Univ.,               France      (MC-srDFT)
+  Olav Vahtras,             KTH Stockholm,                Sweden      (Triplet response, spin-orbit, ESR, TDDFT, open-shell DFT)
+  Lucas Visscher,           Vrije Universiteit Amsterdam, Netherlands (Frozen density embedding)
+  David J. Wilson,          La Trobe University,          Australia   (DFT Hessian and DFT magnetizabilities)
+  Hans Agren,               KTH Stockholm,                Sweden      (SIRIUS module, RESPONS, MC-SCRF solvation)
+ --------------------------------------------------------------------------------
+
+     Date and time (Linux)  : Wed Nov 30 18:25:28 2022
+     Host name              : nodo8                                   
+
+ * Work memory size             :   256000000 =  1.907 gigabytes.
+
+ * Directories for basis set searches:
+   1) /home/andyzapa/otros
+   2) /home/andyzapa/dalton/buildompi/basis
+
+
+Compilation information
+-----------------------
+
+ Who compiled             | andyzapa
+ Host                     | headnode
+ System                   | Linux-5.14.0-119.el9.x86_64
+ CMake generator          | Unix Makefiles
+ Processor                | x86_64
+ 64-bit integers          | OFF
+ MPI                      | ON
+ Fortran compiler         | /software/software/OpenMPI/4.1.4-GCC-11.3.0/bin/mp
+                          | if90
+ Fortran compiler version | GNU Fortran (GCC) 11.3.0
+ C compiler               | /software/software/OpenMPI/4.1.4-GCC-11.3.0/bin/mp
+                          | icc
+ C compiler version       | gcc (GCC) 11.3.0
+ C++ compiler             | /software/software/OpenMPI/4.1.4-GCC-11.3.0/bin/mp
+                          | icxx
+ C++ compiler version     | unknown
+ Static linking           | OFF
+ Last Git revision        | 9d7c5e435b75a9695d5ac8714121d12e6486149f
+ Git branch               | (HEAD detached at Dalton2020.1)
+ Configuration time       | 2022-11-30 18:22:33.610901
+
+ * Sequential calculation.
+
+
+   Content of the .dal input file
+ ----------------------------------
+
+**DALTON
+.RUN WAVE FUNCTION
+*MOLBAS
+.UNCONT
+**INTEGRALS
+.KINENERG
+.NUCPOT
+.PROPRI
+*TWOINT
+.PRINT
+ 10 10 10 10 10
+**WAVE FUNCTIONS
+!.RESTART
+.HF
+*TRANSFORMATION
+.PRINT
+ 250
+*END OF
+
+
+   Content of the .mol file
+ ----------------------------
+
+ATOMBASIS
+HF
+Using the dyall.v2z basis
+Atomtypes=2 Generators=0
+Charge=9.0 Atoms=1 Basis=dyall.v2z1
+F     0.0000000000    0.0000000000  0.0000000
+Charge=1.0 Atoms=1 Basis=dyall.v2z1
+H     0.0000000000    0.0000000000 1.732878764
+FINISH
+
+
+       *******************************************************************
+       *********** Output from DALTON general input processing ***********
+       *******************************************************************
+
+ --------------------------------------------------------------------------------
+   Overall default print level:    0
+   Print level for DALTON.STAT:    1
+
+    HERMIT 1- and 2-electron integral sections will be executed
+    "Old" integral transformation used (limited to max 255 basis functions)
+    Wave function sections will be executed (SIRIUS module)
+ --------------------------------------------------------------------------------
+
+@ * Nuclear model: Point charge.
+
+
+ Changes of defaults for *MOLBAS
+ -------------------------------
+
+
+ Uncontracted basis forced, irrespective of basis input file.
+
+
+
+   ****************************************************************************
+   *************** Output of molecule and basis set information ***************
+   ****************************************************************************
+
+
+    The two title cards from your ".mol" input:
+    ------------------------------------------------------------------------
+ 1: HF                                                                      
+ 2: Using the dyall.v2z basis                                               
+    ------------------------------------------------------------------------
+
+  Atomic type no.    1
+  --------------------
+  Nuclear charge:   9.00000
+  Number of symmetry independent centers:    1
+  Number of basis sets to read;    2
+  The basis set is "dyall.v2z1" from the basis set library.
+  Basis set file used for this atomic type with Z =   9 :
+     "/home/andyzapa/dalton/buildompi/basis/dyall.v2z1"
+
+  Atomic type no.    2
+  --------------------
+  Nuclear charge:   1.00000
+  Number of symmetry independent centers:    1
+  Number of basis sets to read;    2
+  The basis set is "dyall.v2z1" from the basis set library.
+  Basis set file used for this atomic type with Z =   1 :
+     "/home/andyzapa/dalton/buildompi/basis/dyall.v2z1"
+
+
+                         SYMGRP: Point group information
+                         -------------------------------
+
+@    Point group: C1 
+
+
+                                 Isotopic Masses
+                                 ---------------
+
+                           F          18.998403
+                           H           1.007825
+
+                       Total mass:    20.006228 amu
+                       Natural abundance:  99.985 %
+
+ Center-of-mass coordinates (a.u.):    0.000000    0.000000    0.087295
+ Center-of-mass coordinates (Angs):    0.000000    0.000000    0.046194
+
+
+  Atoms and basis sets
+  --------------------
+
+  Number of atom types :    2
+  Total number of atoms:    2
+
+  label    atoms   charge   prim   cont     basis
+  ----------------------------------------------------------------------
+  F           1    9.0000    10    10      [2s1p1d|2s1p1d]                                    
+  H           1    1.0000     4     4      [1s1p|1s1p]                                        
+  ----------------------------------------------------------------------
+  total:      2   10.0000    14    14
+  ----------------------------------------------------------------------
+  Spherical harmonic basis used.
+
+  Threshold for neglecting AO integrals:  1.00D-12
+
+
+  Cartesian Coordinates (a.u.)
+  ----------------------------
+
+  Total number of coordinates:    6
+  F       :     1  x   0.0000000000    2  y   0.0000000000    3  z   0.0000000000
+  H       :     4  x   0.0000000000    5  y   0.0000000000    6  z   1.7328787640
+
+
+   Interatomic separations (in Angstrom):
+   --------------------------------------
+
+            F           H     
+            ------      ------
+ F     :    0.000000
+ H     :    0.917000    0.000000
+
+
+  Max    interatomic separation is    0.9170 Angstrom (    1.7329 Bohr)
+  between atoms    2 and    1, "H     " and "F     ".
+
+  Min HX interatomic separation is    0.9170 Angstrom (    1.7329 Bohr)
+
+
+  Bond distances (Angstrom):
+  --------------------------
+
+                  atom 1     atom 2       distance
+                  ------     ------       --------
+  bond distance:  H          F            0.917000
+
+
+
+
+ Principal moments of inertia (u*A**2) and principal axes
+ --------------------------------------------------------
+
+   IA       0.000000          0.000000    0.000000    1.000000
+   IB       0.804777          0.000000    1.000000    0.000000
+   IC       0.804777          1.000000    0.000000    0.000000
+
+
+ Rotational constants
+ --------------------
+
+@    The molecule is linear.
+
+               B =       627973.86 MHz     (   20.946953 cm-1)
+
+
+@  Nuclear repulsion energy :    5.193669740187 Hartree
+
+
+                     .---------------------------------------.
+                     | Starting in Integral Section (HERMIT) |
+                     `---------------------------------------'
+
+
+
+ ***************************************************************************************
+ ****************** Output from **INTEGRALS input processing (HERMIT) ******************
+ ***************************************************************************************
+
+
+
+    *************************************************************************
+    ****************** Output from HERMIT input processing ******************
+    *************************************************************************
+
+
+ Default print level:        1
+
+ Calculation of one- and two-electron Hamiltonian integrals.
+
+ The following one-electron property integrals are calculated as requested:
+          - overlap integrals
+          - electronic kinetic energy
+          - Potential energy at the nuclei
+
+ All one-electron property integrals are printed.
+
+ Center of mass  (bohr):      0.000000000000      0.000000000000      0.087294743433
+ Operator center (bohr):      0.000000000000      0.000000000000      0.000000000000
+ Gauge origin    (bohr):      0.000000000000      0.000000000000      0.000000000000
+ Dipole origin   (bohr):      0.000000000000      0.000000000000      0.000000000000
+
+
+  Set-up from HR2INP:
+  -------------------
+
+ Print level in TWOINT:   10
+ Extra output for the following shells: 10 10 10 10
+
+Calculation of 2-electron integrals are postponed until they are needed.
+
+
+     ************************************************************************
+     ************************** Output from HERINT **************************
+     ************************************************************************
+
+
+
+                      Nuclear contribution to dipole moments
+                      --------------------------------------
+
+                 au               Debye          C m (/(10**-30)
+
+      x      0.00000000         0.00000000         0.00000000
+      y      0.00000000         0.00000000         0.00000000
+      z      1.73287876         4.40453820        14.69195799
+
+
+
+
+                        +---------------------------------+
+                        ! Integrals of operator: HUCKOVLP !
+                        +---------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       1       1.00000000
+       2       0.54521004     1.00000000
+       3       0.00000000     0.00000000     1.00000000
+       4       0.00000000     0.00000000     0.00000000     1.00000000
+       8       0.00000000     0.00000000     0.00000000     0.00000000
+      10       0.00000000     0.00000000     0.00000000     0.00000000
+      12       0.00000000     0.00000000     0.00215682     0.00000000
+      13       0.00000000     0.00000000     0.00000000     0.00215682
+      14      -0.00052930    -0.00223698     0.00000000     0.00000000
+      15       0.03114136     0.11788173     0.00000000     0.00000000
+      16      -0.00724898    -0.02734831     0.00000000     0.00000000
+      17       0.00000000     0.00000000     0.08421881     0.00000000
+      18       0.00000000     0.00000000     0.00000000     0.08421881
+      20       0.00022064     0.00093260     0.00000000     0.00000000
+
+               Column   5     Column   6     Column   7     Column   8
+       5       1.00000000
+       6       0.00000000     1.00000000
+       7       0.00000000     0.00000000     1.00000000
+       8       0.00000000     0.00000000     0.00000000     1.00000000
+      10       0.00000000     0.00000000     0.00000000    -0.00000000
+      11       0.00000000     0.00000000     0.00000000     0.01318059
+      13       0.00000000     0.00000000     0.22029997     0.00000000
+      14      -0.00431155     0.00000000     0.00000000    -0.03848646
+      15       0.00000000     0.00000000     0.00000000     0.00000000
+      16       0.00000000     0.00000000     0.00000000     0.00000000
+      19       0.08421881     0.00000000     0.00000000     0.00000000
+      20       0.00169614     0.00000000     0.00000000     0.11948298
+
+               Column   9     Column  10     Column  11     Column  12
+       9       1.00000000
+      10       0.00000000     1.00000000
+      11       0.00000000     0.00000000     1.00000000
+      12       0.22029997     0.00000000     0.00000000     1.00000000
+      14       0.00000000    -0.00000000     0.00000000     0.00000000
+      15       0.00000000     0.00000000     0.00000325     0.00000000
+      16       0.00000000     0.00000000     0.01028960     0.00000000
+      17       0.00000000     0.00000000     0.00000000     0.38547753
+      19       0.00000000     0.00000000     0.02016449     0.00000000
+      20       0.00000000     0.00000000     0.08143495     0.00000000
+
+               Column  13     Column  14     Column  15     Column  16
+      13       1.00000000
+      14       0.00000000     1.00000000
+      15       0.00000000    -0.12786104     1.00000000
+      16       0.00000000    -0.54518358     0.00000001     1.00000000
+      18       0.38547753     0.00000000     0.00000000     0.00000000
+      19       0.00000000    -0.21349777     0.00000000     0.00000000
+      20       0.00000000    -0.00000000     0.05670251     0.48040259
+
+               Column  17     Column  18     Column  19     Column  20
+      17       1.00000000
+      18       0.00000000     1.00000000
+      19       0.00000000     0.00000000     1.00000000
+      20       0.00000000     0.00000000     0.39718906     1.00000000
+    ==== End of matrix output ====
+
+
+                         +-------------------------------+
+                         ! Integrals of operator: HUCKEL !
+                         +-------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       1       1.00000000
+       2       0.54521004     1.00000000
+       3       0.00000000     0.00000000     1.00000000
+       4       0.00000000     0.00000000     0.00000000     1.00000000
+       8       0.00000000     0.00000000     0.00000000     0.00000000
+      10       0.00000000     0.00000000     0.00000000     0.00000000
+      12       0.00000000     0.00000000     0.00215682     0.00000000
+      13       0.00000000     0.00000000     0.00000000     0.00215682
+      14      -0.00052930    -0.00223698     0.00000000     0.00000000
+      15       0.03114136     0.11788173     0.00000000     0.00000000
+      16      -0.00724898    -0.02734831     0.00000000     0.00000000
+      17       0.00000000     0.00000000     0.08421881     0.00000000
+      18       0.00000000     0.00000000     0.00000000     0.08421881
+      20       0.00022064     0.00093260     0.00000000     0.00000000
+
+               Column   5     Column   6     Column   7     Column   8
+       5       1.00000000
+       6       0.00000000     1.00000000
+       7       0.00000000     0.00000000     1.00000000
+       8       0.00000000     0.00000000     0.00000000     1.00000000
+      10       0.00000000     0.00000000     0.00000000    -0.00000000
+      11       0.00000000     0.00000000     0.00000000     0.01318059
+      13       0.00000000     0.00000000     0.22029997     0.00000000
+      14      -0.00431155     0.00000000     0.00000000    -0.03848646
+      15       0.00000000     0.00000000     0.00000000     0.00000000
+      16       0.00000000     0.00000000     0.00000000     0.00000000
+      19       0.08421881     0.00000000     0.00000000     0.00000000
+      20       0.00169614     0.00000000     0.00000000     0.11948298
+
+               Column   9     Column  10     Column  11     Column  12
+       9       1.00000000
+      10       0.00000000     1.00000000
+      11       0.00000000     0.00000000     1.00000000
+      12       0.22029997     0.00000000     0.00000000     1.00000000
+      14       0.00000000    -0.00000000     0.00000000     0.00000000
+      15       0.00000000     0.00000000     0.00000325     0.00000000
+      16       0.00000000     0.00000000     0.01028960     0.00000000
+      17       0.00000000     0.00000000     0.00000000     0.38547753
+      19       0.00000000     0.00000000     0.02016449     0.00000000
+      20       0.00000000     0.00000000     0.08143495     0.00000000
+
+               Column  13     Column  14     Column  15     Column  16
+      13       1.00000000
+      14       0.00000000     1.00000000
+      15       0.00000000    -0.12786104   -26.38270000
+      16       0.00000000    -0.54518358     0.00000000    -1.57250000
+      18       0.38547753     0.00000000     0.00000000     0.00000000
+      19       0.00000000    -0.21349777     0.00000000     0.00000000
+      20       0.00000000    -0.00000000     0.00000000     0.00000000
+
+               Column  17     Column  18     Column  19     Column  20
+      17      -0.73000000
+      18       0.00000000    -0.73000000
+      19       0.00000000     0.00000000    -0.73000000
+      20       0.00000000     0.00000000     0.00000000    -0.50000000
+    ==== End of matrix output ====
+
+
+                         +--------------------------------+
+                         ! Integrals of operator: OVERLAP !
+                         +--------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       1       1.00000000
+       2       0.54521004     1.00000000
+       3       0.00000000     0.00000000     1.00000000
+       4       0.00000000     0.00000000     0.00000000     1.00000000
+       8       0.00000000     0.00000000     0.00000000     0.00000000
+      10       0.00000000     0.00000000     0.00000000     0.00000000
+      12       0.00000000     0.00000000     0.00215682     0.00000000
+      13       0.00000000     0.00000000     0.00000000     0.00215682
+      14      -0.00052930    -0.00223698     0.00000000     0.00000000
+
+               Column   5     Column   6     Column   7     Column   8
+       5       1.00000000
+       6       0.00000000     1.00000000
+       7       0.00000000     0.00000000     1.00000000
+       8       0.00000000     0.00000000     0.00000000     1.00000000
+      10       0.00000000     0.00000000     0.00000000    -0.00000000
+      11       0.00000000     0.00000000     0.00000000     0.01318059
+      13       0.00000000     0.00000000     0.22029997     0.00000000
+      14      -0.00431155     0.00000000     0.00000000    -0.03848646
+
+               Column   9     Column  10     Column  11     Column  12
+       9       1.00000000
+      10       0.00000000     1.00000000
+      11       0.00000000     0.00000000     1.00000000
+      12       0.22029997     0.00000000     0.00000000     1.00000000
+      14       0.00000000    -0.00000000     0.00000000     0.00000000
+
+               Column  13     Column  14
+      13       1.00000000
+      14       0.00000000     1.00000000
+    ==== End of matrix output ====
+
+
+                        +---------------------------------+
+                        ! Integrals of operator: HJPOPOVL !
+                        +---------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4     Column   5
+       1       1.00000000     0.54521004     0.00000000     0.00000000     0.00000000
+       2       0.54521004     1.00000000     0.00000000     0.00000000     0.00000000
+       3       0.00000000     0.00000000     1.00000000     0.00000000     0.00000000
+       4       0.00000000     0.00000000     0.00000000     1.00000000     0.00000000
+       5       0.00000000     0.00000000     0.00000000     0.00000000     1.00000000
+      12       0.00000000     0.00000000     0.00428713     0.00000000     0.00000000
+      13       0.00000000     0.00000000     0.00000000     0.00428713     0.00000000
+      14      -0.00105857    -0.00447322     0.00000000     0.00000000    -0.00857009
+
+               Column   6     Column   7     Column   8     Column   9     Column  10
+       6       1.00000000     0.00000000     0.00000000     0.00000000     0.00000000
+       7       0.00000000     1.00000000     0.00000000     0.00000000     0.00000000
+       8       0.00000000     0.00000000     1.00000000     0.00000000     0.00000000
+       9       0.00000000     0.00000000     0.00000000     1.00000000     0.00000000
+      10       0.00000000     0.00000000     0.00000000     0.00000000     1.00000000
+      11       0.00000000     0.00000000     0.00050428     0.00000000     0.00000000
+      12       0.00000000     0.00000000     0.00000000     0.33620390     0.00000000
+      13       0.00000000     0.33620390     0.00000000     0.00000000     0.00000000
+      14       0.00000000     0.00000000    -0.05873491     0.00000000     0.00000000
+
+               Column  11     Column  12     Column  13     Column  14
+       1       0.00000000     0.00000000     0.00000000    -0.00000003
+       2       0.00000000     0.00000000     0.00000000    -0.00000074
+       3       0.00000000     0.00002652     0.00000000     0.00000000
+       4       0.00000000     0.00000000     0.00002652     0.00000000
+       5       0.00000000     0.00000000     0.00000000    -0.00005301
+       7       0.00000000     0.00000000     0.10439604     0.00000000
+       8       0.02585690     0.00000000     0.00000000    -0.01823802
+       9       0.00000000     0.10439604     0.00000000     0.00000000
+      11       1.00000000     0.00000000     0.00000000     0.00000000
+      12       0.00000000     1.00000000     0.00000000     0.00000000
+      13       0.00000000     0.00000000     1.00000000     0.00000000
+      14       0.00000000     0.00000000     0.00000000     1.00000000
+    ==== End of matrix output ====
+
+
+                           +---------------------------+
+                           ! Integrals of operator: R2 !
+                           +---------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       1       0.00003604
+       2       0.00003428     0.00024629
+       3       0.00000000     0.00000000     0.01538685
+       4       0.00000000     0.00000000     0.00000000     0.01538685
+       8       0.00000000     0.00000000     0.00000000     0.00000000
+      10       0.00000000    -0.00000000     0.00000000     0.00000000
+      12       0.00000000     0.00000000     0.00006621     0.00000000
+      13       0.00000000     0.00000000     0.00000000     0.00006621
+      14      -0.00000004    -0.00000110     0.00000000     0.00000000
+
+               Column   5     Column   6     Column   7     Column   8
+       5       0.01538685
+       6       0.00000000     1.08150225
+       7       0.00000000     0.00000000     1.08150225
+       8       0.00000000     0.00000000     0.00000000     1.08150225
+      11       0.00000000     0.00000000     0.00000000     0.03862516
+      13       0.00000000     0.00000000     0.40074425     0.00000000
+      14      -0.00013187     0.00000000     0.00000000    -0.02712573
+
+               Column   9     Column  10     Column  11     Column  12
+       9       1.08150225
+      10       0.00000000     1.08150225
+      11       0.00000000     0.00000000     3.01190836
+      12       0.40074425     0.00000000     0.00000000     5.49068400
+      14       0.00000000     0.00000000     0.00179082     0.00000000
+
+               Column  13     Column  14
+      13       5.49068400
+      14       0.00000000     5.49068400
+    ==== End of matrix output ====
+
+
+                           +---------------------------+
+                           ! Integrals of operator: R4 !
+                           +---------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       1       0.00000000
+       2       0.00000000     0.00000010
+       3       0.00000000     0.00000000     0.00033146
+       4       0.00000000     0.00000000     0.00000000     0.00033146
+       8       0.00000000     0.00000000     0.00000000     0.00000000
+      10       0.00000000     0.00000000     0.00000000     0.00000000
+      12       0.00000000     0.00000000     0.00000285     0.00000000
+      13       0.00000000     0.00000000     0.00000000     0.00000285
+      14      -0.00000000    -0.00000000     0.00000000     0.00000000
+
+               Column   5     Column   6     Column   7     Column   8
+       5       0.00033146
+       6       0.00000000     1.50383201
+       7       0.00000000     0.00000000     1.50383201
+       8       0.00000000     0.00000000     0.00000000     1.50383201
+      10       0.00000000     0.00000000     0.00000000     0.00000000
+      11       0.00000000     0.00000000     0.00000000     0.11409621
+      13       0.00000000     0.00000000     0.93548097     0.00000000
+      14      -0.00000565     0.00000000     0.00000000     0.03303805
+
+               Column   9     Column  10     Column  11     Column  12
+       9       1.50383201
+      10       0.00000000     1.50383201
+      11       0.00000000     0.00000000     9.10783922
+      12       0.93548097     0.00000000     0.00000000    38.59976673
+      14       0.00000000     0.00000000     0.01086248     0.00000000
+
+               Column  13     Column  14
+      13      38.59976673
+      14       0.00000000    50.55269898
+    ==== End of matrix output ====
+
+
+                         +--------------------------------+
+                         ! Integrals of operator: XDIPLEN !
+                         +--------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       3       0.00001894     0.00051740     0.00000000
+       6       0.00000000     0.00000000     0.00000000     0.00061859
+       8       0.00000000     0.00000000    -0.00035714     0.00000000
+      10       0.00000000     0.00000000     0.00061859     0.00000000
+      12       0.00000001     0.00000021     0.00000000     0.00000000
+      14       0.00000000     0.00000000    -0.00371454     0.00000000
+
+               Column   5     Column   6     Column   7     Column   8
+       9       0.00061859     0.00000000     0.00000000     0.00000000
+      12       0.00002297     0.00000000     0.00000000    -0.02081753
+      13       0.00000000     0.12650986     0.00000000     0.00000000
+
+               Column   9     Column  10     Column  11     Column  12
+      11       0.00007939     0.00000000     0.00000000
+      12       0.00000000     0.12650986     0.00051672     0.00000000
+      14      -0.16479044     0.00000000     0.00000000     0.00000000
+
+               Column  13     Column  14
+    ==== End of matrix output ====
+
+
+                         +--------------------------------+
+                         ! Integrals of operator: YDIPLEN !
+                         +--------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       4       0.00001894     0.00051740     0.00000000     0.00000000
+       6       0.00000000     0.00000000     0.00061859     0.00000000
+       8       0.00000000     0.00000000     0.00000000    -0.00035714
+      10       0.00000000     0.00000000     0.00000000    -0.00061859
+      13       0.00000001     0.00000021     0.00000000     0.00000000
+      14       0.00000000     0.00000000     0.00000000    -0.00371454
+
+               Column   5     Column   6     Column   7     Column   8
+       7       0.00061859     0.00000000     0.00000000
+      11       0.00000000     0.00000000     0.00007939     0.00000000
+      12       0.00000000     0.12650986     0.00000000     0.00000000
+      13       0.00002297     0.00000000     0.00000000    -0.02081753
+      14       0.00000000     0.00000000    -0.16479044     0.00000000
+
+               Column   9     Column  10     Column  11     Column  12
+      13       0.00000000    -0.12650986     0.00051672     0.00000000
+
+               Column  13     Column  14
+    ==== End of matrix output ====
+
+
+                         +--------------------------------+
+                         ! Integrals of operator: ZDIPLEN !
+                         +--------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       5       0.00001894     0.00051740     0.00000000     0.00000000
+       7       0.00000000     0.00000000     0.00000000     0.00061859
+       9       0.00000000     0.00000000     0.00061859     0.00000000
+      12       0.00000000     0.00000000     0.00002297     0.00000000
+      13       0.00000000     0.00000000     0.00000000     0.00002297
+      14      -0.00000001    -0.00000043     0.00000000     0.00000000
+
+               Column   5     Column   6     Column   7     Column   8
+       8       0.00071429     0.00000000     0.00000000     0.00000000
+      11       0.00000000     0.00000000     0.00000000     0.02249511
+      13       0.00000000     0.00000000     0.21696270     0.00000000
+      14      -0.00373749     0.00000000     0.00000000    -0.15386278
+
+               Column   9     Column  10     Column  11     Column  12
+      11       0.00000000     0.00000000     1.73287876
+      12       0.21696270     0.00000000     0.00000000     1.73287876
+      14       0.00000000     0.00000000     0.00051672     0.00000000
+
+               Column  13     Column  14
+      13       1.73287876
+      14       0.00000000     1.73287876
+    ==== End of matrix output ====
+
+
+                        +---------------------------------+
+                        ! Integrals of operator: XXQUADRU !
+                        +---------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       1       0.00000601
+       2       0.00000571     0.00004105
+       3       0.00000000     0.00000000     0.00153868
+       4       0.00000000     0.00000000     0.00000000     0.00307737
+       8       0.00000000     0.00000000     0.00000000     0.00000000
+      10      -0.00000000    -0.00000000     0.00000000     0.00000000
+      12       0.00000000     0.00000000     0.00000666     0.00000000
+      13       0.00000000     0.00000000     0.00000000     0.00001325
+      14      -0.00000001    -0.00000018     0.00000000     0.00000000
+
+               Column   5     Column   6     Column   7     Column   8
+       5       0.00307737
+       6       0.00000000     0.15450032
+       7       0.00000000     0.00000000     0.23175048
+       8       0.00000000     0.00000000     0.00000000     0.20600043
+      10       0.00000000     0.00000000     0.00000000     0.04460040
+      11       0.00000000     0.00000000     0.00000000     0.00963685
+      13       0.00000000     0.00000000     0.08720016     0.00000000
+      14      -0.00002637     0.00000000     0.00000000    -0.02865796
+
+               Column   9     Column  10     Column  11     Column  12
+       9       0.15450032
+      10       0.00000000     0.15450032
+      11       0.00000000    -0.00000007     0.75222379
+      12       0.06122836     0.00000000     0.00000000     0.99949872
+      14       0.00000000     0.04182066     0.00044771     0.00000000
+
+               Column  13     Column  14
+      13       1.24828024
+      14       0.00000000     1.24828024
+    ==== End of matrix output ====
+
+
+                        +---------------------------------+
+                        ! Integrals of operator: XYQUADRU !
+                        +---------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       4       0.00000000     0.00000000    -0.00076934     0.00000000
+       6      -0.00000000    -0.00000000     0.00000000     0.00000000
+      12       0.00000000     0.00000000     0.00000000    -0.00000330
+      13       0.00000000     0.00000000    -0.00000330     0.00000000
+
+               Column   5     Column   6     Column   7     Column   8
+       8       0.00000000     0.04460040     0.00000000     0.00000000
+       9       0.00000000     0.00000000    -0.03862508     0.00000000
+      11       0.00000000    -0.00000007     0.00000000     0.00000000
+      12       0.00000000     0.00000000    -0.01298590     0.00000000
+      14       0.00000000     0.04182066     0.00000000     0.00000000
+
+               Column   9     Column  10     Column  11     Column  12
+      13      -0.01298590     0.00000000     0.00000000    -0.12439076
+
+               Column  13     Column  14
+    ==== End of matrix output ====
+
+
+                        +---------------------------------+
+                        ! Integrals of operator: XZQUADRU !
+                        +---------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       5       0.00000000     0.00000000    -0.00076934     0.00000000
+       9      -0.00000000    -0.00000000     0.00000000     0.00000000
+      12      -0.00000000    -0.00000000     0.00000000     0.00000000
+      14       0.00000000     0.00000000     0.00000659     0.00000000
+
+               Column   5     Column   6     Column   7     Column   8
+       7       0.00000000    -0.03862508     0.00000000
+       9       0.00000000     0.00000000     0.00000000    -0.02230020
+      12      -0.00000336     0.00000000     0.00000000    -0.01285796
+      13       0.00000000    -0.01298590     0.00000000     0.00000000
+
+               Column   9     Column  10     Column  11     Column  12
+      10      -0.03862508     0.00000000
+      11      -0.00003381     0.00000000     0.00000000
+      12       0.00000000    -0.01298590    -0.00022385     0.00000000
+      14       0.04575006     0.00000000     0.00000000    -0.12439076
+
+               Column  13     Column  14
+    ==== End of matrix output ====
+
+
+                        +---------------------------------+
+                        ! Integrals of operator: YYQUADRU !
+                        +---------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       1       0.00000601
+       2       0.00000571     0.00004105
+       3       0.00000000     0.00000000     0.00307737
+       4       0.00000000     0.00000000     0.00000000     0.00153868
+       8       0.00000000     0.00000000     0.00000000     0.00000000
+      10       0.00000000     0.00000000     0.00000000     0.00000000
+      12       0.00000000     0.00000000     0.00001325     0.00000000
+      13       0.00000000     0.00000000     0.00000000     0.00000666
+      14      -0.00000001    -0.00000018     0.00000000     0.00000000
+
+               Column   5     Column   6     Column   7     Column   8
+       5       0.00307737
+       6       0.00000000     0.15450032
+       7       0.00000000     0.00000000     0.15450032
+       8       0.00000000     0.00000000     0.00000000     0.20600043
+      10       0.00000000     0.00000000     0.00000000    -0.04460040
+      11       0.00000000     0.00000000     0.00000000     0.00963685
+      13       0.00000000     0.00000000     0.06122836     0.00000000
+      14      -0.00002637     0.00000000     0.00000000    -0.02865796
+
+               Column   9     Column  10     Column  11     Column  12
+       9       0.23175048
+      10       0.00000000     0.15450032
+      11       0.00000000     0.00000007     0.75222379
+      12       0.08720016     0.00000000     0.00000000     1.24828024
+      14       0.00000000    -0.04182066     0.00044771     0.00000000
+
+               Column  13     Column  14
+      13       0.99949872
+      14       0.00000000     1.24828024
+    ==== End of matrix output ====
+
+
+                        +---------------------------------+
+                        ! Integrals of operator: YZQUADRU !
+                        +---------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       5       0.00000000     0.00000000     0.00000000    -0.00076934
+       7      -0.00000000    -0.00000000     0.00000000     0.00000000
+      13      -0.00000000    -0.00000000     0.00000000     0.00000000
+      14       0.00000000     0.00000000     0.00000000     0.00000659
+
+               Column   5     Column   6     Column   7     Column   8
+       8       0.00000000     0.00000000    -0.02230020     0.00000000
+       9       0.00000000    -0.03862508     0.00000000     0.00000000
+      10       0.00000000     0.00000000     0.03862508     0.00000000
+      11       0.00000000     0.00000000    -0.00003381     0.00000000
+      12       0.00000000    -0.01298590     0.00000000     0.00000000
+      13      -0.00000336     0.00000000     0.00000000    -0.01285796
+      14       0.00000000     0.00000000     0.04575006     0.00000000
+
+               Column   9     Column  10     Column  11     Column  12
+      13       0.00000000     0.01298590    -0.00022385     0.00000000
+
+               Column  13     Column  14
+      14      -0.12439076     0.00000000
+    ==== End of matrix output ====
+
+
+                        +---------------------------------+
+                        ! Integrals of operator: ZZQUADRU !
+                        +---------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       1       0.00000601
+       2       0.00000571     0.00004105
+       3       0.00000000     0.00000000     0.00307737
+       4       0.00000000     0.00000000     0.00000000     0.00307737
+       8      -0.00000000    -0.00000000     0.00000000     0.00000000
+      12       0.00000000     0.00000000     0.00001319     0.00000000
+      13       0.00000000     0.00000000     0.00000000     0.00001319
+      14      -0.00000001    -0.00000018     0.00000000     0.00000000
+
+               Column   5     Column   6     Column   7     Column   8
+       5       0.00153868
+       6       0.00000000     0.23175048
+       7       0.00000000     0.00000000     0.15450032
+       8       0.00000000     0.00000000     0.00000000     0.12875027
+      10       0.00000000     0.00000000     0.00000000    -0.00000000
+      11       0.00000000     0.00000000     0.00000000     0.00003888
+      13       0.00000000     0.00000000     0.05194361     0.00000000
+      14      -0.00001319     0.00000000     0.00000000     0.04375306
+
+               Column   9     Column  10     Column  11     Column  12
+       9       0.15450032
+      10       0.00000000     0.23175048
+      11       0.00000000     0.00000000     0.00150659
+      12       0.05194361     0.00000000     0.00000000     0.49756304
+      14       0.00000000     0.00000000     0.00000000     0.00000000
+
+               Column  13     Column  14
+      13       0.49756304
+      14       0.00000000     0.24878152
+    ==== End of matrix output ====
+
+
+                        +---------------------------------+
+                        ! Integrals of operator: KINENERG !
+                        +---------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       1     3.121833E+04
+       2     4.345114E+03   4.567864E+03
+       3     0.000000E+00   0.000000E+00   2.030955E+02
+       4     0.000000E+00   0.000000E+00   0.000000E+00   2.030955E+02
+       8    -1.734723E-18  -1.387779E-17   0.000000E+00   0.000000E+00
+      12     0.000000E+00   0.000000E+00   2.155111E-03   0.000000E+00
+      13     0.000000E+00   0.000000E+00   0.000000E+00   2.155111E-03
+      14    -5.272230E-04  -2.228374E-03   0.000000E+00   0.000000E+00
+
+               Column   5     Column   6     Column   7     Column   8
+       5     2.030955E+02
+       6     0.000000E+00   5.663419E+00
+       7     0.000000E+00   0.000000E+00   5.663419E+00
+       8     0.000000E+00   0.000000E+00   0.000000E+00   5.663419E+00
+      11     0.000000E+00   0.000000E+00   0.000000E+00  -5.297097E-02
+      13     0.000000E+00   0.000000E+00   3.967557E-01   0.000000E+00
+      14    -1.076822E-02   0.000000E+00   0.000000E+00  -2.938827E-01
+
+               Column   9     Column  10     Column  11     Column  12
+       9     5.663419E+00
+      10     0.000000E+00   5.663419E+00
+      11     0.000000E+00   0.000000E+00   1.244531E+02
+      12     3.967557E-01   0.000000E+00   0.000000E+00   1.256122E+00
+      14     0.000000E+00   0.000000E+00  -3.130548E-15   0.000000E+00
+
+               Column  13     Column  14
+      13     1.256122E+00
+      14     0.000000E+00   1.256122E+00
+    ==== End of matrix output ====
+
+
+                         +--------------------------------+
+                         ! Integrals of operator: POT.E F !
+                         +--------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       1    -230.21268699
+       2     -95.02350033   -88.06047013
+       3       0.00000000     0.00000000    -9.58868308
+       4       0.00000000     0.00000000     0.00000000    -9.58868308
+       8      -0.00000000     0.00000000     0.00000000     0.00000000
+      12       0.00000000     0.00000000    -0.01464174     0.00000000
+      13       0.00000000     0.00000000     0.00000000    -0.01464174
+      14       0.08616249     0.13930026     0.00000000     0.00000000
+
+               Column   5     Column   6     Column   7     Column   8
+       5      -9.58868308
+       6       0.00000000    -1.08261514
+       7       0.00000000     0.00000000    -1.08261514
+       8       0.00000000     0.00000000     0.00000000    -1.08261514
+      10       0.00000000     0.00000000     0.00000000     0.00000000
+      11       0.00000000     0.00000000     0.00000000    -0.00772289
+      13       0.00000000     0.00000000    -0.18375832     0.00000000
+      14       0.02932344     0.00000000     0.00000000     0.04223447
+
+               Column   9     Column  10     Column  11     Column  12
+       9      -1.08261514
+      10       0.00000000    -1.08261514
+      11       0.00000000    -0.00000000    -0.57707442
+      12      -0.18375832     0.00000000     0.00000000    -0.48387252
+      14       0.00000000     0.00000000     0.00017208     0.00000000
+
+               Column  13     Column  14
+      13      -0.48387252
+      14       0.00000000    -0.68386507
+    ==== End of matrix output ====
+
+
+                         +--------------------------------+
+                         ! Integrals of operator: POT.E H !
+                         +--------------------------------+
+
+ Symmetry of operator:  A  ( 1)
+
+               Column   1     Column   2     Column   3     Column   4
+       1      -0.57707442
+       2      -0.31462677    -0.57707442
+       3       0.00000000     0.00000000    -0.57648302
+       4       0.00000000     0.00000000     0.00000000    -0.57648302
+       5      -0.00000631    -0.00017230     0.00000000     0.00000000
+       7       0.00000000     0.00000000     0.00000000    -0.00020476
+       8      -0.00000000    -0.00000000     0.00000000     0.00000000
+       9       0.00000000     0.00000000    -0.00020476     0.00000000
+      12       0.00000000     0.00000000    -0.00124976     0.00000000
+      13       0.00000000     0.00000000     0.00000000    -0.00124976
+      14       0.00030545     0.00129105     0.00000000     0.00000000
+
+               Column   5     Column   6     Column   7     Column   8
+       5      -0.57825720
+       6       0.00000000    -0.52227518
+       7       0.00000000     0.00000000    -0.58845049
+       8      -0.00024002     0.00000000     0.00000000    -0.66281407
+      10      -0.00000000     0.00000000     0.00000000     0.00000000
+      11       0.00000000     0.00000000     0.00000000    -0.13435564
+      13       0.00000000     0.00000000    -0.18876801     0.00000000
+      14       0.00374291     0.00000000     0.00000000     0.14147201
+
+               Column   9     Column  10     Column  11     Column  12
+       9      -0.58845049
+      10       0.00000000    -0.52227518
+      11       0.00000000    -0.00000000   -14.53541051
+      12      -0.18876801     0.00000000     0.00000000    -0.75409272
+      14       0.00000000     0.00000000    -0.00000000     0.00000000
+
+               Column  13     Column  14
+      13      -0.75409272
+      14       0.00000000    -0.75409272
+    ==== End of matrix output ====
+  Total CPU  time used in HERMIT:   0.01 seconds
+  Total wall time used in HERMIT:   0.11 seconds
+
+
+                        .----------------------------------.
+                        | End of Integral Section (HERMIT) |
+                        `----------------------------------'
+
+
+
+                   .--------------------------------------------.
+                   | Starting in Wave Function Section (SIRIUS) |
+                   `--------------------------------------------'
+
+
+ *** Output from Huckel module :
+
+     Using EWMO model:          T
+     Using EHT  model:          F
+     Number of Huckel orbitals each symmetry:    6
+
+ EWMO - Energy Weighted Maximum Overlap - is a Huckel type method,
+        which normally is better than Extended Huckel Theory.
+ Reference: Linderberg and Ohrn, Propagators in Quantum Chemistry (Wiley, 1973)
+
+ Huckel EWMO eigenvalues for symmetry :  1
+          -26.384339      -1.727406      -0.829968      -0.730000      -0.730000
+           -0.243486
+
+ **********************************************************************
+ *SIRIUS* a direct, restricted step, second order MCSCF program       *
+ **********************************************************************
+
+ 
+     Date and time (Linux)  : Wed Nov 30 18:25:28 2022
+     Host name              : nodo8                                   
+
+ Title lines from ".mol" input file:
+     HF                                                                      
+     Using the dyall.v2z basis                                               
+
+ Print level on unit LUPRI =   2 is   0
+ Print level on unit LUW4  =   2 is   5
+
+@    Restricted, closed shell Hartree-Fock calculation.
+
+ Initial molecular orbitals are obtained according to
+ ".MOSTART EWMO  " input option
+
+     Wave function specification
+     ============================
+@    Wave function type        --- HF ---
+@    Number of closed shell electrons          10
+@    Number of electrons in active shells       0
+@    Total charge of the molecule               0
+
+@    Spin multiplicity and 2 M_S                1         0
+@    Total number of symmetries                 1 (point group: C1 )
+@    Reference state symmetry                   1 (irrep name : A  )
+
+     Orbital specifications
+     ======================
+@    Abelian symmetry species          All |    1
+@                                          |  A  
+                                       --- |  ---
+@    Occupied SCF orbitals               5 |    5
+@    Secondary orbitals                  9 |    9
+@    Total number of orbitals           14 |   14
+@    Number of basis functions          14 |   14
+
+     Optimization information
+     ========================
+@    Number of configurations                 1
+@    Number of orbital rotations             45
+     ------------------------------------------
+@    Total number of variables               46
+
+     Maximum number of Fock   iterations      0
+     Maximum number of DIIS   iterations     60
+     Maximum number of QC-SCF iterations     60
+     Threshold for SCF convergence     1.00D-05
+
+
+ ***********************************************
+ ***** DIIS acceleration of SCF iterations *****
+ ***********************************************
+
+ C1-DIIS algorithm; max error vectors =    8
+
+ Iter      Total energy        Error norm    Delta(E)  DIIS dim.
+ -----------------------------------------------------------------------------
+
+Calculating AOSUPINT
+
+---> (Re)generating AOTWOINT
+
+
+     ************************************************************************
+     ************************** Output from HERINT **************************
+     ************************************************************************
+
+
+
+                            **************************
+                            *** Output from TWOINT ***
+                            **************************
+
+
+
+                            **************************
+                            *** Output from WHTREP ***
+                            **************************
+
+
+ Number of perturbation representations: 1
+ Perturbation representations:           0
+ ITYPE      0
+ MAXDER     0
+ IATOM      0
+ MULTE      1
+ UNDIFF     T
+ PERTUR     F
+ EXPECT     F
+ DDFOCK     F
+ DIRFCK     F
+ SOFOCK     F
+ SPNORB     F
+ DIA2SO     F
+ ZFS2EL     F
+ LONDON     F
+ SUSCEP     F
+ DISTRI     F
+ ADISTR     F
+ SQ12EL     F
+
+
+                            **************************
+                            *** Output from TWOCAL ***
+                            **************************
+
+
+
+                            **************************
+                            *** Output from TWOLOP ***
+                            **************************
+
+  Type 0 integral buffer #    1 has been written.
+
+           ##      1   1   1   1       1.62784952E+02
+           ##      2   1   1   1       7.57608051E+01
+           ##      2   1   2   1       3.66336231E+01
+           ##      2   2   1   1       8.22485173E+01
+           ##      2   2   2   1       4.28522310E+01
+           ##      2   2   2   2       6.22681556E+01
+           ##      3   1   3   1       2.88237922E-04
+           ##      3   2   3   1       1.04564901E-03
+           ##      3   2   3   2       1.24465019E-02
+           ##      4   1   4   1       2.88237922E-04
+           ##      4   2   4   1       1.04564901E-03
+           ##      4   2   4   2       1.24465019E-02
+           ##      5   1   5   1       2.88237922E-04
+           ##      5   2   5   1       1.04564901E-03
+           ##      5   2   5   2       1.24465019E-02
+           ##      3   3   1   1       9.58862865E+00
+           ##      3   3   2   1       5.22775640E+00
+           ##      3   3   2   2       9.58623402E+00
+           ##      4   4   1   1       9.58862865E+00
+           ##      4   4   2   1       5.22775640E+00
+           ##      4   4   2   2       9.58623402E+00
+           ##      5   5   1   1       9.58862865E+00
+           ##      5   5   2   1       5.22775640E+00
+           ##      5   5   2   2       9.58623402E+00
+           ##      3   3   3   3       8.30577297E+00
+           ##      4   3   4   3       5.08516712E-01
+           ##      4   4   3   3       7.28873954E+00
+           ##      4   4   4   4       8.30577297E+00
+           ##      5   3   5   3       5.08516712E-01
+           ##      5   4   5   4       5.08516712E-01
+           ##      5   5   3   3       7.28873954E+00
+           ##      5   5   4   4       7.28873954E+00
+           ##      5   5   5   5       8.30577297E+00
+           ##      6   1   4   3       8.01821750E-09
+           ##      6   2   4   3       1.41527105E-06
+           ##      7   1   5   4       8.01821750E-09
+           ##      7   2   5   4       1.41527105E-06
+           ##      8   1   3   3      -4.62932003E-09
+           ##      8   2   3   3      -8.17107120E-07
+           ##      8   1   4   4      -4.62932003E-09
+           ##      8   2   4   4      -8.17107120E-07
+           ##      8   1   5   5       9.25864006E-09
+           ##      8   2   5   5       1.63421424E-06
+           ##      9   1   5   3       8.01821750E-09
+           ##      9   2   5   3       1.41527105E-06
+           ##     10   1   3   3       8.01821750E-09
+           ##     10   2   3   3       1.41527105E-06
+           ##     10   1   4   4      -8.01821750E-09
+           ##     10   2   4   4      -1.41527105E-06
+           ##      6   2   6   1       4.95695305E-12
+           ##      6   2   6   2       2.43048748E-10
+           ##      7   2   7   1       4.95695305E-12
+           ##      7   2   7   2       2.43048748E-10
+           ##      8   2   8   1       4.95695305E-12
+           ##      8   2   8   2       2.43048748E-10
+           ##      9   2   9   1       4.95695305E-12
+           ##      9   2   9   2       2.43048748E-10
+           ##     10   2  10   1       4.95695305E-12
+           ##     10   2  10   2       2.43048748E-10
+           ##      6   3   4   1       2.65926831E-06
+           ##      6   3   4   2       7.25438271E-05
+           ##      6   4   3   1       2.65926831E-06
+           ##      6   4   3   2       7.25438271E-05
+           ##      7   4   5   1       2.65926831E-06
+           ##      7   4   5   2       7.25438271E-05
+           ##      7   5   4   1       2.65926831E-06
+           ##      7   5   4   2       7.25438271E-05
+           ##      8   3   3   1      -1.53532927E-06
+           ##      8   3   3   2      -4.18831981E-05
+           ##      8   4   4   1      -1.53532927E-06
+           ##      8   4   4   2      -4.18831981E-05
+           ##      8   5   5   1       3.07065855E-06
+           ##      8   5   5   2       8.37663962E-05
+           ##      9   3   5   1       2.65926831E-06
+           ##      9   3   5   2       7.25438271E-05
+           ##      9   5   3   1       2.65926831E-06
+           ##      9   5   3   2       7.25438271E-05
+           ##     10   3   3   1       2.65926831E-06
+           ##     10   3   3   2       7.25438271E-05
+           ##     10   4   4   1      -2.65926831E-06
+           ##     10   4   4   2      -7.25438271E-05
+           ##      6   3   6   3       5.53743824E-05
+           ##      6   4   6   4       5.53743824E-05
+           ##      6   5   6   5       8.22391817E-06
+           ##      7   3   6   5       8.22391817E-06
+           ##      7   3   7   3       8.22391817E-06
+           ##      7   4   7   4       5.53743824E-05
+           ##      7   5   6   3       3.89265460E-05
+           ##      7   5   7   5       5.53743824E-05
+           ##      8   3   6   4      -2.72223332E-05
+           ##      8   3   8   3       2.39407396E-05
+           ##      8   4   6   3      -2.72223332E-05
+           ##      8   4   7   5      -1.29780891E-05
+           ##      8   4   8   4       2.39407396E-05
+           ##      8   5   7   4       4.02004223E-05
+           ##      8   5   8   5       7.10912038E-05
+           ##      9   3   7   4       3.89265460E-05
+           ##      9   3   8   5       4.02004223E-05
+           ##      9   3   9   3       5.53743824E-05
+           ##      9   4   6   5       8.22391817E-06
+           ##      9   4   7   3       8.22391817E-06
+           ##      9   4   9   4       8.22391817E-06
+           ##      9   5   6   4       3.89265460E-05
+           ##      9   5   8   3      -1.29780891E-05
+           ##      9   5   9   5       5.53743824E-05
+           ##     10   3   6   4       3.07026278E-05
+           ##     10   3   8   3      -2.72223332E-05
+           ##     10   3   9   5       3.89265460E-05
+           ##     10   3  10   3       5.53743824E-05
+           ##     10   4   6   3      -3.07026278E-05
+           ##     10   4   7   5      -3.89265460E-05
+           ##     10   4   8   4       2.72223332E-05
+           ##     10   4  10   4       5.53743824E-05
+           ##     10   5   7   4      -8.22391817E-06
+           ##     10   5   9   3       8.22391817E-06
+           ##     10   5  10   5       8.22391817E-06
+           ##      6   6   1   1       1.08261514E+00
+           ##      6   6   2   1       5.90252645E-01
+           ##      6   6   2   2       1.08261514E+00
+           ##      7   7   1   1       1.08261514E+00
+           ##      7   7   2   1       5.90252645E-01
+           ##      7   7   2   2       1.08261514E+00
+           ##      8   8   1   1       1.08261514E+00
+           ##      8   8   2   1       5.90252645E-01
+           ##      8   8   2   2       1.08261514E+00
+           ##      9   9   1   1       1.08261514E+00
+           ##      9   9   2   1       5.90252645E-01
+           ##      9   9   2   2       1.08261514E+00
+           ##     10  10   1   1       1.08261514E+00
+           ##     10  10   2   1       5.90252645E-01
+           ##     10  10   2   2       1.08261514E+00
+           ##      6   6   3   3       1.08414536E+00
+           ##      6   6   4   4       1.08414536E+00
+           ##      6   6   5   5       1.07953211E+00
+           ##      7   6   5   3       2.30662220E-03
+           ##      7   7   3   3       1.07953211E+00
+           ##      7   7   4   4       1.08414536E+00
+           ##      7   7   5   5       1.08414536E+00
+           ##      8   6   4   3      -2.66345790E-03
+           ##      8   7   5   4       1.33172895E-03
+           ##      8   8   3   3       1.08106986E+00
+           ##      8   8   4   4       1.08106986E+00
+           ##      8   8   5   5       1.08568311E+00
+           ##      9   6   5   4       2.30662220E-03
+           ##      9   7   4   3       2.30662220E-03
+           ##      9   8   5   3       1.33172895E-03
+           ##      9   9   3   3       1.08414536E+00
+           ##      9   9   4   4       1.07953211E+00
+           ##      9   9   5   5       1.08414536E+00
+           ##     10   7   5   4      -2.30662220E-03
+           ##     10   8   3   3      -2.66345790E-03
+           ##     10   8   4   4       2.66345790E-03
+           ##     10   9   5   3       2.30662220E-03
+           ##     10  10   3   3       1.08414536E+00
+           ##     10  10   4   4       1.08414536E+00
+           ##     10  10   5   5       1.07953211E+00
+           ##      8   1   6   6      -7.58223214E-12
+           ##      8   2   6   6      -1.49458662E-09
+           ##      9   1   7   6       6.56640565E-12
+           ##      9   2   7   6       1.29434998E-09
+           ##      8   1   7   7       3.79111607E-12
+           ##      8   2   7   7       7.47293311E-10
+           ##     10   1   7   7      -6.56640565E-12
+           ##     10   2   7   7      -1.29434998E-09
+           ##      8   6   6   1      -7.58223214E-12
+           ##      8   6   6   2      -1.49458662E-09
+           ##      8   7   7   1       3.79111607E-12
+           ##      8   7   7   2       7.47293311E-10
+           ##      8   8   8   1       7.58223214E-12
+           ##      8   8   8   2       1.49458662E-09
+           ##      9   6   7   1       6.56640565E-12
+           ##      9   6   7   2       1.29434998E-09
+           ##      9   7   6   1       6.56640565E-12
+           ##      9   7   6   2       1.29434998E-09
+           ##      9   8   9   1       3.79111607E-12
+           ##      9   8   9   2       7.47293311E-10
+           ##      9   9   8   1       3.79111607E-12
+           ##      9   9   8   2       7.47293311E-10
+           ##     10   1   9   9       6.56640565E-12
+           ##     10   2   9   9       1.29434998E-09
+           ##     10   7   7   1      -6.56640565E-12
+           ##     10   7   7   2      -1.29434998E-09
+           ##     10   8  10   1      -7.58223214E-12
+           ##     10   8  10   2      -1.49458662E-09
+           ##     10   9   9   1       6.56640565E-12
+           ##     10   9   9   2       1.29434998E-09
+           ##     10  10   8   1      -7.58223214E-12
+           ##     10  10   8   2      -1.49458662E-09
+           ##      6   6   6   6       9.78265133E-01
+           ##      7   6   7   6       5.04084217E-02
+           ##      7   7   6   6       8.77448290E-01
+           ##      7   7   7   7       9.78265133E-01
+           ##      8   6   8   6       5.72434619E-02
+           ##      8   7   8   7       3.67383412E-02
+           ##      8   8   6   6       8.63778209E-01
+           ##      8   8   7   7       9.04788451E-01
+           ##      8   8   8   8       9.78265133E-01
+           ##      9   6   8   7       1.18386370E-02
+           ##      9   6   9   6       5.04084217E-02
+           ##      9   7   8   6      -2.36772739E-02
+           ##      9   7   9   7       5.04084217E-02
+           ##      9   8   7   6       1.18386370E-02
+           ##      9   8   9   8       3.67383412E-02
+           ##      9   9   6   6       8.77448290E-01
+           ##      9   9   7   7       8.77448290E-01
+           ##      9   9   8   8       9.04788451E-01
+           ##      9   9   9   9       9.78265133E-01
+           ##     10   6  10   6       2.99033010E-02
+           ##     10   7   8   7      -1.18386370E-02
+           ##     10   7   9   6      -2.05051207E-02
+           ##     10   7  10   7       5.04084217E-02
+           ##     10   8   7   7       2.36772739E-02
+           ##     10   8   9   9      -2.36772739E-02
+           ##     10   8  10   8       5.72434619E-02
+           ##     10   9   7   6       2.05051207E-02
+           ##     10   9   9   8       1.18386370E-02
+           ##     10   9  10   9       5.04084217E-02
+           ##     10  10   6   6       9.18458531E-01
+           ##     10  10   7   7       8.77448290E-01
+           ##     10  10   8   8       8.63778209E-01
+           ##     10  10   9   9       8.77448290E-01
+           ##     10  10  10  10       9.78265133E-01
+           ##     11   8   1   1       7.72288936E-03
+           ##     11   8   2   1       4.21059683E-03
+           ##     11   8   2   2       7.72288936E-03
+           ##     11   7   4   1       3.04388356E-10
+           ##     11   7   4   2       8.31365599E-09
+           ##     11   8   5   1       8.57198421E-08
+           ##     11   8   5   2       2.34123699E-06
+           ##     11   9   3   1       3.04388356E-10
+           ##     11   9   3   2       8.31365599E-09
+           ##     11   6   4   3       1.79668632E-10
+           ##     11   7   5   4       8.70955152E-08
+           ##     11   8   3   3       7.71473023E-03
+           ##     11   8   4   4       7.71473023E-03
+           ##     11   8   5   5       7.73920762E-03
+           ##     11   9   5   3       8.70955152E-08
+           ##     11  10   3   3       1.79668632E-10
+           ##     11  10   4   4      -1.79668632E-10
+           ##     11   8   8   2       7.91718595E-12
+           ##     11   7   6   3       9.87768237E-09
+           ##     11   7   7   5       1.01878225E-08
+           ##     11   7   8   4      -5.52382309E-09
+           ##     11   7  10   4      -9.87768237E-09
+           ##     11   8   7   4       2.78175874E-06
+           ##     11   8   8   5       3.26231904E-06
+           ##     11   8   9   3       2.78175874E-06
+           ##     11   9   6   4       9.87768237E-09
+           ##     11   9   8   3      -5.52382309E-09
+           ##     11   9   9   5       1.01878225E-08
+           ##     11   9  10   3       9.87768237E-09
+           ##     11   6   8   6       1.77257075E-09
+           ##     11   6   9   7       2.29022948E-08
+           ##     11   7   8   7       6.39777118E-06
+           ##     11   7   9   6       3.20936221E-06
+           ##     11   7  10   7      -3.20936221E-06
+           ##     11   8   6   6       6.96880456E-03
+           ##     11   8   7   7       7.87208440E-03
+           ##     11   8   8   8       8.90826292E-03
+           ##     11   8   9   9       7.87208440E-03
+           ##     11   8  10  10       6.96880456E-03
+           ##     11   9   7   6       3.20936221E-06
+           ##     11   9   9   8       6.39777118E-06
+           ##     11   9  10   9       3.20936221E-06
+           ##     11  10   7   7      -2.29022948E-08
+           ##     11  10   9   9       2.29022948E-08
+           ##     11  10  10   8       1.77257075E-09
+           ##     11   6  11   6       8.00511706E-10
+           ##     11   7  11   7       1.30498452E-06
+           ##     11   8  11   8       1.27659621E-03
+           ##     11   9  11   9       1.30498452E-06
+           ##     11  10  11  10       8.00511706E-10
+           ##     11  11   1   1       5.77074416E-01
+           ##     11  11   2   1       3.14626766E-01
+           ##     11  11   2   2       5.77074416E-01
+           ##     11  11   5   1       6.30844123E-06
+           ##     11  11   5   2       1.72300317E-04
+           ##     11  11   3   3       5.76483024E-01
+           ##     11  11   4   4       5.76483024E-01
+           ##     11  11   5   5       5.78257199E-01
+           ##     11  11   8   1       2.91122594E-12
+           ##     11  11   8   2       5.73854797E-10
+           ##     11  11   7   4       2.04758325E-04
+           ##     11  11   8   5       2.40019690E-04
+           ##     11  11   9   3       2.04758325E-04
+           ##     11  11   6   6       5.22275182E-01
+           ##     11  11   7   7       5.88450247E-01
+           ##     11  11   8   8       6.62657518E-01
+           ##     11  11   9   9       5.88450247E-01
+           ##     11  11  10  10       5.22275182E-01
+           ##     11  11  11   8       1.10008541E-01
+           ##     11  11  11  11       1.02780873E+01
+           ##     14   1   1   1      -7.03511875E-02
+           ##     14   1   2   1      -3.43309753E-02
+           ##     14   1   2   2      -4.09961910E-02
+           ##     14   2   1   1      -1.34467730E-01
+           ##     14   2   2   1      -7.15199555E-02
+           ##     14   2   2   2      -1.13736117E-01
+           ##     12   1   3   1       1.11329325E-07
+           ##     12   1   3   2       4.04744874E-07
+           ##     12   2   3   1       4.13903457E-07
+           ##     12   2   3   2       4.99869689E-06
+           ##     13   1   4   1       1.11329325E-07
+           ##     13   1   4   2       4.04744874E-07
+           ##     13   2   4   1       4.13903457E-07
+           ##     13   2   4   2       4.99869689E-06
+           ##     14   1   5   1      -2.24609728E-07
+           ##     14   1   5   2      -8.16576469E-07
+           ##     14   2   5   1      -8.34983634E-07
+           ##     14   2   5   2      -1.00835200E-05
+           ##     12   1   5   3       2.81431430E-10
+           ##     12   2   5   3       4.97368610E-08
+           ##     13   1   5   4       2.81431430E-10
+           ##     13   2   5   4       4.97368610E-08
+           ##     14   1   3   3      -5.07515904E-03
+           ##     14   2   3   3      -2.14286913E-02
+           ##     14   1   4   4      -5.07515904E-03
+           ##     14   2   4   4      -2.14286913E-02
+           ##     14   1   5   5      -5.07515932E-03
+           ##     14   2   5   5      -2.14287419E-02
+           ##     12   2   9   2       8.53726443E-12
+           ##     13   2   7   2       8.53726443E-12
+           ##     14   2   8   2      -5.01404788E-12
+           ##     12   1   6   4       1.03011934E-09
+           ##     12   2   6   4       2.97160387E-08
+           ##     12   1   8   3      -5.94739496E-10
+           ##     12   2   8   3      -1.71563360E-08
+           ##     12   1   9   5       1.03011966E-09
+           ##     12   2   9   5       2.97164317E-08
+           ##     12   1  10   3       1.03011934E-09
+           ##     12   2  10   3       2.97160387E-08
+           ##     13   1   6   3       1.03011934E-09
+           ##     13   2   6   3       2.97160387E-08
+           ##     13   1   7   5       1.03011966E-09
+           ##     13   2   7   5       2.97164317E-08
+           ##     13   1   8   4      -5.94739496E-10
+           ##     13   2   8   4      -1.71563360E-08
+           ##     13   1  10   4      -1.03011934E-09
+           ##     13   2  10   4      -2.97160387E-08
+           ##     14   1   7   4      -2.07826939E-09
+           ##     14   2   7   4      -5.99397531E-08
+           ##     14   1   8   5      -2.39977879E-09
+           ##     14   2   8   5      -6.92124691E-08
+           ##     14   1   9   3      -2.07826939E-09
+           ##     14   2   9   3      -5.99397531E-08
+           ##     12   2   7   6       4.54898444E-11
+           ##     12   2   9   8       2.62636008E-11
+           ##     12   2  10   9       4.54898444E-11
+           ##     13   2   8   7       2.62636008E-11
+           ##     13   2   9   6       4.54898444E-11
+           ##     13   2  10   7      -4.54898444E-11
+           ##     14   1   6   6      -5.73026349E-04
+           ##     14   2   6   6      -2.42178916E-03
+           ##     14   1   7   7      -5.73026349E-04
+           ##     14   2   7   7      -2.42178921E-03
+           ##     14   1   8   8      -5.73026349E-04
+           ##     14   2   8   8      -2.42178922E-03
+           ##     14   1   9   9      -5.73026349E-04
+           ##     14   2   9   9      -2.42178921E-03
+           ##     14   1  10  10      -5.73026349E-04
+           ##     14   2  10  10      -2.42178916E-03
+           ##     12   2  11   9       3.40745782E-12
+           ##     13   2  11   7       3.40745782E-12
+           ##     14   1  11   8      -4.08777918E-06
+           ##     14   2  11   8      -1.72778894E-05
+           ##     14   1  11  11      -3.05449436E-04
+           ##     14   2  11  11      -1.29104673E-03
+           ##     12   1  12   1       4.30011411E-11
+           ##     12   2  12   1       1.60220656E-10
+           ##     12   2  12   2       2.00836883E-09
+           ##     13   1  13   1       4.30011411E-11
+           ##     13   2  13   1       1.60220656E-10
+           ##     13   2  13   2       2.00836883E-09
+           ##     14   1  14   1       3.22482442E-05
+           ##     14   2  14   1       6.88653926E-05
+           ##     14   2  14   2       2.20351124E-04
+           ##     12   3   1   1       1.46417146E-02
+           ##     12   3   2   1       7.98278658E-03
+           ##     12   3   2   2       1.46407754E-02
+           ##     13   4   1   1       1.46417146E-02
+           ##     13   4   2   1       7.98278658E-03
+           ##     13   4   2   2       1.46407754E-02
+           ##     14   5   1   1      -2.93233932E-02
+           ##     14   5   2   1      -1.59873615E-02
+           ##     14   5   2   2      -2.93214983E-02
+           ##     12   3   5   1       9.63914001E-08
+           ##     12   3   5   2       2.62961924E-06
+           ##     12   5   3   1       9.63914001E-08
+           ##     12   5   3   2       2.62961924E-06
+           ##     13   4   5   1       9.63914001E-08
+           ##     13   4   5   2       2.62961924E-06
+           ##     13   5   4   1       9.63914001E-08
+           ##     13   5   4   2       2.62961924E-06
+           ##     14   3   3   1      -3.88181902E-05
+           ##     14   3   3   2      -1.02600055E-03
+           ##     14   4   4   1      -3.88181902E-05
+           ##     14   4   4   2      -1.02600055E-03
+           ##     14   5   5   1      -3.89152532E-05
+           ##     14   5   5   2      -1.02864846E-03
+           ##     12   3   3   3       1.43373410E-02
+           ##     12   3   4   4       1.27457979E-02
+           ##     12   3   5   5       1.27535468E-02
+           ##     12   4   4   3       7.95771555E-04
+           ##     12   5   5   3       8.03520445E-04
+           ##     13   3   4   3       7.95771555E-04
+           ##     13   4   3   3       1.27457979E-02
+           ##     13   4   4   4       1.43373410E-02
+           ##     13   4   5   5       1.27535468E-02
+           ##     13   5   5   4       8.03520445E-04
+           ##     14   3   5   3      -1.59778090E-03
+           ##     14   4   5   4      -1.59778090E-03
+           ##     14   5   3   3      -2.55156653E-02
+           ##     14   5   4   4      -2.55156653E-02
+           ##     14   5   5   5      -2.87112823E-02
+           ##     12   3   8   1      -3.55460733E-12
+           ##     12   3   8   2      -6.62162732E-10
+           ##     12   3  10   1       6.18993350E-12
+           ##     12   3  10   2       1.15341998E-09
+           ##     12   4   6   1       6.18993350E-12
+           ##     12   4   6   2       1.15341998E-09
+           ##     12   5   9   1       6.22310650E-12
+           ##     12   5   9   2       1.15994046E-09
+           ##     13   3   6   1       6.18993350E-12
+           ##     13   3   6   2       1.15341998E-09
+           ##     13   4   8   1      -3.55460733E-12
+           ##     13   4   8   2      -6.62162732E-10
+           ##     13   4  10   1      -6.18993350E-12
+           ##     13   4  10   2      -1.15341998E-09
+           ##     13   5   7   1       6.22310650E-12
+           ##     13   5   7   2       1.15994046E-09
+           ##     14   3   9   1      -1.24554898E-11
+           ##     14   3   9   2      -2.32059226E-09
+           ##     14   4   7   1      -1.24554898E-11
+           ##     14   4   7   2      -2.32059226E-09
+           ##     14   5   8   1      -1.43825393E-11
+           ##     14   5   8   2      -2.67962415E-09
+           ##     12   3   7   4       1.42766091E-06
+           ##     12   3   8   5       1.47657449E-06
+           ##     12   3   9   3       2.03010063E-06
+           ##     12   3  10   5       3.01219862E-07
+           ##     12   4   6   5       3.01219862E-07
+           ##     12   4   7   3       3.01219862E-07
+           ##     12   4   9   4       3.01219862E-07
+           ##     12   5   6   4       1.42766091E-06
+           ##     12   5   8   3      -4.74478625E-07
+           ##     12   5   9   5       2.03350072E-06
+           ##     12   5  10   3       1.42766091E-06
+           ##     13   3   6   5       3.01219862E-07
+           ##     13   3   7   3       3.01219862E-07
+           ##     13   3   9   4       3.01219862E-07
+           ##     13   4   7   4       2.03010063E-06
+           ##     13   4   8   5       1.47657449E-06
+           ##     13   4   9   3       1.42766091E-06
+           ##     13   4  10   5      -3.01219862E-07
+           ##     13   5   6   3       1.42766091E-06
+           ##     13   5   7   5       2.03350072E-06
+           ##     13   5   8   4      -4.74478625E-07
+           ##     13   5  10   4      -1.42766091E-06
+           ##     14   3   6   4      -3.20014884E-04
+           ##     14   3   8   3       1.84585677E-04
+           ##     14   3   9   5      -3.20317998E-04
+           ##     14   3  10   3      -3.20014884E-04
+           ##     14   4   6   3      -3.20014884E-04
+           ##     14   4   7   5      -3.20317998E-04
+           ##     14   4   8   4       1.84585677E-04
+           ##     14   4  10   4       3.20014884E-04
+           ##     14   5   7   4      -3.21447849E-04
+           ##     14   5   8   5      -3.71699062E-04
+           ##     14   5   9   3      -3.21447849E-04
+           ##     12   3   6   6       2.34132689E-03
+           ##     12   3   7   7       2.32182041E-03
+           ##     12   3   8   8       2.32843377E-03
+           ##     12   3   9   9       2.34152920E-03
+           ##     12   3  10   8      -1.13583092E-05
+           ##     12   3  10  10       2.34132689E-03
+           ##     12   4   8   6      -1.13583092E-05
+           ##     12   4   9   7       9.85439367E-06
+           ##     12   5   7   6       1.00210893E-05
+           ##     12   5   9   8       5.80636623E-06
+           ##     12   5  10   9       1.00210893E-05
+           ##     13   3   8   6      -1.13583092E-05
+           ##     13   3   9   7       9.85439367E-06
+           ##     13   4   6   6       2.34132689E-03
+           ##     13   4   7   7       2.34152920E-03
+           ##     13   4   8   8       2.32843377E-03
+           ##     13   4   9   9       2.32182041E-03
+           ##     13   4  10   8       1.13583092E-05
+           ##     13   4  10  10       2.34132689E-03
+           ##     13   5   8   7       5.80636623E-06
+           ##     13   5   9   6       1.00210893E-05
+           ##     13   5  10   7      -1.00210893E-05
+           ##     14   3   7   6      -1.96794676E-05
+           ##     14   3   9   8      -1.13619432E-05
+           ##     14   3  10   9      -1.96794676E-05
+           ##     14   4   8   7      -1.13619432E-05
+           ##     14   4   9   6      -1.96794676E-05
+           ##     14   4  10   7       1.96794676E-05
+           ##     14   5   6   6      -4.64126781E-03
+           ##     14   5   7   7      -4.68062665E-03
+           ##     14   5   8   8      -4.69374611E-03
+           ##     14   5   9   9      -4.68062665E-03
+           ##     14   5  10  10      -4.64126781E-03
+           ##     12   3  11   8       1.67258702E-05
+           ##     12   5  11   9       7.59044129E-10
+           ##     13   4  11   8       1.67258702E-05
+           ##     13   5  11   7       7.59044129E-10
+           ##     14   3  11   9      -6.04373473E-08
+           ##     14   4  11   7      -6.04373473E-08
+           ##     14   5  11   8      -5.03504141E-05
+           ##     12   3  11  11       1.24976236E-03
+           ##     13   4  11  11       1.24976236E-03
+           ##     14   5  11  11      -3.74290642E-03
+           ##     14   1  12   3      -7.74987675E-06
+           ##     14   2  12   3      -3.27470352E-05
+           ##     12   5  12   1       3.75575215E-11
+           ##     12   5  12   2       1.11794880E-09
+           ##     14   1  13   4      -7.74987675E-06
+           ##     14   2  13   4      -3.27470352E-05
+           ##     13   5  13   1       3.75575215E-11
+           ##     13   5  13   2       1.11794880E-09
+           ##     14   3  12   1      -1.50370812E-08
+           ##     14   3  12   2      -4.19962694E-07
+           ##     14   4  13   1      -1.50370812E-08
+           ##     14   4  13   2      -4.19962694E-07
+           ##     14   5  14   1       1.55511679E-05
+           ##     14   5  14   2       6.64281862E-05
+           ##     12   3  12   3       2.74051861E-05
+           ##     12   4  12   4       1.67786854E-06
+           ##     12   5  12   5       1.78160912E-06
+           ##     13   3  12   4       1.67786854E-06
+           ##     13   3  13   3       1.67786854E-06
+           ##     13   4  12   3       2.40494490E-05
+           ##     13   4  13   4       2.74051861E-05
+           ##     13   5  13   5       1.78160912E-06
+           ##     14   3  12   5      -1.50953783E-05
+           ##     14   3  14   3       2.71365221E-03
+           ##     14   4  13   5      -1.50953783E-05
+           ##     14   4  14   4       2.71365221E-03
+           ##     14   5  12   3      -5.98167853E-05
+           ##     14   5  13   4      -5.98167853E-05
+           ##     14   5  14   5       2.84002488E-03
+           ##     12   9   1   1       1.83758322E-01
+           ##     12   9   2   1       1.00186882E-01
+           ##     12   9   2   2       1.83758322E-01
+           ##     13   7   1   1       1.83758322E-01
+           ##     13   7   2   1       1.00186882E-01
+           ##     13   7   2   2       1.83758322E-01
+           ##     14   8   1   1      -4.22344718E-02
+           ##     14   8   2   1      -2.30266582E-02
+           ##     14   8   2   2      -4.22344718E-02
+           ##     12   6   4   1       1.91710711E-06
+           ##     12   6   4   2       5.23612607E-05
+           ##     12   8   3   1      -6.39388046E-07
+           ##     12   8   3   2      -1.74633683E-05
+           ##     12   9   5   1       2.72676163E-06
+           ##     12   9   5   2       7.44750802E-05
+           ##     12  10   3   1       1.91710711E-06
+           ##     12  10   3   2       5.23612607E-05
+           ##     13   6   3   1       1.91710711E-06
+           ##     13   6   3   2       5.23612607E-05
+           ##     13   7   5   1       2.72676163E-06
+           ##     13   7   5   2       7.44750802E-05
+           ##     13   8   4   1      -6.39388046E-07
+           ##     13   8   4   2      -1.74633683E-05
+           ##     13  10   4   1      -1.91710711E-06
+           ##     13  10   4   2      -5.23612607E-05
+           ##     14   7   4   1      -3.05825523E-06
+           ##     14   7   4   2      -8.35290160E-05
+           ##     14   8   5   1      -3.31203210E-06
+           ##     14   8   5   2      -9.04603265E-05
+           ##     14   9   3   1      -3.05825523E-06
+           ##     14   9   3   2      -8.35290160E-05
+           ##     12   6   5   4       2.21845316E-04
+           ##     12   7   4   3       2.21845316E-04
+           ##     12   8   5   3       1.70286394E-04
+           ##     12   9   3   3       1.83881581E-01
+           ##     12   9   4   4       1.83437891E-01
+           ##     12   9   5   5       1.83954681E-01
+           ##     12  10   5   3       2.21845316E-04
+           ##     13   6   5   3       2.21845316E-04
+           ##     13   7   3   3       1.83437891E-01
+           ##     13   7   4   4       1.83881581E-01
+           ##     13   7   5   5       1.83954681E-01
+           ##     13   8   5   4       1.70286394E-04
+           ##     13   9   4   3       2.21845316E-04
+           ##     13  10   5   4      -2.21845316E-04
+           ##     14   6   4   3      -2.78733693E-03
+           ##     14   7   5   4      -2.93998208E-03
+           ##     14   8   3   3      -4.05269815E-02
+           ##     14   8   4   4      -4.05269815E-02
+           ##     14   8   5   5      -4.56489786E-02
+           ##     14   9   5   3      -2.93998208E-03
+           ##     14  10   3   3      -2.78733693E-03
+           ##     14  10   4   4       2.78733693E-03
+           ##     12   6   7   2       1.24360211E-10
+           ##     12   7   6   2       1.24360211E-10
+           ##     12   8   9   2       9.54435785E-11
+           ##     12   9   8   2       9.54435785E-11
+           ##     12   9  10   2       1.24360211E-10
+           ##     12  10   9   2       1.24360211E-10
+
+ Threshold for neglecting two-electron integrals:E 1.00D-12
+  Type  1 integral buffer #    2 has been writtenE
+
+         451  integrals in buffer
+           ##     13   6   9   2       1.24360211E-10
+           ##     13   7   8   2       9.54435785E-11
+           ##     13   7  10   2      -1.24360211E-10
+           ##     13   8   7   2       9.54435785E-11
+           ##     13   9   6   2       1.24360211E-10
+           ##     13  10   7   2      -1.24360211E-10
+           ##     14   6   6   1      -8.17294922E-12
+           ##     14   6   6   2      -1.60871696E-09
+           ##     14   7   7   1      -8.60717308E-12
+           ##     14   7   7   2      -1.69431004E-09
+           ##     14   8   8   1      -8.65619876E-12
+           ##     14   8   8   2      -1.70397380E-09
+           ##     14   9   9   1      -8.60717308E-12
+           ##     14   9   9   2      -1.69431004E-09
+           ##     14  10  10   1      -8.17294922E-12
+           ##     14  10  10   2      -1.60871696E-09
+           ##     12   6   6   3       6.46779513E-05
+           ##     12   6   7   5       6.21408834E-05
+           ##     12   6   8   4      -3.63913073E-05
+           ##     12   6  10   4      -6.04945253E-05
+           ##     12   7   6   5       1.64635807E-06
+           ##     12   7   7   3       1.64635807E-06
+           ##     12   7   9   4       1.64635807E-06
+           ##     12   8   6   4      -2.13972363E-05
+           ##     12   8   8   3       1.40227512E-05
+           ##     12   8   9   5      -1.85063551E-05
+           ##     12   8  10   3      -2.13972363E-05
+           ##     12   9   7   4       8.81113762E-05
+           ##     12   9   8   5       1.01267307E-04
+           ##     12   9   9   3       9.14040923E-05
+           ##     12   9  10   5       1.64635807E-06
+           ##     12  10   6   4       6.04945253E-05
+           ##     12  10   8   3      -3.63913073E-05
+           ##     12  10   9   5       6.21408834E-05
+           ##     12  10  10   3       6.46779513E-05
+           ##     13   6   6   4       6.46779513E-05
+           ##     13   6   8   3      -3.63913073E-05
+           ##     13   6   9   5       6.21408834E-05
+           ##     13   6  10   3       6.04945253E-05
+           ##     13   7   7   4       9.14040923E-05
+           ##     13   7   8   5       1.01267307E-04
+           ##     13   7   9   3       8.81113762E-05
+           ##     13   7  10   5      -1.64635807E-06
+           ##     13   8   6   3      -2.13972363E-05
+           ##     13   8   7   5      -1.85063551E-05
+           ##     13   8   8   4       1.40227512E-05
+           ##     13   8  10   4       2.13972363E-05
+           ##     13   9   6   5       1.64635807E-06
+           ##     13   9   7   3       1.64635807E-06
+           ##     13   9   9   4       1.64635807E-06
+           ##     13  10   6   3      -6.04945253E-05
+           ##     13  10   7   5      -6.21408834E-05
+           ##     13  10   8   4       3.63913073E-05
+           ##     13  10  10   4       6.46779513E-05
+           ##     14   6   6   5      -2.56157756E-06
+           ##     14   6   7   3      -2.56157756E-06
+           ##     14   6   9   4      -2.56157756E-06
+           ##     14   7   6   3      -9.86434019E-05
+           ##     14   7   7   5      -1.03702905E-04
+           ##     14   7   8   4       5.40306890E-05
+           ##     14   7  10   4       9.86434019E-05
+           ##     14   8   7   4      -1.05309926E-04
+           ##     14   8   8   5      -1.29106187E-04
+           ##     14   8   9   3      -1.05309926E-04
+           ##     14   9   6   4      -9.86434019E-05
+           ##     14   9   8   3       5.40306890E-05
+           ##     14   9   9   5      -1.03702905E-04
+           ##     14   9  10   3      -9.86434019E-05
+           ##     14  10   7   4       2.56157756E-06
+           ##     14  10   9   3      -2.56157756E-06
+           ##     14  10  10   5      -2.56157756E-06
+           ##     12   6   8   7       2.28588060E-03
+           ##     12   6   9   6       7.91166202E-03
+           ##     12   6  10   7      -3.41391170E-03
+           ##     12   7   8   6      -3.62718791E-03
+           ##     12   7   9   7       8.45701166E-03
+           ##     12   8   7   6       3.23042886E-03
+           ##     12   8   9   8       7.34009197E-03
+           ##     12   8  10   9       3.23042886E-03
+           ##     12   9   6   6       1.63743776E-01
+           ##     12   9   7   7       1.65925132E-01
+           ##     12   9   8   8       1.71636035E-01
+           ##     12   9   9   9       1.82839155E-01
+           ##     12   9  10   8      -3.62718791E-03
+           ##     12   9  10  10       1.63743776E-01
+           ##     12  10   7   6       3.41391170E-03
+           ##     12  10   9   8       2.28588060E-03
+           ##     12  10  10   9       7.91166202E-03
+           ##     13   6   7   6       7.91166202E-03
+           ##     13   6   9   8       2.28588060E-03
+           ##     13   6  10   9       3.41391170E-03
+           ##     13   7   6   6       1.63743776E-01
+           ##     13   7   7   7       1.82839155E-01
+           ##     13   7   8   8       1.71636035E-01
+           ##     13   7   9   9       1.65925132E-01
+           ##     13   7  10   8       3.62718791E-03
+           ##     13   7  10  10       1.63743776E-01
+           ##     13   8   8   7       7.34009197E-03
+           ##     13   8   9   6       3.23042886E-03
+           ##     13   8  10   7      -3.23042886E-03
+           ##     13   9   8   6      -3.62718791E-03
+           ##     13   9   9   7       8.45701166E-03
+           ##     13  10   8   7      -2.28588060E-03
+           ##     13  10   9   6      -3.41391170E-03
+           ##     13  10  10   7       7.91166202E-03
+           ##     14   6   8   6       3.43411378E-02
+           ##     14   6   9   7      -3.12106752E-02
+           ##     14   7   8   7      -2.03507689E-02
+           ##     14   7   9   6      -3.30485850E-02
+           ##     14   7  10   7       3.30485850E-02
+           ##     14   8   6   6       1.80483446E-03
+           ##     14   8   7   7      -5.46732168E-02
+           ##     14   8   8   8      -7.56213858E-02
+           ##     14   8   9   9      -5.46732168E-02
+           ##     14   8  10  10       1.80483446E-03
+           ##     14   9   7   6      -3.30485850E-02
+           ##     14   9   9   8      -2.03507689E-02
+           ##     14   9  10   9      -3.30485850E-02
+           ##     14  10   7   7       3.12106752E-02
+           ##     14  10   9   9      -3.12106752E-02
+           ##     14  10  10   8       3.43411378E-02
+           ##     12   6  11   7       2.78145461E-06
+           ##     12   7  11   6       2.43256718E-08
+           ##     12   8  11   9       7.31892481E-06
+           ##     12   9  11   8       2.52568384E-03
+           ##     12   9  11  10       2.43256718E-08
+           ##     12  10  11   9       2.78145461E-06
+           ##     13   6  11   9       2.78145461E-06
+           ##     13   7  11   8       2.52568384E-03
+           ##     13   7  11  10      -2.43256718E-08
+           ##     13   8  11   7       7.31892481E-06
+           ##     13   9  11   6       2.43256718E-08
+           ##     13  10  11   7      -2.78145461E-06
+           ##     14   6  11   6      -1.49437540E-08
+           ##     14   7  11   7      -9.19840079E-06
+           ##     14   8  11   8      -1.93522398E-03
+           ##     14   9  11   9      -9.19840079E-06
+           ##     14  10  11  10      -1.49437540E-08
+           ##     12   9  11  11       1.88766475E-01
+           ##     13   7  11  11       1.88766475E-01
+           ##     14   8  11  11      -1.41465219E-01
+           ##     13   1  12   6       7.42651109E-10
+           ##     13   2  12   6       2.14544945E-08
+           ##     12   8  12   1      -2.47662477E-10
+           ##     12   8  12   2      -7.15062004E-09
+           ##     14   1  12   9      -9.72650980E-05
+           ##     14   2  12   9      -4.11125365E-04
+           ##     12  10  12   1       7.42651109E-10
+           ##     12  10  12   2       2.14544945E-08
+           ##     13   6  12   1       7.42651109E-10
+           ##     13   6  12   2       2.14544945E-08
+           ##     14   1  13   7      -9.72650980E-05
+           ##     14   2  13   7      -4.11125365E-04
+           ##     13   8  13   1      -2.47662477E-10
+           ##     13   8  13   2      -7.15062004E-09
+           ##     13  10  13   1      -7.42651109E-10
+           ##     13  10  13   2      -2.14544945E-08
+           ##     14   7  13   1      -1.18497714E-09
+           ##     14   7  13   2      -3.42777511E-08
+           ##     14   8  14   1       2.23572226E-05
+           ##     14   8  14   2       9.45524826E-05
+           ##     14   9  12   1      -1.18497714E-09
+           ##     14   9  12   2      -3.42777511E-08
+           ##     13   5  12   6       3.27419420E-06
+           ##     14   4  12   6      -3.77442834E-04
+           ##     12   7  12   4       1.01201391E-06
+           ##     13   3  12   7       1.01201391E-06
+           ##     12   8  12   5       5.84033253E-08
+           ##     14   3  12   8       1.23665252E-04
+           ##     12   9  12   3       4.00262588E-04
+           ##     13   4  12   9       3.98238561E-04
+           ##     14   5  12   9      -1.33153475E-03
+           ##     12  10  12   5       3.27419420E-06
+           ##     14   3  12  10      -3.77442834E-04
+           ##     13   6  12   5       3.27419420E-06
+           ##     14   3  13   6      -3.77442834E-04
+           ##     13   7  12   3       3.98238561E-04
+           ##     13   7  13   4       4.00262588E-04
+           ##     14   5  13   7      -1.33153475E-03
+           ##     13   8  13   5       5.84033253E-08
+           ##     14   4  13   8       1.23665252E-04
+           ##     13   9  12   4       1.01201391E-06
+           ##     13   9  13   3       1.01201391E-06
+           ##     13  10  13   5      -3.27419420E-06
+           ##     14   4  13  10       3.77442834E-04
+           ##     14   6  12   4      -1.16833036E-05
+           ##     14   6  13   3      -1.16833036E-05
+           ##     14   7  13   5      -1.63176395E-05
+           ##     14   7  14   4       6.23493394E-04
+           ##     14   8  12   3      -8.80205091E-05
+           ##     14   8  13   4      -8.80205091E-05
+           ##     14   8  14   5       8.63211890E-04
+           ##     14   9  12   5      -1.63176395E-05
+           ##     14   9  14   3       6.23493394E-04
+           ##     14  10  12   3      -1.16833036E-05
+           ##     14  10  13   4       1.16833036E-05
+           ##     12   6  12   6       9.48285981E-03
+           ##     12   7  12   7       4.22780001E-03
+           ##     12   8  12   8       5.71316250E-03
+           ##     12   9  12   9       5.55339498E-02
+           ##     12  10  12   8      -8.63593115E-04
+           ##     12  10  12  10       9.48285981E-03
+           ##     13   6  12   8      -8.63593115E-04
+           ##     13   6  12  10       5.25782326E-03
+           ##     13   6  13   6       9.48285981E-03
+           ##     13   7  12   9       4.70783498E-02
+           ##     13   7  13   7       5.55339498E-02
+           ##     13   8  12   6      -8.63593115E-04
+           ##     13   8  13   8       5.71316250E-03
+           ##     13   9  12   7       4.22780001E-03
+           ##     13   9  13   9       4.22780001E-03
+           ##     13  10  12   6      -5.25782326E-03
+           ##     13  10  13   8       8.63593115E-04
+           ##     13  10  13  10       9.48285981E-03
+           ##     14   6  12   7      -7.67161192E-03
+           ##     14   6  13   9      -7.67161192E-03
+           ##     14   6  14   6       3.06500401E-02
+           ##     14   7  12   6      -1.45203986E-02
+           ##     14   7  13   8      -5.91515314E-03
+           ##     14   7  13  10       1.45203986E-02
+           ##     14   7  14   7       5.07023488E-02
+           ##     14   8  12   9      -2.43450591E-02
+           ##     14   8  13   7      -2.43450591E-02
+           ##     14   8  14   8       5.25756786E-02
+           ##     14   9  12   8      -5.91515314E-03
+           ##     14   9  12  10      -1.45203986E-02
+           ##     14   9  13   6      -1.45203986E-02
+           ##     14   9  14   9       5.07023488E-02
+           ##     14  10  12   9      -7.67161192E-03
+           ##     14  10  13   7       7.67161192E-03
+           ##     14  10  14  10       3.06500401E-02
+           ##     14  11   1   1      -1.72075044E-04
+           ##     14  11   2   1      -9.38170418E-05
+           ##     14  11   2   2      -1.72075044E-04
+           ##     12  11   3   1       1.88108374E-09
+           ##     12  11   3   2       5.13774025E-08
+           ##     13  11   4   1       1.88108374E-09
+           ##     13  11   4   2       5.13774025E-08
+           ##     14  11   5   1      -3.76216748E-09
+           ##     14  11   5   2      -1.02754805E-07
+           ##     12  11   5   3       5.29032629E-07
+           ##     13  11   5   4       5.29032629E-07
+           ##     14  11   3   3      -1.71546011E-04
+           ##     14  11   4   4      -1.71546011E-04
+           ##     14  11   5   5      -1.73133109E-04
+           ##     12  11   6   4       6.10558998E-08
+           ##     12  11   8   3      -3.41816039E-08
+           ##     12  11   9   5       6.29075248E-08
+           ##     12  11  10   3       6.10558998E-08
+           ##     13  11   6   3       6.10558998E-08
+           ##     13  11   7   5       6.29075248E-08
+           ##     13  11   8   4      -3.41816039E-08
+           ##     13  11  10   4      -6.10558998E-08
+           ##     14  11   7   4      -1.21371150E-07
+           ##     14  11   8   5      -1.44423477E-07
+           ##     14  11   9   3      -1.21371150E-07
+           ##     12  11   7   6       1.97321932E-05
+           ##     12  11   9   8       3.82397676E-05
+           ##     12  11  10   9       1.97321932E-05
+           ##     13  11   8   7       3.82397676E-05
+           ##     13  11   9   6       1.97321932E-05
+           ##     13  11  10   7      -1.97321932E-05
+           ##     14  11   6   6      -1.25786398E-04
+           ##     14  11   7   7      -1.71407907E-04
+           ##     14  11   8   8      -2.58560759E-04
+           ##     14  11   9   9      -1.71407907E-04
+           ##     14  11  10  10      -1.25786398E-04
+           ##     12  11  11   9       8.22198049E-06
+           ##     13  11  11   7       8.22198049E-06
+           ##     14  11  11   8      -3.60164793E-05
+           ##     12  11  12   2       2.10575015E-11
+           ##     13  11  13   2       2.10575015E-11
+           ##     14  11  14   1       9.10819679E-08
+           ##     14  11  14   2       3.85013473E-07
+           ##     12  11  12   5       4.64857485E-09
+           ##     14   3  12  11      -3.73415714E-07
+           ##     13  11  13   5       4.64857485E-09
+           ##     14   4  13  11      -3.73415714E-07
+           ##     14  11  12   3      -3.73415714E-07
+           ##     14  11  13   4      -3.73415714E-07
+           ##     14  11  14   5       1.49329899E-06
+           ##     12  11  12   8       4.47589341E-05
+           ##     12  11  12  10       1.73349261E-05
+           ##     13   6  12  11       1.73349261E-05
+           ##     14   9  12  11      -5.60813251E-05
+           ##     13  11  12   6       1.73349261E-05
+           ##     13  11  13   8       4.47589341E-05
+           ##     13  11  13  10      -1.73349261E-05
+           ##     14   7  13  11      -5.60813251E-05
+           ##     14  11  12   9      -5.60813251E-05
+           ##     14  11  13   7      -5.60813251E-05
+           ##     14  11  14   8       1.03576133E-04
+           ##     12  11  12  11       5.41542060E-05
+           ##     13  11  13  11       5.41542060E-05
+           ##     14  11  14  11       5.41542060E-05
+           ##     12  12   1   1       4.83872515E-01
+           ##     12  12   2   1       2.63812154E-01
+           ##     12  12   2   2       4.83872515E-01
+           ##     13  13   1   1       4.83872515E-01
+           ##     13  13   2   1       2.63812154E-01
+           ##     13  13   2   2       4.83872515E-01
+           ##     14  14   1   1       6.83861040E-01
+           ##     14  14   2   1       3.72846270E-01
+           ##     14  14   2   2       6.83837522E-01
+           ##     12  12   5   1       3.42879361E-06
+           ##     12  12   5   2       9.36494749E-05
+           ##     13  13   5   1       3.42879361E-06
+           ##     13  13   5   2       9.36494749E-05
+           ##     14  12   3   1      -2.18618360E-06
+           ##     14  12   3   2      -5.96968664E-05
+           ##     14  13   4   1      -2.18618360E-06
+           ##     14  13   4   2      -5.96968664E-05
+           ##     14  14   5   1       6.33653979E-06
+           ##     14  14   5   2       1.73012796E-04
+           ##     12  12   3   3       4.83958347E-01
+           ##     12  12   4   4       4.83550552E-01
+           ##     12  12   5   5       4.84104932E-01
+           ##     13  12   4   3       2.03897590E-04
+           ##     13  13   3   3       4.83550552E-01
+           ##     13  13   4   4       4.83958347E-01
+           ##     13  13   5   5       4.84104932E-01
+           ##     14  12   5   3      -4.72276010E-04
+           ##     14  13   5   4      -4.72276010E-04
+           ##     14  14   3   3       6.81835755E-01
+           ##     14  14   4   4       6.81835755E-01
+           ##     14  14   5   5       6.82767232E-01
+           ##     12  12   8   2       1.13045734E-10
+           ##     12  12  10   2       1.14789933E-10
+           ##     13  12   6   2       1.14789933E-10
+           ##     13  13   8   2       1.13045734E-10
+           ##     13  13  10   2      -1.14789933E-10
+           ##     14  12   9   1      -1.35720682E-12
+           ##     14  12   9   2      -2.67393929E-10
+           ##     14  13   7   1      -1.35720682E-12
+           ##     14  13   7   2      -2.67393929E-10
+           ##     14  14   8   1       1.55279715E-12
+           ##     14  14   8   2       3.05861731E-10
+           ##     12  12   7   4       1.11573830E-04
+           ##     12  12   8   5       1.29131962E-04
+           ##     12  12   9   3       1.12512002E-04
+           ##     12  12  10   5       4.69085950E-07
+           ##     13  12   6   5       4.69085950E-07
+           ##     13  12   7   3       4.69085950E-07
+           ##     13  12   9   4       4.69085950E-07
+           ##     13  13   7   4       1.12512002E-04
+           ##     13  13   8   5       1.29131962E-04
+           ##     13  13   9   3       1.11573830E-04
+           ##     13  13  10   5      -4.69085950E-07
+           ##     14  12   6   4      -7.02021859E-05
+           ##     14  12   8   3       4.00068496E-05
+           ##     14  12   9   5      -7.11104755E-05
+           ##     14  12  10   3      -7.02021859E-05
+           ##     14  13   6   3      -7.02021859E-05
+           ##     14  13   7   5      -7.11104755E-05
+           ##     14  13   8   4       4.00068496E-05
+           ##     14  13  10   4       7.02021859E-05
+           ##     14  14   7   4       2.02746434E-04
+           ##     14  14   8   5       2.34555408E-04
+           ##     14  14   9   3       2.02746434E-04
+           ##     12  12   6   6       4.65810253E-01
+           ##     12  12   7   7       4.75123586E-01
+           ##     12  12   8   8       4.87919538E-01
+           ##     12  12   9   9       4.95725764E-01
+           ##     12  12  10   8      -5.78500610E-03
+           ##     12  12  10  10       4.65810253E-01
+           ##     13  12   8   6      -5.78500610E-03
+           ##     13  12   9   7       1.03010893E-02
+           ##     13  13   6   6       4.65810253E-01
+           ##     13  13   7   7       4.95725764E-01
+           ##     13  13   8   8       4.87919538E-01
+           ##     13  13   9   9       4.75123586E-01
+           ##     13  13  10   8       5.78500610E-03
+           ##     13  13  10  10       4.65810253E-01
+           ##     14  12   7   6      -1.12457926E-02
+           ##     14  12   9   8      -7.45784554E-03
+           ##     14  12  10   9      -1.12457926E-02
+           ##     14  13   8   7      -7.45784554E-03
+           ##     14  13   9   6      -1.12457926E-02
+           ##     14  13  10   7       1.12457926E-02
+           ##     14  14   6   6       5.65896546E-01
+           ##     14  14   7   7       5.86531789E-01
+           ##     14  14   8   8       5.92862444E-01
+           ##     14  14   9   9       5.86531789E-01
+           ##     14  14  10  10       5.65896546E-01
+           ##     12  12  11   8       9.93752833E-03
+           ##     12  12  11  10       1.21788690E-07
+           ##     13  12  11   6       1.21788690E-07
+           ##     13  13  11   8       9.93752833E-03
+           ##     13  13  11  10      -1.21788690E-07
+           ##     14  12  11   9      -1.03930308E-06
+           ##     14  13  11   7      -1.03930308E-06
+           ##     14  14  11   8       9.94144880E-03
+           ##     12  12  11  11       7.54082451E-01
+           ##     13  13  11  11       7.54082451E-01
+           ##     14  14  11  11       7.54082451E-01
+           ##     14   1  12  12      -2.56115578E-04
+           ##     14   2  12  12      -1.08249087E-03
+           ##     14   1  13  13      -2.56115578E-04
+           ##     14   2  13  13      -1.08249087E-03
+           ##     14  12  12   1      -8.46908520E-10
+           ##     14  12  12   2      -2.44644281E-08
+           ##     14  13  13   1      -8.46908520E-10
+           ##     14  13  13   2      -2.44644281E-08
+           ##     14  14  14   1      -3.61969303E-04
+           ##     14  14  14   2      -1.52981271E-03
+           ##     12  12  12   3       1.04817232E-03
+           ##     13   4  12  12       1.04639734E-03
+           ##     14   5  12  12      -2.76468825E-03
+           ##     13  12  12   4       8.87488989E-07
+           ##     13  12  13   3       8.87488989E-07
+           ##     13  13  12   3       1.04639734E-03
+           ##     13  13  13   4       1.04817232E-03
+           ##     14   5  13  13      -2.76468825E-03
+           ##     14  12  12   5      -4.68042613E-06
+           ##     14  12  14   3       4.28321334E-04
+           ##     14  13  13   5      -4.68042613E-06
+           ##     14  13  14   4       4.28321334E-04
+           ##     14  14  12   3       1.47383118E-03
+           ##     14  14  13   4       1.47383118E-03
+           ##     14  14  14   5      -4.17156543E-03
+           ##     12  12  12   9       1.48575966E-01
+           ##     13   7  12  12       1.35298923E-01
+           ##     14   8  12  12      -5.64940879E-02
+           ##     14  10  12  12      -1.00518312E-02
+           ##     13  12  12   7       6.63852143E-03
+           ##     13  12  13   9       6.63852143E-03
+           ##     14   6  13  12      -1.00518312E-02
+           ##     13  13  12   9       1.35298923E-01
+           ##     13  13  13   7       1.48575966E-01
+           ##     14   8  13  13      -5.64940879E-02
+           ##     14  10  13  13       1.00518312E-02
+           ##     14  12  12   8      -1.64495884E-03
+           ##     14  12  12  10      -1.00518312E-02
+           ##     14  12  13   6      -1.00518312E-02
+           ##     14  12  14   9       2.48699960E-02
+           ##     14  13  12   6      -1.00518312E-02
+           ##     14  13  13   8      -1.64495884E-03
+           ##     14  13  13  10       1.00518312E-02
+           ##     14  13  14   7       2.48699960E-02
+           ##     14  14  12   9       1.53530397E-01
+           ##     14  14  13   7       1.53530397E-01
+           ##     14  14  14   8      -6.54375815E-02
+           ##     12  12  12  12       6.53199491E-01
+           ##     13  12  13  12       3.99918056E-02
+           ##     13  13  12  12       5.73215880E-01
+           ##     13  13  13  13       6.53199491E-01
+           ##     14  12  14  12       3.99918056E-02
+           ##     14  13  14  13       3.99918056E-02
+           ##     14  14  12  12       5.73215880E-01
+           ##     14  14  13  13       5.73215880E-01
+           ##     14  14  14  14       6.53199491E-01
+ HERMIT - Number of two-electron integrals written:        1051 ( 18.9% )
+ HERMIT - Megabytes written:                              0.014
+
+
+
+  Maximum work space allocations in TWOINT
+  ----------------------------------------
+
+ Total allocation:                           3771
+ Expansion coefficients (electron 1):         135
+ Expansion coefficients (electron 2):         135
+ Two-electron densities:                        0
+ SO integrals:                                225
+ AO integrals:                                225
+ Hermite integrals:                           168
+ Hermite integral pointer:                      0
+ Hermite-Cartesian integrals:                 525
+ Gamma functions:                              20
+ Work space for Hermite integrals:            168
+ Allocations in C1DRIV:                      1435
+ Allocations in C2DRIV:                        37
+ Allocations in C2HINT:                       337
+ Allocations in C2EINT:                         0
+
+ Allocations in INTEXP:                         0
+ Allocations in PPRIM :                         0
+ Allocations in DRSYM2:                         0
+
+
+
+  Performance of TWOINT
+  ---------------------
+
+  Number of contracted functions:   14
+  Number of primitive  functions:   14
+
+  Number of integrals written                    :        1051
+  Number of contracted integrals (counting zeros):        5565
+  Number of primitive integrals (counting zeros) :        5565
+
+
+  Average time for non-zero (written) integrals:    3.6 microseconds
+  Average time for zero/non-zero integrals     :    0.7 microseconds
+  Average time for primitive integrals         :    0.7 microseconds
+
+ Average reduction of primitive ODC vectors:   14.44 %
+ Average reduction of contracted ODC vectors:  12.89 %
+     (Precalculated AO two-electron integrals are transformed to P-supermatrix elements.
+      Threshold for discarding integrals :  1.00D-12 )
+@  1     12611.6333089        3.53573D+04    1.26D+04    1
+      Virial theorem: -V/T =      0.091345
+@    MULPOP   F       5.19; H      -5.19; 
+   1  Level shift: doubly occupied orbital energies shifted by -2.00D-01
+ -----------------------------------------------------------------------------
+@  2    -14.4532559438        2.23060D+00   -1.26D+04    2
+      Virial theorem: -V/T =      1.476746
+@    MULPOP   F       4.92; H      -4.92; 
+   2  Level shift: doubly occupied orbital energies shifted by -5.00D-02
+ -----------------------------------------------------------------------------
+@  3    -14.6871509788        2.00128D-01   -2.34D-01    3
+      Virial theorem: -V/T =      1.464798
+@    MULPOP   F       4.52; H      -4.52; 
+   3  Level shift: doubly occupied orbital energies shifted by -1.25D-02
+ -----------------------------------------------------------------------------
+@  4    -14.6907355394        2.10373D-03   -3.58D-03    4
+      Virial theorem: -V/T =      1.461130
+@    MULPOP   F       4.45; H      -4.45; 
+ -----------------------------------------------------------------------------
+@  5    -14.6907355450        7.48480D-05   -5.64D-09    5
+      Virial theorem: -V/T =      1.461134
+@    MULPOP   F       4.45; H      -4.45; 
+ -----------------------------------------------------------------------------
+@  6    -14.6907355455        1.19704D-06   -4.87D-10    6
+
+@ *** DIIS converged in   6 iterations !
+@     Converged SCF energy, gradient:    -14.690735545511    1.20D-06
+    - total time used in SIRFCK :              0.00 seconds
+ Matriz G    7.9873610352453825        4.3547055178160887        7.9870375929460469       -1.8026298204258000E-018   3.0672074924716719E-018   7.9796559704107279       -1.0929733642981381E-018   2.2465924761655179E-018   1.2653343377932847E-020   7.9796559704107235       -3.4235106344085208E-006   6.7292720708491283E-004   1.8532775900267977E-016   1.4142856273343301E-016   7.9830960297678466       -2.9670378963459590E-023  -8.1027509673351022E-022   2.3924503299494552E-018   8.9514074650725427E-018  -1.3789843260556426E-020   5.8433808352459531       -4.0714110653693792E-017   8.0487136886430533E-017  -5.4740462827892008E-010  -1.0523464147473584E-003   3.6871318381732578E-015  -3.3124411530396159E-019   6.5916673105994334       -4.6194576687870041E-007  -1.7762014291700239E-006  -8.6871490834651783E-016  -6.6221397148314088E-016   3.8903809535253628E-004  -3.9190496527447245E-018   1.1185623513941838E-015   5.9762137038944907       -6.6473386154228593E-017   1.3112888897738935E-016  -1.0523464147473584E-003   5.4740462544113792E-010   6.2870068335555382E-015  -1.6482097608594590E-016  -4.7666300233290298E-017   1.4642478048179923E-015   6.5916673105994334       -5.8555528501793118E-023  -8.1886589865929888E-022   1.5934920708407203E-017  -1.2169066699280793E-017   3.5171434153672136E-020  -6.9286027439990915E-027   1.6482097608594568E-016   3.1689859293801756E-017  -2.1576030160480848E-016   6.6721294632254180        9.3856776451383208E-008   3.4487572040942840E-007  -2.3070608652939986E-018  -1.7539101360975198E-018  -3.0338280250281698E-006  -4.7394250177033821E-021   1.5463702971544802E-015   8.0977663739506947E-002   2.0222377660496212E-015   1.5570115762773676E-021   6.8679414382151887       -7.8251361597111497E-017   2.4057121577577071E-016   1.5325402242501975E-002   5.6688594643572480E-010   7.2726844399654917E-015  -2.7776602957280190E-017   5.6305671557136163E-010   1.6487942496200171E-016   1.2690535763776691       -3.0158520630631963E-017   5.5637622379787537E-015   4.7756564854897636       -4.7926659898442054E-017   1.4762962088427922E-016  -5.6688595035335734E-010   1.5325402242501982E-002   5.5531026328664813E-015  -3.0107195399669269E-017   1.2690535763776689        1.2599101503298431E-016  -5.6305682565431510E-010   2.3037873252498527E-017   4.2544793360643025E-015  -2.1377468344903977E-017   4.7756564854897636       -3.7492104110682001E-003  -1.6112078366273340E-002  -2.0483655212193920E-017  -1.0576516876880654E-017  -3.4549531128919016E-002  -4.1486161385694472E-018   8.3266641888356126E-017 -0.42575269158947721        1.1845053679810530E-016   9.8609212643851317E-018   8.9073787189267672E-004   5.9891118857135230E-017   4.7044371678925988E-017   5.1400835722485096     
+
+
+ *** SCF orbital energy analysis ***
+
+ Number of electrons :   10
+ Orbital occupations :    5
+
+ Sym       Hartree-Fock orbital energies
+
+1 A      -0.54047556     0.80948209     0.80948209     1.24098804     1.24575429
+          2.06973667     2.26336010     2.26336010   111.61657557   124.20179856
+        124.20179856   124.20682208  3696.90099493 37750.10868094
+
+    E(LUMO) :     2.06973667 au (symmetry 1)
+  - E(HOMO) :     1.24575429 au (symmetry 1)
+  ------------------------------------------
+    gap     :     0.82398238 au
+
+ WARNING: E(HOMO) positive!
+
+ --- Writing SIRIFC interface file
+
+ CPU and wall time for SCF :       0.010       0.096
+
+
+                       .-----------------------------------.
+                       | --- Final results from SIRIUS --- |
+                       `-----------------------------------'
+
+
+@    Spin multiplicity:           1
+@    Spatial symmetry:            1 ( irrep  A   in C1  )
+@    Total charge of molecule:    0
+
+@    Final HF energy:             -14.690735545511                 
+@    Nuclear repulsion:             5.193669740187
+@    Electronic energy:           -19.884405285698
+
+@    Final gradient norm:           0.000001197042
+
+ 
+     Date and time (Linux)  : Wed Nov 30 18:25:28 2022
+     Host name              : nodo8                                   
+
+File label for MO orbitals:  30Nov22   FOCKDIIS
+
+ (Only coefficients > 0.0100 are printed.)
+
+ Molecular orbitals for symmetry species 1  (A  )
+ ------------------------------------------------
+
+    Orbital         1        2        3        4        5        6        7
+   6 F   :3d2-   0.0000   0.0000   0.0000   1.0000   0.0000   0.0000   0.0000
+   7 F   :3d1-  -0.0000  -0.1235   0.2581   0.0000   0.0000   0.0000  -0.9833
+   8 F   :3d0    0.1230  -0.0000  -0.0000   0.0000  -0.9931   0.0000  -0.0000
+   9 F   :3d1+  -0.0000   0.2581   0.1235   0.0000   0.0000   0.0000  -0.0483
+  10 F   :3d2+   0.0000   0.0000   0.0000   0.0000   0.0000   1.0000   0.0000
+  12 H   :2px    0.0000   0.8093   0.3873   0.0000  -0.0000   0.0000   0.0243
+  13 H   :2py    0.0000  -0.3873   0.8093   0.0000  -0.0000   0.0000   0.4954
+  14 H   :2pz    0.9971  -0.0000  -0.0000   0.0000   0.0847   0.0000  -0.0000
+
+    Orbital         8        9       10       11       12       13       14
+   1 F   :1s     0.0000  -0.0000   0.0000   0.0000   0.0000  -0.0599   1.1914
+   2 F   :1s    -0.0000   0.0000  -0.0000  -0.0000  -0.0000   1.0314  -0.5993
+   3 F   :2px    0.0005   0.0000   0.9998   0.0183   0.0000   0.0000  -0.0000
+   4 F   :2py   -0.0000   0.0000  -0.0183   0.9998   0.0000   0.0000  -0.0000
+   5 F   :2pz   -0.0000   0.0000  -0.0000  -0.0000   1.0000   0.0000  -0.0000
+   7 F   :3d1-   0.0483  -0.0000  -0.0000   0.0007  -0.0000  -0.0000   0.0000
+   8 F   :3d0   -0.0000  -0.0149  -0.0000  -0.0000   0.0002   0.0001  -0.0000
+   9 F   :3d1+  -0.9833  -0.0000   0.0007   0.0000  -0.0000  -0.0000   0.0000
+  11 H   :1s    -0.0000   1.0001  -0.0000  -0.0000  -0.0000  -0.0000   0.0000
+  12 H   :2px    0.4954   0.0000  -0.0033  -0.0001   0.0000   0.0000  -0.0000
+  13 H   :2py   -0.0243   0.0000   0.0001  -0.0033   0.0000   0.0000  -0.0000
+
+  Total CPU  time used in SIRIUS :   0.02 seconds
+  Total wall time used in SIRIUS :   0.15 seconds
+
+ 
+     Date and time (Linux)  : Wed Nov 30 18:25:28 2022
+     Host name              : nodo8                                   
+
+
+                     .---------------------------------------.
+                     | End of Wave Function Section (SIRIUS) |
+                     `---------------------------------------'
+
+  Total CPU  time used in DALTON:   0.04 seconds
+  Total wall time used in DALTON:   0.33 seconds
+
+ 
+     Date and time (Linux)  : Wed Nov 30 18:25:28 2022
+     Host name              : nodo8                                   

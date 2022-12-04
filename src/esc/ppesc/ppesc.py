@@ -146,7 +146,7 @@ class ppesc:
 
 if __name__ == "__main__":
     wfn = wave_function(
-        "../../tests/molden_file/HF_v2z.molden",
+        "../../tests/molden_file/HI_v2z.molden",
         scratch_path="/home1/scratch",
         job_folder="HFSRv2z",
     )
