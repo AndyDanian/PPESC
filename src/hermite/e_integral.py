@@ -900,13 +900,13 @@ class eint:
 
 if __name__ == "__main__":
     wf = wave_function(
-        "../tests/molden_file/LiH_ccpvtz.molden",
+        "../tests/molden_file/LiH_STO2G.molden",
         scratch_path="/home1/scratch",
         job_folder="160922134451",
     )
     s = eint(wf)
     # s.integration_twobody(integrals_names=["e2pot"],verbose=101)
-    s.integration_onebody(integrals_names=["pangmomp"], verbose=31)
+    s.integration_onebody(integrals_names=["angmom", "pso"], verbose=31)
     exit()
     one = True
     if one:

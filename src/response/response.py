@@ -495,10 +495,10 @@ class response:
 
 if __name__ == "__main__":
     wfn = wave_function(
-        "../tests/molden_file/LiH_pople.molden",
+        "../tests/molden_file/LiH_STO2G.molden",
         scratch_path="/home1/scratch",
-        job_folder="160922134451",
-        #job_folder="HFSRv2z",
+        #job_folder="160922134451",
+        job_folder="HFSRv2z",
     )
     r = response(wfn)
     # r.drv_reponse_calculation(principal_propagator_approximation="rpa",
@@ -512,13 +512,15 @@ if __name__ == "__main__":
         r.drv_reponse_calculation(
             principal_propagator_approximation="rpa",
             properties=[
-                ["pso", "pangmomp"],
+                ["pso 1", "angmom x"],
+                ["pso 2", "angmom y"],
+                ["pso 3", "angmom z"],
             ],
-            pp_multiplicity=[[1]],
-            property_multiplicity=[[1,1]],
+            #pp_multiplicity=[[1]],
+            #property_multiplicity=[[1,1]],
             # gauge=[0.0,0.0,1.4045523587],
             # gauge = [0.000, 0.0000, -0.545857052], #Li pople
-            verbose=11,
+            verbose=52,
             verbose_integrals=1,
         )
     else:

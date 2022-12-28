@@ -22,4 +22,5 @@ property_multiplicities: dict[str, int] = {
     "sofiel": 3,
     "spinorbit": 3,
     "pnstcgop": 1,
+    "pangmomp": 1,
 }

@@ -186,7 +186,7 @@ def pso(
             )
 
             pso[count] = (
-                normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                -normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * 2.0
                 * np.pi
