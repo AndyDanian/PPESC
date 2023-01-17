@@ -31,9 +31,7 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
     SPEED_LIGHT: float = 137.0359998
     CONST_ALPHA2: float = 1.0 / (SPEED_LIGHT * SPEED_LIGHT)
 
-    #! Note: It's neccesary to multiplicate by 5.0/3.0 to get DALTON's values
-    #!       there is difference in the 6-th decimal
-    CONST_MASSV: float = CONST_ALPHA2 / 8.0 * 5.0 / 3.0
+    CONST_MASSV: float = CONST_ALPHA2 / 8.0
     for i in range(total_nprim):
 
         for j in range(i, total_nprim):
@@ -71,6 +69,204 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 coord[center[i]][2] - coord[center[j]][2],
                 exp[i],
                 exp[j],
+            )
+
+            # dxx left
+            dxxsi = (
+                4.0
+                * exp[i]
+                * exp[i]
+                * (
+                    hermite_coefficient(
+                        lx[i] + 2,
+                        lx[j],
+                        0,
+                        coord[center[i]][0] - coord[center[j]][0],
+                        exp[i],
+                        exp[j],
+                    )
+                )
+                - 2.0
+                * exp[i]
+                * (2.0 * lx[i] + 1.0)
+                * sij
+                + lx[i]
+                * (lx[i] - 1.0)
+                * (
+                    hermite_coefficient(
+                        lx[i] - 2,
+                        lx[j],
+                        0,
+                        coord[center[i]][0] - coord[center[j]][0],
+                        exp[i],
+                        exp[j],
+                    )
+                )                
+            )
+
+            # dxx right
+            dxxsj = (
+                4.0
+                * exp[j]
+                * exp[j]
+                * (
+                    hermite_coefficient(
+                        lx[i],
+                        lx[j] + 2,
+                        0,
+                        coord[center[i]][0] - coord[center[j]][0],
+                        exp[i],
+                        exp[j],
+                    )
+                )
+                - 2.0
+                * exp[j]
+                * (2.0 * lx[j] + 1.0)
+                * sij
+                + lx[j]
+                * (lx[j] - 1.0)
+                * (
+                    hermite_coefficient(
+                        lx[i],
+                        lx[j] - 2,
+                        0,
+                        coord[center[i]][0] - coord[center[j]][0],
+                        exp[i],
+                        exp[j],
+                    )
+                )                
+            )
+
+            # dyy left
+            dyysk = (
+                4.0
+                * exp[i]
+                * exp[i]
+                * (
+                    hermite_coefficient(
+                        ly[i] + 2,
+                        ly[j],
+                        0,
+                        coord[center[i]][1] - coord[center[j]][1],
+                        exp[i],
+                        exp[j],
+                    )
+                )
+                - 2.0
+                * exp[i]
+                * (2.0 * ly[i] + 1.0)
+                * skl
+                + ly[i]
+                * (ly[i] - 1.0)
+                * (
+                    hermite_coefficient(
+                        ly[i] - 2,
+                        ly[j],
+                        0,
+                        coord[center[i]][1] - coord[center[j]][1],
+                        exp[i],
+                        exp[j],
+                    )
+                )                
+            )
+
+            # dyy right
+            dyysl = (
+                4.0
+                * exp[j]
+                * exp[j]
+                * (
+                    hermite_coefficient(
+                        ly[i],
+                        ly[j] + 2,
+                        0,
+                        coord[center[i]][1] - coord[center[j]][1],
+                        exp[i],
+                        exp[j],
+                    )
+                )
+                - 2.0
+                * exp[j]
+                * (2.0 * ly[j] + 1.0)
+                * skl
+                + ly[j]
+                * (ly[j] - 1.0)
+                * (
+                    hermite_coefficient(
+                        ly[i],
+                        ly[j] - 2,
+                        0,
+                        coord[center[i]][1] - coord[center[j]][1],
+                        exp[i],
+                        exp[j],
+                    )
+                )                
+            )
+
+            # dzz left
+            dzzsm = (
+                4.0
+                * exp[i]
+                * exp[i]
+                * (
+                    hermite_coefficient(
+                        lz[i] + 2,
+                        lz[j],
+                        0,
+                        coord[center[i]][2] - coord[center[j]][2],
+                        exp[i],
+                        exp[j],
+                    )
+                )
+                - 2.0
+                * exp[i]
+                * (2.0 * lz[i] + 1.0)
+                * smn
+                + lz[i]
+                * (lz[i] - 1.0)
+                * (
+                    hermite_coefficient(
+                        lz[i] - 2,
+                        lz[j],
+                        0,
+                        coord[center[i]][2] - coord[center[j]][2],
+                        exp[i],
+                        exp[j],
+                    )
+                )                
+            )
+
+            # dzz right
+            dzzsn = (
+                4.0
+                * exp[j]
+                * exp[j]
+                * (
+                    hermite_coefficient(
+                        lz[i],
+                        lz[j] + 2,
+                        0,
+                        coord[center[i]][2] - coord[center[j]][2],
+                        exp[i],
+                        exp[j],
+                    )
+                )
+                - 2.0
+                * exp[j]
+                * (2.0 * lz[j] + 1.0)
+                * smn
+                + lz[j]
+                * (lz[j] - 1.0)
+                * (
+                    hermite_coefficient(
+                        lz[i],
+                        lz[j] - 2,
+                        0,
+                        coord[center[i]][2] - coord[center[j]][2],
+                        exp[i],
+                        exp[j],
+                    )
+                )                
             )
 
             # dxxdxx
@@ -425,13 +621,16 @@ def massvelo(coord, exp, center, lx, ly, lz, output, dalton_normalization, drive
             )
 
             massvelo[count] = (
-                -normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                CONST_MASSV
+                * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
-                * CONST_MASSV
                 * (
                     dxxsidxxsj * skl * smn
+                    + dxxsi * (dyysl * smn + skl * dzzsn)
                     + sij * dyyskdyysl * smn
+                    + dyysk * (dxxsj * smn + sij * dzzsn)
                     + sij * skl * dzzsmdzzsn
+                    + dzzsm * (dxxsj * skl + sij * dyysl)
                 )
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)
             )

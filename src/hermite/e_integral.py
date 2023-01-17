@@ -748,7 +748,7 @@ class eint:
                 ],
                 charge=self._charge,
                 number_atoms=number_atoms,
-                nprim=self._wf.primitives_number,
+                nprim=self._wf.primitives_number_sph,
                 verbose=verbose,
             )
         # *END SPINORBITCalculation ******************************************************
@@ -758,7 +758,7 @@ class eint:
                 integrals=io,
                 number_atoms=number_atoms,
                 charge=self._charge,
-                nprim=self._wf.primitives_number,
+                nprim=self._wf.primitives_number_sph,
                 list_sofiel=[
                     sofiel_xx,
                     sofiel_xy,
@@ -906,7 +906,8 @@ if __name__ == "__main__":
     )
     s = eint(wf)
     # s.integration_twobody(integrals_names=["e2pot"],verbose=101)
-    s.integration_onebody(integrals_names=["angmom", "pso"], verbose=31)
+    s.integration_onebody(integrals_names=["laplacian", "kinetic", "fc", "psoke", "nucpot", "psolap", "overlap", "curllgxp"], verbose=31)
+    #s.integration_onebody(integrals_names=["kinetic", "angmom", "pso", "psoke 1", "ozke", "pangmomp", "ppsop", "massvelo", "darwin", "spinorbit", "sd", "dnske"], verbose=31)
     exit()
     one = True
     if one:

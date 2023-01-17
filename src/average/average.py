@@ -96,9 +96,13 @@ class average:
 
 if __name__ == "__main__":
     wfn = wave_function(
-        "../tests/molden_file/LiH.molden",
+        "../tests/molden_file/HI_v2z.molden",
         scratch_path="/home1/scratch",
-        job_folder="160922134451",
+        job_folder="HFaverage",
     )
     av = average(wfn)
-    av.calculate_average(property=["fc", "massvelo", "darwin"], verbose=11)
+    av.calculate_average(property=["nstcgo 1 x", "nstcgo 2 y", "nstcgo 3 z",
+                                   "psooz 1 x", "psooz 2 y", "psooz 3 z",
+                                   "fc 1", "sd 1 x", "sd 2 y", "sd 3 z",
+                                   "dnske 1 x", "dnske 2 y", "dnske 3 z"], 
+                                   verbose=11)

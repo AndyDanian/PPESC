@@ -16,6 +16,7 @@ property_multiplicities: dict[str, int] = {
     "nstcgo": 1,
     "dnske": 1,
     "psoke": 1,
+    "psolap": 1,
     "psooz": 1,
     "ozke": 1,
     "laplacian": 1,
@@ -23,4 +24,8 @@ property_multiplicities: dict[str, int] = {
     "spinorbit": 3,
     "pnstcgop": 1,
     "pangmomp": 1,
+    "ppsop": 1,
+    "curllgxp": 3,
+    "curllgyp": 3,
+    "curllgzp": 3,
 }

@@ -96,8 +96,12 @@ def calculate_quadratic_response(
                     nvir=n_mo_virt,
                 )
 
+                # Following Lehman representation [39]
+                # [39] H. Lehman, Nuovo Cim. 11 (1954) 342.
+                # Equation (2.43) in Compt. Phys. Reports. 1984, 2, 33
+                # <<A;B>>_w = Sum_{n!=0} [<0|A|n><n|B|0> + <0|B|n><n|A|0>](E_0-E_n)^{-1}
                 io.write_output(
-                    information=f"-<<{op_a};{op_b},{op_c}>> = {-vpathT:.6e}",
+                    information=f"<<{op_a};{op_b},{op_c}>> = {vpathT:.6e}",
                     type=1,
                     title_type=2,
                 )

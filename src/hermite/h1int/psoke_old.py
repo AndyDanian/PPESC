@@ -95,13 +95,11 @@ def psoke(
                         r_x, r_y, r_z = r_x_b, r_y_b, r_z_b
                         sign: float = 1.0
                         der_l: float = float(der_l_c[j])
-                        l_der: float = float(der_l_c[i])
                     else:
                         l_x, l_y, l_z = r_x_b, r_y_b, r_z_b
                         r_x, r_y, r_z = r_x_c, r_y_c, r_z_c
                         sign: float = -1.0
                         der_l: float = float(der_l_b[j])
-                        l_der: float = float(der_l_b[i])
                     # ! Terms of dxxLxyz/rk^3
                     lap_idj_jdi += sign * (
                         4.0
@@ -256,173 +254,183 @@ def psoke(
                             )
                         )
                     )
-                    ##########################
+                    # if count == 140:
+                    #     print("lapL ",d2x,d2y,d2z)
+                    #     print(exp[i],exp[j],lap_idj_jdi*2.0*np.pi/(exp[i] + exp[j])
+                    #         *normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                    #         *normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization))
                     # ! Terms of Lxyz/rk^3dxx
-                    idj_jdi_lap += -sign * (
-                        4.0
-                        * exp[j]
-                        * exp[j]
-                        * (
-                            2.0
-                            * exp[i]
-                            * nuclear_attraction(
-                                lx[i] + l_x,
-                                ly[i] + l_y,
-                                lz[i] + l_z,
-                                lx[j] + d2x,
-                                ly[j] + d2y,
-                                lz[j] + d2z,
-                                r_x,
-                                r_y,
-                                r_z,
-                                exp[i],
-                                exp[j],
-                                coord[center[i]][0],
-                                coord[center[i]][1],
-                                coord[center[i]][2],
-                                coord[center[j]][0],
-                                coord[center[j]][1],
-                                coord[center[j]][2],
-                                coord[atom][0],
-                                coord[atom][1],
-                                coord[atom][2],
-                            )
-                            - l_der
-                            * nuclear_attraction(
-                                lx[i] - l_x,
-                                ly[i] - l_y,
-                                lz[i] - l_z,
-                                lx[j] + d2x,
-                                ly[j] + d2y,
-                                lz[j] + d2z,
-                                r_x,
-                                r_y,
-                                r_z,
-                                exp[i],
-                                exp[j],
-                                coord[center[i]][0],
-                                coord[center[i]][1],
-                                coord[center[i]][2],
-                                coord[center[j]][0],
-                                coord[center[j]][1],
-                                coord[center[j]][2],
-                                coord[atom][0],
-                                coord[atom][1],
-                                coord[atom][2],
-                            )
-                        )
-                        - 2.0 * exp[j] * (2.0 * lap_l_j + 1.0)
-                        * (2.0
-                        * exp[i]
-                        * nuclear_attraction(
-                                lx[i] + l_x,
-                                ly[i] + l_y,
-                                lz[i] + l_z,
-                                lx[j],
-                                ly[j],
-                                lz[j],
-                                r_x,
-                                r_y,
-                                r_z,
-                                exp[i],
-                                exp[j],
-                                coord[center[i]][0],
-                                coord[center[i]][1],
-                                coord[center[i]][2],
-                                coord[center[j]][0],
-                                coord[center[j]][1],
-                                coord[center[j]][2],
-                                coord[atom][0],
-                                coord[atom][1],
-                                coord[atom][2],
-                            )
-                            - l_der
-                            * nuclear_attraction(
-                                    lx[i] - l_x,
-                                    ly[i] - l_y,
-                                    lz[i] - l_z,
-                                    lx[j],
-                                    ly[j],
-                                    lz[j],
-                                    r_x,
-                                    r_y,
-                                    r_z,
-                                    exp[i],
-                                    exp[j],
-                                    coord[center[i]][0],
-                                    coord[center[i]][1],
-                                    coord[center[i]][2],
-                                    coord[center[j]][0],
-                                    coord[center[j]][1],
-                                    coord[center[j]][2],
-                                    coord[atom][0],
-                                    coord[atom][1],
-                                    coord[atom][2],
-                        ))
-                        + lap_l_j
-                        * (lap_l_j - 1.0)
-                        * (
-                            2.0
-                            * exp[i]
-                            * nuclear_attraction(
-                                lx[i] + l_x,
-                                ly[i] + l_y,
-                                lz[i] + l_z,
-                                lx[j] - d2x,
-                                ly[j] - d2y,
-                                lz[j] - d2z,
-                                r_x,
-                                r_y,
-                                r_z,
-                                exp[i],
-                                exp[j],
-                                coord[center[i]][0],
-                                coord[center[i]][1],
-                                coord[center[i]][2],
-                                coord[center[j]][0],
-                                coord[center[j]][1],
-                                coord[center[j]][2],
-                                coord[atom][0],
-                                coord[atom][1],
-                                coord[atom][2],
-                            )
-                            - l_der
-                            * nuclear_attraction(
-                                lx[i] - l_x,
-                                ly[i] - l_y,
-                                lz[i] - l_z,
-                                lx[j] - d2x,
-                                ly[j] - d2y,
-                                lz[j] - d2z,
-                                r_x,
-                                r_y,
-                                r_z,
-                                exp[i],
-                                exp[j],
-                                coord[center[i]][0],
-                                coord[center[i]][1],
-                                coord[center[i]][2],
-                                coord[center[j]][0],
-                                coord[center[j]][1],
-                                coord[center[j]][2],
-                                coord[atom][0],
-                                coord[atom][1],
-                                coord[atom][2],
-                            )
-                        )
-                    )
+                    # idj_jdi_lap += -sign * (
+                    #     4.0
+                    #     * exp[j]
+                    #     * exp[j]
+                    #     * (
+                    #         2.0
+                    #         * exp[i]
+                    #         * nuclear_attraction(
+                    #             lx[i] + l_x,
+                    #             ly[i] + l_y,
+                    #             lz[i] + l_z,
+                    #             lx[j] + d2x,
+                    #             ly[j] + d2y,
+                    #             lz[j] + d2z,
+                    #             r_x,
+                    #             r_y,
+                    #             r_z,
+                    #             exp[i],
+                    #             exp[j],
+                    #             coord[center[i]][0],
+                    #             coord[center[i]][1],
+                    #             coord[center[i]][2],
+                    #             coord[center[j]][0],
+                    #             coord[center[j]][1],
+                    #             coord[center[j]][2],
+                    #             coord[atom][0],
+                    #             coord[atom][1],
+                    #             coord[atom][2],
+                    #         )
+                    #         - der_l
+                    #         * nuclear_attraction(
+                    #             lx[i] - l_x,
+                    #             ly[i] - l_y,
+                    #             lz[i] - l_z,
+                    #             lx[j] + d2x,
+                    #             ly[j] + d2y,
+                    #             lz[j] + d2z,
+                    #             r_x,
+                    #             r_y,
+                    #             r_z,
+                    #             exp[i],
+                    #             exp[j],
+                    #             coord[center[i]][0],
+                    #             coord[center[i]][1],
+                    #             coord[center[i]][2],
+                    #             coord[center[j]][0],
+                    #             coord[center[j]][1],
+                    #             coord[center[j]][2],
+                    #             coord[atom][0],
+                    #             coord[atom][1],
+                    #             coord[atom][2],
+                    #         )
+                    #     )
+                    #     - 2.0 * exp[j] * (2.0 * lap_l_j + 1.0)
+                    #     * (2.0
+                    #     * exp[i]
+                    #     * nuclear_attraction(
+                    #                         lx[i] + l_x,
+                    #                         ly[i] + l_y,
+                    #                         lz[i] + l_z,
+                    #                         lx[j],
+                    #                         ly[j],
+                    #                         lz[j],
+                    #                         r_x,
+                    #                         r_y,
+                    #                         r_z,
+                    #                         exp[i],
+                    #                         exp[j],
+                    #                         coord[center[i]][0],
+                    #                         coord[center[i]][1],
+                    #                         coord[center[i]][2],
+                    #                         coord[center[j]][0],
+                    #                         coord[center[j]][1],
+                    #                         coord[center[j]][2],
+                    #                         coord[atom][0],
+                    #                         coord[atom][1],
+                    #                         coord[atom][2],
+                    #         )
+                    #         - der_l
+                    #         * nuclear_attraction(
+                    #                 lx[i] - l_x,
+                    #                 ly[i] - l_y,
+                    #                 lz[i] - l_z,
+                    #                 lx[j],
+                    #                 ly[j],
+                    #                 lz[j],
+                    #                 r_x,
+                    #                 r_y,
+                    #                 r_z,
+                    #                 exp[i],
+                    #                 exp[j],
+                    #                 coord[center[i]][0],
+                    #                 coord[center[i]][1],
+                    #                 coord[center[i]][2],
+                    #                 coord[center[j]][0],
+                    #                 coord[center[j]][1],
+                    #                 coord[center[j]][2],
+                    #                 coord[atom][0],
+                    #                 coord[atom][1],
+                    #                 coord[atom][2],
+                    #     ))
+                    #     + lap_l_j
+                    #     * (lap_l_j - 1.0)
+                    #     * (
+                    #         2.0
+                    #         * exp[i]
+                    #         * nuclear_attraction(
+                    #             lx[i] + l_x,
+                    #             ly[i] + l_y,
+                    #             lz[i] + l_z,
+                    #             lx[j] - d2x,
+                    #             ly[j] - d2y,
+                    #             lz[j] - d2z,
+                    #             r_x,
+                    #             r_y,
+                    #             r_z,
+                    #             exp[i],
+                    #             exp[j],
+                    #             coord[center[i]][0],
+                    #             coord[center[i]][1],
+                    #             coord[center[i]][2],
+                    #             coord[center[j]][0],
+                    #             coord[center[j]][1],
+                    #             coord[center[j]][2],
+                    #             coord[atom][0],
+                    #             coord[atom][1],
+                    #             coord[atom][2],
+                    #         )
+                    #         - der_l
+                    #         * nuclear_attraction(
+                    #             lx[i] - l_x,
+                    #             ly[i] - l_y,
+                    #             lz[i] - l_z,
+                    #             lx[j] - d2x,
+                    #             ly[j] - d2y,
+                    #             lz[j] - d2z,
+                    #             r_x,
+                    #             r_y,
+                    #             r_z,
+                    #             exp[i],
+                    #             exp[j],
+                    #             coord[center[i]][0],
+                    #             coord[center[i]][1],
+                    #             coord[center[i]][2],
+                    #             coord[center[j]][0],
+                    #             coord[center[j]][1],
+                    #             coord[center[j]][2],
+                    #             coord[atom][0],
+                    #             coord[atom][1],
+                    #             coord[atom][2],
+                    #         )
+                    #     )
+                    # )
 
 
             # * nabla^2 pso + pso nabla^2
             psoke[count] = (
-                - normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                - 0.5 # DALTON CONSTANT
+                * 2.0
+                * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
-                * (lap_idj_jdi + idj_jdi_lap)
-                * 2.0 * np.pi
+                * (lap_idj_jdi) # + idj_jdi_lap)
+                * np.pi
                 / (exp[i] + exp[j])
             )
 
-
+            # if count == 140:
+            #     print(count,exp[i],exp[j],lap_idj_jdi*2.0*np.pi/(exp[i] + exp[j])* normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+            #         * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization))
+            #     print(count,exp[i],exp[j],idj_jdi_lap*2.0*np.pi/(exp[i] + exp[j])*normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+            #         * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization))
             count += 1
     if output > 10:
         driver_time.add_name_delta_time(

@@ -46,6 +46,7 @@ from pso import *  # Paramagnetic spin-orbit
 from nstcgo import *  # Diamagnetic nuclear shielding tensor
 from dnske import *  # Kinetic-energy correction to the diamagnetic contribution to nuclear shielding
 from psoke import *  # Kinetic-energy correction to the paramagnetic spin-orbit to nuclear shielding
+from psolap import *  # Paramagnetic spin-orbit to nuclear shielding by laplacian
 from psooz import *  # Orbital-Zeeman correction to the paramagnetic spin-orbit to nuclear shielding
 from ozke import *  # Calculates the kinetic energy correction to the orbital Zeeman operator
 from laplacian import *  # Calculate different double derivatives
@@ -53,6 +54,10 @@ from spinorbit import *  # Calculate SpinOrbit integrals
 from sofiel import *  # External magnetic-field dependence of the spin-orbit operator integrals
 from pnstcgop import *
 from pangmomp import *
+from ppsop import *
+from curllgxp import *
+from curllgyp import *
+from curllgzp import *
 
 # h2int: Two--Body hermite integrals
 from e2pot import *

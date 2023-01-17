@@ -38,7 +38,8 @@ def spin_orbit(
         lambda a: str(2 + a * 3),
         lambda a: str(3 + a * 3),
     ]
-    SPINORBIT_CTE = 1.0 / (137.0359998 * 137.0359998 * 4.0359998)
+    #! SPINORBIT_CTE: float = 1.0 / (137.0359998 * 137.0359998 * 4.0359998) # DALTON
+    SPINORBIT_CTE: float = 1.0 / (137.0359998 * 137.0359998 * 2.0)
     # * Calculation Spin-Orbit Integrals ****************************************
     for count, so in enumerate(list_spino):
         if so and not (

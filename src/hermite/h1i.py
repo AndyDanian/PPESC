@@ -233,6 +233,20 @@ def h1i(
             dalton_normalization,
             driver_time,
         )
+    elif name.lower() == "psolap":
+        integral = psolap(
+            coord,
+            spatial_sym,
+            atom,
+            exp,
+            center,
+            lx,
+            ly,
+            lz,
+            verbose,
+            dalton_normalization,
+            driver_time,
+        )
     elif name.lower() == "psooz":
         integral = psooz(
             coord,
@@ -306,5 +320,57 @@ def h1i(
             dalton_normalization,
             driver_time,
         )
-
+    elif name.lower() == "ppsop":
+        integral = ppsop(
+            coord,
+            spatial_sym,
+            atom,
+            exp,
+            center,
+            lx,
+            ly,
+            lz,
+            verbose,
+            dalton_normalization,
+            driver_time,
+        )
+    elif name.lower() == "curllgxp":
+        integral = curllgxp(
+            coord,
+            magnetic_xyz,
+            exp,
+            center,
+            lx,
+            ly,
+            lz,
+            verbose,
+            dalton_normalization,
+            driver_time,
+        )
+    elif name.lower() == "curllgyp":
+        integral = curllgyp(
+            coord,
+            magnetic_xyz,
+            exp,
+            center,
+            lx,
+            ly,
+            lz,
+            verbose,
+            dalton_normalization,
+            driver_time,
+        )
+    elif name.lower() == "curllgzp":
+        integral = curllgzp(
+            coord,
+            magnetic_xyz,
+            exp,
+            center,
+            lx,
+            ly,
+            lz,
+            verbose,
+            dalton_normalization,
+            driver_time,
+        )
     return integral

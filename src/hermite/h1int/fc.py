@@ -29,7 +29,8 @@ def fc(coord, atom, exp, center, lx, ly, lz, output, dalton_normalization, drive
     count: int = 0
 
     GFACTOR: float = 2.0023193134
-    CONST_FC: float = 4.0 * np.pi * GFACTOR / 3.0
+    # CONST_FC: float = 4.0 * np.pi * GFACTOR / 3.0 # DALTON
+    CONST_FC: float = 8.0 * np.pi / 3.0
 
     for i in range(total_nprim):
 

@@ -64,7 +64,7 @@ def laplacian(
         c: int = 0
 
     if component >= 0 and component <= 2:
-        FSIGN: float = -1.0
+        FSIGN: float = 1.0
     else:
         FSIGN: float = 1.0
 

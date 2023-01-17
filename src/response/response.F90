@@ -120,7 +120,7 @@ subroutine lineal_sum(xppy,       &
         b = 1
         do 20 jb = 1, nrot
             t = b + n_mo_occ
-            response_value = -0.5*(                  &
+            response_value = 0.5*(                   &
                                     gpva(ia)*        &
                                     pp(ia,jb)*       &
                                     gpvb(jb)         &
@@ -134,7 +134,7 @@ subroutine lineal_sum(xppy,       &
                 write(*,*)
                 write(*,*)" #     i         s         t          j"
             endif
-            if (verbose .gt. 20 .and. abs(response_value) .gt. 0.1) then !improve threshild to write value according its amount and basis set size
+            if (verbose .gt. 20 .and. abs(response_value) .gt. 0.5) then !improve threshild to write value according its amount and basis set size
                 write(*,*)count,i,s,t,j,response_value
             endif
 
@@ -266,7 +266,7 @@ subroutine quadratic_sum(xppyppz,       &
                     *ppa(ia,jb) &
                     *gpva(jb+nrot)
 
-                response_value = -0.5*(appb1 + appb2 + appb3 + appb4 + appb5 + appb6)
+                response_value = 0.5*(appb1 + appb2 + appb3 + appb4 + appb5 + appb6)
                 xppyppz = xppyppz + response_value
 
                 if (verbose .gt. 20 .and. count .eq. 1) then

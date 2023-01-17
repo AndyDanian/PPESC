@@ -45,7 +45,8 @@ def sd(
     count: int = 0
 
     GFACTOR: float = 2.0023193134
-    CONST_SD: float = GFACTOR / 2.0 * 1 / 3.0
+    # CONST_SD: float = GFACTOR / 2.0 * 1 / 3.0 # DALTON
+    CONST_SD: float = 1 / 3.0 # Due to take 1/r⁵ like derivatives: x_k/r⁵ = 1/3 d²x 1/r
 
     dx_x: int = 0
     dy_x: int = 0
@@ -217,6 +218,8 @@ def sd(
                 / (exp[i] + exp[j])
                 * (CTE_XR * xr + CTE_YR * yr + CTE_ZR * zr)
             )
+
+
             count += 1
 
     if output > 10:

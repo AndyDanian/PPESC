@@ -50,8 +50,11 @@ def calculate_lineal_reponse(
                 nocc=n_mo_occ,
                 nvir=n_mo_virt,
             )
+            # Lehman representation [39], Equation (2.43) in Compt. Phys. Reports. 1984, 2, 33
+            # [39] H. Lehman, Nuovo Cim. 11 (1954) 342.
+            # <<A;B>>_w = Sum_{n!=0} [<0|A|n><n|B|0> + <0|B|n><n|A|0>](E_0-E_n)^{-1}
             io.write_output(
-                information=f"-<<{op_a};{op_b}>> = {-vpathT:.6e}", type=1, title_type=2
+                information=f"<<{op_a};{op_b}>> = {vpathT:.6e}", type=1, title_type=2
             )
             io.write_output("\n")
 

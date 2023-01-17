@@ -31,6 +31,7 @@ integral_symmetry: dict = {
     "nstcgo": "sym",
     "dnske": "sym",
     "psoke": "square",
+    "psolap": "square",
     "psooz": "square",
     "ozke": "antisym",
     "spinorbit": "antisym",
@@ -38,6 +39,10 @@ integral_symmetry: dict = {
     "sofiel": "sym",
     "pnstcgop": "sym",
     "pangmomp": "antisym",
+    "ppsop": "antisym",
+    "curllgxp": "sym",
+    "curllgyp": "sym",
+    "curllgzp": "sym",
 }
 
 

@@ -14,6 +14,7 @@ spatial_symmetry: dict[str, int] = {
     "nstcgo": 1,
     "dnske": 1,
     "psoke": 1,
+    "psolap": 1,
     "psooz": 1,
     "ozke": 0,
     "spinorbit": 1,
@@ -21,6 +22,10 @@ spatial_symmetry: dict[str, int] = {
     "sofiel": 1,
     "pnstcgop": 1,
     "pangmomp": 0,
+    "ppsop": 1,
+    "curllgxp": 0,
+    "curllgyp": 0,
+    "curllgzp": 0,
 }
 magnetic: dict[str, int] = {
     "overlap": 0,
@@ -38,6 +43,7 @@ magnetic: dict[str, int] = {
     "nstcgo": 1,
     "dnske": 1,
     "psoke": 0,
+    "psolap": 0,
     "psooz": 1,
     "ozke": 1,
     "spinorbit": 0,
@@ -45,6 +51,10 @@ magnetic: dict[str, int] = {
     "sofield": 1,
     "pnstcgop": 1,
     "pangmomp": 1,
+    "ppsop": 0,
+    "curllgxp": 1,
+    "curllgyp": 1,
+    "curllgzp": 1,
 }
 integral_symmetry: dict[str, str] = {
     "overlap": "sym",
@@ -62,6 +72,7 @@ integral_symmetry: dict[str, str] = {
     "nstcgo": "sym",
     "dnske": "sym",
     "psoke": "square",
+    "psolap": "square",
     "psooz": "square",
     "ozke": "antisym",
     "spinorbit": "antisym",
@@ -69,6 +80,10 @@ integral_symmetry: dict[str, str] = {
     "sofiel": "sym",
     "pnstcgop": "sym",
     "pangmomp": "antisym",
+    "ppsop": "antisym",
+    "curllgxp": "sym",
+    "curllgyp": "sym",
+    "curllgzp": "sym",
 }
 
 # Separated magnetic axes of cartessian component (laplacian), i. e., to make a cartessian component by
@@ -100,6 +115,7 @@ large_name: dict[str, str] = {
     "nstcgo": "Diamagnetic Nuclear Shielding Tensor",
     "dnske": "Kinetic Energy Correction to Diamagnetic Nuclear Shielding Tensor",
     "psoke": "Kinetic Energy Correction to the Paramagnetic Spin-Orbit",
+    "psolap": "Paramagnetic Spin-Orbit by Laplacian",
     "psooz": "Orbital-Zeeman Correction to the Paramagnetic Spin-Orbit",
     "ozke": "Kinetic Energy Correction to Orbital--Zeemna",
     "spinorbit": "One-Elctron Spatial Spin-Orbit",
@@ -107,4 +123,8 @@ large_name: dict[str, str] = {
     "sofiel": "Extenal Magnetic-Field Dependence of the Spin-Orbit Operator",
     "pnstcgop": "nabla(Diamagnetic Nuclear Shielding Tensor)nabla",
     "pangmomp": "nabla (Angulat Mometum)_gauge nabla",
+    "ppsop": "nabla PSO nabla",
+    "curllgxp": "Curl Angular Momentum Atomic Integrals on X by Lineal Momentum",
+    "curllgyp": "Curl Angular Momentum Atomic Integrals on Y by Lineal Momentum",
+    "curllgzp": "Curl Angular Momentum Atomic Integrals on Z by Lineal Momentum",
 }

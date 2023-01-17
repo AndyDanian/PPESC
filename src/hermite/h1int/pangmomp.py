@@ -397,10 +397,8 @@ def pangmomp(
                 lg_sign_firts_second = -1.0
 
             pangmomp[count] = (
-                minus_one_column_row
-                * normalization(  # (-1)^(column+row), times product sign
-                    lx[i], ly[i], lz[i], exp[i], dalton_normalization
-                )
+                -minus_one_column_row   # (-1)^(column+row), times product sign
+                * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * (dxilidxi + dxiljdxi_a + dxiljdxi_b)
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)
