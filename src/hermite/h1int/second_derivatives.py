@@ -1,7 +1,7 @@
 from lib1h import *
 
 ############# Calculate the potential one body integrals ########################
-def laplacian(
+def second_derivatives(
     coord, component, exp, center, lx, ly, lz, output, dalton_normalization, driver_time
 ):
     """_summary_
@@ -29,44 +29,51 @@ def laplacian(
     total_nprim = len(exp)
     ddi = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
 
-    if component == 0 or component == 3:
+
+    if component == 0 or component == 3: # dxdx and dxdy
         mla: list = lx
         mlb: list = ly
         mlc: list = lz
         a: int = 0
         b: int = 1
         c: int = 2
-    elif component == 1:
+    elif component == 1 or component == 5: # dydy and dydx
         mla: list = ly
         mlb: list = lx
         mlc: list = lz
+        a: int = 1
         b: int = 0
         c: int = 2
-    elif component == 2:
+    elif component == 2 or component == 8: # dzdz and dzdy
         mla: list = lz
         mlb: list = ly
         mlc: list = lx
+        a: int = 2
         b: int = 1
         c: int = 0
-    elif component == 4:
+    elif component == 4: # dxdz
         mla: list = lx
         mlb: list = lz
         mlc: list = ly
         a: int = 0
         b: int = 2
         c: int = 1
-    elif component == 5:
+    elif component == 6: # dydz
         mla: list = ly
         mlb: list = lz
         mlc: list = lx
         a: int = 1
         b: int = 2
         c: int = 0
-
-    if component >= 0 and component <= 2:
-        FSIGN: float = 1.0
+    elif component == 8:
+        mla: list = ly
+        mlb: list = lz
+        mlc: list = lx
+        a: int = 1
+        b: int = 2
+        c: int = 0
     else:
-        FSIGN: float = 1.0
+        raise  ValueError(f"***Error\n\n This second derivative not exist: {component}")
 
     count = 0
     for i in range(total_nprim):
@@ -186,8 +193,7 @@ def laplacian(
                 )
 
             ddi[count] = (
-                FSIGN
-                * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                  normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * (sij * skl * smn)
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)

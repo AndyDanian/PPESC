@@ -16,12 +16,14 @@ sys.path.append(os.fspath(PROJECT_DIR / "functions"))
 from drv_time import drv_time
 
 integral_symmetry: dict = {
+    "one": "sym",
     "overlap": "sym",
     "nucpot": "sym",
     "kinetic": "sym",
     "angmom": "antisym",
     "sd": "sym",
     "fc": "sym",
+    "fcke": "sym",
     "darwin": "sym",
     "massvelo": "sym",
     "nelfld": "sym",
@@ -30,12 +32,22 @@ integral_symmetry: dict = {
     "pso": "antisym",
     "nstcgo": "sym",
     "dnske": "sym",
+    "cdnske": "sym",
     "psoke": "square",
     "psolap": "square",
     "psooz": "square",
     "ozke": "antisym",
     "spinorbit": "antisym",
-    "laplacian": "sym",
+    "szke": "sym",
+    "dxdx": "sym",
+    "dydy": "sym",
+    "dzdz": "sym",
+    "dxdy": "sym",
+    "dxdz": "sym",
+    "dydx": "sym",
+    "dydz": "sym",
+    "dzdx": "sym",
+    "dzdy": "sym",
     "sofiel": "sym",
     "pnstcgop": "sym",
     "pangmomp": "antisym",
@@ -43,12 +55,23 @@ integral_symmetry: dict = {
     "curllgxp": "sym",
     "curllgyp": "sym",
     "curllgzp": "sym",
+    "pxabx": "square",
+    "pxaby": "square",
+    "pxabz": "square",
+    "lap_abxxp": "sym",
+    "lap_abyxp": "sym",
+    "lap_abzxp": "sym",
+    "lap_pxabx": "square",
+    "lap_pxaby": "square",
+    "lap_pxabz": "square",
+    "lapauxxp": "square",
+    "rpsod": "square",
 }
 
 
 class scratch:
     # Constructor
-    def __init__(self, scratch: Union[Path, str], job_folder: str) -> None:
+    def __init__(self, scratch: Union[Path, str], job_folder: str, restart: int) -> None:
         """
         Constructor of scratch object
 
@@ -93,8 +116,10 @@ class scratch:
             "EXCHCOUL.H5",
             "PRINPROP.H5",
         ]
+        if (self._scratch / ("AO1BINT.H5")).exists() and restart == 0:
+            (self._scratch / ("AO1BINT.H5")).unlink()
         for i, name_file in enumerate(h5_files):
-            if (self._scratch / (name_file)).exists():
+            if (self._scratch / (name_file)).exists() and restart == 0:
                 (self._scratch / (name_file)).unlink()
         self._hermite_ao1b_binary: Path = self._scratch / ("AO1BINT.H5")
         self._hermite_ao2b_binary: Path = self._scratch / ("AO2BINT.H5")

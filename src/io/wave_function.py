@@ -13,6 +13,7 @@ class wave_function:
         basis: list[list[dict[str, list[float]]]] = None,
         mos: list[dict] = [],
         cartessian_primitive: bool = False,
+        restart: int = 0,
     ):
         """
         Wave function object need a filename with wave function
@@ -38,12 +39,13 @@ class wave_function:
             [{'energy':..., 'spin':..., "occupation":..., "coefficients":[...]},...]
 
             cartessian_primitive (bool): if True, the molecular orbitals are in cartessian
+            restart (int): Errase (0) or not (1) information into de schratch directory (default: 0)
         """
 
         start = time()
         self._driver_time: drv_time = drv_time()
         self._driver_scratch: scratch = scratch(
-            scratch=scratch_path, job_folder=job_folder
+            scratch=scratch_path, job_folder=job_folder, restart=restart
         )
 
         if not filename:

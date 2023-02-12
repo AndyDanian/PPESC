@@ -96,13 +96,17 @@ class average:
 
 if __name__ == "__main__":
     wfn = wave_function(
-        "../tests/molden_file/HI_v2z.molden",
+        "../tests/molden_file/HAt_v2z.molden",
         scratch_path="/home1/scratch",
-        job_folder="HFaverage",
+        #job_folder="HAtaverage",
+        job_folder="/home1/build/PPESC/integrals/intpy/pySCF_CAL/HAt/DwMv/Av",
     )
     av = average(wfn)
-    av.calculate_average(property=["nstcgo 1 x", "nstcgo 2 y", "nstcgo 3 z",
+    av.calculate_average(property=[
+                                   "overlap",
+                                   "nstcgo 1 x", "nstcgo 2 y", "nstcgo 3 z",
                                    "psooz 1 x", "psooz 2 y", "psooz 3 z",
                                    "fc 1", "sd 1 x", "sd 2 y", "sd 3 z",
-                                   "dnske 1 x", "dnske 2 y", "dnske 3 z"], 
-                                   verbose=11)
+                                   "dnske 1 x", "dnske 2 y", "dnske 3 z" 
+                                   "cdnske 1 x", "cdnske 2 y", "cdnske 3 z"], 
+                                   verbose=1)

@@ -495,7 +495,7 @@ if __name__ == "__main__":
     print("\n Calculate MO energies used wave function \n")
     eom_values = fock(wfn)
     eom_values.calculate_hf_moe(
-        verbose=11, verbose_integrals=1, relativity_correction=False
+        verbose=11, verbose_integrals=1, relativity_correction=True
     )
 
 # H2 STO-1G

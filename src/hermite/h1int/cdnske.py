@@ -1,7 +1,7 @@
 from lib1h import *
 
 
-def dnske(
+def cdnske(
     coord,
     gauge,
     spatial_sym,
@@ -42,7 +42,7 @@ def dnske(
     # Primitive total in the cluster
     total_nprim: int = len(exp)
 
-    dnske: list = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
+    cdnske: list = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
 
     count: int = 0
 
@@ -656,30 +656,30 @@ def dnske(
                         )
                     )
 
-            dnske[count] = (
+            cdnske[count] = (
                 normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * 2.0
                 * np.pi
                 / (exp[i] + exp[j])
-                * (Alap+lapA)
+                * (Alap-lapA)
                 * 0.5
                 # * 3.0/4.0 #DALTON
             )
             count += 1
     if output > 10:
         driver_time.add_name_delta_time(
-            name=f"Kinetic-Energy Correction to the Diamagnetic Contribution to Nuclear Shielding, \
+            name=f"Commutator Kinetic-Energy Correction to the Diamagnetic Contribution to Nuclear Shielding, \
         for {magnetic_component} Magnetic Component and {spatial_sym} Spatial Symmetry",
             delta_time=(time() - start),
         )
 
-    return dnske
+    return cdnske
 
 if __name__ == "__main__":
     # STO-2G
     print("\n LiH \n")
-    s = dnske(
+    s = cdnske(
         coord=[[0.0, 0.0, -0.545857052],[0.0, 0.0, 2.309057052]],
         gauge=[0,0,0],
         exp=[

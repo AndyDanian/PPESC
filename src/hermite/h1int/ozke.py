@@ -489,10 +489,10 @@ def ozke(
                 + (e1kl + left_rg * e0kl) * (d_dmm2n_1 - d_dmn_1 + d_dmt2n_1)
             ) * e0ij
 
-            # * nabla^2 Lx + Lx nabla^2, nabla^2 commuta with L
+            # * Lx nabla^2
             ozke[count] = (
                 #* 0.25 #DALTON (Manninen's Constants)
-                -2.0*normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                - normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * (dxxlx + dyylx + dzzlx)
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)

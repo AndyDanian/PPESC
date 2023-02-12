@@ -9,7 +9,6 @@ from cto_gto_h1 import *
 # Modules into sub-folder
 from libint import *
 
-
 class eint:
     def __init__(self, wf: wave_function):
         """
@@ -365,7 +364,9 @@ class eint:
         integrals_names = temp_integrals_names
         # END Remove repet integrals ##########################################################
 
+        # **************************************************************************************
         # * Start 1B Integral Calculation ******************************************************
+        # **************************************************************************************
         symmetries: dict[str, str] = {}
         for int_name in integrals_names:
             integrals: dict[str, list[float]] = {}
@@ -419,16 +420,20 @@ class eint:
                 and magnetic[integral_name.lower()] == 0
             ):
 
-                # **** Molecular Scalars Integrals  *** #
-                if integral_name.lower() in [
+                # **** Atomic Scalars Integrals Which Are Independent of Atom *** #
+                if integral_name.lower() in ([
+                    "one",
                     "overlap",
                     "darwin",
                     "massvelo",
                     "kinetic",
-                ]:
+                    "szke",
+                ] + list(second_derivatives_string.keys())):
 
                     # Build Name == integral name #############################
                     integral_label: str = integral_name.lower()
+                    if integral_name.lower() == "szke":
+                        integral_label = int_name.lower()
                     # END Build Name ##########################################
 
                     # Verification: Integrals is calculated, already ###########
@@ -439,6 +444,14 @@ class eint:
                     ):
                         continue
                     # END Verfication ##########################################
+
+                    # Direction to derivative
+                    magnetic_xyz: int = -1
+                    if integral_label in list(second_derivatives_string.keys()):
+                        magnetic_xyz = second_derivatives_string[integral_label.lower()]
+                    elif integral_label.lower() in list(spin_zeeman_kientic_tensor.keys()):
+                        magnetic_xyz = spin_zeeman_kientic_tensor[integral_label.lower()]
+                    # End direction search ######################################
 
                     symmetries[integral_label] = integral_symmetry[
                         integral_name.lower()
@@ -452,14 +465,16 @@ class eint:
                         lx=self._lx,
                         ly=self._ly,
                         lz=self._lz,
-                        name=integral_name,
+                        name=integral_label,
                         verbose=verbose,
                         dalton_normalization=dalton_normalization,
                         driver_time=driver_time,
+                        # special variable
+                        magnetic_xyz=magnetic_xyz
                     )
 
-                # **** Atomic Scalars Integrals  *** #
-                elif integral_name.lower() in ["nucpot", "fc"]:
+                # **** Atomic Scalars Integrals Which Depedent of Atom *** #
+                elif integral_name.lower() in ["nucpot", "fc", "fcke"]:
 
                     for atom in atoms:
                         # Build Name according atom index ################
@@ -495,7 +510,7 @@ class eint:
                             atom=atom,
                         )
 
-            # **** Molecular Vectorials Integrals  *** #
+            # **** Atomic Vectorials Integrals Which Depdent of Direction *** #
             elif (
                 spatial_symmetry[integral_name.lower()] == 0
                 and magnetic[integral_name.lower()] == 1
@@ -513,7 +528,7 @@ class eint:
                             integral_label = (
                                 integral_name.lower() + " " + magnetic_axes[b_i]
                             )
-                        magnetic_xyz: int = b_i
+                        magnetic_xyz = b_i
                     else:
                         integral_label = integral_name.lower() + " " + str(b_i)
                         if integral_name.lower() == "laplacian":
@@ -906,8 +921,7 @@ if __name__ == "__main__":
     )
     s = eint(wf)
     # s.integration_twobody(integrals_names=["e2pot"],verbose=101)
-    s.integration_onebody(integrals_names=["laplacian", "kinetic", "fc", "psoke", "nucpot", "psolap", "overlap", "curllgxp"], verbose=31)
-    #s.integration_onebody(integrals_names=["kinetic", "angmom", "pso", "psoke 1", "ozke", "pangmomp", "ppsop", "massvelo", "darwin", "spinorbit", "sd", "dnske"], verbose=31)
+    s.integration_onebody(integrals_names=["kinetic", "rpsod"], verbose=31)
     exit()
     one = True
     if one:

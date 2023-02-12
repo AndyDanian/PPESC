@@ -336,6 +336,7 @@ class response:
         gauge: list = [0.0, 0.0, 0.0],
         verbose: int = 0,
         verbose_integrals: int = -1,
+        restart: list = [0, 0],
     ) -> dict[str, float]:
         """
         Manage of response calculation
@@ -349,6 +350,11 @@ class response:
                     > 30: Gradient Vector properties, ocuppied molecular integrals obirtals, virtuals molecular integrals orbitals
                     > 50: Exchange and coulomb integrals, principal propagator and its inverse
             verbose_integrals (int): Print level to hermite module
+            retart (int): read information from scratch direvtory if it exists
+                          1: Don't calculate two body integrals. They are read from AO2BINT.H5
+                          2: Don't calculate coulomb and exchange. They are read from EXCHCOUL.H5
+                          3: Don't calculate Principal Propagator. It's read from PRINPROP.H5
+                           
         """
 
         ## Instance external objects
@@ -392,7 +398,7 @@ class response:
 
         # - Two--Body Atomic Orbitalas
         calculate_integral = eint(self._wf)
-        if not io._hermite_ao2b_binary.exists():
+        if not io._hermite_ao2b_binary.exists() and restart < 1:
             calculate_integral.integration_twobody(
                 integrals_names=["e2pot"],
                 verbose=verbose_integrals,
@@ -454,26 +460,28 @@ class response:
 
         if singlet_activate or triplet_activate:
             # - Coulomb and Exchange
-            if not io._exchange_coulomb.exists():
+            if not io._exchange_coulomb.exists() and restart < 2:
                 get_coulomb_exchange_integrals(
                     io=io,
                     driver_time=driver_time,
                     wf=self._wf,
                     verbose=self._verbose,
                 )
-            drv_principal_propagator(
-                io=io,
-                driver_time=driver_time,
-                n_mo_occ=self._wf.mo_occ,
-                n_mo_virt=self._wf.mo_virt,
-                moe=self._moe,
-                multiplicity_pp={
-                    "singlet": singlet_activate,
-                    "triplet": triplet_activate,
-                },
-                tp_inv=0,
-                verbose=self._verbose,
-            )
+
+            if restart < 3:
+                drv_principal_propagator(
+                    io=io,
+                    driver_time=driver_time,
+                    n_mo_occ=self._wf.mo_occ,
+                    n_mo_virt=self._wf.mo_virt,
+                    moe=self._moe,
+                    multiplicity_pp={
+                        "singlet": singlet_activate,
+                        "triplet": triplet_activate,
+                    },
+                    tp_inv=0,
+                    verbose=self._verbose,
+                )
 
         # Run Response
         if principal_propagator_approximation.lower() == "rpa":
@@ -495,94 +503,68 @@ class response:
 
 if __name__ == "__main__":
     wfn = wave_function(
-        "../tests/molden_file/HF_v2z.molden",
+        "../tests/molden_file/HAt_v2z.molden",
         scratch_path="/home1/scratch",
-        job_folder="160922134451",
-        #job_folder="HFv2z",
+        #job_folder="HFV2Z",
+        job_folder="/home1/build/PPESC/integrals/intpy/pySCF_CAL/HAt/DwMv",
+        restart = 1 # 1 not errase information into scratch/job
     )
     r = response(wfn)
-    # r.drv_reponse_calculation(principal_propagator_approximation="rpa",
-    #         properties = [["angmom x","fc 1","spinorbit x"],["angmom x","sd 1 x","spinorbit x"],["angmom x","sd 1 z","spinorbit z"],["angmom y","sd 2 y","spinorbit y"]
-    #         ,["angmom z","sd 3 x","spinorbit x"],["angmom x", "pso 1", "massvelo"],["angmom x", "pso 1", "darwin"]],
-    #                             pp_multiplicity=[[1,3,3],[1,3,3],[1,3,3],[1,3,3],[1,3,3],[1,1,1],[1,1,1]],gauge=[0.000,0.0000,0.0586476414],
-    #                             verbose=11)
-
     run = True
     if run:
         r.drv_reponse_calculation(
             principal_propagator_approximation="rpa",
-            # properties=[
-            #     ["overlap", "fc 1"],
-            #     ["overlap", "sd 1 x"],
-            #     ["overlap", "sd 2 y"],
-            #     ["overlap", "sd 3 z"],
-            #    ["nstcgo 1 x", "massvelo"],
-            #    ["nstcgo 2 y", "massvelo"],
-            #    ["nstcgo 3 z", "massvelo"],
-            #    ["nstcgo 1 x", "darwin"],
-            #    ["nstcgo 2 y", "darwin"],
-            #    ["nstcgo 3 z", "darwin"]
-            #]
+            restart=3, ## 3 no calcula 2I, C y J, y PP
             properties=[
-               ["curllgxp x", "fc 1"],
-               ["curllgxp y", "fc 1"],
-               ["curllgxp z", "fc 1"],
-               ["curllgyp x", "fc 1"],
-               ["curllgyp y", "fc 1"],
-               ["curllgyp z", "fc 1"],
-               ["curllgzp x", "fc 1"],
-               ["curllgzp y", "fc 1"],
-               ["curllgzp z", "fc 1"],
-               ["curllgxp x", "sd 1 x"],
-               ["curllgxp y", "sd 2 y"],
-               ["curllgxp z", "sd 3 z"],
-               ["curllgyp x", "sd 1 x"],
-               ["curllgyp y", "sd 2 y"],
-               ["curllgyp z", "sd 3 z"],
-               ["curllgzp x", "sd 1 x"],
-               ["curllgzp y", "sd 2 y"],
-               ["curllgzp z", "sd 3 z"],
-               ["kinetic", "fc 1"],
-               ["laplacian xx", "fc 1"],
-               ["laplacian yy", "fc 1"],
-               ["laplacian zz", "fc 1"],
-            #   ["pso 1", "ozke x"],
-            #   ["pso 2", "ozke y"],
-            #   ["pso 3", "ozke z"],
-            #   ["pso 1", "pangmomp x"],
-            #   ["pso 2", "pangmomp y"],
-            #   ["pso 3", "pangmomp z"],
-            #   ["angmom x", "psoke 1"],
-            #   ["angmom y", "psoke 2"],
-            #   ["angmom z", "psoke 3"],
-            #   ["angmom x", "psolap 1"],
-            #   ["angmom y", "psolap 2"],
-            #   ["angmom z", "psolap 3"],
-            #   ["angmom x", "ppsop 1"],
-            #   ["angmom y", "ppsop 2"],
-            #   ["angmom z", "ppsop 3"],
-            #   ["kinetic", "sd 1 x"],
-            #   ["kinetic", "sd 2 x"],
-            #   ["kinetic", "sd 3 x"],
-            #   ["kinetic", "sd 1 y"],
-            #   ["kinetic", "sd 2 y"],
-            #   ["kinetic", "sd 3 y"],
-            #   ["kinetic", "sd 1 z"],
-            #   ["kinetic", "sd 2 z"],
-            #   ["kinetic", "sd 3 z"],
-            #   ["angmom x", "fc 1", "spinorbit x"],
-            #   ["angmom y", "fc 1", "spinorbit y"],
-            #   ["angmom z", "fc 1", "spinorbit z"],
-            #   ["angmom x", "sd 1 x", "spinorbit x"],
-            #   ["angmom y", "sd 2 y", "spinorbit y"],
-            #   ["angmom z", "sd 3 z", "spinorbit z"],
-            #   ["angmom x", "pso 1", "massvelo"],
-            #   ["angmom y", "pso 2", "massvelo"],
-            #   ["angmom z", "pso 3", "massvelo"],
-            #   ["angmom x", "pso 1", "darwin"],
-            #   ["angmom y", "pso 2", "darwin"],
-            #   ["angmom z", "pso 3", "darwin"],
-            ],
+               ["pso 1", "angmom x"],
+               ["pso 2", "angmom y"],
+               ["pso 3", "angmom z"],
+               ["pso 1", "ozke x"],
+               ["pso 2", "ozke y"],
+               ["pso 3", "ozke z"],
+               ["angmom x", "psoke 1"],
+               ["angmom y", "psoke 2"],
+               ["angmom z", "psoke 3"],
+               ["angmom x", "rpsod 1"],
+               ["angmom y", "rpsod 2"],
+               ["angmom z", "rpsod 3"],
+               ["szke xx", "fc 1"],
+               ["szke xy", "fc 1"],
+               ["szke xz", "fc 1"],
+               ["szke yx", "fc 1"],
+               ["szke yy", "fc 1"],
+               ["szke yz", "fc 1"],
+               ["szke zx", "fc 1"],
+               ["szke zy", "fc 1"],
+               ["szke zz", "fc 1"],
+               ["szke xx", "sd 1 x"],
+               ["szke xx", "sd 1 y"],
+               ["szke xx", "sd 1 z"],
+               ["szke xy", "sd 1 x"],
+               ["szke xy", "sd 1 y"],
+               ["szke xy", "sd 1 z"],
+               ["szke xz", "sd 1 x"],
+               ["szke xz", "sd 1 y"],
+               ["szke xz", "sd 1 z"],
+               ["szke yx", "sd 2 x"],
+               ["szke yx", "sd 2 y"],
+               ["szke yx", "sd 2 z"],
+               ["szke yy", "sd 2 x"],
+               ["szke yy", "sd 2 y"],
+               ["szke yy", "sd 2 z"],
+               ["szke yz", "sd 2 x"],
+               ["szke yz", "sd 2 y"],
+               ["szke yz", "sd 2 z"],
+               ["szke zx", "sd 3 x"],
+               ["szke zx", "sd 3 y"],
+               ["szke zx", "sd 3 z"],
+               ["szke zy", "sd 3 x"],
+               ["szke zy", "sd 3 y"],
+               ["szke zy", "sd 3 z"],
+               ["szke zz", "sd 3 x"],
+               ["szke zz", "sd 3 y"],
+               ["szke zz", "sd 3 z"],
+               ],
             #pp_multiplicity=[[1]],
             #property_multiplicity=[[1,1]],
             # gauge=[0.0,0.0,1.4045523587],
