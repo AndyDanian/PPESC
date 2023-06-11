@@ -17,6 +17,8 @@ def psoke(
     """
     Kinetic energy correction to the paramagnetic spin-orbit atomic integrals
 
+    NOTE: This implementation reproduce values of the DALTON
+
     Agauges:
         coord (list): list 2d with coordinates of the atoms
         spatial_sym (int): spatial symmetry index
@@ -38,8 +40,7 @@ def psoke(
     # Primitive total in the cluster
     total_nprim: int = len(exp)
 
-    # psoke: list = [0 for i in range(int(total_nprim * total_nprim))]
-    psoke: list = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
+    psoke: list = [0 for i in range(int(total_nprim * total_nprim))]
 
     count: int = 0
 
@@ -74,20 +75,16 @@ def psoke(
     lap: list = [(2, 0, 0), (0, 2, 0), (0, 0, 2)]
     for i in range(total_nprim):
 
-        for j in range(i, total_nprim):
+        for j in range(total_nprim):
 
             #
-            lap_idj_jdi: float = 0.0
             idj_jdi_lap: float = 0.0
             for d2x, d2y, d2z in lap:
                 if d2x == 2:
-                    lap_l_i: float = float(lx[i])
                     lap_l_j: float = float(lx[j])
                 elif d2y == 2:
-                    lap_l_i: float = float(ly[i])
                     lap_l_j: float = float(ly[j])
                 elif d2z == 2:
-                    lap_l_i: float = float(lz[i])
                     lap_l_j: float = float(lz[j])
 
                 for k in range(2):
@@ -95,185 +92,21 @@ def psoke(
                         l_x, l_y, l_z = r_x_c, r_y_c, r_z_c  # l_i     r_i
                         r_x, r_y, r_z = r_x_b, r_y_b, r_z_b
                         sign: float = 1.0
-                        der_l: float = float(der_l_c[j])
                         l_der: float = float(der_l_c[i])
                     else:
                         l_x, l_y, l_z = r_x_b, r_y_b, r_z_b
                         r_x, r_y, r_z = r_x_c, r_y_c, r_z_c
                         sign: float = -1.0
-                        der_l: float = float(der_l_b[j])
                         l_der: float = float(der_l_b[i])
-                    # ! Terms of dxxLxyz/rk^3
-                    lap_idj_jdi += sign * (
-                        4.0
-                        * exp[i]
-                        * exp[i]
-                        * (
-                            2.0
-                            * exp[j]
-                            * nuclear_attraction(
-                                lx[i] + d2x,
-                                ly[i] + d2y,
-                                lz[i] + d2z,
-                                lx[j] + l_x,
-                                ly[j] + l_y,
-                                lz[j] + l_z,
-                                r_x,
-                                r_y,
-                                r_z,
-                                exp[i],
-                                exp[j],
-                                coord[center[i]][0],
-                                coord[center[i]][1],
-                                coord[center[i]][2],
-                                coord[center[j]][0],
-                                coord[center[j]][1],
-                                coord[center[j]][2],
-                                coord[atom][0],
-                                coord[atom][1],
-                                coord[atom][2],
-                            )
-                            - der_l
-                            * nuclear_attraction(
-                                lx[i] + d2x,
-                                ly[i] + d2y,
-                                lz[i] + d2z,
-                                lx[j] - l_x,
-                                ly[j] - l_y,
-                                lz[j] - l_z,
-                                r_x,
-                                r_y,
-                                r_z,
-                                exp[i],
-                                exp[j],
-                                coord[center[i]][0],
-                                coord[center[i]][1],
-                                coord[center[i]][2],
-                                coord[center[j]][0],
-                                coord[center[j]][1],
-                                coord[center[j]][2],
-                                coord[atom][0],
-                                coord[atom][1],
-                                coord[atom][2],
-                            )
-                        )
-                        - 2.0
-                        * exp[i]
-                        * (2.0 * lap_l_i + 1.0)
-                        * (
-                            2.0
-                            * exp[j]
-                            * nuclear_attraction(
-                                lx[i],
-                                ly[i],
-                                lz[i],
-                                lx[j] + l_x,
-                                ly[j] + l_y,
-                                lz[j] + l_z,
-                                r_x,
-                                r_y,
-                                r_z,
-                                exp[i],
-                                exp[j],
-                                coord[center[i]][0],
-                                coord[center[i]][1],
-                                coord[center[i]][2],
-                                coord[center[j]][0],
-                                coord[center[j]][1],
-                                coord[center[j]][2],
-                                coord[atom][0],
-                                coord[atom][1],
-                                coord[atom][2],
-                            )
-                            - der_l
-                            * nuclear_attraction(
-                                lx[i],
-                                ly[i],
-                                lz[i],
-                                lx[j] - l_x,
-                                ly[j] - l_y,
-                                lz[j] - l_z,
-                                r_x,
-                                r_y,
-                                r_z,
-                                exp[i],
-                                exp[j],
-                                coord[center[i]][0],
-                                coord[center[i]][1],
-                                coord[center[i]][2],
-                                coord[center[j]][0],
-                                coord[center[j]][1],
-                                coord[center[j]][2],
-                                coord[atom][0],
-                                coord[atom][1],
-                                coord[atom][2],
-                            )
-                        )
-                        + lap_l_i
-                        * (lap_l_i - 1.0)
-                        * (
-                            2.0
-                            * exp[j]
-                            * nuclear_attraction(
-                                lx[i] - d2x,
-                                ly[i] - d2y,
-                                lz[i] - d2z,
-                                lx[j] + l_x,
-                                ly[j] + l_y,
-                                lz[j] + l_z,
-                                r_x,
-                                r_y,
-                                r_z,
-                                exp[i],
-                                exp[j],
-                                coord[center[i]][0],
-                                coord[center[i]][1],
-                                coord[center[i]][2],
-                                coord[center[j]][0],
-                                coord[center[j]][1],
-                                coord[center[j]][2],
-                                coord[atom][0],
-                                coord[atom][1],
-                                coord[atom][2],
-                            )
-                            - der_l
-                            * nuclear_attraction(
-                                lx[i] - d2x,
-                                ly[i] - d2y,
-                                lz[i] - d2z,
-                                lx[j] - l_x,
-                                ly[j] - l_y,
-                                lz[j] - l_z,
-                                r_x,
-                                r_y,
-                                r_z,
-                                exp[i],
-                                exp[j],
-                                coord[center[i]][0],
-                                coord[center[i]][1],
-                                coord[center[i]][2],
-                                coord[center[j]][0],
-                                coord[center[j]][1],
-                                coord[center[j]][2],
-                                coord[atom][0],
-                                coord[atom][1],
-                                coord[atom][2],
-                            )
-                        )
-                    )
-                    # if count == 140:
-                    #    print("lapL ",d2x,d2y,d2z)
-                    #    print(exp[i],exp[j],lap_idj_jdi*2.0*np.pi/(exp[i] + exp[j])
-                    #         *normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
-                    #         *normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization))
+                    ##########################
                     # ! Terms of Lxyz/rk^3dxx
-                    idj_jdi_lap -= sign * (
+                    idj_jdi_lap += sign * (
                         4.0
                         * exp[j]
                         * exp[j]
                         * (
                             2.0
-                            * exp[j]
+                            * exp[i]
                             * nuclear_attraction(
                                 lx[i] + l_x,
                                 ly[i] + l_y,
@@ -325,7 +158,7 @@ def psoke(
                         * (2.0 * lap_l_j + 1.0)
                         * (
                             2.0
-                            * exp[j]
+                            * exp[i]
                             * nuclear_attraction(
                                 lx[i] + l_x,
                                 ly[i] + l_y,
@@ -376,7 +209,7 @@ def psoke(
                         * (lap_l_j - 1.0)
                         * (
                             2.0
-                            * exp[j]
+                            * exp[i]
                             * nuclear_attraction(
                                 lx[i] + l_x,
                                 ly[i] + l_y,
@@ -425,51 +258,47 @@ def psoke(
                         )
                     )
 
-            # NOTE: According to WOLFRAM ALPHA, this integral is
-            #       0.25 * {p²,PSO} when it is considered the s and p AOs
+            # NOTE: According to DALTON and WOLFRAM ALPHA, this integral is
+            #       0.5 * PSO LAP
             if lx[i] + ly[i] + lz[i] <= 1 and lx[j] + ly[j] + lz[j] <= 1:
-                cte_sp: float = 0.25
+                cte_sp_df = 0.5
+            elif (
+                lx[i] + ly[i] + lz[i] > 1
+                and lx[i] + ly[i] + lz[i] == lx[j] + ly[j] + lz[j]
+            ):
+                cte_sp_df = 2.0
             else:
-                cte_sp = 1.0
-            # * nabla^2 pso + pso nabla^2
+                cte_sp_df = 0.5
+
+            #
             psoke[count] = (
-                # - 0.5 # DALTON CONSTANT
-                # *
-                -2.0
-                * cte_sp
+                cte_sp_df
                 * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
-                * (lap_idj_jdi + idj_jdi_lap)
+                * (idj_jdi_lap)
+                * 2.0
                 * np.pi
                 / (exp[i] + exp[j])
             )
-
-            # if abs(psoke[count]) > 0.0:
-            #     print(
-            #         i + 1,
-            #         j + 1,
-            #         lap_idj_jdi
-            #         * 2.0
-            #         * cte_sp
-            #         * np.pi
-            #         / (exp[i] + exp[j])
-            #         * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
-            #         * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization),
-            #     )
-            #     print(
-            #         i + 1,
-            #         j + 1,
-            #         idj_jdi_lap
-            #         * 2.0
-            #         * cte_sp
-            #         * np.pi
-            #         / (exp[i] + exp[j])
-            #         * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
-            #         * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization),
-            #     )
-            #     print("total : ", psoke[count])
-            #     print()
-
+            if abs(psoke[count]) > 0.001:
+                print(
+                    "alpha ",
+                    exp[i],
+                    lx[i],
+                    ly[i],
+                    lz[i],
+                    normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization),
+                )
+                print(
+                    "beta  ",
+                    exp[j],
+                    lx[j],
+                    ly[j],
+                    lz[j],
+                    normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization),
+                )
+                print(count, " : ", psoke[count])
+                print()
             count += 1
     if output > 10:
         driver_time.add_name_delta_time(
@@ -517,7 +346,7 @@ if __name__ == "__main__":
         s = psoke(
             coord=[[0.0, 0.0, 0.0]],
             atom=0,
-            spatial_sym=1,
+            spatial_sym=0,
             exp=[
                 9623.91395,
                 6.25523565,
@@ -541,4 +370,4 @@ if __name__ == "__main__":
             dalton_normalization=True,
             driver_time=None,
         )
-    print("psoke ppesc : ", s, "\n", len(s), "\n\n")
+    print("psoke : ", s, "\n", len(s), "\n\n")

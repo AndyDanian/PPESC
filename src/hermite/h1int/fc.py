@@ -62,6 +62,8 @@ def fc(coord, atom, exp, center, lx, ly, lz, output, dalton_normalization, drive
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * multiplication_gg
             )
+            # if abs(fc[count]) > 0.01:
+            #     print("(", i + 1, j + 1, ") : ", fc[count])
             count += 1
     if output > 10:
         driver_time.add_name_delta_time(
@@ -71,24 +73,63 @@ def fc(coord, atom, exp, center, lx, ly, lz, output, dalton_normalization, drive
 
     return fc
 
+
 if __name__ == "__main__":
     # STO-2G
-    print("\n LiH \n")
-    s = fc(
-        coord=[[0.0, 0.0, -0.545857052],[0.0, 0.0, 2.309057052]],
-        atom=0,
-        exp=[
-            6.1638450, 1.0971610, 0.2459160, 0.0623710,
-            0.2459160, 0.2459160, 0.2459160,
-            0.0623710, 0.0623710, 0.0623710,
-            1.3097564, 0.2331360
-        ],
-        center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-        lx=[0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-        ly=[0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
-        lz=[0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
-        output=9,
-        dalton_normalization=False,
-        driver_time=None,
-    )
-    print("p X A_B : ", s, "\n", len(s), "\n\n")
+    lih: bool = True
+    if lih:
+        print("\n LiH \n")
+        s = fc(
+            coord=[[0.0, 0.0, -0.545857052], [0.0, 0.0, 2.309057052]],
+            atom=0,
+            exp=[
+                6.1638450,
+                1.0971610,
+                0.2459160,
+                0.0623710,
+                0.2459160,
+                0.2459160,
+                0.2459160,
+                0.0623710,
+                0.0623710,
+                0.0623710,
+                1.3097564,
+                0.2331360,
+            ],
+            center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+            lx=[0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+            ly=[0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+            lz=[0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
+            output=9,
+            dalton_normalization=False,
+            driver_time=None,
+        )
+    else:
+        print("\n He \n")
+        s = fc(
+            coord=[[0.0, 0.0, 0.0]],
+            atom=0,
+            exp=[
+                9623.91395,
+                6.25523565,
+                6.25523565,
+                6.25523565,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                2.68495795,
+                2.68495795,
+                2.68495795,
+            ],
+            center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            lx=[0, 1, 0, 0, 2, 1, 1, 0, 0, 0, 3, 2, 2],
+            ly=[0, 0, 1, 0, 0, 1, 0, 2, 1, 0, 0, 1, 0],
+            lz=[0, 0, 0, 1, 0, 0, 1, 0, 1, 2, 0, 0, 1],
+            output=9,
+            dalton_normalization=True,
+            driver_time=None,
+        )
+    print("fc : ", s, "\n", len(s), "\n\n")

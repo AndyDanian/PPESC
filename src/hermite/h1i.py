@@ -102,6 +102,36 @@ def h1i(
             dalton_normalization,
             driver_time,
         )
+    elif name.lower() == "sdke":
+        integral = sdke(
+            coord,
+            magnetic_xyz,
+            spatial_sym,
+            atom,
+            exp,
+            center,
+            lx,
+            ly,
+            lz,
+            verbose,
+            dalton_normalization,
+            driver_time,
+        )
+    elif name.lower() == "psdke":
+        integral = sdke_ppesc(
+            coord,
+            magnetic_xyz,
+            spatial_sym,
+            atom,
+            exp,
+            center,
+            lx,
+            ly,
+            lz,
+            verbose,
+            dalton_normalization,
+            driver_time,
+        )
     elif name.lower() == "fc":
         integral = fc(
             coord,
@@ -117,6 +147,19 @@ def h1i(
         )
     elif name.lower() == "fcke":
         integral = fcke(
+            coord,
+            atom,
+            exp,
+            center,
+            lx,
+            ly,
+            lz,
+            verbose,
+            dalton_normalization,
+            driver_time,
+        )
+    elif name.lower() == "pfcke":
+        integral = fcke_ppesc(
             coord,
             atom,
             exp,
@@ -262,6 +305,20 @@ def h1i(
             dalton_normalization,
             driver_time,
         )
+    elif name.lower() == "psomv":
+        integral = psomv(
+            coord,
+            spatial_sym,
+            atom,
+            exp,
+            center,
+            lx,
+            ly,
+            lz,
+            verbose,
+            dalton_normalization,
+            driver_time,
+        )
     elif name.lower() == "psolap":
         integral = psolap(
             coord,
@@ -306,6 +363,20 @@ def h1i(
             dalton_normalization,
             driver_time,
         )
+    elif name.lower() == "ozmv":
+        integral = ozmv(
+            coord,
+            r_gauge,
+            magnetic_xyz,
+            exp,
+            center,
+            lx,
+            ly,
+            lz,
+            verbose,
+            dalton_normalization,
+            driver_time,
+        )
     elif name.lower() in list(second_derivatives_string.keys()):
         integral = second_derivatives(
             coord,
@@ -319,8 +390,34 @@ def h1i(
             dalton_normalization,
             driver_time,
         )
+    elif name.lower() in list(laplacian_didj_string.keys()):
+        integral = laplacian_didj(
+            coord,
+            magnetic_xyz,
+            exp,
+            center,
+            lx,
+            ly,
+            lz,
+            verbose,
+            dalton_normalization,
+            driver_time,
+        )
     elif name.lower() in list(spin_zeeman_kientic_tensor.keys()):
         integral = szke(
+            coord,
+            magnetic_xyz,
+            exp,
+            center,
+            lx,
+            ly,
+            lz,
+            verbose,
+            dalton_normalization,
+            driver_time,
+        )
+    elif name.lower() in list(spin_zeeman_massvelocity_tensor.keys()):
+        integral = szmv(
             coord,
             magnetic_xyz,
             exp,

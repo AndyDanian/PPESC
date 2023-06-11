@@ -22,8 +22,11 @@ integral_symmetry: dict = {
     "kinetic": "sym",
     "angmom": "antisym",
     "sd": "sym",
+    "sdke": "sym",
+    "psdke": "square",
     "fc": "sym",
     "fcke": "sym",
+    "pfcke": "square",
     "darwin": "sym",
     "massvelo": "sym",
     "nelfld": "sym",
@@ -32,13 +35,19 @@ integral_symmetry: dict = {
     "pso": "antisym",
     "nstcgo": "sym",
     "dnske": "sym",
-    "cdnske": "sym",
-    "psoke": "square",
-    "psolap": "square",
+    "psoke": "antisym",
+    "psomv": "antisym",
     "psooz": "square",
     "ozke": "antisym",
+    "ozmv": "antisym",
     "spinorbit": "antisym",
+    "ozso": "square",
     "szke": "sym",
+    "szke": "mv",
+    # othres
+    "cdnske": "sym",
+    "psolap": "square",
+    # & didj
     "dxdx": "sym",
     "dydy": "sym",
     "dzdz": "sym",
@@ -48,6 +57,23 @@ integral_symmetry: dict = {
     "dydz": "sym",
     "dzdx": "sym",
     "dzdy": "sym",
+    # & Laplacian didj
+    "d4x": "sym",
+    "d4y": "sym",
+    "d4z": "sym",
+    "d2xd2y": "sym",
+    "d2xd2z": "sym",
+    "d2yd2x": "sym",
+    "d2yd2z": "sym",
+    "d2zd2x": "sym",
+    "d2zd2y": "sym",
+    "d2xdydz": "sym",
+    "d2xdzdy": "sym",
+    "d2ydxdz": "sym",
+    "d2ydzdx": "sym",
+    "d2zdxdy": "sym",
+    "d2zdydx": "sym",
+    # &
     "sofiel": "sym",
     "pnstcgop": "sym",
     "pangmomp": "antisym",
@@ -71,7 +97,9 @@ integral_symmetry: dict = {
 
 class scratch:
     # Constructor
-    def __init__(self, scratch: Union[Path, str], job_folder: str, restart: int) -> None:
+    def __init__(
+        self, scratch: Union[Path, str], job_folder: str, restart: int
+    ) -> None:
         """
         Constructor of scratch object
 

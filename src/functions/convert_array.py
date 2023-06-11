@@ -34,8 +34,8 @@ def vector_to_matrix(
                 row = 0
                 col += 1
         else:
-            matrix[col + row, row] = x
-            matrix[row, col + row] = coef * x
+            matrix[row, col + row] = x
+            matrix[col + row, row] = coef * x
             col += 1
             if col == n - row:
                 col = 0

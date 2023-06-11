@@ -1,7 +1,7 @@
 from lib1h import *
 
 
-def fcke(
+def fcke_ppesc(
     coord, atom, exp, center, lx, ly, lz, output, dalton_normalization, driver_time
 ):
     """
@@ -26,8 +26,8 @@ def fcke(
     # Primitive total in the cluster
     total_nprim: int = len(exp)
 
-    fcke: list = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
-    # fcke: list = [0 for i in range(int(total_nprim * (total_nprim)))]
+    # fcke_ppesc: list = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
+    fcke_ppesc: list = [0 for i in range(int(total_nprim * (total_nprim)))]
     count: int = 0
 
     GFACTOR: float = 2.0023193134
@@ -36,7 +36,7 @@ def fcke(
 
     for i in range(total_nprim):
 
-        for j in range(i, total_nprim):
+        for j in range(total_nprim):
 
             multiplication_gg: float = gaussian_mult(
                 lx[i],
@@ -162,14 +162,15 @@ def fcke(
                         )
                     )
 
-            fcke[count] = (
-                -CONST_FC
-                * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+            fcke_ppesc[count] = (
+                -normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
-                * (fc_lap + lap_fc)
+                * 8.0
+                * np.pi
+                * (fc_lap + lap_fc / 3.0)
             )
-            # if abs(fcke[count]) > 0.01:
-            #     print("(", i + 1, j + 1, ") : ", fcke[count])
+            # if abs(fcke_ppesc[count]) > 0.01:
+            #     print("(", i + 1, j + 1, ") : ", fcke_ppesc[count])
             count += 1
     if output > 10:
         driver_time.add_name_delta_time(
@@ -177,7 +178,7 @@ def fcke(
             delta_time=(time() - start),
         )
 
-    return fcke
+    return fcke_ppesc
 
 
 if __name__ == "__main__":
@@ -185,7 +186,7 @@ if __name__ == "__main__":
     lih: bool = False
     if lih:
         print("\n LiH \n")
-        s = fcke(
+        s = fcke_ppesc(
             coord=[[0.0, 0.0, -0.545857052], [0.0, 0.0, 2.309057052]],
             atom=0,
             exp=[
@@ -212,7 +213,7 @@ if __name__ == "__main__":
         )
     else:
         print("\n He \n")
-        s = fcke(
+        s = fcke_ppesc(
             coord=[[0.0, 0.0, 0.0]],
             atom=0,
             exp=[

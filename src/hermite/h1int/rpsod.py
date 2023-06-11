@@ -713,9 +713,11 @@ def rpsod(
             #!? WARNING los terminos z_k²dydz/r⁵_k dan con una diferencia a Wolfram Alpha.
             #!? en Wolfram estos salen con Warnings 
             # if count == 140:
-            #     print(count, exp[i], exp[j], rpsod[count])
-            #     print(" mli ",lx[i], ly[i], lz[i])
-            #     print(" mlj ",lx[j], ly[j], lz[j])
+            if abs(rpsod[count]) > 0.0:
+                print("alpha ",exp[i], lx[i], ly[i], lz[i])
+                print("beta  ",exp[j], lx[j], ly[j], lz[j])
+                print(count," : ",rpsod[count])
+                print()
             count += 1
             
     if output > 10:

@@ -39,6 +39,7 @@ def ozke(
     total_nprim: int = len(exp)
 
     ozke: list = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
+    # ozke: list = [0 for i in range(int(total_nprim * (total_nprim)))]
 
     count: int = 0
 
@@ -489,15 +490,17 @@ def ozke(
                 + (e1kl + left_rg * e0kl) * (d_dmm2n_1 - d_dmn_1 + d_dmt2n_1)
             ) * e0ij
 
-            # * Lx nabla^2
+            # 2 * Lx nabla^2 (signo verificado con matemáticas)
             ozke[count] = (
-                #* 0.25 #DALTON (Manninen's Constants)
-                - normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                # * 0.25 #DALTON (Manninen's Constants)
+                -2.0
+                * normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * (dxxlx + dyylx + dzzlx)
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)
             )
-
+            # if abs(ozke[count]) > 0.01:
+            #     print("(", i + 1, j + 1, ") : ", ozke[count])
             count += 1
 
     if output > 10:
@@ -508,3 +511,66 @@ def ozke(
         )
 
     return ozke
+
+
+if __name__ == "__main__":
+    # STO-2G
+    lih: bool = False
+    if lih:
+        print("\n LiH \n")
+        s = ozke(
+            coord=[[0.0, 0.0, -0.545857052], [0.0, 0.0, 2.309057052]],
+            gauge=[0.0, 0.0, 0.0],
+            magnetic_component=0,
+            exp=[
+                6.1638450,
+                1.0971610,
+                0.2459160,
+                0.0623710,
+                0.2459160,
+                0.2459160,
+                0.2459160,
+                0.0623710,
+                0.0623710,
+                0.0623710,
+                1.3097564,
+                0.2331360,
+            ],
+            center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+            lx=[0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+            ly=[0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+            lz=[0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
+            output=9,
+            dalton_normalization=False,
+            driver_time=None,
+        )
+    else:
+        print("\n He \n")
+        s = ozke(
+            coord=[[0.0, 0.0, 0.0]],
+            gauge=[0.0, 0.0, 0.0],
+            magnetic_component=2,
+            exp=[
+                9623.91395,
+                6.25523565,
+                6.25523565,
+                6.25523565,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                2.68495795,
+                2.68495795,
+                2.68495795,
+            ],
+            center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            lx=[0, 1, 0, 0, 2, 1, 1, 0, 0, 0, 3, 2, 2],
+            ly=[0, 0, 1, 0, 0, 1, 0, 2, 1, 0, 0, 1, 0],
+            lz=[0, 0, 0, 1, 0, 0, 1, 0, 1, 2, 0, 0, 1],
+            output=9,
+            dalton_normalization=True,
+            driver_time=None,
+        )
+    print("ozke : ", s, "\n", len(s), "\n\n")

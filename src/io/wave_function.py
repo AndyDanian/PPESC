@@ -94,6 +94,8 @@ class wave_function:
     ##################################################################
     # ATRIBUTES
     ##################################################################
+
+    #! grep ########################################################
     @property
     def molecules_number(self) -> int:
         "Molecule Number"
@@ -303,6 +305,8 @@ class wave_function:
     def mo_energies(self) -> list:
         "Molecular Orbitals Energies"
         return [mo["energy"] for mo in self._mos]
+
+    #! set ########################################################
 
     @mo_energies.setter
     def mo_energies(self, moe: list) -> list:

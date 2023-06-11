@@ -65,13 +65,13 @@ def second_derivatives(
         a: int = 1
         b: int = 2
         c: int = 0
-    elif component == 8:
-        mla: list = ly
-        mlb: list = lz
-        mlc: list = lx
-        a: int = 1
-        b: int = 2
-        c: int = 0
+    elif component == 7:
+        mla: list = lz
+        mlb: list = lx
+        mlc: list = ly
+        a: int = 2
+        b: int = 0
+        c: int = 1
     else:
         raise  ValueError(f"***Error\n\n This second derivative not exist: {component}")
 

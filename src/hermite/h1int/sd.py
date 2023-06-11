@@ -41,12 +41,13 @@ def sd(
     total_nprim: int = len(exp)
 
     sd: list = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
+    # sd: list = [0 for i in range(int(total_nprim * (total_nprim)))]
 
     count: int = 0
 
     GFACTOR: float = 2.0023193134
     # CONST_SD: float = GFACTOR / 2.0 * 1 / 3.0 # DALTON
-    CONST_SD: float = 1 / 3.0 # Due to take 1/r⁵ like derivatives: x_k/r⁵ = 1/3 d²x 1/r
+    CONST_SD: float = 1 / 3.0  # Due to take 1/r⁵ like derivatives: x_k/r⁵ = 1/3 d²x 1/r
 
     dx_x: int = 0
     dy_x: int = 0
@@ -219,6 +220,9 @@ def sd(
                 * (CTE_XR * xr + CTE_YR * yr + CTE_ZR * zr)
             )
 
+            # if abs(sd[count]) > 0.001:
+            #     print("(", i + 1, j + 1, "): ", sd[count])
+            # print(i, normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization))
 
             count += 1
 
@@ -230,3 +234,68 @@ def sd(
         )
 
     return sd
+
+
+if __name__ == "__main__":
+    # STO-2G
+    lih: bool = False
+    if lih:
+        print("\n LiH \n")
+        s = sd(
+            coord=[[0.0, 0.0, -0.545857052], [0.0, 0.0, 2.309057052]],
+            magnetic_component=0,
+            spatial_sym=0,
+            atom=0,
+            exp=[
+                6.1638450,
+                1.0971610,
+                0.2459160,
+                0.0623710,
+                0.2459160,
+                0.2459160,
+                0.2459160,
+                0.0623710,
+                0.0623710,
+                0.0623710,
+                1.3097564,
+                0.2331360,
+            ],
+            center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+            lx=[0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+            ly=[0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+            lz=[0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
+            output=9,
+            dalton_normalization=False,
+            driver_time=None,
+        )
+    else:
+        print("\n He \n")
+        s = sd(
+            coord=[[0.0, 0.0, 0.0]],
+            magnetic_component=2,
+            spatial_sym=1,
+            atom=0,
+            exp=[
+                9623.91395,
+                6.25523565,
+                6.25523565,
+                6.25523565,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                2.68495795,
+                2.68495795,
+                2.68495795,
+            ],
+            center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            lx=[0, 1, 0, 0, 2, 1, 1, 0, 0, 0, 3, 2, 2],
+            ly=[0, 0, 1, 0, 0, 1, 0, 2, 1, 0, 0, 1, 0],
+            lz=[0, 0, 0, 1, 0, 0, 1, 0, 1, 2, 0, 0, 1],
+            output=9,
+            dalton_normalization=False,
+            driver_time=None,
+        )
+    print("sd : ", s, "\n", len(s), "\n\n")

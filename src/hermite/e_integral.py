@@ -9,6 +9,7 @@ from cto_gto_h1 import *
 # Modules into sub-folder
 from libint import *
 
+
 class eint:
     def __init__(self, wf: wave_function):
         """
@@ -226,6 +227,78 @@ class eint:
                 integrals_names = temp_names
         # END Spin-Orbit Integrals Activation #############################################
 
+        #! Activation Spin--Orbit energy correction to Orbital--Zeeman Activation #########################
+        ozso_integrals: bool = False
+        if "ozso" in [
+            name for int_name in integrals_names for name in int_name.split()
+        ]:
+            ozso_integrals = True
+            temp_names: list = []
+            activate_all_psooz: bool = False
+            ozso_x: bool = False
+            ozso_y: bool = False
+            ozso_z: bool = False
+            for name in integrals_names:
+                if "ozso" not in name:
+                    temp_names.append(name)
+                else:
+                    if len(name.split()) > 1:
+                        if name.split()[1] == "1" or name.split()[1] == "x":
+                            ozso_x = True
+                            self._list_1b_integrals_calculated.append("ozso x")
+                        if name.split()[1] == "2" or name.split()[1] == "y":
+                            ozso_y = True
+                            self._list_1b_integrals_calculated.append("ozso y")
+                        if name.split()[1] == "3" or name.split()[1] == "z":
+                            ozso_z = True
+                            self._list_1b_integrals_calculated.append("ozso z")
+
+                        if (name.split()[1]).isalpha():
+                            spatial_axe: int = [
+                                i
+                                for i, r in magnetic_axes.items()
+                                if r == name.split()[1]
+                            ][0]
+                        else:
+                            spatial_axe = int(name.split()[1])
+
+                        if "psooz" not in [int_name for int_name in integrals_names]:
+                            temp_names += [
+                                "psooz "
+                                + str(spatial_axe + 1 + i * 3)
+                                + " "
+                                + str(spatial_axe + 1)
+                                for i in range(number_atoms)
+                                if "psooz "
+                                + str(spatial_axe + 1 + i * 3)
+                                + " "
+                                + str(spatial_axe + 1)
+                                not in integrals_names
+                            ]
+
+                    elif "psooz" not in [int_name for int_name in integrals_names]:
+                        ozso_x = ozso_y = ozso_z = True
+                        self._list_1b_integrals_calculated += [
+                            "ozso x",
+                            "ozso y",
+                            "ozso z",
+                        ]
+                        temp_names.append("psooz")
+                        activate_all_psooz = True
+                    elif "psooz" in [int_name for int_name in integrals_names]:
+                        ozso_x = ozso_y = ozso_z = True
+                        self._list_1b_integrals_calculated += [
+                            "ozso x",
+                            "ozso y",
+                            "ozso z",
+                        ]
+                        activate_all_psooz = True
+            if activate_all_psooz:
+                integrals_names = [name for name in temp_names if "psooz " not in name]
+            else:
+                integrals_names = temp_names
+        #! END Spin--Orbit energy correction to Orbital--Zeeman Activation #########################
+
         # Activation: SOFIEL is the sum of the NSTCGO integrals ###########################
         sofiel_integrals: bool = False
         if "sofiel" in [
@@ -421,18 +494,25 @@ class eint:
             ):
 
                 # **** Atomic Scalars Integrals Which Are Independent of Atom *** #
-                if integral_name.lower() in ([
-                    "one",
-                    "overlap",
-                    "darwin",
-                    "massvelo",
-                    "kinetic",
-                    "szke",
-                ] + list(second_derivatives_string.keys())):
+                if integral_name.lower() in (
+                    [
+                        "one",
+                        "overlap",
+                        "darwin",
+                        "massvelo",
+                        "kinetic",
+                        "szke",
+                        "szmv",
+                    ]
+                    + list(second_derivatives_string.keys())
+                ):
 
                     # Build Name == integral name #############################
                     integral_label: str = integral_name.lower()
-                    if integral_name.lower() == "szke":
+                    if (
+                        integral_name.lower() == "szke"
+                        or integral_name.lower() == "szmv"
+                    ):
                         integral_label = int_name.lower()
                     # END Build Name ##########################################
 
@@ -449,8 +529,18 @@ class eint:
                     magnetic_xyz: int = -1
                     if integral_label in list(second_derivatives_string.keys()):
                         magnetic_xyz = second_derivatives_string[integral_label.lower()]
-                    elif integral_label.lower() in list(spin_zeeman_kientic_tensor.keys()):
-                        magnetic_xyz = spin_zeeman_kientic_tensor[integral_label.lower()]
+                    elif integral_label.lower() in list(
+                        spin_zeeman_kientic_tensor.keys()
+                    ):
+                        magnetic_xyz = spin_zeeman_kientic_tensor[
+                            integral_label.lower()
+                        ]
+                    elif integral_label.lower() in list(
+                        spin_zeeman_massvelocity_tensor.keys()
+                    ):
+                        magnetic_xyz = spin_zeeman_massvelocity_tensor[
+                            integral_label.lower()
+                        ]
                     # End direction search ######################################
 
                     symmetries[integral_label] = integral_symmetry[
@@ -470,11 +560,11 @@ class eint:
                         dalton_normalization=dalton_normalization,
                         driver_time=driver_time,
                         # special variable
-                        magnetic_xyz=magnetic_xyz
+                        magnetic_xyz=magnetic_xyz,
                     )
 
                 # **** Atomic Scalars Integrals Which Depedent of Atom *** #
-                elif integral_name.lower() in ["nucpot", "fc", "fcke"]:
+                elif integral_name.lower() in ["nucpot", "fc", "fcke", "pfcke"]:
 
                     for atom in atoms:
                         # Build Name according atom index ################
@@ -697,7 +787,7 @@ class eint:
                                 list(magnetic_axes.values()).index(b_i)
                             ]
 
-                        # Veridication: Integrals is calculated, already #####################
+                        # Verification: Integrals is calculated, already #####################
                         # - Save integral name
                         self._list_1b_integrals_calculated.append(integral_label)
                         if io._hermite_ao1b_binary.exists() and io.binary(
@@ -732,19 +822,19 @@ class eint:
 
             # Transform integrals from cto to sph
             integrals_matrix = {}
+            start_cto: float = time()
             if not self._cartessian:
-                start_cto: float = time()
                 for label, integral in integrals.items():
                     integrals_matrix[label] = cto_gto_h1(
                         vector_to_matrix(self._n, integral, symmetries[label]),
                         np.array(self._angular_moments),
                     )
-                time_cto: float = time() - start_cto
             else:
                 for label, integral in integrals.items():
                     integrals_matrix[label] = vector_to_matrix(
                         self._n, integral, symmetries[label]
                     )
+            time_cto: float = time() - start_cto
             ## Write in binary file
             for label, integral in integrals_matrix.items():
                 io.binary(
@@ -767,6 +857,22 @@ class eint:
                 verbose=verbose,
             )
         # *END SPINORBITCalculation ******************************************************
+        # * Calculation: Spin--Orbit Correction to OZ and Write integrals in AO1BINT *****
+        if ozso_integrals:
+            ozso(
+                integrals=io,
+                driver_time=driver_time,
+                list_spino=[
+                    ozso_x,
+                    ozso_y,
+                    ozso_z,
+                ],
+                charge=self._charge,
+                number_atoms=number_atoms,
+                nprim=self._wf.primitives_number_sph,
+                verbose=verbose,
+            )
+        # *END SPINORBIT Correction to OZ Calculation *************************************
         # * Calculation: SOFIEL Calculation and Write integrals in AO1BINT ****************
         if sofiel_integrals:
             sofiel(
@@ -915,18 +1021,24 @@ class eint:
 
 if __name__ == "__main__":
     wf = wave_function(
-        "../tests/molden_file/LiH_STO2G.molden",
+        "../tests/molden_file/Hespdf.molden",
         scratch_path="/home1/scratch",
-        job_folder="160922134451",
+        job_folder="Hespdf",
     )
     s = eint(wf)
+    # s._cartessian = True
     # s.integration_twobody(integrals_names=["e2pot"],verbose=101)
-    s.integration_onebody(integrals_names=["kinetic", "rpsod"], verbose=31)
+    s.integration_onebody(
+        integrals_names=["ozke", "psoke", "psomv", "ozmv"],
+        gauge=[0, 0.0, 0.0],
+        verbose=31,
+        # dalton_normalization=True,
+    )
     exit()
     one = True
     if one:
         s.integration_onebody(
-            integrals_names=["nucpot", "darwin", "fc", "spinorbit", "sofiel"],
+            integrals_names=["angmom x", "kinetic", "spinorbit", "sofiel"],
             # {
             # "nucpot":{"atoms":[0]},
             # "angmom":{"magnetic_components":[0, 1, 2], "r_gauge":[0.0, 0.0, 1.404552358700]},

@@ -39,6 +39,7 @@ def pso(
     total_nprim: int = len(exp)
 
     pso: list = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
+    # pso: list = [0 for i in range(int(total_nprim * (total_nprim)))]
 
     count: int = 0
 
@@ -186,14 +187,17 @@ def pso(
             )
 
             pso[count] = (
-                -normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * 2.0
                 * np.pi
                 / (exp[i] + exp[j])
                 * (left_term - right_term)
             )
+            # if abs(pso[count]) > 0.0:
+            #     print("(", i + 1, j + 1, ") : ", pso[count])
             count += 1
+
     if output > 10:
         driver_time.add_name_delta_time(
             name=f"Paramagnetic Spin-Orbit Atomic Integrals, \
@@ -203,25 +207,63 @@ def pso(
 
     return pso
 
+
 if __name__ == "__main__":
     # STO-2G
-    print("\n LiH \n")
-    s = pso(
-        spatial_sym=0,
-        coord=[[0.0, 0.0, -0.545857052],[0.0, 0.0, 2.309057052]],
-        atom=0,
-        exp=[
-            6.1638450, 1.0971610, 0.2459160, 0.0623710,
-            0.2459160, 0.2459160, 0.2459160,
-            0.0623710, 0.0623710, 0.0623710,
-            1.3097564, 0.2331360
-        ],
-        center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-        lx=[0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-        ly=[0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
-        lz=[0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
-        output=9,
-        dalton_normalization=False,
-        driver_time=None,
-    )
+    lih: bool = False
+    if lih:
+        print("\n LiH \n")
+        s = pso(
+            spatial_sym=0,
+            coord=[[0.0, 0.0, -0.545857052], [0.0, 0.0, 2.309057052]],
+            atom=0,
+            exp=[
+                6.1638450,
+                1.0971610,
+                0.2459160,
+                0.0623710,
+                0.2459160,
+                0.2459160,
+                0.2459160,
+                0.0623710,
+                0.0623710,
+                0.0623710,
+                1.3097564,
+                0.2331360,
+            ],
+            center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+            lx=[0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+            ly=[0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+            lz=[0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
+            output=9,
+            dalton_normalization=False,
+            driver_time=None,
+        )
+    else:
+        print("\n He \n")
+        s = pso(
+            coord=[[0.0, 0.0, 0.0]],
+            atom=0,
+            spatial_sym=0,
+            exp=[
+                9623.91395,
+                6.25523565,
+                6.25523565,
+                6.25523565,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+            ],
+            center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            lx=[0, 1, 0, 0, 2, 1, 1, 0, 0, 0],
+            ly=[0, 0, 1, 0, 0, 1, 0, 2, 1, 0],
+            lz=[0, 0, 0, 1, 0, 0, 1, 0, 1, 2],
+            output=9,
+            dalton_normalization=True,
+            driver_time=None,
+        )
+
     print("pso : ", s, "\n", len(s), "\n\n")

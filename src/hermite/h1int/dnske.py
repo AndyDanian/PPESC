@@ -296,8 +296,8 @@ def dnske(
                             ly[i] - d2y,
                             lz[i] - d2z,
                             lx[j] + r_x_a,
-                            ly[j] + r_x_a,
-                            lz[j] + r_x_a,
+                            ly[j] + r_y_a,
+                            lz[j] + r_z_a,
                             r_x_b,
                             r_y_b,
                             r_z_b,
@@ -662,10 +662,14 @@ def dnske(
                 * 2.0
                 * np.pi
                 / (exp[i] + exp[j])
-                * (Alap+lapA)
-                * 0.5
-                # * 3.0/4.0 #DALTON
+                * (Alap + lapA)
+                # * 0.5
+                * 3.0
+                / 4.0  # DALTON
             )
+            # if i == 4 and j == 4:
+            #    print("<dxx|{Lap, A²}|dxx> : ",i+1,j+1,dnske[count])
+            #    exit()
             count += 1
     if output > 10:
         driver_time.add_name_delta_time(
@@ -676,28 +680,67 @@ def dnske(
 
     return dnske
 
+
 if __name__ == "__main__":
     # STO-2G
-    print("\n LiH \n")
-    s = dnske(
-        coord=[[0.0, 0.0, -0.545857052],[0.0, 0.0, 2.309057052]],
-        gauge=[0,0,0],
-        exp=[
-            6.1638450, 1.0971610, 0.2459160, 0.0623710,
-            0.2459160, 0.2459160, 0.2459160,
-            0.0623710, 0.0623710, 0.0623710,
-            1.3097564, 0.2331360
-        ],
-        center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-        lx=[0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
-        ly=[0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
-        lz=[0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
-        output=9,
-        spatial_sym=0,
-        magnetic_component=0,
-        atom=0,
-        dalton_normalization=False,
-        driver_time=None,
-    )
-    
-    print("psooz : ", s, "\n", len(s), "\n\n")
+    lih: bool = False
+    if lih:
+        print("\n LiH \n")
+        s = dnske(
+            coord=[[0.0, 0.0, -0.545857052], [0.0, 0.0, 2.309057052]],
+            gauge=[0, 0, 0],
+            exp=[
+                6.1638450,
+                1.0971610,
+                0.2459160,
+                0.0623710,
+                0.2459160,
+                0.2459160,
+                0.2459160,
+                0.0623710,
+                0.0623710,
+                0.0623710,
+                1.3097564,
+                0.2331360,
+            ],
+            center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+            lx=[0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+            ly=[0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+            lz=[0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
+            output=9,
+            spatial_sym=0,
+            magnetic_component=0,
+            atom=0,
+            dalton_normalization=False,
+            driver_time=None,
+        )
+    else:
+        print("\n He \n")
+        s = dnske(
+            coord=[[0.0, 0.0, 0.0]],
+            gauge=[0, 0, 0],
+            exp=[
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                0.2331360,
+                0.2331360,
+                0.2331360,
+                0.2331360,
+                0.2331360,
+                0.2331360,
+            ],
+            center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            lx=[0, 1, 0, 0, 2, 1, 1, 0, 0, 0],
+            ly=[0, 0, 1, 0, 0, 1, 0, 2, 1, 0],
+            lz=[0, 0, 0, 1, 0, 0, 1, 0, 1, 2],
+            output=9,
+            spatial_sym=0,
+            magnetic_component=0,
+            atom=0,
+            dalton_normalization=True,
+            driver_time=None,
+        )
+
+    print("dnske : ", s, "\n", len(s), "\n\n")

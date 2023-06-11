@@ -39,6 +39,7 @@ def angmom(
     total_nprim: int = len(exp)
 
     angmom: list = [0 for i in range(int(total_nprim * (total_nprim + 1) / 2))]
+    # angmom: list = [0 for i in range(int(total_nprim * (total_nprim)))]
 
     count: int = 0
 
@@ -175,7 +176,7 @@ def angmom(
             )
 
             angmom[count] = (
-                -normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
+                normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
                 * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
                 * (
                     (left_r + left_rg * left_s) * left_p
@@ -184,6 +185,11 @@ def angmom(
                 * spatial_s
                 * np.power(np.pi / (exp[i] + exp[j]), 1.5)
             )
+            # if abs(angmom[count]) > 0.01:
+            #     print("alpha ", exp[i], lx[i], ly[i], lz[i])
+            #     print("beta  ", exp[j], lx[j], ly[j], lz[j])
+            #     print(count, " a+1: ", angmom[count])
+
             count += 1
 
     if output > 10:
@@ -193,3 +199,63 @@ def angmom(
         )
 
     return angmom
+
+
+if __name__ == "__main__":
+    # STO-2G
+    lih: bool = False
+    if lih:
+        print("\n LiH \n")
+        s = angmom(
+            coord=[[0.0, 0.0, -0.545857052], [0.0, 0.0, 2.309057052]],
+            gauge=[0.0, 0.0, 0.0],
+            magnetic_component=0,
+            exp=[
+                6.1638450,
+                1.0971610,
+                0.2459160,
+                0.0623710,
+                0.2459160,
+                0.2459160,
+                0.2459160,
+                0.0623710,
+                0.0623710,
+                0.0623710,
+                1.3097564,
+                0.2331360,
+            ],
+            center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+            lx=[0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+            ly=[0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+            lz=[0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
+            output=9,
+            dalton_normalization=False,
+            driver_time=None,
+        )
+    else:
+        print("\n He \n")
+        s = angmom(
+            coord=[[0.0, 0.0, 0.0]],
+            gauge=[0.0, 0.0, 0.0],
+            magnetic_component=2,
+            exp=[
+                9623.91395,
+                6.25523565,
+                6.25523565,
+                6.25523565,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+                4.32782104,
+            ],
+            center=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            lx=[0, 1, 0, 0, 2, 1, 1, 0, 0, 0],
+            ly=[0, 0, 1, 0, 0, 1, 0, 2, 1, 0],
+            lz=[0, 0, 0, 1, 0, 0, 1, 0, 1, 2],
+            output=9,
+            dalton_normalization=True,
+            driver_time=None,
+        )
+    print("angmom : ", s, "\n", len(s), "\n\n")

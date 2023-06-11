@@ -164,7 +164,7 @@ def psooz(
                     """
                                             OZ.PSO
                     [r_a^i s_a^{j+1} (2pt_a^{k+1}-kt_a^{k-1}) exp(-p r_a^2)]
-                    [r_b^l s_b^m s_k/r³_k (2tp_b^{n+1}-np_b^{n-1}) exp(-t r_b^2)]
+                    [r_b^l s_b^ms_k/r³_k (2pt_n^{n+1}-nt_b^{n-1}) exp(-t r_b^2)]
                                             PSO.OZ
                     <phi| r_k/r³_k d_s t_o d_u |phi>
                     """
@@ -189,8 +189,23 @@ def psooz(
                         pso_r_z_c,
                     )  # ? derivative
                     r_x, r_y, r_z = pso_r_x_b, pso_r_y_b, pso_r_z_b  # ? position
-                    der_l_pso_bra: float = float(pso_der_l_c[i])
                     der_l_pso_ket: float = float(pso_der_l_c[j])
+                    # * Both
+                    gauge_bi: float = -1.0
+                    second_derivative_x: int = oz_r_x_c + pso_r_x_c  #! ?
+                    second_derivative_y: int = oz_r_y_c + pso_r_y_c  #! ?
+                    second_derivative_z: int = oz_r_z_c + pso_r_z_c  #! ?
+                    ml_gauge_x, ml_gauge_y, ml_gauge_z = oz_r_x_b, oz_r_y_b, oz_r_z_b
+                    ml_oz_derivative_x, ml_oz_derivative_y, ml_oz_derivative_z = (
+                        oz_r_x_c,
+                        oz_r_y_c,
+                        oz_r_z_c,
+                    )
+                    ml_pso_derivative_x, ml_pso_derivative_y, ml_pso_derivative_z = (
+                        pso_r_x_c,
+                        pso_r_y_c,
+                        pso_r_z_c,
+                    )
                 elif k == 1:
                     """
                     (A_s-0_s)
@@ -206,8 +221,13 @@ def psooz(
                     # * PSO
                     l_x_j, l_y_j, l_z_j = pso_r_x_c, pso_r_y_c, pso_r_z_c
                     r_x, r_y, r_z = pso_r_x_b, pso_r_y_b, pso_r_z_b
-                    der_l_pso_bra: float = float(pso_der_l_c[i])
                     der_l_pso_ket: float = float(pso_der_l_c[j])
+                    # * Both
+                    gauge_bi = -1.0 * (coord[center[j]][coord_b] - gauge[coord_b])
+                    second_derivative_x: int = oz_r_x_c + pso_r_x_c  #! ?
+                    second_derivative_y: int = oz_r_y_c + pso_r_y_c  #! ?
+                    second_derivative_z: int = oz_r_z_c + pso_r_z_c  #! ?
+                    ml_gauge_x, ml_gauge_y, ml_gauge_z = 0, 0, 0
                 elif k == 2:
                     """
                     -[r_a^i (2ps_a^{j+1}-js_a^{j-1}) t_a^{k+1} exp(-p r_a^2)]
@@ -230,8 +250,23 @@ def psooz(
                     # * PSO
                     l_x_j, l_y_j, l_z_j = pso_r_x_c, pso_r_y_c, pso_r_z_c
                     r_x, r_y, r_z = pso_r_x_b, pso_r_y_b, pso_r_z_b
-                    der_l_pso_bra: float = float(pso_der_l_c[i])
                     der_l_pso_ket: float = float(pso_der_l_c[j])
+                    # * Both
+                    gauge_bi = 1.0
+                    second_derivative_x: int = oz_r_x_b + pso_r_x_c  #! ?
+                    second_derivative_y: int = oz_r_y_b + pso_r_y_c  #! ?
+                    second_derivative_z: int = oz_r_z_b + pso_r_z_c  #! ?
+                    ml_gauge_x, ml_gauge_y, ml_gauge_z = oz_r_x_c, oz_r_y_c, oz_r_z_c
+                    ml_oz_derivative_x, ml_oz_derivative_y, ml_oz_derivative_z = (
+                        oz_r_x_b,
+                        oz_r_y_b,
+                        oz_r_z_b,
+                    )
+                    ml_pso_derivative_x, ml_pso_derivative_y, ml_pso_derivative_z = (
+                        pso_r_x_c,
+                        pso_r_y_c,
+                        pso_r_z_c,
+                    )
                 elif k == 3:
                     """
                     -(A_t-0_t)
@@ -247,8 +282,13 @@ def psooz(
                     # * PSO
                     l_x_j, l_y_j, l_z_j = pso_r_x_c, pso_r_y_c, pso_r_z_c
                     r_x, r_y, r_z = pso_r_x_b, pso_r_y_b, pso_r_z_b
-                    der_l_pso_bra: float = float(pso_der_l_c[i])
                     der_l_pso_ket: float = float(pso_der_l_c[j])
+                    # * Both
+                    gauge_bi: float = 1.0 * (coord[center[j]][coord_c] - gauge[coord_c])
+                    second_derivative_x: int = oz_r_x_b + pso_r_x_c  #! ?
+                    second_derivative_y: int = oz_r_y_b + pso_r_y_c  #! ?
+                    second_derivative_z: int = oz_r_z_b + pso_r_z_c  #! ?
+                    ml_gauge_x, ml_gauge_y, ml_gauge_z = 0, 0, 0
                 elif k == 4:
                     """
                     -[r_a^i s_a^{j+1} (2pt_a^{k+1}-kt_a^{k-1}) exp(-p r_a^2)]
@@ -271,8 +311,23 @@ def psooz(
                     # * PSO
                     l_x_j, l_y_j, l_z_j = pso_r_x_b, pso_r_y_b, pso_r_z_b
                     r_x, r_y, r_z = pso_r_x_c, pso_r_y_c, pso_r_z_c
-                    der_l_pso_bra: float = float(pso_der_l_b[i])
                     der_l_pso_ket: float = float(pso_der_l_b[j])
+                    # * Both
+                    gauge_bi = 1.0
+                    second_derivative_x: int = oz_r_x_c + pso_r_x_b  #! ?
+                    second_derivative_y: int = oz_r_y_c + pso_r_y_b  #! ?
+                    second_derivative_z: int = oz_r_z_c + pso_r_z_b  #! ?
+                    ml_gauge_x, ml_gauge_y, ml_gauge_z = oz_r_x_b, oz_r_y_b, oz_r_z_b
+                    ml_oz_derivative_x, ml_oz_derivative_y, ml_oz_derivative_z = (
+                        oz_r_x_c,
+                        oz_r_y_c,
+                        oz_r_z_c,
+                    )
+                    ml_pso_derivative_x, ml_pso_derivative_y, ml_pso_derivative_z = (
+                        pso_r_x_b,
+                        pso_r_y_b,
+                        pso_r_z_b,
+                    )
                 elif k == 5:
                     """
                     -(A_s-0_s)
@@ -288,8 +343,13 @@ def psooz(
                     # * PSO
                     l_x_j, l_y_j, l_z_j = pso_r_x_b, pso_r_y_b, pso_r_z_b
                     r_x, r_y, r_z = pso_r_x_c, pso_r_y_c, pso_r_z_c
-                    der_l_pso_bra: float = float(pso_der_l_b[i])
                     der_l_pso_ket: float = float(pso_der_l_b[j])
+                    # * Both
+                    gauge_bi: float = 1.0 * (coord[center[j]][coord_b] - gauge[coord_b])
+                    second_derivative_x: int = oz_r_x_c + pso_r_x_b  #! ?
+                    second_derivative_y: int = oz_r_y_c + pso_r_y_b  #! ?
+                    second_derivative_z: int = oz_r_z_c + pso_r_z_b  #! ?
+                    ml_gauge_x, ml_gauge_y, ml_gauge_z = 0, 0, 0
                 elif k == 6:
                     """
                     [r_a^i (2ps_a^{j+1}-js_a^{j-1}) t_a^{k+1} exp(-p r_a^2)]
@@ -312,8 +372,23 @@ def psooz(
                     # * PSO
                     l_x_j, l_y_j, l_z_j = pso_r_x_b, pso_r_y_b, pso_r_z_b
                     r_x, r_y, r_z = pso_r_x_c, pso_r_y_c, pso_r_z_c
-                    der_l_pso_bra: float = float(pso_der_l_b[i])
                     der_l_pso_ket: float = float(pso_der_l_b[j])
+                    # * Both
+                    gauge_bi = -1.0
+                    second_derivative_x: int = oz_r_x_b + pso_r_x_b  #! ?
+                    second_derivative_y: int = oz_r_y_b + pso_r_y_b  #! ?
+                    second_derivative_z: int = oz_r_z_b + pso_r_z_b  #! ?
+                    ml_gauge_x, ml_gauge_y, ml_gauge_z = oz_r_x_c, oz_r_y_c, oz_r_z_c
+                    ml_oz_derivative_x, ml_oz_derivative_y, ml_oz_derivative_z = (
+                        oz_r_x_b,
+                        oz_r_y_b,
+                        oz_r_z_b,
+                    )
+                    ml_pso_derivative_x, ml_pso_derivative_y, ml_pso_derivative_z = (
+                        pso_r_x_b,
+                        pso_r_y_b,
+                        pso_r_z_b,
+                    )
                 elif k == 7:
                     """
                     (A_t-0_t)
@@ -329,8 +404,15 @@ def psooz(
                     # * PSO
                     l_x_j, l_y_j, l_z_j = pso_r_x_b, pso_r_y_b, pso_r_z_b
                     r_x, r_y, r_z = pso_r_x_c, pso_r_y_c, pso_r_z_c
-                    der_l_pso_bra: float = float(pso_der_l_b[i])
                     der_l_pso_ket: float = float(pso_der_l_b[j])
+                    # * Both
+                    gauge_bi: float = -1.0 * (
+                        coord[center[j]][coord_c] - gauge[coord_c]
+                    )
+                    second_derivative_x: int = oz_r_x_b + pso_r_x_b  #! ?
+                    second_derivative_y: int = oz_r_y_b + pso_r_y_b  #! ?
+                    second_derivative_z: int = oz_r_z_b + pso_r_z_b  #! ?
+                    ml_gauge_x, ml_gauge_y, ml_gauge_z = 0, 0, 0
                 """
                                         OZ.PSO
                 OZ is applied to the bra and PSO to the ket
@@ -442,121 +524,225 @@ def psooz(
                         coord[atom][2],
                     )
                 )
-                """
-                                        PSO.OZ
-                PSO is applied to the bra while OZ to the ket
-                """
-                igdj_jgdi_idj_jdi_b += coef * (
-                    4.0
-                    * exp[i]
-                    * exp[j]
-                    * nuclear_attraction(
-                        # *  PSO
-                        lx[i] + l_x_j,
-                        ly[i] + l_y_j,
-                        lz[i] + l_z_j,
-                        # *
-                        # * OZ
-                        lx[j] + l_x_i_a,
-                        ly[j] + l_y_i_a,
-                        lz[j] + l_z_i_a,
-                        # * PSO
-                        r_x,
-                        r_y,
-                        r_z,
-                        # *
-                        exp[i],
-                        exp[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        # * PSO
-                        coord[atom][0],
-                        coord[atom][1],
-                        coord[atom][2],
-                        # *
-                    )
-                    - 2.0
-                    * exp[j]
-                    * der_l_pso_bra
-                    * nuclear_attraction(
-                        lx[i] - l_x_j,
-                        ly[i] - l_y_j,
-                        lz[i] - l_z_j,
-                        lx[j] + l_x_i_a,
-                        ly[j] + l_y_i_a,
-                        lz[j] + l_z_i_a,
-                        r_x,
-                        r_y,
-                        r_z,
-                        exp[i],
-                        exp[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[atom][0],
-                        coord[atom][1],
-                        coord[atom][2],
-                    )
-                    - 2.0
-                    * exp[i]
-                    * der_l_oz_ket
-                    * nuclear_attraction(
-                        lx[i] + l_x_j,
-                        ly[i] + l_y_j,
-                        lz[i] + l_z_j,
-                        lx[j] + l_x_i_b,
-                        ly[j] + l_y_i_b,
-                        lz[j] + l_z_i_b,
-                        r_x,
-                        r_y,
-                        r_z,
-                        exp[i],
-                        exp[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[atom][0],
-                        coord[atom][1],
-                        coord[atom][2],
-                    )
-                    + der_l_oz_ket
-                    * der_l_pso_bra
-                    * nuclear_attraction(
-                        lx[i] - l_x_j,
-                        ly[i] - l_y_j,
-                        lz[i] - l_z_j,
-                        lx[j] + l_x_i_b,
-                        ly[j] + l_y_i_b,
-                        lz[j] + l_z_i_b,
-                        r_x,
-                        r_y,
-                        r_z,
-                        exp[i],
-                        exp[j],
-                        coord[center[i]][0],
-                        coord[center[i]][1],
-                        coord[center[i]][2],
-                        coord[center[j]][0],
-                        coord[center[j]][1],
-                        coord[center[j]][2],
-                        coord[atom][0],
-                        coord[atom][1],
-                        coord[atom][2],
-                    )
-                )
-
                 # if (i == 2 and j == 2) or (i == 0 and j ==0):
                 #    print("\n ka ",k,i,j,igdj_jgdi_idj_jdi)
+                """
+                                            PSO.OZ
+                It's applied all operators to right gaussian
+                """
+                if (
+                    second_derivative_x == 2
+                    or second_derivative_y == 2
+                    or second_derivative_z == 2
+                ):
+                    igdj_jgdi_idj_jdi_b += gauge_bi * (
+                        4.0
+                        * exp[j]
+                        * exp[j]
+                        * nuclear_attraction(
+                            lx[i],
+                            ly[i],
+                            lz[i],
+                            # * PSO + OZ
+                            lx[j] + second_derivative_x + ml_gauge_x,
+                            ly[j] + second_derivative_y + ml_gauge_y,
+                            lz[j] + second_derivative_z + ml_gauge_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            # *
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            # * PSO
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                            # *
+                        )
+                        - 2.0
+                        * exp[j]
+                        * (2.0 * der_l_oz_ket + 1.0)
+                        * nuclear_attraction(
+                            lx[i],
+                            ly[i],
+                            lz[i],
+                            lx[j] + ml_gauge_x,
+                            ly[j] + ml_gauge_y,
+                            lz[j] + ml_gauge_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        )
+                        + der_l_oz_ket
+                        * (der_l_pso_ket - 1.0)
+                        * nuclear_attraction(
+                            lx[i],
+                            ly[i],
+                            lz[i],
+                            lx[j] - second_derivative_x + ml_gauge_x,
+                            ly[j] - second_derivative_y + ml_gauge_y,
+                            lz[j] - second_derivative_z + ml_gauge_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        )
+                    )
+                    # if (i == 2 and j == 2) or (i == 0 and j ==0):
+                    #    print(" kb ",k,i,j,igdj_jgdi_idj_jdi_b)
+                else:
+                    igdj_jgdi_idj_jdi_b += gauge_bi * (
+                        4.0
+                        * exp[j]
+                        * exp[j]
+                        * nuclear_attraction(
+                            lx[i],
+                            ly[i],
+                            lz[i],
+                            # * PSO + OZ
+                            lx[j] + second_derivative_x + ml_gauge_x,
+                            ly[j] + second_derivative_y + ml_gauge_y,
+                            lz[j] + second_derivative_z + ml_gauge_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            # *
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            # * PSO
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                            # *
+                        )
+                        - 2.0
+                        * exp[j]
+                        * der_l_oz_ket
+                        * nuclear_attraction(
+                            lx[i],
+                            ly[i],
+                            lz[i],
+                            lx[j]
+                            + ml_gauge_x
+                            - ml_oz_derivative_x
+                            + ml_pso_derivative_x,
+                            ly[j]
+                            + ml_gauge_y
+                            - ml_oz_derivative_y
+                            + ml_pso_derivative_y,
+                            lz[j]
+                            + ml_gauge_z
+                            - ml_oz_derivative_z
+                            + ml_pso_derivative_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        )
+                        - 2.0
+                        * exp[j]
+                        * (der_l_pso_ket + ml_gauge_x + ml_gauge_y + ml_gauge_z)
+                        * nuclear_attraction(
+                            lx[i],
+                            ly[i],
+                            lz[i],
+                            lx[j]
+                            + ml_gauge_x
+                            + ml_oz_derivative_x
+                            - ml_pso_derivative_x,
+                            ly[j]
+                            + ml_gauge_y
+                            + ml_oz_derivative_y
+                            - ml_pso_derivative_y,
+                            lz[j]
+                            + ml_gauge_z
+                            + ml_oz_derivative_z
+                            - ml_pso_derivative_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        )
+                        + der_l_oz_ket
+                        * (der_l_pso_ket + ml_gauge_x + ml_gauge_y + ml_gauge_z)
+                        * nuclear_attraction(
+                            lx[i],
+                            ly[i],
+                            lz[i],
+                            lx[j] - second_derivative_x + ml_gauge_x,
+                            ly[j] - second_derivative_y + ml_gauge_y,
+                            lz[j] - second_derivative_z + ml_gauge_z,
+                            r_x,
+                            r_y,
+                            r_z,
+                            exp[i],
+                            exp[j],
+                            coord[center[i]][0],
+                            coord[center[i]][1],
+                            coord[center[i]][2],
+                            coord[center[j]][0],
+                            coord[center[j]][1],
+                            coord[center[j]][2],
+                            coord[atom][0],
+                            coord[atom][1],
+                            coord[atom][2],
+                        )
+                    )
+                    # if (i == 2 and j == 2) or (i == 0 and j ==0):
+                    #    print(" kb  ",k,i,j,igdj_jgdi_idj_jdi_b)
 
             psooz[count] = (
                 normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
@@ -566,8 +752,8 @@ def psooz(
                 / (exp[i] + exp[j])
                 * (igdj_jgdi_idj_jdi + igdj_jgdi_idj_jdi_b)
             )
-            # if abs(psooz[count]) > 0.01:
-            #     print("  <phi|{PSO, OZ}|phi> : ", i + 1, j + 1, psooz[count])
+            if abs(psooz[count]) > 0.01:
+                print("  <phi|{PSO, OZ}|phi> : ", i + 1, j + 1, psooz[count])
             # normalization(lx[i], ly[i], lz[i], exp[i], dalton_normalization)
             # * normalization(lx[j], ly[j], lz[j], exp[j], dalton_normalization)
             # *2.0
@@ -645,7 +831,7 @@ if __name__ == "__main__":
             ly=[0, 0, 1, 0, 0, 1, 0, 2, 1, 0, 0, 1, 0],
             lz=[0, 0, 0, 1, 0, 0, 1, 0, 1, 2, 0, 0, 1],
             output=9,
-            spatial_sym=2,
+            spatial_sym=1,
             magnetic_component=0,
             atom=0,
             dalton_normalization=True,
